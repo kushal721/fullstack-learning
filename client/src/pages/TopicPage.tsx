@@ -1,15 +1,17 @@
 import { useParams } from "react-router";
+import { Badge } from "../components/ui/Badge.tsx";
+import { PageHeader } from "../components/ui/PageHeader.tsx";
 
 export default function TopicPage() {
   const { topic } = useParams();
   return (
     <>
       <title>Topic · Full-Stack Learning</title>
-      <h1 className="text-3xl font-semibold tracking-tight">Topic: {topic}</h1>
-      <p className="mt-2 text-muted">
-        What this topic is, why it matters and where it fits in the whole
-        application.
-      </p>
+      <PageHeader
+        title={`Topic: ${topic}`}
+        description="What this topic is, why it matters and where it fits in the whole application."
+        eyebrow={<Badge tone="info">Coming soon</Badge>}
+      />
     </>
   );
 }
