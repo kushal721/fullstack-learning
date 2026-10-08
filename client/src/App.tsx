@@ -1,41 +1,34 @@
-import type { HealthResponse } from "@fsl/shared";
-import { useEffect, useState } from "react";
+import { Route, Routes } from "react-router";
+import { AppLayout } from "./components/layout/AppLayout.tsx";
+import BuildPage from "./pages/BuildPage.tsx";
+import BuildStepPage from "./pages/BuildStepPage.tsx";
+import ConceptPage from "./pages/ConceptPage.tsx";
+import ConceptsPage from "./pages/ConceptsPage.tsx";
+import ExplorerPage from "./pages/ExplorerPage.tsx";
+import FlowPage from "./pages/FlowPage.tsx";
+import HomePage from "./pages/HomePage.tsx";
+import LearnPage from "./pages/LearnPage.tsx";
+import NotFoundPage from "./pages/NotFoundPage.tsx";
+import ProjectPage from "./pages/ProjectPage.tsx";
+import TopicPage from "./pages/TopicPage.tsx";
 
-type ApiStatus = "checking" | "ok" | "unreachable";
-
+// Every URL of the platform. All pages render inside AppLayout.
 export default function App() {
-  // Temporary: shows the client can reach the API. Replaced by the app shell.
-  const [apiStatus, setApiStatus] = useState<ApiStatus>("checking");
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch("/api/health", { signal: controller.signal })
-      .then((res) => (res.ok ? (res.json() as Promise<HealthResponse>) : null))
-      .then((body) =>
-        setApiStatus(body?.status === "ok" ? "ok" : "unreachable"),
-      )
-      .catch(() => {
-        if (!controller.signal.aborted) setApiStatus("unreachable");
-      });
-    return () => controller.abort();
-  }, []);
-
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center gap-6 px-6 py-24">
-      <h1 className="text-4xl font-semibold tracking-tight">
-        Full-Stack Learning
-      </h1>
-      <p className="text-lg leading-8 text-muted">
-        Learn how a real web application works by building one — from an empty
-        project to a deployed app.
-      </p>
-      <blockquote className="border-l-4 border-border pl-4 text-lg italic">
-        Don&apos;t just learn what to write. Understand what happens when you
-        write it.
-      </blockquote>
-      <p className="text-sm text-muted" role="status">
-        API: {apiStatus}
-      </p>
-    </main>
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="learn" element={<LearnPage />} />
+        <Route path="learn/:topic" element={<TopicPage />} />
+        <Route path="concepts" element={<ConceptsPage />} />
+        <Route path="concepts/:concept" element={<ConceptPage />} />
+        <Route path="build" element={<BuildPage />} />
+        <Route path="build/:step" element={<BuildStepPage />} />
+        <Route path="explorer" element={<ExplorerPage />} />
+        <Route path="project" element={<ProjectPage />} />
+        <Route path="flow" element={<FlowPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 }
