@@ -25,15 +25,33 @@ The product specification lives in
 
 ```bash
 npm install
+npm run dev
 ```
 
-Running the client and API is set up in upcoming issues; see the
-[roadmap milestones](https://github.com/kushal721/fullstack-learning/milestones).
+- Client (Vite): <http://localhost:5173>, which forwards `/api` requests to the API
+- API (Express): <http://localhost:3000/api/health>
+
+## Run with Docker
+
+The production image runs one Node.js process that serves the API under
+`/api` and the built React app for every other path.
+
+```bash
+docker build -t fullstack-learning .
+docker run --rm -p 3000:3000 fullstack-learning
+```
+
+Open <http://localhost:3000>. The container reports its health using
+`/api/health`.
+
+See the [roadmap milestones](https://github.com/kushal721/fullstack-learning/milestones)
+for what comes next.
 
 ## Scripts
 
 | Command                | What it does                            |
 | ---------------------- | --------------------------------------- |
+| `npm run dev`          | Run client and API together with reload |
 | `npm run lint`         | Lint the whole repo with ESLint         |
 | `npm run format`       | Format files with Prettier              |
 | `npm run format:check` | Check formatting without changing files |
