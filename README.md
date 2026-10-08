@@ -1,5 +1,7 @@
 # Full-Stack Learning
 
+[![CI](https://github.com/kushal721/fullstack-learning/actions/workflows/ci.yml/badge.svg)](https://github.com/kushal721/fullstack-learning/actions/workflows/ci.yml)
+
 An interactive platform that teaches beginners how full-stack web development
 actually works, by guiding them through building a real application (a Notes
 App) from an empty project to a deployed website.
