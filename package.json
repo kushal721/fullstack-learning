@@ -20,7 +20,8 @@
     "format:check": "prettier --check .",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present"
+    "build": "npm run build --workspaces --if-present",
+    "validate": "npm run validate -w server"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
