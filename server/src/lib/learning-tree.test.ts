@@ -63,4 +63,28 @@ describe("learning tree", () => {
     expect(getAdjacentTopics("how-everything-connects").next).toBeUndefined();
     expect(getAdjacentTopics("unknown")).toEqual({});
   });
+
+  it("gives every topic an overview of 3 to 5 paragraphs", () => {
+    for (const topic of getAllTopics()) {
+      expect(topic.overview.length, topic.id).toBeGreaterThanOrEqual(3);
+      expect(topic.overview.length, topic.id).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it("only uses formatting the client can render (inline `code`)", () => {
+    for (const topic of [getTree(), ...getAllTopics()]) {
+      const text = [topic.summary, ...topic.overview, topic.whereToStart].join(
+        " ",
+      );
+      expect((text.match(/`/g) ?? []).length % 2, topic.id).toBe(0);
+      // Outside `code` spans there must be no Markdown bold or HTML tags.
+      const prose = text.replace(/`[^`]*`/g, "");
+      expect(prose, topic.id).not.toMatch(/\*\*|<[a-z]/i);
+    }
+  });
+
+  it("tells a beginner where to start", () => {
+    expect(getTree().whereToStart).toBeTruthy();
+    expect(getAllTopics()[0]?.whereToStart).toBeTruthy();
+  });
 });
