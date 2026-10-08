@@ -6,8 +6,9 @@ App) from an empty project to a deployed website.
 
 > **Don't just learn what to write. Understand what happens when you write it.**
 
-The product specification lives in
-[`FULLSTACK_LEARNING_PROJECT_SPEC.md`](./FULLSTACK_LEARNING_PROJECT_SPEC.md).
+- [PROJECT.md](./PROJECT.md) — vision, systems, architecture, roadmap
+- [CONTRIBUTING.md](./CONTRIBUTING.md) — workflow, conventions, checks
+- [Product specification](./FULLSTACK_LEARNING_PROJECT_SPEC.md) — the source of truth
 
 ## Stack
 
@@ -65,6 +66,16 @@ docker run --rm -p 3000:3000 fullstack-learning   # http://localhost:3000
 ```
 
 The container reports its health using `/api/health`.
+
+## How changes reach production
+
+```text
+issue → branch → pull request → CI (format, lint, typecheck, test, build,
+Docker build) → review → merge to main → Docker image published to GitHub
+Container Registry → deployed to Render → health check
+```
+
+CI is set up in #122, image publishing in #123 and deployment in #124.
 
 See the [roadmap milestones](https://github.com/kushal721/fullstack-learning/milestones)
 for what comes next.
