@@ -14,13 +14,14 @@ function renderAt(path: string) {
 
 describe("App routing", () => {
   beforeEach(() => {
-    // The home page checks the API; keep tests offline.
+    // Pages load data from the API; keep tests offline.
     vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("offline"));
+    vi.spyOn(window, "scrollTo").mockImplementation(() => {});
   });
 
   it.each([
     ["/learn", "Learn"],
-    ["/learn/html", "Topic: html"],
+    ["/learn/html", "Couldn't load this topic"],
     ["/concepts", "Concepts"],
     ["/concepts/react-usestate", "Concept: react-usestate"],
     ["/build", "Build"],
@@ -29,10 +30,10 @@ describe("App routing", () => {
     ["/project", "Project"],
     ["/flow", "Flow"],
     ["/no-such-page", "Page not found"],
-  ])("renders %s inside the layout", (path, heading) => {
+  ])("renders %s inside the layout", async (path, heading) => {
     renderAt(path);
     expect(
-      screen.getByRole("heading", { level: 1, name: heading }),
+      await screen.findByRole("heading", { level: 1, name: heading }),
     ).toBeInTheDocument();
     expect(screen.getByRole("banner")).toBeInTheDocument();
     expect(screen.getByRole("main")).toBeInTheDocument();

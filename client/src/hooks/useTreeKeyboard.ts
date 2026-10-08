@@ -13,6 +13,8 @@ type Options = {
   items: TreeKeyboardItem[];
   /** Expand (`true`) or collapse (`false`) an item. */
   onExpandedChange: (id: string, expanded: boolean) => void;
+  /** Item that gets the Tab stop before the user moves (e.g. the current page). */
+  defaultFocusId?: string;
 };
 
 /**
@@ -23,14 +25,22 @@ type Options = {
  *
  * The hook knows nothing about what the tree shows, so any tree can use it.
  */
-export function useTreeKeyboard({ items, onExpandedChange }: Options) {
+export function useTreeKeyboard({
+  items,
+  onExpandedChange,
+  defaultFocusId,
+}: Options) {
   const elements = useRef(new Map<string, HTMLElement>());
   const [focusedId, setFocusedId] = useState<string | null>(null);
 
-  // If the focused item was hidden (its parent collapsed), fall back to the first.
-  const tabStopId =
-    focusedId !== null && items.some((item) => item.id === focusedId)
-      ? focusedId
+  // The last focused item keeps the Tab stop; if it is hidden (its parent was
+  // collapsed) or nothing was focused yet, use the default, then the first item.
+  const isVisible = (id: string | null | undefined) =>
+    id != null && items.some((item) => item.id === id);
+  const tabStopId = isVisible(focusedId)
+    ? focusedId
+    : isVisible(defaultFocusId)
+      ? defaultFocusId
       : (items[0]?.id ?? null);
 
   const moveFocus = useCallback((id: string | undefined) => {
