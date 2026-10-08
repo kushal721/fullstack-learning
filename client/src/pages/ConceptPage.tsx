@@ -1,16 +1,17 @@
 import { useParams } from "react-router";
+import { Badge } from "../components/ui/Badge.tsx";
+import { PageHeader } from "../components/ui/PageHeader.tsx";
 
 export default function ConceptPage() {
   const { concept } = useParams();
   return (
     <>
       <title>Concept · Full-Stack Learning</title>
-      <h1 className="text-3xl font-semibold tracking-tight">
-        Concept: {concept}
-      </h1>
-      <p className="mt-2 text-muted">
-        One concept, explained from the basics and connected to the Notes App.
-      </p>
+      <PageHeader
+        title={`Concept: ${concept}`}
+        description="One concept, explained from the basics and connected to the Notes App."
+        eyebrow={<Badge tone="info">Coming soon</Badge>}
+      />
     </>
   );
 }
