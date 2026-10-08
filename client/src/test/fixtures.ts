@@ -1,4 +1,4 @@
-import type { TopicTreeNode } from "@fsl/shared";
+import type { TopicResponse, TopicTreeNode } from "@fsl/shared";
 
 /** A small learning tree for tests (not the real content). */
 export const topicTreeFixture: TopicTreeNode = {
@@ -34,4 +34,43 @@ export const topicTreeFixture: TopicTreeNode = {
       ],
     },
   ],
+};
+
+/** GET /api/topics/react for the fixture tree above. */
+export const reactTopicFixture: TopicResponse = {
+  topic: {
+    id: "react",
+    slug: "react",
+    order: 2,
+    title: "React",
+    summary: "Components that update when data changes.",
+    overview: [
+      "React lets you describe the page for the current data.",
+      "Call `setNotes` and React updates the screen.",
+    ],
+    children: [
+      {
+        id: "hooks",
+        slug: "hooks",
+        order: 1,
+        title: "Hooks",
+        summary: "Remembering values between renders.",
+        overview: [],
+        children: [],
+        conceptIds: [],
+        buildStepIds: [],
+      },
+    ],
+    conceptIds: [],
+    buildStepIds: [],
+  },
+  previous: {
+    id: "html",
+    slug: "html",
+    order: 1,
+    title: "HTML",
+    summary: "The structure of a web page.",
+  },
+  concepts: [],
+  buildSteps: [],
 };

@@ -9,15 +9,31 @@ import { LearningNode } from "./LearningNode.tsx";
 type Props = {
   /** The root topic; its children are shown as the first level. */
   root: TopicTreeNode;
+  /** The topic being viewed: highlighted, and its ancestors start expanded. */
+  currentId?: string;
+  /** Titles only, for narrow places such as a sidebar. */
+  compact?: boolean;
 };
 
-/** Top-level topics that have children start expanded. */
-function initiallyExpanded(root: TopicTreeNode) {
-  return new Set(
-    root.children
-      .filter((topic) => topic.children.length > 0)
-      .map((topic) => topic.id),
-  );
+/** Ids of the topics above `id`, or null if `id` is not in `topics`. */
+function ancestorsOf(topics: TopicTreeNode[], id: string): string[] | null {
+  for (const topic of topics) {
+    if (topic.id === id) return [];
+    const below = ancestorsOf(topic.children, id);
+    if (below) return [topic.id, ...below];
+  }
+  return null;
+}
+
+/** Top-level parents start expanded, and so does the path to the current topic. */
+function initiallyExpanded(root: TopicTreeNode, currentId?: string) {
+  const topLevelParents = root.children
+    .filter((topic) => topic.children.length > 0)
+    .map((topic) => topic.id);
+  const pathToCurrent = currentId
+    ? (ancestorsOf(root.children, currentId) ?? [])
+    : [];
+  return new Set([...topLevelParents, ...pathToCurrent]);
 }
 
 /** The rows a learner can currently see, in display order. */
@@ -44,8 +60,10 @@ function visibleItems(
  * The Learning Tree (spec §4.1). It renders whatever tree the API sends, so
  * adding or reordering topics never requires changing this component.
  */
-export function LearningTree({ root }: Props) {
-  const [expanded, setExpanded] = useState(() => initiallyExpanded(root));
+export function LearningTree({ root, currentId, compact = false }: Props) {
+  const [expanded, setExpanded] = useState(() =>
+    initiallyExpanded(root, currentId),
+  );
 
   const setTopicExpanded = useCallback((id: string, isExpanded: boolean) => {
     setExpanded((current) => {
@@ -63,6 +81,7 @@ export function LearningTree({ root }: Props) {
   const { getItemProps } = useTreeKeyboard({
     items,
     onExpandedChange: setTopicExpanded,
+    defaultFocusId: currentId,
   });
 
   return (
@@ -77,6 +96,8 @@ export function LearningTree({ root }: Props) {
           expanded={expanded}
           onExpandedChange={setTopicExpanded}
           getItemProps={getItemProps}
+          currentId={currentId}
+          compact={compact}
         />
       ))}
     </ul>
