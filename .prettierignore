@@ -1,0 +1,5 @@
+dist/
+coverage/
+node_modules/
+package-lock.json
+FULLSTACK_LEARNING_PROJECT_SPEC.md
