@@ -19,6 +19,16 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
+    rules: {
+      // `_name` marks a parameter that must exist but is intentionally unused
+      // (e.g. Express needs 4 args to recognise an error handler).
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+    },
+  },
+  {
     files: ["server/**/*.ts", "shared/**/*.ts", "*.js"],
     languageOptions: { globals: globals.node },
   },
