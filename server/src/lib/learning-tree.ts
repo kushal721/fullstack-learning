@@ -1,4 +1,4 @@
-import type { Topic } from "@fsl/shared";
+import type { Topic, TopicSummary, TopicTreeNode } from "@fsl/shared";
 import { learningTree } from "../content/learning-tree.js";
 
 /** Every topic in reading order (depth-first), without the root. */
@@ -32,4 +32,23 @@ export function getAdjacentTopics(id: string): {
   const index = indexById.get(id);
   if (index === undefined) return {};
   return { previous: allTopics[index - 1], next: allTopics[index + 1] };
+}
+
+export function toTopicSummary({
+  id,
+  slug,
+  order,
+  title,
+  summary,
+}: Topic): TopicSummary {
+  return { id, slug, order, title, summary };
+}
+
+function toTreeNode(topic: Topic): TopicTreeNode {
+  return { ...toTopicSummary(topic), children: topic.children.map(toTreeNode) };
+}
+
+/** The tree without long texts, small enough to send on every page. */
+export function getTopicTree(): TopicTreeNode {
+  return toTreeNode(learningTree);
 }

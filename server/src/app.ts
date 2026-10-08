@@ -4,6 +4,7 @@ import { errorHandler } from "./middleware/errorHandler.js";
 import { notFound } from "./middleware/notFound.js";
 import { serveClient } from "./middleware/serveClient.js";
 import { healthRouter } from "./routes/health.js";
+import { topicsRouter } from "./routes/topics.js";
 
 type AppOptions = {
   /** Folder with the built client; when set, the app also serves the website. */
@@ -17,6 +18,7 @@ export function createApp({ clientDist = config.clientDist }: AppOptions = {}) {
   app.use(express.json());
 
   app.use("/api/health", healthRouter);
+  app.use("/api/topics", topicsRouter);
   app.use("/api", notFound);
 
   if (clientDist) app.use(serveClient(clientDist));
