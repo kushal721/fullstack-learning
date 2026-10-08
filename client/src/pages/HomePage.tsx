@@ -1,27 +1,16 @@
 import type { HealthResponse } from "@fsl/shared";
-import { useEffect, useState } from "react";
 import { navItems } from "../components/layout/nav-items.ts";
 import { ButtonLink } from "../components/ui/ButtonLink.tsx";
 import { Card } from "../components/ui/Card.tsx";
-
-type ApiStatus = "checking" | "ok" | "unreachable";
+import { useApi } from "../hooks/useApi.ts";
 
 export default function HomePage() {
-  // Temporary: shows the client can reach the API. Replaced by useApi (#131).
-  const [apiStatus, setApiStatus] = useState<ApiStatus>("checking");
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetch("/api/health", { signal: controller.signal })
-      .then((res) => (res.ok ? (res.json() as Promise<HealthResponse>) : null))
-      .then((body) =>
-        setApiStatus(body?.status === "ok" ? "ok" : "unreachable"),
-      )
-      .catch(() => {
-        if (!controller.signal.aborted) setApiStatus("unreachable");
-      });
-    return () => controller.abort();
-  }, []);
+  const health = useApi<HealthResponse>("/health");
+  const apiStatus = health.isLoading
+    ? "checking"
+    : health.data?.status === "ok"
+      ? "ok"
+      : "unreachable";
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-10 py-12">
