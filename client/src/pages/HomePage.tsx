@@ -1,21 +1,25 @@
-import type { HealthResponse } from "@fsl/shared";
+import type { TopicTreeResponse } from "@fsl/shared";
+import { Link } from "react-router";
 import { navItems } from "../components/layout/nav-items.ts";
 import { ButtonLink } from "../components/ui/ButtonLink.tsx";
 import { Card } from "../components/ui/Card.tsx";
+import { ErrorState } from "../components/ui/ErrorState.tsx";
+import { Loading } from "../components/ui/Loading.tsx";
+import { RichText } from "../components/ui/RichText.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { apiPaths } from "../services/api.ts";
 
 export default function HomePage() {
-  const health = useApi<HealthResponse>(apiPaths.health());
-  const apiStatus = health.isLoading
-    ? "checking"
-    : health.data?.status === "ok"
-      ? "ok"
-      : "unreachable";
+  const { data, error, isLoading, reload } = useApi<TopicTreeResponse>(
+    apiPaths.topicTree(),
+  );
+  const topics = data?.tree.children ?? [];
+  const firstTopic = topics[0];
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-10 py-12">
+    <div className="mx-auto flex max-w-3xl flex-col gap-12 py-12">
       <title>Full-Stack Learning</title>
+
       <section className="flex flex-col gap-6">
         <h1 className="text-4xl font-semibold tracking-tight">
           Full-Stack Learning
@@ -28,17 +32,41 @@ export default function HomePage() {
           Don&apos;t just learn what to write. Understand what happens when you
           write it.
         </blockquote>
-        <div className="flex flex-wrap gap-3">
-          <ButtonLink to="/learn">Start learning</ButtonLink>
-          <ButtonLink to="/build" variant="secondary">
-            Build the Notes App
-          </ButtonLink>
-        </div>
       </section>
 
-      <section aria-labelledby="sections-heading">
-        <h2 id="sections-heading" className="mb-4 text-xl font-semibold">
-          What you&apos;ll find here
+      <section
+        aria-labelledby="start-heading"
+        className="rounded-xl border border-accent/30 bg-accent/5 p-6"
+      >
+        <h2 id="start-heading" className="text-xl font-semibold">
+          Where to start
+        </h2>
+        {isLoading && <Loading />}
+        {error && <ErrorState message={error.message} onRetry={reload} />}
+        {data && (
+          <>
+            {data.whereToStart && (
+              <p className="mt-2 leading-7">
+                <RichText text={data.whereToStart} />
+              </p>
+            )}
+            <div className="mt-4 flex flex-wrap gap-3">
+              {firstTopic && (
+                <ButtonLink to={`/learn/${firstTopic.slug}`}>
+                  Start with {firstTopic.title}
+                </ButtonLink>
+              )}
+              <ButtonLink to="/build" variant="secondary">
+                Build the Notes App
+              </ButtonLink>
+            </div>
+          </>
+        )}
+      </section>
+
+      <section aria-labelledby="how-heading">
+        <h2 id="how-heading" className="mb-4 text-xl font-semibold">
+          How this works
         </h2>
         <ul className="grid gap-3 sm:grid-cols-2">
           {navItems.map((item) => (
@@ -51,9 +79,31 @@ export default function HomePage() {
         </ul>
       </section>
 
-      <p className="text-sm text-muted" role="status">
-        API: {apiStatus}
-      </p>
+      {topics.length > 0 && (
+        <section aria-labelledby="topics-heading">
+          <h2 id="topics-heading" className="mb-4 text-xl font-semibold">
+            The {topics.length} topics
+          </h2>
+          <ol className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
+            {topics.map((topic) => (
+              <li key={topic.id}>
+                <Link
+                  to={`/learn/${topic.slug}`}
+                  className="flex gap-3 rounded-md px-2 py-1.5 hover:bg-foreground/5"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="w-6 text-right text-muted"
+                  >
+                    {topic.order}.
+                  </span>
+                  <span>{topic.title}</span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
     </div>
   );
 }

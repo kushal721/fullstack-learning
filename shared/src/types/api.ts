@@ -31,7 +31,11 @@ export type TopicSummary = {
 export type TopicTreeNode = TopicSummary & { children: TopicTreeNode[] };
 
 /** GET /api/topics */
-export type TopicTreeResponse = { tree: TopicTreeNode };
+export type TopicTreeResponse = {
+  tree: TopicTreeNode;
+  /** Tells a beginner where to begin (shown on the home page). */
+  whereToStart?: string;
+};
 
 /** A concept in a list (full concepts arrive in M3). */
 export type ConceptSummary = {
