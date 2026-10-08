@@ -90,11 +90,14 @@ npm run lint           # ESLint for the whole repo
 npm run typecheck      # TypeScript in every workspace
 npm test               # Vitest in every workspace
 npm run build          # production build of client and server
+npm run validate       # learning content ids and references
 ```
 
-Once content data exists, `npm run validate` checks that every referenced
-id (topics, concepts, files, steps, symbols…) exists. Every issue that adds
-a kind of content data extends this validation.
+`npm run validate` checks the learning content: ids are unique and every
+reference (topic → concept, step → file, …) points at something that exists.
+It runs `validateContent()` in `server/src/lib/validation.ts`. **Every issue
+that adds a kind of content data must extend `validateContent()`** with the
+checks for its own ids and references, and add a test for each new error.
 
 ## Conventions
 
