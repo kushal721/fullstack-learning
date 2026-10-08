@@ -8,13 +8,13 @@ type TopicInput = Pick<Topic, "id" | "title" | "summary"> & Partial<Topic>;
 /** Fills the fields that start empty, so each topic below stays readable. */
 function topic(order: number, input: TopicInput): Topic {
   return {
-    slug: input.id,
-    order,
-    overview: [],
-    children: [],
-    conceptIds: [],
-    buildStepIds: [],
     ...input,
+    slug: input.slug ?? input.id,
+    order,
+    overview: input.overview ?? [],
+    children: input.children ?? [],
+    conceptIds: input.conceptIds ?? [],
+    buildStepIds: input.buildStepIds ?? [],
   };
 }
 

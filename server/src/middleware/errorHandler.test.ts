@@ -1,6 +1,7 @@
 import express from "express";
 import request from "supertest";
 import { describe, expect, it, vi } from "vitest";
+import { HttpError } from "../lib/http-error.js";
 import { errorHandler } from "./errorHandler.js";
 
 describe("errorHandler", () => {
@@ -23,5 +24,24 @@ describe("errorHandler", () => {
     expect(JSON.stringify(res.body)).not.toContain("secret");
     expect(consoleError).toHaveBeenCalled();
     consoleError.mockRestore();
+  });
+
+  it("turns an HttpError into its status and message", async () => {
+    const consoleError = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+    const app = express();
+    app.get("/missing", () => {
+      throw new HttpError(404, "NOT_FOUND", "No such thing");
+    });
+    app.use(errorHandler);
+
+    const res = await request(app).get("/missing");
+
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({
+      error: { code: "NOT_FOUND", message: "No such thing" },
+    });
+    expect(consoleError).not.toHaveBeenCalled();
   });
 });
