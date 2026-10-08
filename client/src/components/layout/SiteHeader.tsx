@@ -1,0 +1,26 @@
+import { Link } from "react-router";
+import { MobileNav } from "./MobileNav.tsx";
+import { navItems } from "./nav-items.ts";
+import { NavItemLink } from "./NavItemLink.tsx";
+
+export function SiteHeader() {
+  return (
+    <header className="relative border-b border-border">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+        <Link to="/" className="font-semibold tracking-tight">
+          Full-Stack Learning
+        </Link>
+        <nav aria-label="Main" className="hidden md:block">
+          <ul className="flex gap-1">
+            {navItems.map((item) => (
+              <li key={item.to}>
+                <NavItemLink item={item} />
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <MobileNav />
+      </div>
+    </header>
+  );
+}

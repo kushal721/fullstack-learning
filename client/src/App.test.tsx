@@ -1,28 +1,84 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App.tsx";
 
-describe("App", () => {
-  it("renders the title and the API status", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(
-        JSON.stringify({ status: "ok", uptime: 1, version: "test" }),
-      ),
-    );
+function renderAt(path: string) {
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <App />
+    </MemoryRouter>,
+  );
+}
 
-    render(<App />);
-
-    expect(
-      screen.getByRole("heading", { name: "Full-Stack Learning" }),
-    ).toBeInTheDocument();
-    expect(await screen.findByText("API: ok")).toBeInTheDocument();
+describe("App routing", () => {
+  beforeEach(() => {
+    // The home page checks the API; keep tests offline.
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("offline"));
   });
 
-  it("shows when the API cannot be reached", async () => {
-    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("offline"));
+  it.each([
+    ["/learn", "Learn"],
+    ["/learn/html", "Topic: html"],
+    ["/concepts", "Concepts"],
+    ["/concepts/react-usestate", "Concept: react-usestate"],
+    ["/build", "Build"],
+    ["/build/create-project", "Build step: create-project"],
+    ["/explorer", "Explorer"],
+    ["/project", "Project"],
+    ["/flow", "Flow"],
+    ["/no-such-page", "Page not found"],
+  ])("renders %s inside the layout", (path, heading) => {
+    renderAt(path);
+    expect(
+      screen.getByRole("heading", { level: 1, name: heading }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("banner")).toBeInTheDocument();
+    expect(screen.getByRole("main")).toBeInTheDocument();
+  });
 
-    render(<App />);
+  it("marks the current section in the navigation", () => {
+    renderAt("/concepts/react-usestate");
+    const nav = screen.getByRole("navigation", { name: "Main" });
+    expect(within(nav).getByRole("link", { name: "Concepts" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    expect(
+      within(nav).getByRole("link", { name: "Learn" }),
+    ).not.toHaveAttribute("aria-current");
+  });
 
-    expect(await screen.findByText("API: unreachable")).toBeInTheDocument();
+  it("navigates when a header link is clicked", async () => {
+    renderAt("/");
+    const nav = screen.getByRole("navigation", { name: "Main" });
+    await userEvent.click(within(nav).getByRole("link", { name: "Flow" }));
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Flow" }),
+    ).toBeInTheDocument();
+  });
+
+  it("opens and closes the mobile menu", async () => {
+    renderAt("/");
+    const button = screen.getByRole("button", { name: "Menu" });
+    expect(button).toHaveAttribute("aria-expanded", "false");
+
+    await userEvent.click(button);
+    expect(button).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getAllByRole("navigation", { name: "Main" })).toHaveLength(2);
+
+    await userEvent.keyboard("{Escape}");
+    expect(screen.getByRole("button", { name: "Menu" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+  });
+
+  it("offers a skip link to the main content", () => {
+    renderAt("/learn");
+    expect(
+      screen.getByRole("link", { name: "Skip to content" }),
+    ).toHaveAttribute("href", "#main");
   });
 });
