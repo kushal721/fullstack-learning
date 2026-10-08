@@ -5,6 +5,7 @@ import {
   getAdjacentTopics,
   getTopicBySlug,
   getTopicTree,
+  getTree,
   toTopicSummary,
 } from "../lib/learning-tree.js";
 
@@ -12,9 +13,13 @@ export const topicsRouter = Router();
 
 const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
-// GET /api/topics — the whole learning tree (titles and summaries only).
+// GET /api/topics — the whole learning tree (titles and summaries only)
+// and where a beginner should start.
 topicsRouter.get("/", (_req, res) => {
-  const body: TopicTreeResponse = { tree: getTopicTree() };
+  const body: TopicTreeResponse = {
+    tree: getTopicTree(),
+    whereToStart: getTree().whereToStart,
+  };
   res.json(body);
 });
 

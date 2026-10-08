@@ -22,6 +22,7 @@ describe("GET /api/topics", () => {
       children: [],
     });
     expect(JSON.stringify(body)).not.toContain('"overview"');
+    expect(body.whereToStart).toMatch(/How the Web Works/);
   });
 });
 
