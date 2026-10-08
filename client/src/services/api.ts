@@ -68,3 +68,10 @@ export async function apiGet<T>(
   }
   return body as T;
 }
+
+/** Every API path the client uses, so URLs are written in one place. */
+export const apiPaths = {
+  health: () => "/health",
+  topicTree: () => "/topics",
+  topic: (slug: string) => `/topics/${encodeURIComponent(slug)}`,
+};
