@@ -33,16 +33,38 @@ npm run dev
 
 ## Run with Docker
 
+### Development (hot reload)
+
+```bash
+docker compose up
+```
+
+- Client: <http://localhost:5173> (forwards `/api` to the server container)
+- API: <http://localhost:3000/api/health>
+
+Your source folder is mounted into the containers, so saving a file reloads
+the server or updates the page. Dependencies are installed inside the
+containers (in Docker volumes) because some packages need Linux builds. After
+changing dependencies, run `docker compose run --rm deps` (or
+`docker compose down -v` to start fresh).
+
+### Production image
+
 The production image runs one Node.js process that serves the API under
 `/api` and the built React app for every other path.
 
 ```bash
-docker build -t fullstack-learning .
-docker run --rm -p 3000:3000 fullstack-learning
+docker compose --profile prod up --build app   # http://localhost:8080
 ```
 
-Open <http://localhost:3000>. The container reports its health using
-`/api/health`.
+or without Compose:
+
+```bash
+docker build -t fullstack-learning .
+docker run --rm -p 3000:3000 fullstack-learning   # http://localhost:3000
+```
+
+The container reports its health using `/api/health`.
 
 See the [roadmap milestones](https://github.com/kushal721/fullstack-learning/milestones)
 for what comes next.

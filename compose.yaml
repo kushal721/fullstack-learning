@@ -1,0 +1,63 @@
+# Local development with Docker: `docker compose up`
+#   client (Vite)    http://localhost:5173  -> forwards /api to the server
+#   server (Express) http://localhost:3000
+# Production image locally: `docker compose --profile prod up app`
+#   app              http://localhost:8080
+
+# Source code is bind-mounted so edits on your machine hot-reload inside the
+# containers. node_modules live in named volumes instead: packages with
+# native binaries (esbuild, rolldown) must be installed for Linux, not macOS.
+name: fullstack-learning
+
+x-node-dev: &node-dev
+  image: node:22-alpine
+  working_dir: /app
+  volumes:
+    - .:/app
+    - node_modules:/app/node_modules
+    - client_node_modules:/app/client/node_modules
+    - server_node_modules:/app/server/node_modules
+    - shared_node_modules:/app/shared/node_modules
+
+services:
+  # Installs dependencies once, then exits. The dev servers wait for it.
+  deps:
+    <<: *node-dev
+    command: npm ci
+
+  server:
+    <<: *node-dev
+    command: npm run dev -w server
+    ports:
+      - "3000:3000"
+    depends_on:
+      deps:
+        condition: service_completed_successfully
+
+  client:
+    <<: *node-dev
+    command: npm run dev -w client -- --host 0.0.0.0
+    environment:
+      API_URL: http://server:3000
+    ports:
+      - "5173:5173"
+    depends_on:
+      deps:
+        condition: service_completed_successfully
+      server:
+        condition: service_started
+
+  app:
+    profiles: [prod]
+    build:
+      context: .
+      args:
+        APP_VERSION: local
+    ports:
+      - "8080:3000"
+
+volumes:
+  node_modules:
+  client_node_modules:
+  server_node_modules:
+  shared_node_modules:
