@@ -1,0 +1,16 @@
+{
+  "name": "@fsl/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "TypeScript types shared by client and server. Types only: import with `import type`.",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}

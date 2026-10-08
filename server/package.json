@@ -15,6 +15,7 @@
     "tsx": "^4.23.15"
   },
   "dependencies": {
+    "@fsl/shared": "*",
     "express": "^5.2.1"
   }
 }
