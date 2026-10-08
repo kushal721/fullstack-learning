@@ -11,6 +11,8 @@ type Props = {
   expanded: Set<string>;
   onExpandedChange: (id: string, expanded: boolean) => void;
   getItemProps: ReturnType<typeof useTreeKeyboard>["getItemProps"];
+  currentId?: string;
+  compact: boolean;
 };
 
 // One topic in the tree. The link is the tree item; its accessible name is
@@ -23,11 +25,14 @@ export function LearningNode({
   expanded,
   onExpandedChange,
   getItemProps,
+  currentId,
+  compact,
 }: Props) {
   const titleId = `topic-${topic.id}-title`;
   const summaryId = `topic-${topic.id}-summary`;
   const hasChildren = topic.children.length > 0;
   const isExpanded = hasChildren && expanded.has(topic.id);
+  const isCurrent = topic.id === currentId;
 
   return (
     <li role="none">
@@ -42,7 +47,7 @@ export function LearningNode({
               : undefined
           }
           data-testid={hasChildren ? `toggle-${topic.id}` : undefined}
-          className={`mt-4 flex size-6 shrink-0 select-none items-center justify-center rounded text-muted ${
+          className={`${compact ? "mt-1.5" : "mt-4"} flex size-6 shrink-0 select-none items-center justify-center rounded text-muted ${
             hasChildren ? "cursor-pointer hover:bg-foreground/5" : ""
           }`}
         >
@@ -56,23 +61,37 @@ export function LearningNode({
           aria-setsize={siblingCount}
           aria-expanded={hasChildren ? isExpanded : undefined}
           aria-labelledby={titleId}
-          aria-describedby={summaryId}
+          aria-describedby={compact ? undefined : summaryId}
+          aria-current={isCurrent ? "page" : undefined}
           {...getItemProps(topic.id)}
-          className="group flex flex-1 gap-4 rounded-lg border border-transparent p-3 transition-colors hover:border-border hover:bg-foreground/5"
+          className={`group flex flex-1 items-center rounded-lg border transition-colors ${
+            compact ? "gap-2 p-1.5 text-sm" : "gap-4 p-3"
+          } ${
+            isCurrent
+              ? "border-accent/40 bg-accent/10"
+              : "border-transparent hover:border-border hover:bg-foreground/5"
+          }`}
         >
           <span
             aria-hidden="true"
-            className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/10 text-sm font-semibold text-accent"
+            className={`flex shrink-0 items-center justify-center rounded-full bg-accent/10 font-semibold text-accent ${
+              compact ? "size-6 text-xs" : "size-8 text-sm"
+            }`}
           >
             {topic.order}
           </span>
           <span className="flex flex-col gap-0.5">
-            <span id={titleId} className="font-medium group-hover:text-accent">
+            <span
+              id={titleId}
+              className={`font-medium group-hover:text-accent ${isCurrent ? "text-accent" : ""}`}
+            >
               {topic.title}
             </span>
-            <span id={summaryId} className="text-sm text-muted">
-              {topic.summary}
-            </span>
+            {!compact && (
+              <span id={summaryId} className="text-sm text-muted">
+                {topic.summary}
+              </span>
+            )}
           </span>
         </Link>
       </div>
@@ -88,6 +107,8 @@ export function LearningNode({
               expanded={expanded}
               onExpandedChange={onExpandedChange}
               getItemProps={getItemProps}
+              currentId={currentId}
+              compact={compact}
             />
           ))}
         </ul>
