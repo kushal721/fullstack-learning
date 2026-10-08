@@ -54,6 +54,8 @@ A learner should be able to answer questions such as:
 -   Who calls this function?
 -   What does this function call?
 -   How does one React component communicate with another?
+-   How Hooks works?
+-   How to create one? 
 -   How does the frontend communicate with the backend?
 -   What is an HTTP request?
 -   Where does the request go?
@@ -66,7 +68,7 @@ A learner should be able to answer questions such as:
 -   What happens when something fails?
 -   How does the application eventually become a deployed website?
 
-The product should make these relationships visible.
+The product should make these relationships visible. The app should explain the every concept from scratch and from basics. 
 
 ------------------------------------------------------------------------
 
@@ -127,7 +129,10 @@ At every step the platform should explain:
 7.  What does it connect to?
 8.  What changed in the application?
 9.  What did this step enable?
-10. What comes next?
+10. How do i do create these?
+11. What comes next?
+12. How do i do these from scratch?
+
 
 ------------------------------------------------------------------------
 
@@ -997,35 +1002,46 @@ change it.
 
 ## Learning Platform
 
--   Next.js
--   React
--   TypeScript
+-   React + TypeScript client, built with Vite
+-   React Router for client-side pages
+-   Node.js + Express + TypeScript API
+-   npm workspaces monorepo: `client/`, `server/`, `shared/` (types used
+    by both)
 -   Tailwind CSS
 -   React Flow
--   Monaco Editor or another suitable code viewer/editor
+-   A lightweight read-only code viewer (Monaco only if editing is ever
+    needed)
 -   Framer Motion only where it improves comprehension
--   MDX/TypeScript/JSON for structured learning content
--   GitHub
--   Vercel for initial deployment
+-   TypeScript data files for structured learning content, served by the
+    API
+-   Vitest (+ Supertest for the API, Testing Library for the client)
+-   Docker (one production image) and Docker Compose for development
+-   GitHub Actions for CI/CD: checks on every PR, image published to GitHub
+    Container Registry, deployed to Render
 
-## Initial backend/database for the learning platform
+Next.js is intentionally not used: the platform is itself a small
+full-stack application, so a separate React client and Node.js API mirror
+what the learner builds.
 
-None.
+## Platform API and database
 
-The learning content can initially be static/data-driven.
+The Node.js API exists from the start. It serves the learning content
+(topics, concepts, build steps, files, relationships, flows) from
+structured TypeScript data and, in production, also serves the built
+client.
 
-Later, if required:
+No database initially. Later, if required:
 
 ``` text
-Next.js
+React client
     ↓
-API/backend
+Node.js API
     ↓
 PostgreSQL
 ```
 
-This should only be introduced when user accounts/progress/etc. actually
-require it.
+A database should only be introduced when user accounts/progress/etc.
+actually require it.
 
 ------------------------------------------------------------------------
 
@@ -1150,89 +1166,70 @@ Initial platform repository:
 ``` text
 fullstack-learning/
 │
-├── app/
-│   ├── page.tsx
-│   │
-│   ├── learn/
-│   │   ├── page.tsx
-│   │   └── [topic]/
-│   │       └── page.tsx
-│   │
-│   ├── concepts/
-│   │   ├── page.tsx
-│   │   └── [concept]/
-│   │       └── page.tsx
-│   │
-│   ├── build/
-│   │   ├── page.tsx
-│   │   └── [step]/
-│   │       └── page.tsx
-│   │
-│   ├── explorer/
-│   │   └── page.tsx
-│   │
-│   ├── project/
-│   │   └── page.tsx
-│   │
-│   └── flow/
-│       └── page.tsx
+├── client/                     React + TypeScript (Vite)
+│   └── src/
+│       ├── main.tsx
+│       ├── App.tsx             routes
+│       ├── pages/              one component per URL
+│       │   ├── HomePage.tsx
+│       │   ├── LearnPage.tsx       /learn
+│       │   ├── TopicPage.tsx       /learn/:topic
+│       │   ├── ConceptsPage.tsx    /concepts
+│       │   ├── ConceptPage.tsx     /concepts/:concept
+│       │   ├── BuildPage.tsx       /build
+│       │   ├── BuildStepPage.tsx   /build/:step
+│       │   ├── ExplorerPage.tsx    /explorer
+│       │   ├── ProjectPage.tsx     /project
+│       │   └── FlowPage.tsx        /flow
+│       ├── components/
+│       │   ├── layout/
+│       │   ├── learning-tree/
+│       │   ├── concept-explorer/
+│       │   ├── build-journey/
+│       │   ├── project-evolution/
+│       │   ├── file-explorer/
+│       │   ├── code-viewer/
+│       │   ├── connection-graph/
+│       │   ├── flow-tracer/
+│       │   ├── security-flow/
+│       │   └── ui/
+│       ├── hooks/              useApi, …
+│       └── services/           api.ts (the only code that calls fetch)
 │
-├── components/
-│   ├── learning-tree/
-│   ├── concept-explorer/
-│   ├── build-journey/
-│   ├── project-evolution/
-│   ├── file-explorer/
-│   ├── code-viewer/
-│   ├── connection-graph/
-│   ├── flow-tracer/
-│   ├── security-flow/
-│   └── ui/
+├── server/                     Node.js + Express + TypeScript
+│   ├── src/
+│   │   ├── app.ts              createApp()
+│   │   ├── index.ts            starts the server
+│   │   ├── config.ts
+│   │   ├── routes/             /api/topics, /api/concepts, …
+│   │   ├── middleware/
+│   │   ├── lib/                learning-tree, concepts, build-journey,
+│   │   │                       project-graph, flow-tracer, search, …
+│   │   └── content/            learning content as TypeScript data
+│   │       ├── learning-tree.ts
+│   │       ├── concepts/<topic>/<concept>.ts
+│   │       ├── build-steps/
+│   │       ├── files.ts
+│   │       ├── symbols.ts
+│   │       ├── relationships.ts
+│   │       └── flows/
+│   └── scripts/                validate-content.ts
 │
-├── content/
-│   ├── fundamentals/
-│   ├── html/
-│   ├── css/
-│   ├── javascript/
-│   ├── git/
-│   ├── react/
-│   ├── http/
-│   ├── backend/
-│   ├── database/
-│   ├── authentication/
-│   ├── security/
-│   ├── testing/
-│   └── deployment/
+├── shared/                     types used by client and server
+│   └── src/types/
 │
-├── data/
-│   ├── learning-tree.ts
-│   ├── concepts.ts
-│   ├── build-steps.ts
-│   ├── example-project.ts
-│   ├── files.ts
-│   ├── relationships.ts
-│   └── flows.ts
-│
-├── example-project/
+├── example-project/            the Notes App teaching artifact
 │   ├── frontend/
 │   ├── backend/
 │   └── database/
 │
-├── lib/
-│   ├── concepts.ts
-│   ├── build-journey.ts
-│   ├── project-graph.ts
-│   ├── flow-tracer.ts
-│   └── search.ts
-│
-├── public/
-│
+├── Dockerfile
+├── compose.yaml
+├── .github/workflows/
 ├── README.md
 ├── PROJECT.md
 ├── CONTRIBUTING.md
-├── package.json
-├── tsconfig.json
-└── ...
+└── package.json                npm workspaces
 ```
 
 This structure can evolve. Do not create every directory on day one if
@@ -1242,7 +1239,8 @@ it has no purpose yet.
 
 # 26. Frontend Architecture
 
-The learning platform should be componentized.
+The learning platform should be componentized. Components live in
+`client/src/components/`.
 
 Example:
 
@@ -1388,14 +1386,14 @@ The first meaningful MVP should include:
 Goals:
 
 -   create GitHub repository
--   initialize Next.js
+-   initialize the monorepo (React client, Node.js API, shared types)
 -   configure TypeScript
 -   configure linting/formatting as appropriate
 -   create README
 -   create PROJECT.md
 -   create CONTRIBUTING.md
 -   establish branch/PR workflow
--   establish GitHub Issues and milestones
+-   establish all the GitHub Issues and milestones first
 
 ------------------------------------------------------------------------
 
@@ -1616,7 +1614,7 @@ Prefer meaningful conventional commits.
 Examples:
 
 ``` text
-chore: initialize Next.js project
+chore: initialize npm workspaces monorepo
 docs: add project specification
 feat: add learning tree data model
 feat: add interactive learning tree
@@ -1679,11 +1677,11 @@ Create issues approximately in this order.
 
 ## M1 --- Foundation
 
-### Issue 1 --- Initialize Next.js project
+### Issue 1 --- Initialize the project
 
 Goal:
 
-Create the initial Next.js + TypeScript application.
+Create the initial React + TypeScript client and Node.js + TypeScript API.
 
 Acceptance criteria:
 
@@ -1889,21 +1887,28 @@ Each GitHub issue should contain:
 
 ## Requirements
 
+##Scope
+
 ## Acceptance Criteria
 
 ## Out of Scope
 
 ## Dependencies
+    Depends on these issues:
+    Blocks these issues:
 ```
 
 Issues should be small enough to complete in one focused development
-cycle.
+cycle. Issues should have prefixes which could help to determine the
+order of the issues, and also to determine the milestone which the
+issue belongs to, fronte or backend. ANd sub issues should have the prefix connected to the parent issue. 
+Also add parents issue, size of issue, milestone of issue and wave. 
 
 Do not create one enormous issue such as:
 
 > Build the entire connection tracer.
 
-Instead split it into data model, UI, graph, interaction, etc.
+Instead split it into data model, UI, graph, interaction, etc. The issue should have all the details so that an AI coding agent can implement it without further clarification. And issue shoudl be in order of the development phases.
 
 ------------------------------------------------------------------------
 
@@ -2187,7 +2192,7 @@ The first sequence should be:
         ↓
 2. Create initial project locally
         ↓
-3. Initialize Next.js + TypeScript
+3. Initialize React + Node.js + TypeScript
         ↓
 4. Create README.md
         ↓
@@ -2262,13 +2267,14 @@ Your responsibilities are:
 1.  Initialize the project professionally.
 2.  Create the repository structure.
 3.  Create GitHub milestones and issues.
-4.  Follow issue-driven development.
-5.  Work on one focused issue at a time.
+4.  Follow issue-driven development. After all the issue has been build wait for the insturction of the user to work on which issue.
+5.  Work on one focused issue at a time that is mentioned by user.
 6.  Use branches and pull requests.
 7.  Keep the architecture reusable.
 8.  Keep learning content separate from UI.
 9.  Avoid unnecessary dependencies.
-10. Avoid premature backend/database work for the learning platform.
+10. Avoid premature database work for the learning platform (the API
+    serves static content until accounts/progress require a database).
 11. Build the example application as a teaching artifact.
 12. Make frontend/backend/database relationships explicit.
 13. Make project evolution visible.
@@ -2291,3 +2297,4 @@ Do not implement the full application immediately.
 
 First establish the professional GitHub/project foundation and create
 the roadmap/issues required to build the project incrementally.
+
