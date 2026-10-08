@@ -3,9 +3,10 @@ import { navItems } from "../components/layout/nav-items.ts";
 import { ButtonLink } from "../components/ui/ButtonLink.tsx";
 import { Card } from "../components/ui/Card.tsx";
 import { useApi } from "../hooks/useApi.ts";
+import { apiPaths } from "../services/api.ts";
 
 export default function HomePage() {
-  const health = useApi<HealthResponse>("/health");
+  const health = useApi<HealthResponse>(apiPaths.health());
   const apiStatus = health.isLoading
     ? "checking"
     : health.data?.status === "ok"
