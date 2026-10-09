@@ -127,7 +127,16 @@ It runs `validateContent()` in `server/src/lib/validation.ts`. **Every issue
 that adds a kind of content data must extend `validateContent()`** with the
 checks for its own ids and references, and add a test for each new error.
 
-## Conventions
+## Dependency updates
+
+[Dependabot](.github/dependabot.yml) opens pull requests every Monday for
+npm packages (minor/patch updates of dev tools are grouped into one PR), the
+Docker base image and GitHub Actions. To review one:
+
+1. Read the linked release notes or changelog, especially for major versions.
+2. Wait for CI to pass.
+3. Squash-merge. If an update breaks something, fix it on the same branch or
+   close the PR with a comment explaining why.
 
 ### Client (`client/`)
 
