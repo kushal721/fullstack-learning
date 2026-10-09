@@ -1,0 +1,40 @@
+# Dependabot opens small pull requests to keep dependencies up to date.
+# Review them like any PR: read the changelog, wait for CI, squash-merge.
+version: 2
+updates:
+  # npm packages for every workspace (one root lockfile).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore(deps)
+      prefix-development: chore(deps-dev)
+    labels: [area:ops]
+    groups:
+      # Minor and patch updates of tools (lint, test, build) as one PR.
+      dev-dependencies:
+        dependency-type: development
+        update-types: [minor, patch]
+
+  # Base image in the Dockerfile (node:22-alpine).
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: chore(deps)
+    labels: [area:ops]
+
+  # Actions used in .github/workflows.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci
+    labels: [area:ops]
