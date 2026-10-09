@@ -10,6 +10,8 @@ COPY package.json package-lock.json ./
 COPY client/package.json client/
 COPY server/package.json server/
 COPY shared/package.json shared/
+# `npm ci` runs the prepare script, which skips git hooks here (no .git).
+COPY scripts/install-git-hooks.mjs scripts/
 RUN npm ci
 
 # ---- build: compile client and server ----
@@ -33,6 +35,7 @@ COPY package.json package-lock.json ./
 COPY client/package.json client/
 COPY server/package.json server/
 COPY shared/package.json shared/
+COPY scripts/install-git-hooks.mjs scripts/
 RUN npm ci --omit=dev --workspace server --include-workspace-root=false \
     && npm cache clean --force
 

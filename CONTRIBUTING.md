@@ -79,7 +79,24 @@ Issues must be small enough for one focused cycle and detailed enough to be
 implemented without further questions. Split big work (data model, API, UI,
 interaction, content) instead of opening one huge issue.
 
-## Checks
+## Git hooks
+
+`npm install` installs a **pre-commit** hook (with
+[simple-git-hooks](https://github.com/toplenboren/simple-git-hooks)). On every
+commit, [lint-staged](https://github.com/lint-staged/lint-staged) runs on the
+files you are committing only:
+
+- `*.ts, *.tsx, *.js, *.mjs` → `eslint --fix`, then `prettier --write`
+- `*.json, *.md, *.yml, *.yaml, *.css, *.html` → `prettier --write`
+
+Fixed files are included in the commit automatically. If ESLint finds a
+problem it cannot fix, the commit is stopped and the error is shown — fix it
+and commit again. Typecheck, tests and build are not run in the hook (they
+are slower); CI runs them.
+
+If the hook is missing (for example after cloning with `--ignore-scripts`),
+run `npm run prepare`. Skipping it with `git commit --no-verify` is for
+emergencies only; CI will still catch the problem.
 
 Run these from the repository root before opening a PR. CI runs the same
 commands and a PR can only merge when they pass.
