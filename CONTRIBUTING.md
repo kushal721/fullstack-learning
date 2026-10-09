@@ -121,6 +121,11 @@ npm run build          # production build of client and server
 npm run validate       # learning content ids and references
 ```
 
+CI also runs `npm audit --audit-level=high` and fails on known high or
+critical vulnerabilities. If a vulnerable package has no fixed version yet,
+pin a safe version with an npm `overrides` entry and explain it in the PR —
+never lower the audit level for everything.
+
 `npm run validate` checks the learning content: ids are unique and every
 reference (topic → concept, step → file, …) points at something that exists.
 It runs `validateContent()` in `server/src/lib/validation.ts`. **Every issue
