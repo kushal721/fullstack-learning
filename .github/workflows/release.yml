@@ -1,4 +1,4 @@
-# Publishes the Docker image after CI has passed on main.
+# After CI has passed on main: publish the Docker image, then deploy it to Render.
 # Image: ghcr.io/kushal721/fullstack-learning, tagged with the commit (sha-<short>) and latest.
 name: Release
 
@@ -28,8 +28,11 @@ jobs:
       contents: read
       packages: write
     outputs:
-      image: ${{ steps.meta.outputs.tags }}
+      sha: ${{ steps.commit.outputs.sha }}
     steps:
+      - id: commit
+        run: echo "sha=${{ github.event.workflow_run.head_sha || github.sha }}" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v7
         with:
           # Build exactly the commit that CI checked.
@@ -62,3 +65,44 @@ jobs:
           build-args: APP_VERSION=${{ github.event.workflow_run.head_sha || github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to Render
+    needs: publish
+    # Skipped until the Render service exists (repo variable RENDER_SERVICE_URL).
+    if: vars.RENDER_SERVICE_URL != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ vars.RENDER_SERVICE_URL }}
+    env:
+      SHA: ${{ needs.publish.outputs.sha }}
+      SERVICE_URL: ${{ vars.RENDER_SERVICE_URL }}
+    steps:
+      - name: Ask Render to deploy this exact image
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$DEPLOY_HOOK" ]; then
+            echo "::error::Repository secret RENDER_DEPLOY_HOOK_URL is not set."
+            exit 1
+          fi
+          image="ghcr.io/${GITHUB_REPOSITORY}:sha-${SHA:0:7}"
+          echo "Deploying $image"
+          curl -fsS -X POST --get "$DEPLOY_HOOK" --data-urlencode "imgURL=$image" > /dev/null
+
+      # The deploy is only done when the live site reports the new commit.
+      - name: Wait until the new version is live
+        run: |
+          for attempt in $(seq 1 60); do
+            version=$(curl -fsS "$SERVICE_URL/api/health" | jq -r '.version' || true)
+            if [ "$version" = "$SHA" ]; then
+              echo "Live: $SERVICE_URL is running $SHA"
+              exit 0
+            fi
+            echo "Waiting ($attempt/60): live version is ${version:-unreachable}"
+            sleep 10
+          done
+          echo "::error::$SERVICE_URL did not report version $SHA within 10 minutes."
+          exit 1
