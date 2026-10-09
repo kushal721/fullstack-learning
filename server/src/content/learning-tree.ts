@@ -261,6 +261,7 @@ const topics: TopicInput[] = [
   },
   {
     id: "testing",
+    conceptIds: ["why-test", "unit-test", "integration-test", "e2e-test"],
     title: "Testing",
     summary:
       "Checking automatically that the application still works after every change.",
@@ -274,6 +275,17 @@ const topics: TopicInput[] = [
   },
   {
     id: "deployment",
+    conceptIds: [
+      "production-build",
+      "environment-config",
+      "docker-image-container",
+      "dockerfile",
+      "docker-compose",
+      "ci-cd",
+      "hosting",
+      "domain-dns",
+      "deploying-a-full-stack-app",
+    ],
     title: "Deployment",
     summary:
       "Turning the project on your computer into a live website anyone can visit.",
