@@ -11,13 +11,20 @@ describe("GET /api/concepts", () => {
     const body = res.body as ConceptListResponse;
 
     expect(res.status).toBe(200);
-    // html (topic 2) → react (topic 6) → http (topic 7)
-    expect(body.concepts.map((c) => c.id)).toEqual([
-      "html-button",
-      "react-usestate",
-      "http-post",
+    // Grouped by topic in learning-tree order; within a topic in conceptIds order.
+    const ids = body.concepts.map((c) => c.id);
+    expect(ids.slice(0, 3)).toEqual([
+      "how-the-web-works",
+      "html-document",
+      "html-element",
     ]);
-    expect(body.concepts[0]).toEqual({
+    expect(ids.indexOf("html-button")).toBeLessThan(
+      ids.indexOf("css-selector"),
+    );
+    expect(ids.indexOf("css-responsive")).toBeLessThan(
+      ids.indexOf("react-usestate"),
+    );
+    expect(body.concepts.find((c) => c.id === "html-button")).toEqual({
       id: "html-button",
       slug: "html-button",
       title: "HTML <button>",
@@ -36,7 +43,7 @@ describe("GET /api/concepts", () => {
   });
 
   it("returns an empty list for a topic without concepts", async () => {
-    const res = await request(app).get("/api/concepts?topic=css");
+    const res = await request(app).get("/api/concepts?topic=databases");
     expect(res.status).toBe(200);
     expect(res.body.concepts).toEqual([]);
   });
@@ -73,10 +80,9 @@ describe("GET /api/concepts/:slug", () => {
       summary: expect.any(String),
     });
     // Listed by html-button itself, and linked back from react-usestate.
-    expect(body.related.map((c) => c.id)).toEqual([
-      "http-post",
-      "react-usestate",
-    ]);
+    expect(body.related.map((c) => c.id)).toEqual(
+      expect.arrayContaining(["http-post", "react-usestate"]),
+    );
     expect(body.related[0]).not.toHaveProperty("basics");
   });
 

@@ -8,12 +8,12 @@ import {
 } from "./concepts.js";
 
 describe("concepts", () => {
-  it("has the three reference concepts", () => {
-    expect(getAllConcepts().map((concept) => concept.id)).toEqual([
-      "html-button",
-      "react-usestate",
-      "http-post",
-    ]);
+  it("registers concepts with unique ids, including the reference concepts", () => {
+    const ids = getAllConcepts().map((concept) => concept.id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids).toEqual(
+      expect.arrayContaining(["html-button", "react-usestate", "http-post"]),
+    );
   });
 
   it("finds concepts by id and slug", () => {
@@ -27,18 +27,20 @@ describe("concepts", () => {
     expect(getConceptsByTopic("react").map((concept) => concept.id)).toEqual([
       "react-usestate",
     ]);
-    expect(getConceptsByTopic("css")).toEqual([]);
+    expect(getConceptsByTopic("databases")).toEqual([]);
   });
 
   it("includes links written on either side, without duplicates", () => {
-    // html-button lists http-post; react-usestate and http-post list html-button.
-    expect(getRelatedConcepts("html-button").map((c) => c.id)).toEqual([
-      "http-post",
-      "react-usestate",
-    ]);
-    expect(getRelatedConcepts("http-post").map((c) => c.id)).toEqual([
+    // html-button lists http-post; react-usestate lists html-button.
+    const forButton = getRelatedConcepts("html-button").map((c) => c.id);
+    expect(forButton).toEqual(
+      expect.arrayContaining(["http-post", "react-usestate"]),
+    );
+    expect(new Set(forButton).size).toBe(forButton.length);
+    expect(forButton).not.toContain("html-button");
+    expect(getRelatedConcepts("react-usestate").map((c) => c.id)).toContain(
       "html-button",
-    ]);
+    );
     expect(getRelatedConcepts("nope")).toEqual([]);
   });
 

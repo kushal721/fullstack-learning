@@ -22,6 +22,7 @@ function topic(order: number, input: TopicInput): Topic {
 const topics: TopicInput[] = [
   {
     id: "how-the-web-works",
+    conceptIds: ["how-the-web-works"],
     title: "How the Web Works",
     summary:
       "What happens between typing an address in the browser and seeing a page: browsers, servers, URLs and requests.",
@@ -37,7 +38,14 @@ const topics: TopicInput[] = [
   },
   {
     id: "html",
-    conceptIds: ["html-button"],
+    conceptIds: [
+      "html-document",
+      "html-element",
+      "html-semantic-structure",
+      "html-form",
+      "html-input",
+      "html-button",
+    ],
     title: "HTML",
     summary:
       "The structure of a web page: the elements that tell the browser what each piece of content is.",
@@ -51,6 +59,12 @@ const topics: TopicInput[] = [
   },
   {
     id: "css",
+    conceptIds: [
+      "css-selector",
+      "css-box-model",
+      "css-flexbox",
+      "css-responsive",
+    ],
     title: "CSS",
     summary:
       "How a page looks: colours, spacing and layout, and how the same page adapts to different screens.",
