@@ -47,10 +47,11 @@ Content-Type: application/json
   ],
   howToCreate: [
     {
-      text: "In a new folder, create a tiny server with Express that accepts a POST and answers with 201.",
+      text: "In a new folder, create a project that uses ES modules (`import`) and install Express.",
       code: {
         language: "bash",
         code: `npm init -y
+npm pkg set type=module
 npm install express`,
       },
     },
@@ -59,7 +60,7 @@ npm install express`,
       code: {
         language: "js",
         fileName: "server.js",
-        code: `const express = require("express");
+        code: `import express from "express";
 const app = express();
 app.use(express.json()); // turns the JSON body into req.body
 

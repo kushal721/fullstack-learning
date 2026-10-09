@@ -25,6 +25,21 @@ import { jsErrorHandling } from "./javascript/js-error-handling.js";
 import { typescriptWhy } from "./javascript/typescript-why.js";
 import { typescriptTypes } from "./javascript/typescript-types.js";
 import { httpPost } from "./http/http-post.js";
+import { httpRequestResponse } from "./http/http-request-response.js";
+import { httpMethods } from "./http/http-methods.js";
+import { httpGet } from "./http/http-get.js";
+import { httpPutDelete } from "./http/http-put-delete.js";
+import { httpStatusCodes } from "./http/http-status-codes.js";
+import { httpHeaders } from "./http/http-headers.js";
+import { restEndpoint } from "./http/rest-endpoint.js";
+import { nodejs } from "./backend/nodejs.js";
+import { npmPackages } from "./backend/npm-packages.js";
+import { express } from "./backend/express.js";
+import { expressRoute } from "./backend/express-route.js";
+import { expressMiddleware } from "./backend/express-middleware.js";
+import { controller } from "./backend/controller.js";
+import { requestBody } from "./backend/request-body.js";
+import { environmentVariables } from "./backend/environment-variables.js";
 import { reactUseState } from "./react/react-usestate.js";
 import { reactWhy } from "./react/react-why.js";
 import { reactComponent } from "./react/react-component.js";
@@ -86,5 +101,20 @@ export const concepts: Concept[] = [
   reactComponentCommunication,
   reactReusableComponent,
   vite,
+  httpRequestResponse,
+  httpMethods,
+  httpGet,
   httpPost,
+  httpPutDelete,
+  httpStatusCodes,
+  httpHeaders,
+  restEndpoint,
+  nodejs,
+  npmPackages,
+  express,
+  expressRoute,
+  expressMiddleware,
+  controller,
+  requestBody,
+  environmentVariables,
 ];
