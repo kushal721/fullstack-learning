@@ -21,7 +21,8 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
-    "validate": "npm run validate -w server"
+    "validate": "npm run validate -w server",
+    "prepare": "node scripts/install-git-hooks.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
@@ -31,11 +32,23 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.13.0",
+    "lint-staged": "^17.6.0",
     "prettier": "^3.9.9",
+    "simple-git-hooks": "^2.14.0",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.71.1"
   },
   "overrides": {
     "shell-quote": "^1.12.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml,css,html}": "prettier --write"
   }
 }
