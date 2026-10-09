@@ -1,5 +1,6 @@
-import type { Topic } from "@fsl/shared";
+import type { Concept, Topic } from "@fsl/shared";
 import { describe, expect, it } from "vitest";
+import { concepts as realConcepts } from "../content/concepts/index.js";
 import { validateContent } from "./validation.js";
 
 function topic(id: string, order: number, children: Topic[] = []): Topic {
@@ -25,7 +26,7 @@ describe("validateContent", () => {
     const tree = topic("root", 0, [topic("html", 1), topic("css", 2)]);
     tree.children[1]!.slug = "html";
 
-    expect(validateContent({ tree })).toEqual([
+    expect(validateContent({ tree, concepts: [] })).toEqual([
       'Topic slug "html" is used more than once.',
     ]);
   });
@@ -37,7 +38,7 @@ describe("validateContent", () => {
       { ...topic("html", 3), slug: "html-3" },
     ]);
 
-    expect(validateContent({ tree })).toEqual([
+    expect(validateContent({ tree, concepts: [] })).toEqual([
       'Topic id "html" is used more than once.',
     ]);
   });
@@ -47,7 +48,7 @@ describe("validateContent", () => {
       { ...topic("html", 1), slug: "HTML Basics" },
     ]);
 
-    expect(validateContent({ tree })).toEqual([
+    expect(validateContent({ tree, concepts: [] })).toEqual([
       'Topic "html" has slug "HTML Basics"; use lowercase letters, numbers and single hyphens.',
     ]);
   });
@@ -55,7 +56,7 @@ describe("validateContent", () => {
   it("reports missing titles or summaries", () => {
     const tree = topic("root", 0, [{ ...topic("html", 1), summary: " " }]);
 
-    expect(validateContent({ tree })).toEqual([
+    expect(validateContent({ tree, concepts: [] })).toEqual([
       'Topic "html" needs a title and a summary.',
     ]);
   });
@@ -63,8 +64,79 @@ describe("validateContent", () => {
   it("reports children that are not ordered 1..n", () => {
     const tree = topic("root", 0, [topic("html", 1), topic("css", 3)]);
 
-    expect(validateContent({ tree })).toEqual([
+    expect(validateContent({ tree, concepts: [] })).toEqual([
       'Children of topic "root" must be ordered 1..2 (found 1, 3).',
     ]);
+  });
+
+  describe("concepts", () => {
+    const base = realConcepts[0]!;
+    const concept = (overrides: Partial<Concept>): Concept => ({
+      ...base,
+      relatedConcepts: [],
+      ...overrides,
+    });
+    const tree = () => {
+      const root = topic("root", 0, [topic("html", 1), topic("react", 2)]);
+      return root;
+    };
+
+    it("reports duplicate concept ids and slugs", () => {
+      const errors = validateContent({
+        tree: tree(),
+        concepts: [
+          concept({ id: "a", slug: "same" }),
+          concept({ id: "a", slug: "same" }),
+        ],
+      });
+      expect(errors).toEqual([
+        'Concept id "a" is used more than once.',
+        'Concept slug "same" is used more than once.',
+      ]);
+    });
+
+    it("reports an unknown related concept", () => {
+      const errors = validateContent({
+        tree: tree(),
+        concepts: [concept({ id: "a", slug: "a", relatedConcepts: ["ghost"] })],
+      });
+      expect(errors).toEqual([
+        'Concept "a" links to unknown related concept "ghost".',
+      ]);
+    });
+
+    it("reports a concept in an unknown topic", () => {
+      const errors = validateContent({
+        tree: tree(),
+        concepts: [concept({ id: "a", slug: "a", topicId: "cooking" })],
+      });
+      expect(errors).toEqual([
+        'Concept "a" belongs to unknown topic "cooking".',
+      ]);
+    });
+
+    it("reports empty sections", () => {
+      const errors = validateContent({
+        tree: tree(),
+        concepts: [concept({ id: "a", slug: "a", why: [], howToCreate: [] })],
+      });
+      expect(errors).toEqual([
+        'Concept "a" has an empty "why" section.',
+        'Concept "a" has an empty "howToCreate" section.',
+      ]);
+    });
+
+    it("reports topic conceptIds that are unknown or point at another topic", () => {
+      const root = tree();
+      root.children[0]!.conceptIds = ["ghost", "a"];
+      const errors = validateContent({
+        tree: root,
+        concepts: [concept({ id: "a", slug: "a", topicId: "react" })],
+      });
+      expect(errors).toEqual([
+        'Topic "html" lists unknown concept "ghost".',
+        'Topic "html" lists concept "a", but that concept belongs to "react".',
+      ]);
+    });
   });
 });

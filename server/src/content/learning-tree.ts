@@ -37,6 +37,7 @@ const topics: TopicInput[] = [
   },
   {
     id: "html",
+    conceptIds: ["html-button"],
     title: "HTML",
     summary:
       "The structure of a web page: the elements that tell the browser what each piece of content is.",
@@ -89,6 +90,7 @@ const topics: TopicInput[] = [
   },
   {
     id: "react",
+    conceptIds: ["react-usestate"],
     title: "React",
     summary:
       "Building the interface from reusable components that update automatically when the application's data changes.",
@@ -102,6 +104,7 @@ const topics: TopicInput[] = [
   },
   {
     id: "http",
+    conceptIds: ["http-post"],
     title: "HTTP & APIs",
     summary:
       "How the frontend and backend talk: requests, responses, methods, status codes and JSON.",
