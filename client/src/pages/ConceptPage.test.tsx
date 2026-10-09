@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useStateConceptFixture } from "../test/fixtures.ts";
@@ -63,7 +64,7 @@ describe("ConceptPage", () => {
 
     expect(screen.getByText("Step 2:", { exact: false })).toBeInTheDocument();
 
-    expect(screen.getByRole("link", { name: "HTML <button>" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /HTML <button>/ })).toHaveAttribute(
       "href",
       "/concepts/html-button",
     );
@@ -88,5 +89,31 @@ describe("ConceptPage", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Could not reach the server.",
     );
+  });
+
+  it("navigates to a related concept", async () => {
+    mockFetchRoutes({
+      "/api/concepts/react-usestate": useStateConceptFixture,
+      "/api/concepts/html-button": {
+        ...useStateConceptFixture,
+        concept: {
+          ...useStateConceptFixture.concept,
+          id: "html-button",
+          slug: "html-button",
+          title: "HTML <button>",
+        },
+        related: [],
+      },
+    });
+    renderAt("/concepts/react-usestate");
+
+    await userEvent.click(
+      await screen.findByRole("link", { name: /HTML <button>/ }),
+    );
+
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "HTML <button>" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("No related concepts yet.")).toBeInTheDocument();
   });
 });

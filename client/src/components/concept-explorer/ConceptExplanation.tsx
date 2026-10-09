@@ -1,9 +1,8 @@
 import type { ConceptResponse } from "@fsl/shared";
-import { Link } from "react-router";
-import { RichText } from "../ui/RichText.tsx";
 import { CodeExample } from "./CodeExample.tsx";
 import { BulletList, ConceptSection, Paragraphs } from "./ConceptSection.tsx";
 import { HowToCreate } from "./HowToCreate.tsx";
+import { RelatedConcepts } from "./RelatedConcepts.tsx";
 
 /**
  * Every section of a concept, always in the same order (spec §5), so a
@@ -54,23 +53,7 @@ export function ConceptExplanation({
         <BulletList items={concept.commonMistakes} />
       </ConceptSection>
       <ConceptSection id="related" title="Related">
-        {related.length > 0 ? (
-          <ul className="flex flex-col gap-2">
-            {related.map((item) => (
-              <li key={item.id}>
-                <Link
-                  to={`/concepts/${item.slug}`}
-                  className="font-medium text-accent underline"
-                >
-                  {item.title}
-                </Link>{" "}
-                — <RichText text={item.summary} />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-muted">No related concepts yet.</p>
-        )}
+        <RelatedConcepts concepts={related} />
       </ConceptSection>
     </div>
   );
