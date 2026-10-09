@@ -1,14 +1,13 @@
 import type { Concept, Topic } from "@fsl/shared";
 import { concepts } from "../content/concepts/index.js";
 import { learningTree } from "../content/learning-tree.js";
+import { SLUG_PATTERN } from "./slug.js";
 
 /** All content that is checked. Later registries (concepts, build steps…) are added here. */
 export type Content = {
   tree: Topic;
   concepts: Concept[];
 };
-
-const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 function allTopics(topic: Topic): Topic[] {
   return [topic, ...topic.children.flatMap(allTopics)];

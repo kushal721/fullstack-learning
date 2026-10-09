@@ -1,5 +1,6 @@
 import type { TopicResponse, TopicTreeResponse } from "@fsl/shared";
 import { Router } from "express";
+import { getConcept, toConceptSummary } from "../lib/concepts.js";
 import { notFoundError, validationError } from "../lib/http-error.js";
 import {
   getAdjacentTopics,
@@ -8,10 +9,9 @@ import {
   getTree,
   toTopicSummary,
 } from "../lib/learning-tree.js";
+import { isSlug } from "../lib/slug.js";
 
 export const topicsRouter = Router();
-
-const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 // GET /api/topics — the whole learning tree (titles and summaries only)
 // and where a beginner should start.
@@ -26,7 +26,7 @@ topicsRouter.get("/", (_req, res) => {
 // GET /api/topics/:slug — one topic with its neighbours and related content.
 topicsRouter.get("/:slug", (req, res) => {
   const { slug } = req.params;
-  if (!SLUG_PATTERN.test(slug)) {
+  if (!isSlug(slug)) {
     throw validationError(
       "A topic slug may only contain lowercase letters, numbers and hyphens.",
     );
@@ -40,7 +40,10 @@ topicsRouter.get("/:slug", (req, res) => {
     topic,
     previous: previous && toTopicSummary(previous),
     next: next && toTopicSummary(next),
-    concepts: [],
+    concepts: topic.conceptIds
+      .map((id) => getConcept(id))
+      .filter((concept) => concept !== undefined)
+      .map(toConceptSummary),
     buildSteps: [],
   };
   res.json(body);
