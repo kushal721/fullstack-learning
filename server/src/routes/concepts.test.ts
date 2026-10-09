@@ -37,9 +37,14 @@ describe("GET /api/concepts", () => {
     const res = await request(app).get("/api/concepts?topic=react");
 
     expect(res.status).toBe(200);
-    expect(res.body.concepts.map((c: { id: string }) => c.id)).toEqual([
-      "react-usestate",
-    ]);
+    const ids = res.body.concepts.map((c: { id: string }) => c.id);
+    expect(ids).toContain("react-usestate");
+    expect(ids).toContain("react-custom-hook");
+    expect(
+      res.body.concepts.every(
+        (c: { topicId: string }) => c.topicId === "react",
+      ),
+    ).toBe(true);
   });
 
   it("returns an empty list for a topic without concepts", async () => {
@@ -106,13 +111,13 @@ describe("GET /api/concepts/:slug", () => {
 
 describe("GET /api/topics/:slug concepts", () => {
   it("lists the concepts of the topic", async () => {
-    const res = await request(app).get("/api/topics/react");
+    const res = await request(app).get("/api/topics/http");
     expect(res.body.concepts).toEqual([
       {
-        id: "react-usestate",
-        slug: "react-usestate",
-        title: "useState",
-        topicId: "react",
+        id: "http-post",
+        slug: "http-post",
+        title: "HTTP POST",
+        topicId: "http",
         summary: expect.any(String),
       },
     ]);

@@ -26,6 +26,20 @@ import { typescriptWhy } from "./javascript/typescript-why.js";
 import { typescriptTypes } from "./javascript/typescript-types.js";
 import { httpPost } from "./http/http-post.js";
 import { reactUseState } from "./react/react-usestate.js";
+import { reactWhy } from "./react/react-why.js";
+import { reactComponent } from "./react/react-component.js";
+import { jsx } from "./react/jsx.js";
+import { reactProps } from "./react/react-props.js";
+import { reactEventHandling } from "./react/react-event-handling.js";
+import { reactState } from "./react/react-state.js";
+import { reactUseEffect } from "./react/react-useeffect.js";
+import { reactHowHooksWork } from "./react/react-how-hooks-work.js";
+import { reactCustomHook } from "./react/react-custom-hook.js";
+import { reactListsKeys } from "./react/react-lists-keys.js";
+import { reactControlledForm } from "./react/react-controlled-form.js";
+import { reactComponentCommunication } from "./react/react-component-communication.js";
+import { reactReusableComponent } from "./react/react-reusable-component.js";
+import { vite } from "./react/vite.js";
 
 // Every concept, one file each under concepts/<topic-id>/<concept-id>.ts.
 // To add a concept: create its file, add it here, and add its id to the
@@ -57,6 +71,20 @@ export const concepts: Concept[] = [
   jsErrorHandling,
   typescriptWhy,
   typescriptTypes,
+  reactWhy,
+  reactComponent,
+  jsx,
+  reactProps,
+  reactEventHandling,
+  reactState,
   reactUseState,
+  reactUseEffect,
+  reactHowHooksWork,
+  reactCustomHook,
+  reactListsKeys,
+  reactControlledForm,
+  reactComponentCommunication,
+  reactReusableComponent,
+  vite,
   httpPost,
 ];

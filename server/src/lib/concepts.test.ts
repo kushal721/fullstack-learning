@@ -24,9 +24,14 @@ describe("concepts", () => {
   });
 
   it("lists the concepts of a topic", () => {
-    expect(getConceptsByTopic("react").map((concept) => concept.id)).toEqual([
-      "react-usestate",
+    expect(getConceptsByTopic("http").map((concept) => concept.id)).toEqual([
+      "http-post",
     ]);
+    expect(
+      getConceptsByTopic("react").every(
+        (concept) => concept.topicId === "react",
+      ),
+    ).toBe(true);
     expect(getConceptsByTopic("databases")).toEqual([]);
   });
 
