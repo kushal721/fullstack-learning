@@ -6,6 +6,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  # Lets you run CI by hand from the Actions tab (e.g. if a push was missed).
+  workflow_dispatch:
 
 # A new push to the same branch cancels the run that is now out of date.
 concurrency:
