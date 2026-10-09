@@ -72,15 +72,19 @@ The container reports its health using `/api/health`.
 ## How changes reach production
 
 ```text
-issue → branch → pull request → CI (format, lint, typecheck, test, build,
-Docker build) → review → merge to main → Docker image published to GitHub
-Container Registry → deployed to Render → health check
+pull request ─► CI: audit, format, lint, typecheck, validate, test, build, Docker build
+      │ (review, squash-merge)
+      ▼
+main ─► CI again ─► Release: build that exact commit and publish
+                    ghcr.io/kushal721/fullstack-learning:sha-<commit> and :latest
+                        │
+                        ▼
+                    Deploy: Render runs sha-<commit>; the job waits until
+                    /api/health on the live site reports that commit
 ```
 
-CI is set up in #122, image publishing in #123 and deployment in #124.
-
-See the [roadmap milestones](https://github.com/kushal721/fullstack-learning/milestones)
-for what comes next.
+- Workflows: [`.github/workflows/ci.yml`](.github/workflows/ci.yml) and [`release.yml`](.github/workflows/release.yml). Both can also be started by hand from the Actions tab.
+- The deploy step runs once the repository variable `RENDER_SERVICE_URL` and the secret `RENDER_DEPLOY_HOOK_URL` are set.
 
 ## Scripts
 
