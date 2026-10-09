@@ -7,6 +7,8 @@ on:
     workflows: [CI]
     types: [completed]
     branches: [main]
+  # Publish the current main by hand from the Actions tab.
+  workflow_dispatch:
 
 # Never publish two releases at the same time; finish them in order.
 concurrency:
@@ -17,7 +19,9 @@ jobs:
   publish:
     name: Publish Docker image
     # Only after a successful CI run for a push to main (not for pull requests).
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -29,7 +33,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           # Build exactly the commit that CI checked.
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - uses: docker/setup-buildx-action@v4
 
@@ -44,10 +48,10 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=sha,prefix=sha-,format=short,value=${{ github.event.workflow_run.head_sha }}
+            type=sha,prefix=sha-,format=short,value=${{ github.event.workflow_run.head_sha || github.sha }}
             type=raw,value=latest
           labels: |
-            org.opencontainers.image.revision=${{ github.event.workflow_run.head_sha }}
+            org.opencontainers.image.revision=${{ github.event.workflow_run.head_sha || github.sha }}
 
       - uses: docker/build-push-action@v7
         with:
@@ -55,6 +59,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: APP_VERSION=${{ github.event.workflow_run.head_sha }}
+          build-args: APP_VERSION=${{ github.event.workflow_run.head_sha || github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
