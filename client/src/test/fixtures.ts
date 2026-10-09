@@ -1,4 +1,8 @@
-import type { TopicResponse, TopicTreeNode } from "@fsl/shared";
+import type {
+  ConceptResponse,
+  TopicResponse,
+  TopicTreeNode,
+} from "@fsl/shared";
 
 /** A small learning tree for tests (not the real content). */
 export const topicTreeFixture: TopicTreeNode = {
@@ -73,4 +77,55 @@ export const reactTopicFixture: TopicResponse = {
   },
   concepts: [],
   buildSteps: [],
+};
+
+/** GET /api/concepts/react-usestate for tests (short texts, every section). */
+export const useStateConceptFixture: ConceptResponse = {
+  concept: {
+    id: "react-usestate",
+    slug: "react-usestate",
+    title: "useState",
+    topicId: "react",
+    summary: "Remember a value between renders.",
+    basics: ["A component is a function."],
+    what: ["`useState` gives a component memory."],
+    why: ["The screen must match the data."],
+    howItWorks: ["Calling the setter re-renders."],
+    basicExample: {
+      language: "jsx",
+      code: "const [count, setCount] = useState(0);",
+      caption: "A counter.",
+    },
+    internals: ["React keeps state slots in call order."],
+    howToCreate: [
+      {
+        text: "Create a Vite app.",
+        code: { language: "bash", code: "npm create vite@latest" },
+      },
+      { text: "Open http://localhost:5173." },
+    ],
+    whereUsed: ["Form inputs."],
+    connectsTo: ["Event handlers."],
+    projectUsage: [{ explanation: "`useNotes` keeps the notes in state." }],
+    commonMistakes: ["Changing state in place."],
+    relatedConcepts: [],
+    relatedFiles: [],
+    relatedBuildSteps: [],
+  },
+  topic: {
+    id: "react",
+    slug: "react",
+    order: 6,
+    title: "React",
+    summary: "Components.",
+  },
+  related: [
+    {
+      id: "html-button",
+      slug: "html-button",
+      title: "HTML <button>",
+      topicId: "html",
+      summary: "Trigger an action.",
+    },
+  ],
 };
