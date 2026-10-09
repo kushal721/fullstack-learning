@@ -54,12 +54,13 @@ describe("ConceptPage", () => {
       "href",
       "/learn/react",
     );
-    expect(
-      screen.getByText("const [count, setCount] = useState(0);"),
-    ).toBeInTheDocument();
+    const codes = [...document.querySelectorAll("pre code")].map(
+      (code) => code.textContent,
+    );
+    expect(codes).toContain("const [count, setCount] = useState(0);");
+    expect(codes).toContain("npm create vite@latest");
     expect(screen.getByText("useNotes").tagName).toBe("CODE");
 
-    expect(screen.getByText("npm create vite@latest")).toBeInTheDocument();
     expect(screen.getByText("Step 2:", { exact: false })).toBeInTheDocument();
 
     expect(screen.getByRole("link", { name: "HTML <button>" })).toHaveAttribute(

@@ -1,7 +1,7 @@
 import type { ConceptResponse } from "@fsl/shared";
 import { Link } from "react-router";
 import { RichText } from "../ui/RichText.tsx";
-import { CodeSnippet } from "./CodeSnippet.tsx";
+import { CodeExample } from "./CodeExample.tsx";
 import { BulletList, ConceptSection, Paragraphs } from "./ConceptSection.tsx";
 import { HowToCreate } from "./HowToCreate.tsx";
 
@@ -28,7 +28,7 @@ export function ConceptExplanation({
         <Paragraphs items={concept.howItWorks} />
       </ConceptSection>
       <ConceptSection id="example" title="Basic example">
-        <CodeSnippet example={concept.basicExample} />
+        <CodeExample example={concept.basicExample} />
       </ConceptSection>
       <ConceptSection id="internals" title="What happens internally?">
         <Paragraphs items={concept.internals} />
