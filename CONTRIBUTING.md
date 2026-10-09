@@ -45,6 +45,14 @@ ci: publish image to GHCR
 
 Never use messages like `update`, `changes`, `fix stuff` or `final`.
 
+A **commit-msg** hook (`scripts/check-commit-msg.mjs`) rejects messages that
+don't start with one of `feat`, `fix`, `refactor`, `docs`, `test`, `chore`,
+`ci`, `build`, `perf`, `style`, `revert`, an optional `(scope)` in lowercase,
+an optional `!` for breaking changes, then `: ` and a description — with a
+first line under 100 characters. Merge, revert and `fixup!` commits are
+allowed. Because PRs are squash-merged, the **PR title** becomes the commit
+on `main`, so give it the same format.
+
 ## Issues
 
 Every issue has a title prefix and a metadata table.
@@ -88,6 +96,9 @@ files you are committing only:
 
 - `*.ts, *.tsx, *.js, *.mjs` → `eslint --fix`, then `prettier --write`
 - `*.json, *.md, *.yml, *.yaml, *.css, *.html` → `prettier --write`
+
+A second hook, **commit-msg**, checks the commit message format (see
+[Commit messages](#commit-messages)).
 
 Fixed files are included in the commit automatically. If ESLint finds a
 problem it cannot fix, the commit is stopped and the error is shown — fix it
