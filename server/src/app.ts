@@ -3,6 +3,7 @@ import { config } from "./config.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFound } from "./middleware/notFound.js";
 import { serveClient } from "./middleware/serveClient.js";
+import { conceptsRouter } from "./routes/concepts.js";
 import { healthRouter } from "./routes/health.js";
 import { topicsRouter } from "./routes/topics.js";
 
@@ -19,6 +20,7 @@ export function createApp({ clientDist = config.clientDist }: AppOptions = {}) {
 
   app.use("/api/health", healthRouter);
   app.use("/api/topics", topicsRouter);
+  app.use("/api/concepts", conceptsRouter);
   app.use("/api", notFound);
 
   if (clientDist) app.use(serveClient(clientDist));

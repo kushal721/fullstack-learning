@@ -1,4 +1,4 @@
-import type { Topic } from "./content.ts";
+import type { Concept, Topic } from "./content.ts";
 
 // Shapes of API requests and responses. The server sends exactly these and
 // the client expects exactly these, so a change here is checked on both sides.
@@ -64,4 +64,16 @@ export type TopicResponse = {
   concepts: ConceptSummary[];
   /** Build steps that apply this topic (empty until build steps exist). */
   buildSteps: BuildStepSummary[];
+};
+
+/** GET /api/concepts — grouped by topic, in learning-tree order. */
+export type ConceptListResponse = { concepts: ConceptSummary[] };
+
+/** GET /api/concepts/:slug */
+export type ConceptResponse = {
+  concept: Concept;
+  /** The learning-tree topic the concept belongs to. */
+  topic: TopicSummary;
+  /** Related concepts, including ones that link to this concept. */
+  related: ConceptSummary[];
 };

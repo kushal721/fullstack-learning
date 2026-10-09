@@ -1,5 +1,6 @@
-import type { Concept } from "@fsl/shared";
+import type { Concept, ConceptSummary } from "@fsl/shared";
 import { concepts } from "../content/concepts/index.js";
+import { getAllTopics } from "./learning-tree.js";
 
 const byId = new Map(concepts.map((concept) => [concept.id, concept]));
 const bySlug = new Map(concepts.map((concept) => [concept.slug, concept]));
@@ -38,4 +39,43 @@ export function getRelatedConcepts(id: string): Concept[] {
   return [...relatedIds]
     .map((relatedId) => byId.get(relatedId))
     .filter((related): related is Concept => related !== undefined);
+}
+
+export function toConceptSummary({
+  id,
+  slug,
+  title,
+  topicId,
+  summary,
+}: Concept): ConceptSummary {
+  return { id, slug, title, topicId, summary };
+}
+
+/**
+ * Concepts grouped by topic in learning-tree order; within a topic, in the
+ * order the topic lists them (`conceptIds`), then any others.
+ */
+export function getConceptsInReadingOrder(): Concept[] {
+  const topics = getAllTopics();
+  const rank = (concept: Concept) => {
+    const topicIndex = topics.findIndex((t) => t.id === concept.topicId);
+    const listed = topics[topicIndex]?.conceptIds.indexOf(concept.id) ?? -1;
+    return [
+      topicIndex === -1 ? topics.length : topicIndex,
+      listed === -1 ? Number.MAX_SAFE_INTEGER : listed,
+    ] as const;
+  };
+  return concepts
+    .map((concept, registryIndex) => ({
+      concept,
+      registryIndex,
+      rank: rank(concept),
+    }))
+    .sort(
+      (a, b) =>
+        a.rank[0] - b.rank[0] ||
+        a.rank[1] - b.rank[1] ||
+        a.registryIndex - b.registryIndex,
+    )
+    .map(({ concept }) => concept);
 }
