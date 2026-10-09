@@ -82,12 +82,31 @@ for what comes next.
 
 ## Scripts
 
-| Command                | What it does                            |
-| ---------------------- | --------------------------------------- |
-| `npm run dev`          | Run client and API together with reload |
-| `npm run lint`         | Lint the whole repo with ESLint         |
-| `npm run format`       | Format files with Prettier              |
-| `npm run format:check` | Check formatting without changing files |
-| `npm run typecheck`    | Type-check every workspace              |
-| `npm test`             | Run tests in every workspace            |
-| `npm run build`        | Build every workspace                   |
+| Command                | What it does                                                    |
+| ---------------------- | --------------------------------------------------------------- |
+| `npm run dev`          | Run client and API together with reload                         |
+| `npm run lint`         | Lint the whole repo with ESLint                                 |
+| `npm run format`       | Format files with Prettier                                      |
+| `npm run format:check` | Check formatting without changing files                         |
+| `npm run typecheck`    | Type-check every workspace                                      |
+| `npm test`             | Run tests in every workspace                                    |
+| `npm run build`        | Build every workspace                                           |
+| `npm run validate`     | Check learning content ids and references                       |
+| `npm run check`        | Run every CI check (format, lint, types, content, tests, build) |
+
+### Make (optional)
+
+If you have `make`, the same tasks have short names. Run `make` on its own to
+list them. Every target just calls the npm script or Docker command above, so
+npm works everywhere (including Windows) and `make` is a convenience.
+
+| Command            | What it does                                      |
+| ------------------ | ------------------------------------------------- |
+| `make install`     | `npm ci` — install exactly what the lockfile says |
+| `make dev`         | Run the API and client with reload                |
+| `make check`       | Run every CI check                                |
+| `make test`        | Run all tests                                     |
+| `make docker-dev`  | Dev stack in Docker (`docker compose up`)         |
+| `make docker-prod` | Production image with Compose on :8080            |
+| `make docker-run`  | Build and run the production image on :3000       |
+| `make clean`       | Delete build output and coverage                  |
