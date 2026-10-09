@@ -73,6 +73,7 @@ describe("validateContent", () => {
     const base = realConcepts[0]!;
     const concept = (overrides: Partial<Concept>): Concept => ({
       ...base,
+      topicId: "html",
       relatedConcepts: [],
       ...overrides,
     });

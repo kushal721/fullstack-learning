@@ -35,7 +35,14 @@ describe("GET /api/topics/:slug", () => {
     expect(body.topic).toMatchObject({ id: "html", title: "HTML" });
     expect(body.previous).toMatchObject({ slug: "how-the-web-works" });
     expect(body.next).toMatchObject({ slug: "css" });
-    expect(body.concepts.map((c) => c.id)).toEqual(["html-button"]);
+    expect(body.concepts.map((c) => c.id)).toEqual([
+      "html-document",
+      "html-element",
+      "html-semantic-structure",
+      "html-form",
+      "html-input",
+      "html-button",
+    ]);
     expect(body.buildSteps).toEqual([]);
   });
 
