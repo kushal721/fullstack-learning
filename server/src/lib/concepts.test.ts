@@ -32,7 +32,7 @@ describe("concepts", () => {
         (concept) => concept.topicId === "react",
       ),
     ).toBe(true);
-    expect(getConceptsByTopic("databases")).toEqual([]);
+    expect(getConceptsByTopic("authentication")).toEqual([]);
   });
 
   it("includes links written on either side, without duplicates", () => {

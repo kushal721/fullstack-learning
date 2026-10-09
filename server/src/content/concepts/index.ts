@@ -5,6 +5,20 @@ import { cssResponsive } from "./css/css-responsive.js";
 import { cssSelector } from "./css/css-selector.js";
 import { gitRepository } from "./git/git-repository.js";
 import { gitCommit } from "./git/git-commit.js";
+import { database } from "./databases/database.js";
+import { sql } from "./databases/sql.js";
+import { sqlTable } from "./databases/sql-table.js";
+import { rowColumn } from "./databases/row-column.js";
+import { primaryKey } from "./databases/primary-key.js";
+import { foreignKey } from "./databases/foreign-key.js";
+import { oneToManyRelationship } from "./databases/one-to-many-relationship.js";
+import { crud } from "./databases/crud.js";
+import { sqlSelect } from "./databases/sql-select.js";
+import { sqlInsert } from "./databases/sql-insert.js";
+import { sqlUpdateDelete } from "./databases/sql-update-delete.js";
+import { parameterizedQuery } from "./databases/parameterized-query.js";
+import { dbTransaction } from "./databases/db-transaction.js";
+import { dbConnectionPool } from "./databases/db-connection-pool.js";
 import { gitBranch } from "./git/git-branch.js";
 import { gitignore } from "./git/gitignore.js";
 import { githubRemotePush } from "./git/github-remote-push.js";
@@ -133,4 +147,18 @@ export const concepts: Concept[] = [
   controller,
   requestBody,
   environmentVariables,
+  database,
+  sql,
+  sqlTable,
+  rowColumn,
+  primaryKey,
+  foreignKey,
+  oneToManyRelationship,
+  crud,
+  sqlSelect,
+  sqlInsert,
+  sqlUpdateDelete,
+  parameterizedQuery,
+  dbTransaction,
+  dbConnectionPool,
 ];

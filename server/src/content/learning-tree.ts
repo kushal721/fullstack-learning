@@ -206,6 +206,22 @@ const topics: TopicInput[] = [
   },
   {
     id: "databases",
+    conceptIds: [
+      "database",
+      "sql",
+      "sql-table",
+      "row-column",
+      "primary-key",
+      "foreign-key",
+      "one-to-many-relationship",
+      "crud",
+      "sql-select",
+      "sql-insert",
+      "sql-update-delete",
+      "parameterized-query",
+      "db-transaction",
+      "db-connection-pool",
+    ],
     title: "Databases",
     summary:
       "Storing data so it survives a restart: tables, rows, relationships and SQL queries.",

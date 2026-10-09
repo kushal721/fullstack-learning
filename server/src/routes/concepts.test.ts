@@ -48,7 +48,7 @@ describe("GET /api/concepts", () => {
   });
 
   it("returns an empty list for a topic without concepts", async () => {
-    const res = await request(app).get("/api/concepts?topic=databases");
+    const res = await request(app).get("/api/concepts?topic=authentication");
     expect(res.status).toBe(200);
     expect(res.body.concepts).toEqual([]);
   });
