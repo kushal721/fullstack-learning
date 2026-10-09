@@ -1,6 +1,6 @@
 import type { Instruction } from "@fsl/shared";
 import { RichText } from "../ui/RichText.tsx";
-import { CodeSnippet } from "./CodeSnippet.tsx";
+import { CodeExample } from "./CodeExample.tsx";
 
 /** "How do I create it from scratch?" as numbered steps with code. */
 export function HowToCreate({ steps }: { steps: Instruction[] }) {
@@ -19,7 +19,7 @@ export function HowToCreate({ steps }: { steps: Instruction[] }) {
               <span className="sr-only">Step {index + 1}: </span>
               <RichText text={step.text} />
             </p>
-            {step.code && <CodeSnippet example={step.code} />}
+            {step.code && <CodeExample example={step.code} />}
           </div>
         </li>
       ))}
