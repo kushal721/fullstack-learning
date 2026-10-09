@@ -107,6 +107,16 @@ const topics: TopicInput[] = [
   },
   {
     id: "git",
+    conceptIds: [
+      "git-repository",
+      "git-commit",
+      "git-branch",
+      "gitignore",
+      "github-remote-push",
+      "pull-request",
+      "merge",
+      "conventional-commit",
+    ],
     title: "Git & GitHub",
     summary:
       "Saving the history of your project, working on changes safely in branches, and sharing code through pull requests.",
