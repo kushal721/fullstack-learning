@@ -183,7 +183,7 @@ export default function App() {
   projectUsage: [
     {
       explanation:
-        "`src/hooks/useNotes.js` keeps `notes`, `isLoading` and `error` in `useState`, loads the notes once with `useEffect(() => { ... getNotes() ... }, [])`, and returns `{ notes, isLoading, error, addNote, removeNote }`.",
+        "`src/hooks/useNotes.js` keeps `notes`, `isLoading` and `error` in `useState`, loads the notes once with `useEffect(() => { ... getNotes() ... }, [])`, and returns `{ notes, isLoading, error, addNote, replaceNote, removeNote }`.",
     },
     {
       explanation:

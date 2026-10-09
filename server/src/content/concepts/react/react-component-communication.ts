@@ -159,7 +159,7 @@ export default function App() {
   projectUsage: [
     {
       explanation:
-        "`Dashboard.jsx` is the closest common parent of the form and the cards. It gets the shared notes and the functions that change them from `useNotes()`: `const { notes, isLoading, error, addNote, removeNote } = useNotes();`.",
+        "`Dashboard.jsx` is the closest common parent of the form and the cards. It gets the shared notes and the functions that change them from `useNotes()`: `const { notes, isLoading, error, addNote, replaceNote, removeNote } = useNotes();`, and passes `addNote` to `NoteForm` and `replaceNote`/`removeNote` to each `NoteCard`.",
     },
     {
       explanation:

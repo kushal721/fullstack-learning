@@ -60,7 +60,7 @@ Node.js + Express API (server/)
   │
   ▼
 shared/ — TypeScript types for content and API responses, used by both sides
-example-project/ — the Notes App source the platform teaches from
+example-project/ — the Notes App source the platform teaches from (spec: docs/NOTES_APP.md)
 ```
 
 - **One process in production.** The Docker image runs Express, which serves
