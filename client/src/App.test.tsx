@@ -23,7 +23,7 @@ describe("App routing", () => {
     ["/learn", "Learn"],
     ["/learn/html", "Couldn't load this topic"],
     ["/concepts", "Concepts"],
-    ["/concepts/react-usestate", "Concept: react-usestate"],
+    ["/concepts/react-usestate", "Couldn't load this concept"],
     ["/build", "Build"],
     ["/build/create-project", "Build step: create-project"],
     ["/explorer", "Explorer"],
