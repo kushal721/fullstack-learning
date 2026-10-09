@@ -74,4 +74,6 @@ export const apiPaths = {
   health: () => "/health",
   topicTree: () => "/topics",
   topic: (slug: string) => `/topics/${encodeURIComponent(slug)}`,
+  concepts: () => "/concepts",
+  concept: (slug: string) => `/concepts/${encodeURIComponent(slug)}`,
 };
