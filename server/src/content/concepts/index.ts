@@ -3,6 +3,14 @@ import { cssBoxModel } from "./css/css-box-model.js";
 import { cssFlexbox } from "./css/css-flexbox.js";
 import { cssResponsive } from "./css/css-responsive.js";
 import { cssSelector } from "./css/css-selector.js";
+import { gitRepository } from "./git/git-repository.js";
+import { gitCommit } from "./git/git-commit.js";
+import { gitBranch } from "./git/git-branch.js";
+import { gitignore } from "./git/gitignore.js";
+import { githubRemotePush } from "./git/github-remote-push.js";
+import { pullRequest } from "./git/pull-request.js";
+import { merge } from "./git/merge.js";
+import { conventionalCommit } from "./git/conventional-commit.js";
 import { howTheWebWorks } from "./how-the-web-works/how-the-web-works.js";
 import { htmlButton } from "./html/html-button.js";
 import { htmlDocument } from "./html/html-document.js";
@@ -86,6 +94,14 @@ export const concepts: Concept[] = [
   jsErrorHandling,
   typescriptWhy,
   typescriptTypes,
+  gitRepository,
+  gitCommit,
+  gitBranch,
+  gitignore,
+  githubRemotePush,
+  pullRequest,
+  merge,
+  conventionalCommit,
   reactWhy,
   reactComponent,
   jsx,
