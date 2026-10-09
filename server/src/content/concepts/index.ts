@@ -10,6 +10,20 @@ import { htmlElement } from "./html/html-element.js";
 import { htmlForm } from "./html/html-form.js";
 import { htmlInput } from "./html/html-input.js";
 import { htmlSemanticStructure } from "./html/html-semantic-structure.js";
+import { jsVariable } from "./javascript/js-variable.js";
+import { jsFunction } from "./javascript/js-function.js";
+import { jsArrowFunction } from "./javascript/js-arrow-function.js";
+import { jsObjectArray } from "./javascript/js-object-array.js";
+import { jsEvent } from "./javascript/js-event.js";
+import { jsEventListener } from "./javascript/js-event-listener.js";
+import { jsModuleImportExport } from "./javascript/js-module-import-export.js";
+import { jsPromise } from "./javascript/js-promise.js";
+import { jsAsyncAwait } from "./javascript/js-async-await.js";
+import { jsFetch } from "./javascript/js-fetch.js";
+import { json } from "./javascript/json.js";
+import { jsErrorHandling } from "./javascript/js-error-handling.js";
+import { typescriptWhy } from "./javascript/typescript-why.js";
+import { typescriptTypes } from "./javascript/typescript-types.js";
 import { httpPost } from "./http/http-post.js";
 import { reactUseState } from "./react/react-usestate.js";
 
@@ -29,6 +43,20 @@ export const concepts: Concept[] = [
   cssBoxModel,
   cssFlexbox,
   cssResponsive,
+  jsVariable,
+  jsFunction,
+  jsArrowFunction,
+  jsObjectArray,
+  jsEvent,
+  jsEventListener,
+  jsModuleImportExport,
+  jsPromise,
+  jsAsyncAwait,
+  jsFetch,
+  json,
+  jsErrorHandling,
+  typescriptWhy,
+  typescriptTypes,
   reactUseState,
   httpPost,
 ];

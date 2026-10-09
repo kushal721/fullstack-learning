@@ -78,6 +78,22 @@ const topics: TopicInput[] = [
   },
   {
     id: "javascript",
+    conceptIds: [
+      "js-variable",
+      "js-function",
+      "js-arrow-function",
+      "js-object-array",
+      "js-event",
+      "js-event-listener",
+      "js-module-import-export",
+      "js-promise",
+      "js-async-await",
+      "js-fetch",
+      "json",
+      "js-error-handling",
+      "typescript-why",
+      "typescript-types",
+    ],
     title: "JavaScript",
     summary:
       "The language that makes pages respond to the user: variables, functions, events and talking to servers.",
