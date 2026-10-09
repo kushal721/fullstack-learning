@@ -19,6 +19,19 @@ import { sqlUpdateDelete } from "./databases/sql-update-delete.js";
 import { parameterizedQuery } from "./databases/parameterized-query.js";
 import { dbTransaction } from "./databases/db-transaction.js";
 import { dbConnectionPool } from "./databases/db-connection-pool.js";
+import { whyTest } from "./testing/why-test.js";
+import { unitTest } from "./testing/unit-test.js";
+import { integrationTest } from "./testing/integration-test.js";
+import { e2eTest } from "./testing/e2e-test.js";
+import { productionBuild } from "./deployment/production-build.js";
+import { environmentConfig } from "./deployment/environment-config.js";
+import { dockerImageContainer } from "./deployment/docker-image-container.js";
+import { dockerfile } from "./deployment/dockerfile.js";
+import { dockerCompose } from "./deployment/docker-compose.js";
+import { ciCd } from "./deployment/ci-cd.js";
+import { hosting } from "./deployment/hosting.js";
+import { domainDns } from "./deployment/domain-dns.js";
+import { deployingAFullStackApp } from "./deployment/deploying-a-full-stack-app.js";
 import { gitBranch } from "./git/git-branch.js";
 import { gitignore } from "./git/gitignore.js";
 import { githubRemotePush } from "./git/github-remote-push.js";
@@ -161,4 +174,17 @@ export const concepts: Concept[] = [
   parameterizedQuery,
   dbTransaction,
   dbConnectionPool,
+  whyTest,
+  unitTest,
+  integrationTest,
+  e2eTest,
+  productionBuild,
+  environmentConfig,
+  dockerImageContainer,
+  dockerfile,
+  dockerCompose,
+  ciCd,
+  hosting,
+  domainDns,
+  deployingAFullStackApp,
 ];
