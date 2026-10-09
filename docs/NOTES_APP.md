@@ -68,26 +68,28 @@ Every file has one job. The platform's file explorer shows these purposes
 
 **Frontend — `frontend/`**
 
-| File                               | Purpose                                                                                                  |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `package.json`                     | Frontend dependencies (`react`, `react-dom`, `vite`) and scripts `dev`, `build`, `preview`, `test`       |
-| `index.html`                       | The single HTML page; contains `<div id="root">` and loads `src/main.jsx`                                |
-| `vite.config.js`                   | Vite setup; in development forwards `/api` requests to the backend on port 3000                          |
-| `src/main.jsx`                     | Starts React: `createRoot(document.getElementById("root")).render(<App />)`                              |
-| `src/App.jsx`                      | Knows who is logged in and shows `Navbar` plus the current page (Login, Register or Dashboard)           |
-| `src/index.css`                    | All styles: `.navbar`, `.notes-grid`, `.note-card`, `.form-field`, `.button`; mobile-first               |
-| `src/components/Button.jsx`        | Reusable button (`children`, `variant`, other props passed through) used across the app                  |
-| `src/components/Input.jsx`         | Reusable labelled input (`label`, `id`, other props) for every form field                                |
-| `src/components/NoteCard.jsx`      | Shows one note as an `<article>`; Edit switches to inputs (saves with `updateNote()`), Delete removes it |
-| `src/components/NoteForm.jsx`      | Form to create a note; owns the typed title and content; calls `createNote()`                            |
-| `src/components/Navbar.jsx`        | App name, the logged-in user's email and a Log out button                                                |
-| `src/pages/Login.jsx`              | Login form; calls `login()` and tells `App` who logged in                                                |
-| `src/pages/Register.jsx`           | Registration form; calls `register()`                                                                    |
-| `src/pages/Dashboard.jsx`          | The logged-in home: `NoteForm` and the list of `NoteCard`s, using `useNotes()`                           |
-| `src/hooks/useNotes.js`            | Custom hook that loads the notes and keeps them in state (`addNote`, `removeNote`)                       |
-| `src/services/notesApi.js`         | The only place the frontend calls the notes API: `getNotes`, `createNote`, `updateNote`, `deleteNote`    |
-| `src/services/authApi.js`          | The only place the frontend calls the auth API: `register`, `login`, `logout`, `getCurrentUser`          |
-| `src/components/NoteForm.test.jsx` | Component test: typing and submitting calls `createNote` and clears the form                             |
+| File                               | Purpose                                                                                                                                     |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `package.json`                     | Frontend dependencies (`react`, `react-dom`; dev: `vite`, `vitest`, Testing Library, `jsdom`) and scripts `dev`, `build`, `preview`, `test` |
+| `index.html`                       | The single HTML page; contains `<div id="root">` and loads `src/main.jsx`                                                                   |
+| `vite.config.js`                   | Vite setup; in development forwards `/api` to the backend on port 3000; test settings (jsdom)                                               |
+| `src/main.jsx`                     | Starts React: `createRoot(document.getElementById("root")).render(<App />)`                                                                 |
+| `src/App.jsx`                      | Knows who is logged in and shows `Navbar` plus the current page (Login, Register or Dashboard)                                              |
+| `src/index.css`                    | All styles: `.navbar`, `.notes-grid`, `.note-card`, `.form-field`, `.button`; mobile-first                                                  |
+| `src/components/Button.jsx`        | Reusable button (`children`, `variant`, other props passed through) used across the app                                                     |
+| `src/components/Input.jsx`         | Reusable labelled input (`label`, `id`, other props) for every form field                                                                   |
+| `src/components/NoteCard.jsx`      | Shows one note as an `<article>`; Edit switches to inputs (saves with `updateNote()`), Delete removes it                                    |
+| `src/components/NoteForm.jsx`      | Form to create a note; owns the typed title and content; calls `createNote()`                                                               |
+| `src/components/Navbar.jsx`        | App name, the logged-in user's email and a Log out button                                                                                   |
+| `src/pages/Login.jsx`              | Login form; calls `login()` and tells `App` who logged in                                                                                   |
+| `src/pages/Register.jsx`           | Registration form; calls `register()`                                                                                                       |
+| `src/pages/Dashboard.jsx`          | The logged-in home: `NoteForm` and the list of `NoteCard`s, using `useNotes()`                                                              |
+| `src/hooks/useNotes.js`            | Custom hook that loads the notes and keeps them in state (`addNote`, `removeNote`)                                                          |
+| `src/services/notesApi.js`         | The only place the frontend calls the notes API: `getNotes`, `createNote`, `updateNote`, `deleteNote`                                       |
+| `src/services/request.js`          | Shared `request()` used by both API files: sends the cookie and JSON, throws the server's `error` message                                   |
+| `src/services/authApi.js`          | The only place the frontend calls the auth API: `register`, `login`, `logout`, `getCurrentUser`                                             |
+| `src/test-setup.js`                | Test setup: jest-dom matchers, and cleanup between tests                                                                                    |
+| `src/components/NoteForm.test.jsx` | Component test: typing and submitting calls `createNote` and clears the form                                                                |
 
 **Backend — `backend/`**
 
@@ -239,7 +241,7 @@ App (user state; which page)
   → `onSaved(note)` → clear both fields. On failure it shows the error
   message; the Save button is disabled while saving.
 - **`useNotes()`**: `notes`, `isLoading`, `error` state; `useEffect(…, [])`
-  loads with `getNotes()`; `addNote(note)` → `setNotes((current) => [...current, note])`;
+  loads with `getNotes()`; `addNote(note)` → `setNotes((current) => [note, ...current])` (newest first, like the API's order);
   `replaceNote(note)` swaps in an edited note by id; `removeNote(id)` →
   `await deleteNote(id)` then filters it out. Returns
   `{ notes, isLoading, error, addNote, replaceNote, removeNote }`.
@@ -250,9 +252,11 @@ App (user state; which page)
   `updateNote(note.id, { title, content })` (`PUT /api/notes/:id`) and then
   `onUpdated(updatedNote)`; **Cancel** restores the view; **Delete** calls
   `onDelete(note.id)`.
-- **API services** call `fetch("/api/…", { credentials: "include", … })`,
-  check `response.ok`, throw `new Error(body.error)` otherwise, and return
-  `await response.json()` (nothing for `204`).
+- **API services** (`notesApi.js`, `authApi.js`) call one shared `request()`
+  in `request.js`, which runs `fetch("/api/…", { credentials: "include", … })`,
+  checks `response.ok`, throws `new Error(body.error)` otherwise, and returns
+  the JSON (nothing for `204`). The fetch logic is written once instead of in
+  every function.
 
 ## Configuration
 

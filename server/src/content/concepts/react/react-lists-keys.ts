@@ -138,7 +138,7 @@ export default function App() {
     },
     {
       explanation:
-        "When a note is saved, `addNote` appends it with `[...current, note]`. Its new id is a key React has not seen before, so React creates exactly one new `NoteCard` at the end.",
+        "When a note is saved, `addNote` puts it first with `[note, ...current]`, so the newest note is at the top, matching the order the API returns. Its new id is a key React has not seen before, so React creates exactly one new `NoteCard` at the end.",
     },
   ],
   commonMistakes: [

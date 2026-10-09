@@ -1,0 +1,171 @@
+/* All styles for the Notes App. Written mobile-first: the base rules are
+   for small screens, and media queries add columns on wider ones. */
+
+*,
+*::before,
+*::after {
+  /* Width includes padding and border, so boxes are the size we set. */
+  box-sizing: border-box;
+}
+
+:root {
+  --color-text: #1f2328;
+  --color-muted: #59636e;
+  --color-border: #d0d7de;
+  --color-background: #f6f8fa;
+  --color-primary: #1d4ed8;
+  --color-danger: #b42318;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+/* Navbar: app name on the left, user and Log out on the right. */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.navbar-title {
+  font-weight: 700;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-muted);
+}
+
+.dashboard,
+.auth-page,
+.page-message {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+.auth-page {
+  max-width: 24rem;
+}
+
+/* Forms: label above input, the same spacing everywhere. */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.form-field input,
+.form-field textarea {
+  padding: 0.5rem;
+  font: inherit;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+}
+
+.form-error {
+  color: var(--color-danger);
+}
+
+.note-form {
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+/* Buttons */
+.button {
+  padding: 0.5rem 1rem;
+  font: inherit;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.button-primary {
+  color: white;
+  background: var(--color-primary);
+}
+
+.button-secondary {
+  color: var(--color-text);
+  background: white;
+  border-color: var(--color-border);
+}
+
+.button-danger {
+  color: white;
+  background: var(--color-danger);
+}
+
+.button-link {
+  padding: 0;
+  color: var(--color-primary);
+  background: none;
+  text-decoration: underline;
+}
+
+/* Notes: one column on phones, more as the screen gets wider. */
+.notes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 40rem) {
+  .notes-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .notes-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.note-card {
+  padding: 1rem;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.note-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+}
+
+.note-card p {
+  /* Keep the line breaks the user typed. */
+  white-space: pre-wrap;
+}
+
+.note-actions {
+  display: flex;
+  gap: 0.5rem;
+}

@@ -187,7 +187,7 @@ export default function App() {
     },
     {
       explanation:
-        "`addNote(note)` uses `setNotes((current) => [...current, note])`, and `removeNote(id)` first awaits `deleteNote(id)` from `notesApi.js`, then filters the note out of state.",
+        "`addNote(note)` uses `setNotes((current) => [note, ...current])` (newest first, like the list from the API), and `removeNote(id)` first awaits `deleteNote(id)` from `notesApi.js`, then filters the note out of state.",
     },
     {
       explanation:
