@@ -17,6 +17,19 @@ GitHub issue → branch → implement → run checks → review the diff
 - Merge with **squash**, using the PR title (a conventional commit) as the
   commit message.
 
+## Templates and project board
+
+- New issues use the **Task** or **Bug** template (blank issues are off).
+- Pull requests are pre-filled from `.github/pull_request_template.md`.
+- The [roadmap board](https://github.com/users/kushal721/projects/1) shows
+  every issue with its **Status** (Backlog → Ready → In Progress → In
+  Review → Done), **ID**, **Size** and **Wave**. Move an issue to
+  _In Progress_ when you start it and to _In Review_ when its PR is open;
+  merging closes it (_Done_).
+- `main` is not technically protected (that needs GitHub Pro for a private
+  repository), so the rule is a team agreement: never push to `main`, and
+  only merge pull requests whose CI is green.
+
 ## Branch names
 
 ```text
