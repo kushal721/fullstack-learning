@@ -111,13 +111,13 @@ describe("GET /api/concepts/:slug", () => {
 
 describe("GET /api/topics/:slug concepts", () => {
   it("lists the concepts of the topic", async () => {
-    const res = await request(app).get("/api/topics/http");
+    const res = await request(app).get("/api/topics/how-the-web-works");
     expect(res.body.concepts).toEqual([
       {
-        id: "http-post",
-        slug: "http-post",
-        title: "HTTP POST",
-        topicId: "http",
+        id: "how-the-web-works",
+        slug: "how-the-web-works",
+        title: "How the web works",
+        topicId: "how-the-web-works",
         summary: expect.any(String),
       },
     ]);

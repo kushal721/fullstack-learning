@@ -24,9 +24,9 @@ describe("concepts", () => {
   });
 
   it("lists the concepts of a topic", () => {
-    expect(getConceptsByTopic("http").map((concept) => concept.id)).toEqual([
-      "http-post",
-    ]);
+    expect(
+      getConceptsByTopic("how-the-web-works").map((concept) => concept.id),
+    ).toEqual(["how-the-web-works"]);
     expect(
       getConceptsByTopic("react").every(
         (concept) => concept.topicId === "react",

@@ -150,7 +150,16 @@ const topics: TopicInput[] = [
   },
   {
     id: "http",
-    conceptIds: ["http-post"],
+    conceptIds: [
+      "http-request-response",
+      "http-methods",
+      "http-get",
+      "http-post",
+      "http-put-delete",
+      "http-status-codes",
+      "http-headers",
+      "rest-endpoint",
+    ],
     title: "HTTP & APIs",
     summary:
       "How the frontend and backend talk: requests, responses, methods, status codes and JSON.",
@@ -164,6 +173,16 @@ const topics: TopicInput[] = [
   },
   {
     id: "backend",
+    conceptIds: [
+      "nodejs",
+      "npm-packages",
+      "express",
+      "express-route",
+      "express-middleware",
+      "controller",
+      "request-body",
+      "environment-variables",
+    ],
     title: "Backend",
     summary:
       "The server side with Node.js and Express: receiving requests, applying rules and sending responses.",
