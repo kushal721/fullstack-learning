@@ -56,7 +56,9 @@ export function CodeBlock({ example, showLineNumbers = false }: Props) {
                   {...lineProps}
                   data-line={lineNumber}
                   data-highlighted={isHighlighted || undefined}
-                  className={`${lineProps.className} flex border-l-4 pr-4 ${
+                  // min-h-6: an empty line still takes one line of height (otherwise
+                  // blank lines, like the one between HTTP headers and body, vanish).
+                  className={`${lineProps.className} flex min-h-6 border-l-4 pr-4 ${
                     isHighlighted
                       ? "border-accent bg-accent/15"
                       : "border-transparent"
