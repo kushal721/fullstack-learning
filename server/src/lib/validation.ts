@@ -1,12 +1,18 @@
-import type { Concept, Topic } from "@fsl/shared";
+import type { Concept, ProjectFile, Topic } from "@fsl/shared";
 import { concepts } from "../content/concepts/index.js";
+import { projectFiles } from "../content/files.js";
 import { learningTree } from "../content/learning-tree.js";
+import { listExampleProjectFiles } from "./project-files.js";
 import { SLUG_PATTERN } from "./slug.js";
 
 /** All content that is checked. Later registries (concepts, build steps…) are added here. */
 export type Content = {
   tree: Topic;
   concepts: Concept[];
+  /** Descriptions of the example project's files (content/files.ts). */
+  files?: ProjectFile[];
+  /** Paths actually found on disk in example-project/. */
+  diskFiles?: string[];
 };
 
 function allTopics(topic: Topic): Topic[] {
@@ -146,11 +152,62 @@ function validateConcepts(tree: Topic, concepts: Concept[]): string[] {
  *
  * Every issue that adds a kind of content data extends this function.
  */
+function validateFiles(
+  files: ProjectFile[],
+  diskFiles: string[],
+  concepts: Concept[],
+): string[] {
+  const conceptIds = new Set(concepts.map((concept) => concept.id));
+  const described = new Set(files.map((file) => file.id));
+  const onDisk = new Set(diskFiles);
+  const errors = duplicates(
+    files.map((file) => file.id),
+    (id) => `File "${id}" is described more than once.`,
+  );
+
+  for (const file of files) {
+    const name = `File "${file.id}"`;
+    if (file.path !== file.id)
+      errors.push(`${name} must have path equal to its id.`);
+    if (!onDisk.has(file.id)) {
+      errors.push(
+        `${name} is described but does not exist in example-project/.`,
+      );
+    }
+    if (!file.purpose.trim() || !file.whyItExists.trim()) {
+      errors.push(`${name} needs a purpose and a whyItExists text.`);
+    }
+    for (const conceptId of file.conceptIds) {
+      if (!conceptIds.has(conceptId)) {
+        errors.push(`${name} links to unknown concept "${conceptId}".`);
+      }
+    }
+  }
+  for (const diskFile of diskFiles) {
+    if (!described.has(diskFile)) {
+      errors.push(
+        `File "${diskFile}" exists in example-project/ but has no entry in content/files.ts.`,
+      );
+    }
+  }
+  return errors;
+}
+
 export function validateContent(
-  content: Content = { tree: learningTree, concepts },
+  content: Content = {
+    tree: learningTree,
+    concepts,
+    files: projectFiles,
+    diskFiles: listExampleProjectFiles(),
+  },
 ): string[] {
   return [
     ...validateTopics(content.tree),
     ...validateConcepts(content.tree, content.concepts),
+    ...validateFiles(
+      content.files ?? [],
+      content.diskFiles ?? [],
+      content.concepts,
+    ),
   ];
 }
