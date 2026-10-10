@@ -15,7 +15,9 @@ export function RichText({ text }: Props) {
         part.startsWith("`") && part.endsWith("`") && part.length > 2 ? (
           <code
             key={i}
-            className="rounded bg-foreground/5 px-1.5 py-0.5 font-mono text-[0.9em]"
+            // Long code (file paths, calls) has no spaces; let it wrap instead of
+            // pushing the page wider than a phone screen.
+            className="rounded bg-foreground/5 px-1.5 py-0.5 font-mono text-[0.9em] [overflow-wrap:anywhere]"
           >
             {part.slice(1, -1)}
           </code>
