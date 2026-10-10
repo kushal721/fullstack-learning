@@ -115,10 +115,10 @@ Every file has one job. The platform's file explorer shows these purposes
 
 **Database — `database/`**
 
-| File         | Purpose                                              |
-| ------------ | ---------------------------------------------------- |
-| `schema.sql` | Creates the `users` and `notes` tables and the index |
-| `seed.sql`   | One demo user and two notes for local development    |
+| File         | Purpose                                                                                                        |
+| ------------ | -------------------------------------------------------------------------------------------------------------- |
+| `schema.sql` | Creates the `users` and `notes` tables and the index                                                           |
+| `seed.sql`   | Demo account `demo@example.com` / `demo-password` (real bcrypt hash) and two notes, for local development only |
 
 **Root**
 
