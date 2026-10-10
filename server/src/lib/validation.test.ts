@@ -140,4 +140,45 @@ describe("validateContent", () => {
       ]);
     });
   });
+
+  describe("example project files", () => {
+    const file = (id: string, conceptIds: string[] = []) => ({
+      id,
+      path: id,
+      layer: "frontend" as const,
+      language: "js" as const,
+      purpose: "Does a thing.",
+      whyItExists: "Because.",
+      conceptIds,
+    });
+    const tree = () => topic("root", 0, []);
+
+    it("reports files described but missing on disk, and files on disk without a description", () => {
+      expect(
+        validateContent({
+          tree: tree(),
+          concepts: [],
+          files: [file("frontend/a.js")],
+          diskFiles: ["frontend/b.js"],
+        }),
+      ).toEqual([
+        'File "frontend/a.js" is described but does not exist in example-project/.',
+        'File "frontend/b.js" exists in example-project/ but has no entry in content/files.ts.',
+      ]);
+    });
+
+    it("reports unknown concepts and duplicate descriptions", () => {
+      expect(
+        validateContent({
+          tree: tree(),
+          concepts: [],
+          files: [file("a.js", ["ghost"]), file("a.js")],
+          diskFiles: ["a.js"],
+        }),
+      ).toEqual([
+        'File "a.js" is described more than once.',
+        'File "a.js" links to unknown concept "ghost".',
+      ]);
+    });
+  });
 });

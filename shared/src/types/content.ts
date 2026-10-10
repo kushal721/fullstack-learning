@@ -88,3 +88,42 @@ export type Concept = {
   /** Build step ids (filled once build steps exist, M5). */
   relatedBuildSteps: string[];
 };
+
+/** Which part of the Notes App a file belongs to. */
+export type ProjectLayer = "frontend" | "backend" | "database" | "root";
+
+/** One file of the example Notes App (`example-project/`). */
+export type ProjectFile = {
+  /** Path relative to `example-project/`, e.g. "frontend/src/App.jsx". */
+  id: string;
+  path: string;
+  layer: ProjectLayer;
+  /** How to highlight the file. */
+  language: CodeExample["language"];
+  /** One sentence: what the file does. */
+  purpose: string;
+  /** Why the project needs this file, in 2–3 sentences (spec §42). */
+  whyItExists: string;
+  /** Concepts a learner meets in this file. */
+  conceptIds: string[];
+};
+
+/** A file in the project tree: just what a file list needs. */
+export type FileTreeFile = {
+  type: "file";
+  name: string;
+  path: string;
+  layer: ProjectLayer;
+  purpose: string;
+};
+
+/** A folder in the project tree, with its folders first, then its files. */
+export type FileTreeFolder = {
+  type: "folder";
+  name: string;
+  /** "" for the project root. */
+  path: string;
+  children: FileTreeNode[];
+};
+
+export type FileTreeNode = FileTreeFolder | FileTreeFile;
