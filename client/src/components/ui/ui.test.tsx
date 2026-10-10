@@ -21,6 +21,15 @@ describe("RichText", () => {
     expect(container.textContent).toBe("Plain text");
   });
 
+  it("lets long inline code wrap so pages never scroll sideways", () => {
+    const { container } = render(
+      <RichText text="See `backend/src/middleware/authMiddleware.js`." />,
+    );
+    expect(container.querySelector("code")?.className).toContain(
+      "[overflow-wrap:anywhere]",
+    );
+  });
+
   it("renders text as text, never as HTML", () => {
     const { container } = render(<RichText text="<b>not bold</b>" />);
     expect(container.querySelector("b")).toBeNull();
