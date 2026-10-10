@@ -39,6 +39,17 @@ describe("CodeBlock", () => {
     expect(tokens(tokenType)).toContain(expected);
   });
 
+  it("keeps blank lines as full-height lines", () => {
+    const { lines } = renderCode({
+      code: "POST /api/notes HTTP/1.1\nContent-Type: application/json\n\n{}",
+      language: "http",
+    });
+    expect(lines).toHaveLength(4);
+    expect(lines.every((line) => line.className.includes("min-h-6"))).toBe(
+      true,
+    );
+  });
+
   it("marks highlighted lines", () => {
     const { lines } = renderCode({
       code: "a\nb\nc",
