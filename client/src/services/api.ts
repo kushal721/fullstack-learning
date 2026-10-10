@@ -76,4 +76,8 @@ export const apiPaths = {
   topic: (slug: string) => `/topics/${encodeURIComponent(slug)}`,
   concepts: () => "/concepts",
   concept: (slug: string) => `/concepts/${encodeURIComponent(slug)}`,
+  fileTree: () => "/files",
+  // Each folder name is encoded on its own, so the path keeps its slashes.
+  file: (path: string) =>
+    `/files/${path.split("/").map(encodeURIComponent).join("/")}`,
 };

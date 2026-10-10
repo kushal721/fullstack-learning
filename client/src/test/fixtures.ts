@@ -1,5 +1,6 @@
 import type {
   ConceptResponse,
+  FileTreeFolder,
   TopicResponse,
   TopicTreeNode,
 } from "@fsl/shared";
@@ -126,6 +127,57 @@ export const useStateConceptFixture: ConceptResponse = {
       title: "HTML <button>",
       topicId: "html",
       summary: "Trigger an action.",
+    },
+  ],
+};
+
+/** GET /api/files for tests: a small example project. */
+export const fileTreeFixture: FileTreeFolder = {
+  type: "folder",
+  name: "",
+  path: "",
+  children: [
+    {
+      type: "folder",
+      name: "backend",
+      path: "backend",
+      children: [
+        {
+          type: "file",
+          name: "server.js",
+          path: "backend/server.js",
+          layer: "backend",
+          purpose: "Starts the `app`.",
+        },
+      ],
+    },
+    {
+      type: "folder",
+      name: "frontend",
+      path: "frontend",
+      children: [
+        {
+          type: "folder",
+          name: "src",
+          path: "frontend/src",
+          children: [
+            {
+              type: "file",
+              name: "App.jsx",
+              path: "frontend/src/App.jsx",
+              layer: "frontend",
+              purpose: "The top component.",
+            },
+          ],
+        },
+        {
+          type: "file",
+          name: "index.html",
+          path: "frontend/index.html",
+          layer: "frontend",
+          purpose: "The single HTML page.",
+        },
+      ],
     },
   ],
 };

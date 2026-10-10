@@ -1,0 +1,85 @@
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router";
+import { describe, expect, it, vi } from "vitest";
+import { fileTreeFixture } from "../test/fixtures.ts";
+import { mockFetchRoutes } from "../test/mock-fetch.ts";
+import ExplorerPage from "./ExplorerPage.tsx";
+
+function ShowLocation() {
+  const location = useLocation();
+  return <output data-testid="location">{location.search}</output>;
+}
+
+function renderAt(url: string) {
+  mockFetchRoutes({ "/api/files": { tree: fileTreeFixture } });
+  return render(
+    <MemoryRouter initialEntries={[url]}>
+      <Routes>
+        <Route
+          path="/explorer"
+          element={
+            <>
+              <ExplorerPage />
+              <ShowLocation />
+            </>
+          }
+        />
+      </Routes>
+    </MemoryRouter>,
+  );
+}
+
+describe("ExplorerPage", () => {
+  it("loads the file tree and asks the learner to choose a file", async () => {
+    renderAt("/explorer");
+    expect(
+      await screen.findByRole("tree", { name: "Notes App files" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Choose a file/)).toBeInTheDocument();
+  });
+
+  it("puts the selected file in the URL", async () => {
+    renderAt("/explorer");
+    await userEvent.click(
+      await screen.findByRole("treeitem", { name: "index.html" }),
+    );
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "?file=frontend%2Findex.html",
+    );
+    expect(
+      screen.getByRole("heading", { name: "frontend/index.html" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("The single HTML page.")).toBeInTheDocument();
+  });
+
+  it("opens the file from the URL, as after a reload", async () => {
+    renderAt("/explorer?file=frontend/src/App.jsx");
+    expect(
+      await screen.findByRole("heading", { name: "frontend/src/App.jsx" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("treeitem", { name: "App.jsx" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+  });
+
+  it("says so when the file in the URL does not exist", async () => {
+    renderAt("/explorer?file=frontend/nope.js");
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "frontend/nope.js",
+    );
+  });
+
+  it("shows an error with retry when the API is unreachable", async () => {
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("offline"));
+    render(
+      <MemoryRouter initialEntries={["/explorer"]}>
+        <ExplorerPage />
+      </MemoryRouter>,
+    );
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Could not reach the server.",
+    );
+  });
+});
