@@ -1,4 +1,4 @@
-import type { Concept, Topic } from "./content.ts";
+import type { Concept, FileTreeFolder, ProjectFile, Topic } from "./content.ts";
 
 // Shapes of API requests and responses. The server sends exactly these and
 // the client expects exactly these, so a change here is checked on both sides.
@@ -76,4 +76,15 @@ export type ConceptResponse = {
   topic: TopicSummary;
   /** Related concepts, including ones that link to this concept. */
   related: ConceptSummary[];
+};
+
+/** GET /api/files — the example project as nested folders. */
+export type FileTreeResponse = { tree: FileTreeFolder };
+
+/** GET /api/files/<path> — one file with its source code. */
+export type FileResponse = {
+  file: ProjectFile;
+  source: string;
+  /** The concepts a learner meets in this file. */
+  concepts: ConceptSummary[];
 };

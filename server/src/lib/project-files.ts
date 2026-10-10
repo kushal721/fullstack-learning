@@ -6,6 +6,7 @@ import { config } from "../config.js";
 import { projectFiles } from "../content/files.js";
 
 const byId = new Map(projectFiles.map((file) => [file.id, file]));
+const sourceCache = new Map<string, string>();
 
 export function getAllFiles(): ProjectFile[] {
   return projectFiles;
@@ -78,7 +79,17 @@ function compareNodes(a: FileTreeNode, b: FileTreeNode) {
 export async function readFileSource(id: string): Promise<string | undefined> {
   const file = byId.get(id);
   if (!file) return undefined;
-  return readFile(path.join(config.exampleProjectDir, file.path), "utf8");
+  // The example files never change while the server runs, so each one is
+  // read from disk once and then served from memory.
+  let source = sourceCache.get(id);
+  if (source === undefined) {
+    source = await readFile(
+      path.join(config.exampleProjectDir, file.path),
+      "utf8",
+    );
+    sourceCache.set(id, source);
+  }
+  return source;
 }
 
 /** Generated or local-only files that are never part of the example. */

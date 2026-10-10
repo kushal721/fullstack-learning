@@ -41,6 +41,9 @@ RUN npm ci --omit=dev --workspace server --include-workspace-root=false \
 
 COPY --from=build /app/server/dist server/dist
 COPY --from=build /app/client/dist client/dist
+# The Notes App source the platform shows in its file explorer (read at
+# runtime by GET /api/files/...). node_modules is excluded by .dockerignore.
+COPY example-project example-project
 
 # Never run the app as root inside the container.
 USER node
