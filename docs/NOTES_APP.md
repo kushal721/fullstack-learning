@@ -71,6 +71,7 @@ Every file has one job. The platform's file explorer shows these purposes
 | File                               | Purpose                                                                                                                                     |
 | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | `package.json`                     | Frontend dependencies (`react`, `react-dom`; dev: `vite`, `vitest`, Testing Library, `jsdom`) and scripts `dev`, `build`, `preview`, `test` |
+| `package-lock.json`                | Exact installed versions of every package, so `npm ci` installs the same everywhere                                                         |
 | `index.html`                       | The single HTML page; contains `<div id="root">` and loads `src/main.jsx`                                                                   |
 | `vite.config.js`                   | Vite setup; in development forwards `/api` to the backend on port 3000; test settings (jsdom)                                               |
 | `src/main.jsx`                     | Starts React: `createRoot(document.getElementById("root")).render(<App />)`                                                                 |
@@ -97,8 +98,11 @@ Every file has one job. The platform's file explorer shows these purposes
 | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `package.json`                          | `"type": "module"`; dependencies `express`, `pg`, `bcrypt`, `jsonwebtoken`, `cookie-parser`; scripts `dev`, `start`, `test` |
 | `.env.example`                          | Every environment variable with a safe example value; copied to the git-ignored `.env`                                      |
+| `package-lock.json`                     | Exact installed versions (needed by `npm ci` in the Dockerfile)                                                             |
+| `.dockerignore`                         | Keeps `node_modules`, `.env` and tests out of the image                                                                     |
 | `Dockerfile`                            | Builds the production image of the API (`node:22-alpine`, non-root, health check)                                           |
-| `src/server.js`                         | Creates the Express app, adds middleware and routers, the error handler, and listens                                        |
+| `src/server.js`                         | Checks required environment variables, then starts the app from `app.js` on `PORT`                                          |
+| `src/app.js`                            | Builds the Express app (middleware, routes, error handler) without starting it, so tests can use it                         |
 | `src/db.js`                             | Creates the one shared PostgreSQL connection pool from `DATABASE_URL`                                                       |
 | `src/routes/auth.js`                    | Maps `/api/auth/*` URLs to `authController` functions                                                                       |
 | `src/routes/notes.js`                   | Requires login for every notes route and maps `/api/notes` URLs to `notesController`                                        |
