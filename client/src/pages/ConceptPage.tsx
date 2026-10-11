@@ -1,5 +1,4 @@
 import type { ConceptResponse } from "@fsl/shared";
-import { useEffect } from "react";
 import { useParams } from "react-router";
 import { ConceptExplanation } from "../components/concept-explorer/ConceptExplanation.tsx";
 import { ConceptHeader } from "../components/concept-explorer/ConceptHeader.tsx";
@@ -8,6 +7,7 @@ import { Loading } from "../components/ui/Loading.tsx";
 import { NotFoundState } from "../components/ui/NotFoundState.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { useApi } from "../hooks/useApi.ts";
+import { useScrollToTop } from "../hooks/useScrollToTop.ts";
 import { apiPaths } from "../services/api.ts";
 
 export default function ConceptPage() {
@@ -17,7 +17,7 @@ export default function ConceptPage() {
   );
 
   // Following a "Related" link should start at the top of the new concept.
-  useEffect(() => window.scrollTo(0, 0), [slug]);
+  useScrollToTop(slug);
 
   if (isLoading) return <Loading label="Loading concept…" />;
 

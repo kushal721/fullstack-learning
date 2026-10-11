@@ -1,5 +1,5 @@
 import type { TopicResponse, TopicTreeResponse } from "@fsl/shared";
-import { type ReactNode, useEffect } from "react";
+import type { ReactNode } from "react";
 import { useParams } from "react-router";
 import { LearningTree } from "../components/learning-tree/LearningTree.tsx";
 import { TopicNav } from "../components/learning-tree/TopicNav.tsx";
@@ -10,6 +10,7 @@ import { NotFoundState } from "../components/ui/NotFoundState.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { RichText } from "../components/ui/RichText.tsx";
 import { type ApiState, useApi } from "../hooks/useApi.ts";
+import { useScrollToTop } from "../hooks/useScrollToTop.ts";
 import { apiPaths } from "../services/api.ts";
 
 export default function TopicPage() {
@@ -19,7 +20,7 @@ export default function TopicPage() {
   const tree = useApi<TopicTreeResponse>(apiPaths.topicTree());
 
   // Moving to the next topic should start at the top of the page.
-  useEffect(() => window.scrollTo(0, 0), [slug]);
+  useScrollToTop(slug);
 
   return (
     <div className="grid gap-10 lg:grid-cols-[17rem_minmax(0,1fr)]">
