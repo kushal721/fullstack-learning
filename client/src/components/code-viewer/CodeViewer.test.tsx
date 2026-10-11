@@ -2,7 +2,6 @@ import type { FileResponse } from "@fsl/shared";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { mockFetchRoutes } from "../../test/mock-fetch.ts";
 import { CodeViewer } from "./CodeViewer.tsx";
 
 function fileResponse(path: string, lineCount: number): FileResponse {
@@ -29,11 +28,18 @@ function renderViewer(
   lineCount: number,
   line: number | null = null,
 ) {
-  mockFetchRoutes({ [`/api/files/${path}`]: fileResponse(path, lineCount) });
+  const { file, source } = fileResponse(path, lineCount);
   const onSelectLine = vi.fn();
   const scrollIntoView = vi.fn();
   Element.prototype.scrollIntoView = scrollIntoView;
-  render(<CodeViewer path={path} line={line} onSelectLine={onSelectLine} />);
+  render(
+    <CodeViewer
+      file={file}
+      source={source}
+      line={line}
+      onSelectLine={onSelectLine}
+    />,
+  );
   return { onSelectLine, scrollIntoView };
 }
 

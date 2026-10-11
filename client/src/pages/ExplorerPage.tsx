@@ -1,11 +1,17 @@
-import type { FileTreeFile, FileTreeNode, FileTreeResponse } from "@fsl/shared";
+import type {
+  FileResponse,
+  FileTreeFile,
+  FileTreeNode,
+  FileTreeResponse,
+} from "@fsl/shared";
+import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 import { CodeViewer } from "../components/code-viewer/CodeViewer.tsx";
+import { FileMetadata } from "../components/file-explorer/FileMetadata.tsx";
 import { FileTree } from "../components/file-explorer/FileTree.tsx";
 import { ErrorState } from "../components/ui/ErrorState.tsx";
 import { Loading } from "../components/ui/Loading.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
-import { RichText } from "../components/ui/RichText.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { apiPaths } from "../services/api.ts";
 
@@ -33,6 +39,24 @@ export default function ExplorerPage() {
 
   const selected =
     data && selectedPath ? findFile(data.tree.children, selectedPath) : null;
+  // One request per file, shared by the code viewer and the metadata panel.
+  const file = useApi<FileResponse>(
+    selected ? apiPaths.file(selected.path) : null,
+  );
+
+  // On phones the tree is above the file, so after choosing a file bring
+  // its details into view (unless a ?line= link scrolls to a line instead).
+  const detailsRef = useRef<HTMLDivElement>(null);
+  const fileLoaded = Boolean(file.data);
+  useEffect(() => {
+    if (
+      fileLoaded &&
+      !line &&
+      window.matchMedia?.("(max-width: 767px)").matches
+    ) {
+      detailsRef.current?.scrollIntoView?.({ block: "start" });
+    }
+  }, [fileLoaded, selected?.path, line]);
 
   return (
     <>
@@ -44,10 +68,10 @@ export default function ExplorerPage() {
       {isLoading && <Loading label="Loading the project files…" />}
       {error && <ErrorState message={error.message} onRetry={reload} />}
       {data && (
-        <div className="grid gap-6 md:grid-cols-[18rem_minmax(0,1fr)]">
+        <div className="grid gap-6 md:grid-cols-[16rem_minmax(0,1fr)]">
           <nav
             aria-label="Project files"
-            className="rounded-lg border border-border p-2"
+            className="self-start rounded-lg border border-border p-2"
           >
             <FileTree
               tree={data.tree}
@@ -55,7 +79,7 @@ export default function ExplorerPage() {
               onSelect={(path) => setSearchParams({ file: path })}
             />
           </nav>
-          <div className="min-w-0">
+          <div ref={detailsRef} className="min-w-0 scroll-mt-4">
             {!selectedPath && (
               <p className="text-muted">
                 Choose a file to see what it does and why it exists.
@@ -66,20 +90,31 @@ export default function ExplorerPage() {
                 There is no file &ldquo;{selectedPath}&rdquo; in the Notes App.
               </p>
             )}
-            {selected && (
-              <div className="flex flex-col gap-3">
-                <p className="leading-7">
-                  <RichText text={selected.purpose} />
-                </p>
-                <CodeViewer
-                  // A new file starts fresh (e.g. shortened again).
-                  key={selected.path}
-                  path={selected.path}
-                  line={line}
-                  onSelectLine={(n) =>
-                    setSearchParams({ file: selected.path, line: String(n) })
-                  }
-                />
+            {selected && file.isLoading && (
+              <Loading label="Loading the file…" />
+            )}
+            {selected && file.error && (
+              <ErrorState message={file.error.message} onRetry={file.reload} />
+            )}
+            {selected && file.data && (
+              // Metadata comes first in the page (read "why" before the code);
+              // on wide screens it moves to a column on the right.
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_18rem]">
+                <div className="xl:order-2">
+                  <FileMetadata {...file.data} />
+                </div>
+                <div className="min-w-0 xl:order-1">
+                  <CodeViewer
+                    // A new file starts fresh (e.g. shortened again).
+                    key={selected.path}
+                    file={file.data.file}
+                    source={file.data.source}
+                    line={line}
+                    onSelectLine={(n) =>
+                      setSearchParams({ file: selected.path, line: String(n) })
+                    }
+                  />
+                </div>
               </div>
             )}
           </div>
