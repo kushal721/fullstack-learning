@@ -1,4 +1,4 @@
-import type { BuildStep } from "@fsl/shared";
+import type { BuildStep, BuildStepSummary, Topic } from "@fsl/shared";
 import { buildSteps } from "../content/build-steps/index.js";
 
 const byId = new Map(buildSteps.map((step) => [step.id, step]));
@@ -26,4 +26,29 @@ export function getAdjacentSteps(
   const index = ordered.findIndex((step) => step.id === id);
   if (index === -1) return {};
   return { previous: ordered[index - 1], next: ordered[index + 1] };
+}
+
+export function toBuildStepSummary({
+  id,
+  slug,
+  order,
+  title,
+  goal,
+}: BuildStep): BuildStepSummary {
+  return { id, slug, order, title, goal };
+}
+
+/**
+ * Steps that apply a topic: the ones it lists in `buildStepIds`, plus the
+ * ones that introduce any of its concepts, in journey order.
+ */
+export function getStepsForTopic(
+  topic: Topic,
+  steps: BuildStep[] = buildSteps,
+): BuildStep[] {
+  return getOrderedSteps(steps).filter(
+    (step) =>
+      topic.buildStepIds.includes(step.id) ||
+      step.conceptIds.some((id) => topic.conceptIds.includes(id)),
+  );
 }

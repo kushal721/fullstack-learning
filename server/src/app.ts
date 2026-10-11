@@ -3,9 +3,11 @@ import { config } from "./config.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFound } from "./middleware/notFound.js";
 import { serveClient } from "./middleware/serveClient.js";
+import { buildStepsRouter } from "./routes/build-steps.js";
 import { conceptsRouter } from "./routes/concepts.js";
 import { filesRouter } from "./routes/files.js";
 import { healthRouter } from "./routes/health.js";
+import { projectRouter } from "./routes/project.js";
 import { topicsRouter } from "./routes/topics.js";
 
 type AppOptions = {
@@ -23,6 +25,8 @@ export function createApp({ clientDist = config.clientDist }: AppOptions = {}) {
   app.use("/api/topics", topicsRouter);
   app.use("/api/concepts", conceptsRouter);
   app.use("/api/files", filesRouter);
+  app.use("/api/build-steps", buildStepsRouter);
+  app.use("/api/project", projectRouter);
   app.use("/api", notFound);
 
   if (clientDist) app.use(serveClient(clientDist));

@@ -43,7 +43,17 @@ describe("GET /api/topics/:slug", () => {
       "html-input",
       "html-button",
     ]);
-    expect(body.buildSteps).toEqual([]);
+    expect(body.buildSteps.map((step) => step.id)).toEqual([
+      "create-project",
+      "create-frontend-structure",
+    ]);
+    expect(body.buildSteps[0]).toEqual({
+      id: "create-project",
+      slug: "create-project",
+      order: 2,
+      title: "Create the project",
+      goal: expect.any(String),
+    });
   });
 
   it("has no previous topic for the first topic", async () => {
