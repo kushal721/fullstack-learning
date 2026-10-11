@@ -3,7 +3,6 @@ import type {
   BuildStepResponse,
   SnapshotResponse,
 } from "@fsl/shared";
-import { useEffect } from "react";
 import { useParams } from "react-router";
 import { BuildStep } from "../components/build-journey/BuildStep.tsx";
 import { BuildTimeline } from "../components/build-journey/BuildTimeline.tsx";
@@ -12,6 +11,7 @@ import { Loading } from "../components/ui/Loading.tsx";
 import { NotFoundState } from "../components/ui/NotFoundState.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { useApi } from "../hooks/useApi.ts";
+import { useScrollToTop } from "../hooks/useScrollToTop.ts";
 import { apiPaths } from "../services/api.ts";
 
 export default function BuildStepPage() {
@@ -29,7 +29,7 @@ export default function BuildStepPage() {
   );
 
   // Moving to another step should start at the top of its lesson.
-  useEffect(() => window.scrollTo(0, 0), [slug]);
+  useScrollToTop(slug);
 
   if (isLoading) return <Loading label="Loading the build step…" />;
 
