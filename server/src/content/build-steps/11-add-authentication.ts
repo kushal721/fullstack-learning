@@ -1,19 +1,209 @@
 import type { BuildStep } from "@fsl/shared";
 
-// Skeleton: goal, why, files and concepts. The full lesson (explanation,
-// how to create it, from scratch, code, common mistakes) is written in M05.3.
 export const addAuthenticationStep: BuildStep = {
   id: "add-authentication",
   slug: "add-authentication",
   order: 11,
   title: "Add authentication",
-  goal: "Let users register and log in, with hashed passwords and a login cookie.",
-  why: "Notes are private, so the app must know who is making each request.",
-  problemSolved: "An app where anyone can read and change everyone's notes.",
+  goal: "Let people register and log in, with hashed passwords and a login cookie, and require a login for every notes request.",
+  why: "Notes are private, so the server must know who is making each request. HTTP itself forgets everything between requests; a signed login cookie that the browser sends back every time lets the server recognise the same person.",
+  problemSolved:
+    "An app where everyone shares the same demo notes and anyone can read or change them.",
   prerequisites: ["add-database"],
-  explanation: [],
-  howToCreate: [],
-  fromScratch: [],
+  explanation: [
+    "**Authentication** answers *who are you?* It has two parts: proving it once (log in with email and password) and being recognised on every later request (a login token).",
+    "Passwords are never stored. **bcrypt** turns a password into a **hash**: a scrambled string that can't be turned back. It adds a random **salt**, so two people with the same password get different hashes, and it is deliberately slow (`cost 12`), so guessing millions of passwords from a stolen database takes years. To log in, `bcrypt.compare` hashes the typed password the same way and compares.",
+    "After a successful login the server creates a **JWT** (JSON Web Token): a small piece of text containing the user's id (`sub`) and an expiry date, **signed** with `JWT_SECRET`. Anyone can read a JWT, but nobody can change it or make a new one without the secret, because the signature would no longer match.",
+    'The token travels in a **cookie**. The server sends it with a `Set-Cookie` header; the browser stores it and sends it back in the `Cookie` header of every request to the same site — automatically. `httpOnly` stops JavaScript in the page from reading it, so an XSS bug can\'t steal it; `sameSite: "lax"` stops other websites from making the browser send it.',
+    "`requireAuth` is **middleware**: it runs before every notes route, reads the cookie (`cookie-parser` turns the `Cookie` header into `req.cookies`), verifies the JWT and puts the user in `req.user`. If the token is missing, forged or expired, it answers **401** and the controller never runs. The controller then uses `req.user.id` instead of the demo user.",
+    "The frontend can't read an `httpOnly` cookie, so on load App asks `GET /api/auth/me` who is logged in and shows the Login page or the Dashboard. Three pages are simple enough to switch with state — no router library needed.",
+    "Good error messages leak nothing: login says *Invalid email or password* whether the email exists or not, and registering an existing email relies on the database's `UNIQUE` rule (409), so two sign-ups at the same moment can't both succeed.",
+  ],
+  howToCreate: [
+    {
+      text: "In the second terminal (in `notes-app/backend`), install the three login packages: bcrypt for hashing, jsonwebtoken for tokens and cookie-parser for reading cookies.",
+      code: {
+        language: "bash",
+        code: "npm install bcrypt cookie-parser jsonwebtoken",
+      },
+    },
+    {
+      text: "Replace `.env.example` to add `JWT_SECRET`, the key that signs tokens, then copy it to `.env`.",
+      code: {
+        language: "bash",
+        code: "# Copy this file to .env and change the values. .env is never committed.\nPORT=3000\nDATABASE_URL=postgres://postgres:dev@localhost:5432/notes\n# Signs the login tokens. Use a long random string in production.\nJWT_SECRET=change-me-to-a-long-random-string\nNODE_ENV=development",
+        fileName: "backend/.env.example",
+        caption:
+          "Final version. Step 12 replaces the example secret in your `.env` with a long random one.",
+      },
+    },
+    {
+      text: "Copy it.",
+      code: {
+        language: "bash",
+        code: "cp .env.example .env",
+      },
+    },
+    {
+      text: "Replace `src/server.js` so it also refuses to start without `JWT_SECRET`.",
+      code: {
+        language: "js",
+        code: 'import { createApp } from "./app.js";\n\n// Stop at once with a clear message if a setting is missing, instead of\n// failing later on the first request.\nconst required = ["DATABASE_URL", "JWT_SECRET"];\nconst missing = required.filter((name) => !process.env[name]);\nif (missing.length > 0) {\n  console.error(`Missing environment variables: ${missing.join(", ")}`);\n  console.error("Copy .env.example to .env and fill it in.");\n  process.exit(1);\n}\n\nconst port = Number(process.env.PORT ?? 3000);\n\ncreateApp().listen(port, () => {\n  console.log(`Notes API listening on http://localhost:${port}`);\n});',
+        fileName: "backend/src/server.js",
+        caption: "Final version.",
+      },
+    },
+    {
+      text: "Create the middleware folder and `src/middleware/authMiddleware.js`.",
+      code: {
+        language: "bash",
+        code: "mkdir src/middleware",
+      },
+    },
+    {
+      text: "Write `requireAuth`: verify the token from the cookie and put the user in `req.user`, or answer 401.",
+      code: {
+        language: "js",
+        code: 'import jwt from "jsonwebtoken";\n\n// Runs before every notes route. It finds out who is making the request from\n// the login cookie and stops the request if nobody is logged in.\nexport function requireAuth(req, res, next) {\n  const token = req.cookies.token;\n  try {\n    // verify() checks the signature and the expiry date, so a forged or\n    // old token is rejected.\n    const payload = jwt.verify(token, process.env.JWT_SECRET);\n    req.user = { id: payload.sub };\n    next();\n  } catch {\n    res.status(401).json({ error: "Please log in" });\n  }\n}',
+        fileName: "backend/src/middleware/authMiddleware.js",
+        caption: "Final version.",
+      },
+    },
+    {
+      text: 'Create `src/controllers/authController.js` with register, login, logout and "who am I?".',
+      code: {
+        language: "js",
+        code: 'import bcrypt from "bcrypt";\nimport jwt from "jsonwebtoken";\nimport { pool } from "../db.js";\n\nconst PASSWORD_MIN_LENGTH = 8;\nconst BCRYPT_COST = 12;\nconst SESSION_DAYS = 7;\nconst UNIQUE_VIOLATION = "23505";\n\nconst cookieOptions = {\n  // JavaScript in the page cannot read the cookie, so an XSS bug can\'t\n  // steal it.\n  httpOnly: true,\n  // Other websites can\'t make the browser send it with their requests.\n  sameSite: "lax",\n  // Only sent over HTTPS in production (local development uses http).\n  secure: process.env.NODE_ENV === "production",\n  maxAge: SESSION_DAYS * 24 * 60 * 60 * 1000,\n};\n\nfunction readCredentials(body) {\n  const email =\n    typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";\n  const password = typeof body?.password === "string" ? body.password : "";\n  return { email, password };\n}\n\nexport async function register(req, res) {\n  const { email, password } = readCredentials(req.body);\n  if (!email.includes("@")) {\n    return res\n      .status(400)\n      .json({ error: "Please enter a valid email address" });\n  }\n  if (password.length < PASSWORD_MIN_LENGTH) {\n    return res.status(400).json({\n      error: `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,\n    });\n  }\n\n  // Never store the password itself: bcrypt makes a slow, salted hash.\n  const passwordHash = await bcrypt.hash(password, BCRYPT_COST);\n  try {\n    const result = await pool.query(\n      "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email",\n      [email, passwordHash],\n    );\n    res.status(201).json(result.rows[0]);\n  } catch (err) {\n    // The UNIQUE rule on email is the real check, so two sign-ups at the\n    // same moment can\'t both succeed.\n    if (err.code === UNIQUE_VIOLATION) {\n      return res.status(409).json({ error: "Email already registered" });\n    }\n    throw err;\n  }\n}\n\nexport async function login(req, res) {\n  const { email, password } = readCredentials(req.body);\n  if (!email || !password) {\n    return res.status(400).json({ error: "Email and password are required" });\n  }\n\n  const result = await pool.query(\n    "SELECT id, email, password_hash FROM users WHERE email = $1",\n    [email],\n  );\n  const user = result.rows[0];\n  const passwordMatches =\n    user && (await bcrypt.compare(password, user.password_hash));\n\n  // The same message for "no such user" and "wrong password", so nobody can\n  // find out which emails are registered.\n  if (!passwordMatches) {\n    return res.status(401).json({ error: "Invalid email or password" });\n  }\n\n  const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET, {\n    expiresIn: `${SESSION_DAYS}d`,\n  });\n  res.cookie("token", token, cookieOptions);\n  res.json({ id: user.id, email: user.email });\n}\n\nexport function logout(req, res) {\n  res.clearCookie("token", { ...cookieOptions, maxAge: undefined });\n  res.status(204).end();\n}\n\nexport async function currentUser(req, res) {\n  const result = await pool.query("SELECT id, email FROM users WHERE id = $1", [\n    req.user.id,\n  ]);\n  if (result.rowCount === 0) {\n    return res.status(401).json({ error: "Please log in" });\n  }\n  res.json(result.rows[0]);\n}',
+        fileName: "backend/src/controllers/authController.js",
+        caption:
+          "Final version. Read the comments: each one explains a security decision.",
+      },
+    },
+    {
+      text: "Create `src/routes/auth.js`. `/me` needs a login, so `requireAuth` runs before it.",
+      code: {
+        language: "js",
+        code: 'import express from "express";\nimport * as authController from "../controllers/authController.js";\nimport { requireAuth } from "../middleware/authMiddleware.js";\n\nexport const authRoutes = express.Router();\n\nauthRoutes.post("/register", authController.register);\nauthRoutes.post("/login", authController.login);\nauthRoutes.post("/logout", authController.logout);\nauthRoutes.get("/me", requireAuth, authController.currentUser);',
+        fileName: "backend/src/routes/auth.js",
+        caption: "Final version.",
+      },
+    },
+    {
+      text: "Replace `src/routes/notes.js` so every notes route requires a login.",
+      code: {
+        language: "js",
+        code: 'import express from "express";\nimport * as notesController from "../controllers/notesController.js";\nimport { requireAuth } from "../middleware/authMiddleware.js";\n\n// Which URL runs which controller function. Every notes route needs a\n// logged-in user, so requireAuth runs first for all of them.\nexport const notesRoutes = express.Router();\n\nnotesRoutes.use(requireAuth);\nnotesRoutes.get("/", notesController.listNotes);\nnotesRoutes.post("/", notesController.createNote);\nnotesRoutes.put("/:id", notesController.updateNote);\nnotesRoutes.delete("/:id", notesController.deleteNote);',
+        fileName: "backend/src/routes/notes.js",
+        caption: "Final version.",
+      },
+    },
+    {
+      text: "Replace `src/controllers/notesController.js`: `DEMO_USER_ID` becomes `req.user.id`, the logged-in user.",
+      code: {
+        language: "js",
+        code: 'import { pool } from "../db.js";\nimport { validateNote } from "../validation/noteValidation.js";\n\n// requireAuth (step 11) puts the logged-in user in req.user.\n// Values are always passed separately ($1, $2…), never glued into the SQL,\n// so user input can never change the query (no SQL injection).\n\n// Ids in the URL are text. Anything that isn\'t a positive whole number can\'t\n// be a note, so it is "not found" instead of a database error.\nfunction noteId(req) {\n  const id = Number(req.params.id);\n  return Number.isInteger(id) && id > 0 ? id : null;\n}\n\nexport async function listNotes(req, res) {\n  const result = await pool.query(\n    `SELECT id, title, content, created_at, updated_at\n       FROM notes\n      WHERE user_id = $1\n      ORDER BY created_at DESC`,\n    [req.user.id],\n  );\n  res.json(result.rows);\n}\n\nexport async function createNote(req, res) {\n  const error = validateNote(req.body);\n  if (error) return res.status(400).json({ error });\n\n  const { title, content = "" } = req.body;\n  const result = await pool.query(\n    `INSERT INTO notes (user_id, title, content)\n     VALUES ($1, $2, $3)\n     RETURNING id, title, content, created_at, updated_at`,\n    [req.user.id, title.trim(), content],\n  );\n  res.status(201).json(result.rows[0]);\n}\n\nexport async function updateNote(req, res) {\n  const id = noteId(req);\n  if (!id) return res.status(404).json({ error: "Note not found" });\n  const error = validateNote(req.body);\n  if (error) return res.status(400).json({ error });\n\n  const { title, content = "" } = req.body;\n  const result = await pool.query(\n    `UPDATE notes\n        SET title = $1, content = $2, updated_at = now()\n      WHERE id = $3\n      RETURNING id, title, content, created_at, updated_at`,\n    [title.trim(), content, id],\n  );\n  if (result.rowCount === 0) {\n    return res.status(404).json({ error: "Note not found" });\n  }\n  res.json(result.rows[0]);\n}\n\nexport async function deleteNote(req, res) {\n  const id = noteId(req);\n  if (!id) return res.status(404).json({ error: "Note not found" });\n  const result = await pool.query("DELETE FROM notes WHERE id = $1", [id]);\n  if (result.rowCount === 0) {\n    return res.status(404).json({ error: "Note not found" });\n  }\n  res.status(204).end();\n}',
+        fileName: "backend/src/controllers/notesController.js",
+        caption:
+          "Listing and creating are final. Update and delete still look a note up by its id only — step 12 shows why that is a security hole and fixes it.",
+      },
+    },
+    {
+      text: "Replace `src/app.js` to add cookie-parser and mount the auth routes.",
+      code: {
+        language: "js",
+        code: 'import cookieParser from "cookie-parser";\nimport express from "express";\nimport { authRoutes } from "./routes/auth.js";\nimport { notesRoutes } from "./routes/notes.js";\n\n// Builds the Express app without starting it, so tests can send requests\n// to it directly (server.js starts it).\nexport function createApp() {\n  const app = express();\n\n  // Middleware runs in this order for every request.\n  app.use(express.json()); // JSON body → req.body\n  app.use(cookieParser()); // Cookie header → req.cookies\n\n  app.get("/api/health", (req, res) => res.json({ status: "ok" }));\n  app.use("/api/auth", authRoutes);\n  app.use("/api/notes", notesRoutes);\n\n\n  return app;\n}',
+        fileName: "backend/src/app.js",
+        caption: "Step 12 adds the error handler at the end.",
+      },
+    },
+    {
+      text: "In the third terminal, restart the backend so it reads `JWT_SECRET` from the new `.env` (Ctrl+C, then `npm run dev`).",
+      code: {
+        language: "bash",
+        code: "npm run dev",
+      },
+    },
+    {
+      text: "Check the backend with `curl` in the second terminal: without a login, notes are refused.",
+      code: {
+        language: "bash",
+        code: "curl -i http://localhost:3000/api/notes",
+        caption:
+          'Expected: `401 Unauthorized` with `{"error":"Please log in"}`.',
+      },
+    },
+    {
+      text: "Now the frontend. In the second terminal, go to the frontend folder.",
+      code: {
+        language: "bash",
+        code: "cd ../frontend",
+      },
+    },
+    {
+      text: "Create `src/services/authApi.js` with one function per auth endpoint.",
+      code: {
+        language: "js",
+        code: 'import { request } from "./request.js";\n\nexport function register({ email, password }) {\n  return request("/api/auth/register", {\n    method: "POST",\n    body: { email, password },\n  });\n}\n\nexport function login({ email, password }) {\n  return request("/api/auth/login", {\n    method: "POST",\n    body: { email, password },\n  });\n}\n\nexport function logout() {\n  return request("/api/auth/logout", { method: "POST" });\n}\n\n// The login cookie is httpOnly, so JavaScript cannot read it. Instead we ask\n// the API who is logged in. A 401 means nobody is, so return null.\nexport async function getCurrentUser() {\n  try {\n    return await request("/api/auth/me");\n  } catch {\n    return null;\n  }\n}',
+        fileName: "frontend/src/services/authApi.js",
+        caption: "Final version.",
+      },
+    },
+    {
+      text: "Create `src/pages/Login.jsx`.",
+      code: {
+        language: "jsx",
+        code: 'import { useState } from "react";\nimport Button from "../components/Button.jsx";\nimport Input from "../components/Input.jsx";\nimport { login } from "../services/authApi.js";\n\nexport default function Login({ onLoggedIn, onShowRegister }) {\n  const [email, setEmail] = useState("");\n  const [password, setPassword] = useState("");\n  const [error, setError] = useState(null);\n\n  async function handleSubmit(event) {\n    event.preventDefault();\n    setError(null);\n    try {\n      // On success the API also sets the login cookie in the browser.\n      const user = await login({ email, password });\n      onLoggedIn(user);\n    } catch (err) {\n      setError(err.message);\n    }\n  }\n\n  return (\n    <main className="auth-page">\n      <h1>Log in</h1>\n      <form onSubmit={handleSubmit}>\n        <Input\n          id="login-email"\n          label="Email"\n          type="email"\n          autoComplete="email"\n          value={email}\n          onChange={(event) => setEmail(event.target.value)}\n          required\n        />\n        <Input\n          id="login-password"\n          label="Password"\n          type="password"\n          autoComplete="current-password"\n          value={password}\n          onChange={(event) => setPassword(event.target.value)}\n          required\n        />\n        {error && (\n          <p className="form-error" role="alert">\n            {error}\n          </p>\n        )}\n        <Button type="submit">Log in</Button>\n      </form>\n      <p>\n        No account yet?{" "}\n        <Button type="button" variant="link" onClick={onShowRegister}>\n          Register\n        </Button>\n      </p>\n    </main>\n  );\n}',
+        fileName: "frontend/src/pages/Login.jsx",
+        caption: "Final version.",
+      },
+    },
+    {
+      text: "Create `src/pages/Register.jsx`. After registering it logs in straight away.",
+      code: {
+        language: "jsx",
+        code: 'import { useState } from "react";\nimport Button from "../components/Button.jsx";\nimport Input from "../components/Input.jsx";\nimport { login, register } from "../services/authApi.js";\n\nexport default function Register({ onLoggedIn, onShowLogin }) {\n  const [email, setEmail] = useState("");\n  const [password, setPassword] = useState("");\n  const [error, setError] = useState(null);\n\n  async function handleSubmit(event) {\n    event.preventDefault();\n    setError(null);\n    try {\n      await register({ email, password });\n      // Log in straight away so the new user lands on their notes.\n      const user = await login({ email, password });\n      onLoggedIn(user);\n    } catch (err) {\n      setError(err.message);\n    }\n  }\n\n  return (\n    <main className="auth-page">\n      <h1>Create an account</h1>\n      <form onSubmit={handleSubmit}>\n        <Input\n          id="register-email"\n          label="Email"\n          type="email"\n          autoComplete="email"\n          value={email}\n          onChange={(event) => setEmail(event.target.value)}\n          required\n        />\n        <Input\n          id="register-password"\n          label="Password (at least 8 characters)"\n          type="password"\n          autoComplete="new-password"\n          minLength={8}\n          value={password}\n          onChange={(event) => setPassword(event.target.value)}\n          required\n        />\n        {error && (\n          <p className="form-error" role="alert">\n            {error}\n          </p>\n        )}\n        <Button type="submit">Register</Button>\n      </form>\n      <p>\n        Already have an account?{" "}\n        <Button type="button" variant="link" onClick={onShowLogin}>\n          Log in\n        </Button>\n      </p>\n    </main>\n  );\n}',
+        fileName: "frontend/src/pages/Register.jsx",
+        caption: "Final version.",
+      },
+    },
+    {
+      text: "Replace `src/components/Navbar.jsx` to show the logged-in user's email and a Log out button.",
+      code: {
+        language: "jsx",
+        code: 'import Button from "./Button.jsx";\n\nexport default function Navbar({ user, onLogout }) {\n  return (\n    <header className="navbar">\n      <span className="navbar-title">Notes</span>\n      {user && (\n        <nav className="navbar-user">\n          <span>{user.email}</span>\n          <Button variant="secondary" type="button" onClick={onLogout}>\n            Log out\n          </Button>\n        </nav>\n      )}\n    </header>\n  );\n}',
+        fileName: "frontend/src/components/Navbar.jsx",
+        caption: "Final version.",
+      },
+    },
+    {
+      text: "Replace `src/App.jsx`. On load it asks the API who is logged in, then shows Login, Register or the Dashboard.",
+      code: {
+        language: "jsx",
+        code: 'import { useEffect, useState } from "react";\nimport Navbar from "./components/Navbar.jsx";\nimport Dashboard from "./pages/Dashboard.jsx";\nimport Login from "./pages/Login.jsx";\nimport Register from "./pages/Register.jsx";\nimport { getCurrentUser, logout } from "./services/authApi.js";\n\n// Three pages are simple enough to switch with state, so the app needs no\n// router library.\nexport default function App() {\n  const [user, setUser] = useState(null);\n  const [page, setPage] = useState("loading");\n\n  // On first load, ask the API whether someone is already logged in.\n  useEffect(() => {\n    getCurrentUser().then((current) => {\n      setUser(current);\n      setPage(current ? "dashboard" : "login");\n    });\n  }, []);\n\n  function handleLoggedIn(loggedInUser) {\n    setUser(loggedInUser);\n    setPage("dashboard");\n  }\n\n  async function handleLogout() {\n    await logout();\n    setUser(null);\n    setPage("login");\n  }\n\n  return (\n    <>\n      <Navbar user={user} onLogout={handleLogout} />\n      {page === "loading" && <p className="page-message">Loading…</p>}\n      {page === "login" && (\n        <Login\n          onLoggedIn={handleLoggedIn}\n          onShowRegister={() => setPage("register")}\n        />\n      )}\n      {page === "register" && (\n        <Register\n          onLoggedIn={handleLoggedIn}\n          onShowLogin={() => setPage("login")}\n        />\n      )}\n      {page === "dashboard" && <Dashboard />}\n    </>\n  );\n}',
+        fileName: "frontend/src/App.jsx",
+        caption: "Final version.",
+      },
+    },
+    {
+      text: "Add the narrower width for the login and register pages to the end of `src/index.css`.",
+      code: {
+        language: "css",
+        code: ".auth-page {\n  max-width: 24rem;\n}",
+        fileName: "frontend/src/index.css",
+      },
+    },
+    {
+      text: "Check it worked in the browser (http://localhost:5173): you see **Log in**. Click *Register*, create an account (for example `you@example.com` with an 8+ character password): you land on an empty Dashboard with your email in the Navbar. Add a note, then *Log out*. Log in as `demo@example.com` / `demo-password`: you see only the demo notes, not yours. In the developer tools (Application → Cookies) the `token` cookie is marked *HttpOnly*.",
+    },
+  ],
+  fromScratch: [
+    "Store a bcrypt hash (cost 12 or more) in a `password_hash` column, never the password, and make the email column `UNIQUE`.",
+    "On login, compare with `bcrypt.compare`, sign a short-lived JWT with a secret from the environment, and send it in an `httpOnly`, `sameSite` cookie (`secure` in production).",
+    "Write one `requireAuth` middleware that verifies the token and sets `req.user`, and put it in front of every private route.",
+    "Use `req.user.id` from the token in every query — never a user id sent in the request body or URL.",
+    "Give the frontend a `GET /me` endpoint to find out who is logged in, because an `httpOnly` cookie can't be read from JavaScript.",
+    "Return the same message for an unknown email and a wrong password.",
+  ],
   filesCreated: [
     "backend/src/routes/auth.js",
     "backend/src/controllers/authController.js",
@@ -35,12 +225,47 @@ export const addAuthenticationStep: BuildStep = {
     "frontend/src/index.css",
   ],
   filesRemoved: [],
-  conceptIds: ["express-middleware", "http-headers", "http-post"],
-  codeExamples: [],
+  conceptIds: [
+    "express-middleware",
+    "http-headers",
+    "http-post",
+    "http-status-codes",
+    "environment-variables",
+  ],
+  codeExamples: [
+    {
+      language: "js",
+      code: "const passwordHash = await bcrypt.hash(password, BCRYPT_COST);",
+      fileName: "backend/src/controllers/authController.js",
+      caption: "The database only ever sees the hash.",
+    },
+    {
+      language: "js",
+      code: 'const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET, {\n  expiresIn: `${SESSION_DAYS}d`,\n});\nres.cookie("token", token, cookieOptions);',
+      fileName: "backend/src/controllers/authController.js",
+      caption:
+        "A signed token with the user's id, stored by the browser as an httpOnly cookie.",
+    },
+    {
+      language: "js",
+      code: "const payload = jwt.verify(token, process.env.JWT_SECRET);\nreq.user = { id: payload.sub };\nnext();",
+      fileName: "backend/src/middleware/authMiddleware.js",
+      caption:
+        "Every notes request passes through here first; a bad token never reaches the controller.",
+    },
+  ],
   relationshipIds: [],
-  enables: "Register, log in and log out, and stay logged in across requests.",
-  commonMistakes: [],
+  enables:
+    "Register, log in and log out, stay logged in across requests, and see only your own list of notes.",
+  commonMistakes: [
+    "Storing passwords as plain text or with a fast hash like SHA-256. One database leak exposes every password; use bcrypt (or argon2) with a high cost.",
+    "Keeping the token in `localStorage`. Any script on the page can read it, so one XSS bug steals every session. An `httpOnly` cookie can't be read by JavaScript.",
+    "Reading the user id from the request body (`req.body.userId`). Anyone can send any id; only trust `req.user.id` from the verified token.",
+    "Saying *No account with that email* on login. It tells attackers which emails are registered; use one message for both cases.",
+    "Forgetting `cookie-parser`. `req.cookies` is then undefined and every request gets 401 even after logging in.",
+    "Forgetting to restart the backend after changing `.env`, so `JWT_SECRET` is missing and the server refuses to start.",
+  ],
   nextStepId: "add-security",
   nextWhy:
-    "Logging in is not enough on its own; next we make sure users can only touch their own notes.",
+    "Logging in tells the server who you are, but update and delete still don't check whose note it is. Next we close that hole and make errors and input safe.",
 };
