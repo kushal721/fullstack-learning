@@ -38,7 +38,7 @@ describe("project evolution", () => {
         "frontend/src/hooks/useNotes.js",
       ],
       removed: [],
-      modified: ["frontend/src/pages/Dashboard.jsx"],
+      modified: ["frontend/src/index.css", "frontend/src/pages/Dashboard.jsx"],
     });
   });
 
