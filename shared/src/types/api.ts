@@ -1,4 +1,10 @@
-import type { Concept, FileTreeFolder, ProjectFile, Topic } from "./content.ts";
+import type {
+  BuildStep,
+  Concept,
+  FileTreeFolder,
+  ProjectFile,
+  Topic,
+} from "./content.ts";
 
 // Shapes of API requests and responses. The server sends exactly these and
 // the client expects exactly these, so a change here is checked on both sides.
@@ -46,7 +52,7 @@ export type ConceptSummary = {
   summary: string;
 };
 
-/** A build step in a list (full build steps arrive in M5). */
+/** A build step in a list, without its lesson. */
 export type BuildStepSummary = {
   id: string;
   slug: string;
@@ -62,7 +68,7 @@ export type TopicResponse = {
   next?: TopicSummary;
   /** Concepts taught in this topic (empty until the concept registry exists). */
   concepts: ConceptSummary[];
-  /** Build steps that apply this topic (empty until build steps exist). */
+  /** Build steps that use this topic's concepts, in journey order. */
   buildSteps: BuildStepSummary[];
 };
 
@@ -88,3 +94,31 @@ export type FileResponse = {
   /** The concepts a learner meets in this file. */
   concepts: ConceptSummary[];
 };
+
+/** GET /api/build-steps — the whole journey, in order. */
+export type BuildStepListResponse = { buildSteps: BuildStepSummary[] };
+
+/** Files that changed between two points of the build journey. */
+export type SnapshotDiff = {
+  added: string[];
+  removed: string[];
+  /** Files that exist on both sides and were changed in between. */
+  modified: string[];
+};
+
+/** GET /api/build-steps/:slug */
+export type BuildStepResponse = {
+  step: BuildStep;
+  /** The concepts this step introduces. */
+  concepts: ConceptSummary[];
+  previous?: BuildStepSummary;
+  next?: BuildStepSummary;
+  /** What this step changes in the project (previous step → this step). */
+  diff: SnapshotDiff;
+};
+
+/** GET /api/project/snapshots/:order — the project after a step (0 = empty). */
+export type SnapshotResponse = { order: number; tree: FileTreeFolder };
+
+/** GET /api/project/diff?from=&to= */
+export type DiffResponse = SnapshotDiff;

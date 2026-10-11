@@ -1,5 +1,6 @@
 import type { TopicResponse, TopicTreeResponse } from "@fsl/shared";
 import { Router } from "express";
+import { getStepsForTopic, toBuildStepSummary } from "../lib/build-journey.js";
 import { getConcept, toConceptSummary } from "../lib/concepts.js";
 import { notFoundError, validationError } from "../lib/http-error.js";
 import {
@@ -44,7 +45,7 @@ topicsRouter.get("/:slug", (req, res) => {
       .map((id) => getConcept(id))
       .filter((concept) => concept !== undefined)
       .map(toConceptSummary),
-    buildSteps: [],
+    buildSteps: getStepsForTopic(topic).map(toBuildStepSummary),
   };
   res.json(body);
 });

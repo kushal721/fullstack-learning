@@ -1,4 +1,9 @@
-import type { BuildStep, FileTreeFolder, ProjectFile } from "@fsl/shared";
+import type {
+  BuildStep,
+  FileTreeFolder,
+  ProjectFile,
+  SnapshotDiff,
+} from "@fsl/shared";
 import { buildSteps } from "../content/build-steps/index.js";
 import { projectFiles } from "../content/files.js";
 import { getOrderedSteps } from "./build-journey.js";
@@ -10,13 +15,6 @@ export type ProjectSnapshot = {
   order: number;
   files: ProjectFile[];
   tree: FileTreeFolder;
-};
-
-export type SnapshotDiff = {
-  added: string[];
-  removed: string[];
-  /** Files that exist in both snapshots and were changed in between. */
-  modified: string[];
 };
 
 /** File ids that exist after replaying steps 1..order. */
