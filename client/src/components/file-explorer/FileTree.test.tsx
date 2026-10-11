@@ -66,3 +66,27 @@ describe("FileTree", () => {
     expect(onSelect).toHaveBeenLastCalledWith("frontend/index.html");
   });
 });
+
+describe("FileTree markers", () => {
+  it("opens the folders of marked files and names the change in words", () => {
+    render(
+      <FileTree
+        tree={fileTreeFixture}
+        selectedPath={null}
+        onSelect={() => {}}
+        label="Files after step 2"
+        markers={{
+          "frontend/src/App.jsx": "added",
+          "backend/server.js": "modified",
+        }}
+      />,
+    );
+    expect(
+      screen.getByRole("tree", { name: "Files after step 2" }),
+    ).toBeInTheDocument();
+    expect(item("App.jsx, added")).toBeVisible();
+    expect(item("App.jsx, added")).toHaveTextContent("+ added");
+    expect(item("server.js, modified")).toHaveTextContent("~ modified");
+    expect(item("index.html")).toBeVisible();
+  });
+});

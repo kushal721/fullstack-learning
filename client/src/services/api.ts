@@ -80,4 +80,8 @@ export const apiPaths = {
   // Each folder name is encoded on its own, so the path keeps its slashes.
   file: (path: string) =>
     `/files/${path.split("/").map(encodeURIComponent).join("/")}`,
+  buildSteps: () => "/build-steps",
+  buildStep: (slug: string) => `/build-steps/${encodeURIComponent(slug)}`,
+  snapshot: (order: number) => `/project/snapshots/${order}`,
+  diff: (from: number, to: number) => `/project/diff?from=${from}&to=${to}`,
 };

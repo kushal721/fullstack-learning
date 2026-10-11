@@ -6,10 +6,17 @@ import {
 } from "../../hooks/useTreeKeyboard.ts";
 import { FileTreeNode } from "./FileTreeNode.tsx";
 
+/** How a file changed in a build step, shown next to its name. */
+export type FileMarker = "added" | "modified" | "removed";
+
 type Props = {
   tree: FileTreeFolder;
   selectedPath: string | null;
   onSelect: (path: string) => void;
+  /** Accessible name of the tree (needed when a page shows several). */
+  label?: string;
+  /** Change markers by file path; their folders start open. */
+  markers?: Record<string, FileMarker>;
 };
 
 /** Folder paths above a file: "a/b/c.js" → ["a", "a/b"]. */
@@ -18,14 +25,23 @@ function ancestorFolders(path: string): string[] {
   return parts.map((_, index) => parts.slice(0, index + 1).join("/"));
 }
 
-/** Top-level folders start open, plus the folders above the selected file. */
-function initiallyExpanded(tree: FileTreeFolder, selectedPath: string | null) {
+/**
+ * Top-level folders start open, plus the folders above the selected file
+ * and above every marked file, so changes are visible without clicking.
+ */
+function initiallyExpanded(
+  tree: FileTreeFolder,
+  selectedPath: string | null,
+  markedPaths: string[],
+) {
   const top = tree.children
     .filter((node) => node.type === "folder")
     .map((node) => node.path);
   return new Set([
     ...top,
-    ...(selectedPath ? ancestorFolders(selectedPath) : []),
+    ...[selectedPath, ...markedPaths].flatMap((path) =>
+      path ? ancestorFolders(path) : [],
+    ),
   ]);
 }
 
@@ -53,9 +69,15 @@ function visibleItems(
  * The Notes App's files as a tree. Keyboard support comes from the same
  * useTreeKeyboard hook as the learning tree.
  */
-export function FileTree({ tree, selectedPath, onSelect }: Props) {
+export function FileTree({
+  tree,
+  selectedPath,
+  onSelect,
+  label = "Notes App files",
+  markers,
+}: Props) {
   const [expanded, setExpanded] = useState(() =>
-    initiallyExpanded(tree, selectedPath),
+    initiallyExpanded(tree, selectedPath, Object.keys(markers ?? {})),
   );
 
   const setFolderExpanded = useCallback((path: string, open: boolean) => {
@@ -83,7 +105,7 @@ export function FileTree({ tree, selectedPath, onSelect }: Props) {
   });
 
   return (
-    <ul role="tree" aria-label="Notes App files" className="flex flex-col">
+    <ul role="tree" aria-label={label} className="flex flex-col">
       {tree.children.map((node, index) => (
         <FileTreeNode
           key={node.path}
@@ -93,6 +115,7 @@ export function FileTree({ tree, selectedPath, onSelect }: Props) {
           siblingCount={tree.children.length}
           expanded={expanded}
           selectedPath={selectedPath}
+          markers={markers}
           onToggle={toggle}
           onSelect={onSelect}
           getItemProps={getItemProps}
