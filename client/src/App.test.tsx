@@ -25,7 +25,7 @@ describe("App routing", () => {
     ["/concepts", "Concepts"],
     ["/concepts/react-usestate", "Couldn't load this concept"],
     ["/build", "Build"],
-    ["/build/create-project", "Build step: create-project"],
+    ["/build/create-project", "Couldn't load this build step"],
     ["/explorer", "Explorer"],
     ["/project", "Project"],
     ["/flow", "Flow"],

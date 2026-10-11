@@ -10,6 +10,10 @@ type Props = {
   after: FileTreeFolder;
   diff: SnapshotDiff;
   onOpenFile: (path: string) => void;
+  /** 3 when the diff sits inside a page section that has its own h2. */
+  headingLevel?: 2 | 3;
+  /** Heading of the change list (default "What changed in step N"). */
+  title?: string;
 };
 
 const SYMBOL: Record<FileMarker, string> = {
@@ -25,7 +29,16 @@ const explorerLink = (path: string) =>
  * BEFORE | AFTER trees for one step (stacked on phones), with a written
  * list of what changed so the answer never depends on scanning the trees.
  */
-export function ProjectDiff({ step, before, after, diff, onOpenFile }: Props) {
+export function ProjectDiff({
+  step,
+  before,
+  after,
+  diff,
+  onOpenFile,
+  headingLevel = 2,
+  title = `What changed in step ${step}`,
+}: Props) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   const beforeMarkers: Record<string, FileMarker> = {};
   const afterMarkers: Record<string, FileMarker> = {};
   for (const path of diff.removed) beforeMarkers[path] = "removed";
@@ -47,9 +60,9 @@ export function ProjectDiff({ step, before, after, diff, onOpenFile }: Props) {
   return (
     <div className="flex flex-col gap-6">
       <section aria-labelledby="changes-heading">
-        <h2 id="changes-heading" className="text-lg font-semibold">
-          What changed in step {step}
-        </h2>
+        <Heading id="changes-heading" className="text-lg font-semibold">
+          {title}
+        </Heading>
         {total === 0 ? (
           <p className="mt-1 text-muted">
             No files change in this step: it is about understanding, not code.
@@ -89,6 +102,7 @@ export function ProjectDiff({ step, before, after, diff, onOpenFile }: Props) {
           tree={before}
           markers={beforeMarkers}
           onOpenFile={onOpenFile}
+          headingLevel={headingLevel}
         />
         <ProjectSnapshot
           title="After"
@@ -96,6 +110,7 @@ export function ProjectDiff({ step, before, after, diff, onOpenFile }: Props) {
           tree={after}
           markers={afterMarkers}
           onOpenFile={onOpenFile}
+          headingLevel={headingLevel}
         />
       </div>
     </div>
