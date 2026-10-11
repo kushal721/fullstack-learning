@@ -1,5 +1,6 @@
-import type { Concept, Topic } from "@fsl/shared";
+import type { BuildStep, Concept, Topic } from "@fsl/shared";
 import { describe, expect, it } from "vitest";
+import { buildSteps as realSteps } from "../content/build-steps/index.js";
 import { concepts as realConcepts } from "../content/concepts/index.js";
 import { validateContent } from "./validation.js";
 
@@ -178,6 +179,84 @@ describe("validateContent", () => {
       ).toEqual([
         'File "a.js" is described more than once.',
         'File "a.js" links to unknown concept "ghost".',
+      ]);
+    });
+  });
+
+  describe("build steps", () => {
+    const step = (
+      id: string,
+      order: number,
+      overrides: Partial<BuildStep> = {},
+    ): BuildStep => ({
+      ...realSteps[0]!,
+      id,
+      slug: id,
+      order,
+      prerequisites: [],
+      filesCreated: [],
+      filesModified: [],
+      filesRemoved: [],
+      conceptIds: [],
+      nextStepId: undefined,
+      ...overrides,
+    });
+    const check = (buildSteps: BuildStep[], tree = topic("root", 0)) =>
+      validateContent({ tree, concepts: [], buildSteps });
+
+    it("accepts a consistent journey", () => {
+      expect(
+        check([
+          step("a", 1, { nextStepId: "b" }),
+          step("b", 2, { prerequisites: ["a"] }),
+        ]),
+      ).toEqual([]);
+    });
+
+    it("reports duplicate ids, slugs and orders", () => {
+      expect(check([step("a", 1), step("a", 1)])).toEqual([
+        'Build step id "a" is used more than once.',
+        'Build step slug "a" is used more than once.',
+        "Build steps must be ordered 1..2 with no gaps or repeats (found 1, 1).",
+      ]);
+    });
+
+    it("reports unknown files and concepts", () => {
+      expect(
+        check([
+          step("a", 1, {
+            filesCreated: ["frontend/ghost.js"],
+            filesRemoved: ["old.js"],
+            conceptIds: ["ghost"],
+          }),
+        ]),
+      ).toEqual([
+        'Build step "a" lists unknown file "frontend/ghost.js".',
+        'Build step "a" lists unknown file "old.js".',
+        'Build step "a" lists unknown concept "ghost".',
+      ]);
+    });
+
+    it("reports prerequisites and next steps that are unknown or out of order", () => {
+      expect(
+        check([
+          step("a", 1, { prerequisites: ["b"], nextStepId: "ghost" }),
+          step("b", 2, { prerequisites: ["ghost"], nextStepId: "a" }),
+        ]),
+      ).toEqual([
+        'Build step "a" requires "b", which does not come before it.',
+        'Build step "a" has unknown next step "ghost".',
+        'Build step "b" requires unknown step "ghost".',
+        'Build step "b" has next step "a", which does not come after it.',
+      ]);
+    });
+
+    it("reports topics that list unknown build steps", () => {
+      const tree = topic("root", 0, [
+        { ...topic("react", 1), buildStepIds: ["a", "ghost"] },
+      ]);
+      expect(check([step("a", 1)], tree)).toEqual([
+        'Topic "react" lists unknown build step "ghost".',
       ]);
     });
   });

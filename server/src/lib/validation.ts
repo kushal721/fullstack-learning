@@ -1,4 +1,5 @@
-import type { Concept, ProjectFile, Topic } from "@fsl/shared";
+import type { BuildStep, Concept, ProjectFile, Topic } from "@fsl/shared";
+import { buildSteps } from "../content/build-steps/index.js";
 import { concepts } from "../content/concepts/index.js";
 import { projectFiles } from "../content/files.js";
 import { learningTree } from "../content/learning-tree.js";
@@ -13,6 +14,7 @@ export type Content = {
   files?: ProjectFile[];
   /** Paths actually found on disk in example-project/. */
   diskFiles?: string[];
+  buildSteps?: BuildStep[];
 };
 
 function allTopics(topic: Topic): Topic[] {
@@ -65,7 +67,6 @@ function validateTopics(tree: Topic): string[] {
     }
   }
 
-  // buildStepIds are checked once build steps exist (M05.1.1).
   return errors;
 }
 
@@ -193,12 +194,99 @@ function validateFiles(
   return errors;
 }
 
+function validateBuildSteps(
+  steps: BuildStep[],
+  tree: Topic,
+  concepts: Concept[],
+  files: ProjectFile[],
+): string[] {
+  const stepIds = new Set(steps.map((step) => step.id));
+  const conceptIds = new Set(concepts.map((concept) => concept.id));
+  const fileIds = new Set(files.map((file) => file.id));
+  const errors = [
+    ...duplicates(
+      steps.map((step) => step.id),
+      (id) => `Build step id "${id}" is used more than once.`,
+    ),
+    ...duplicates(
+      steps.map((step) => step.slug),
+      (slug) => `Build step slug "${slug}" is used more than once.`,
+    ),
+  ];
+
+  const orders = steps.map((step) => step.order).sort((a, b) => a - b);
+  const expected = orders.map((_, index) => index + 1);
+  if (orders.join() !== expected.join()) {
+    errors.push(
+      `Build steps must be ordered 1..${orders.length} with no gaps or repeats (found ${orders.join(", ")}).`,
+    );
+  }
+
+  for (const step of steps) {
+    const name = `Build step "${step.id}"`;
+    if (!SLUG_PATTERN.test(step.slug)) {
+      errors.push(
+        `${name} has slug "${step.slug}"; use lowercase letters, numbers and single hyphens.`,
+      );
+    }
+    if (!step.title.trim() || !step.goal.trim() || !step.why.trim()) {
+      errors.push(`${name} needs a title, a goal and a why.`);
+    }
+    for (const fileId of [
+      ...step.filesCreated,
+      ...step.filesModified,
+      ...step.filesRemoved,
+    ]) {
+      if (!fileIds.has(fileId)) {
+        errors.push(`${name} lists unknown file "${fileId}".`);
+      }
+    }
+    for (const conceptId of step.conceptIds) {
+      if (!conceptIds.has(conceptId)) {
+        errors.push(`${name} lists unknown concept "${conceptId}".`);
+      }
+    }
+    for (const prerequisite of step.prerequisites) {
+      const required = steps.find((other) => other.id === prerequisite);
+      if (!required) {
+        errors.push(`${name} requires unknown step "${prerequisite}".`);
+      } else if (required.order >= step.order) {
+        errors.push(
+          `${name} requires "${prerequisite}", which does not come before it.`,
+        );
+      }
+    }
+    if (step.nextStepId !== undefined) {
+      const next = steps.find((other) => other.id === step.nextStepId);
+      if (!next) {
+        errors.push(`${name} has unknown next step "${step.nextStepId}".`);
+      } else if (next.order <= step.order) {
+        errors.push(
+          `${name} has next step "${step.nextStepId}", which does not come after it.`,
+        );
+      }
+    }
+  }
+
+  for (const topic of allTopics(tree)) {
+    for (const stepId of topic.buildStepIds) {
+      if (!stepIds.has(stepId)) {
+        errors.push(
+          `Topic "${topic.id}" lists unknown build step "${stepId}".`,
+        );
+      }
+    }
+  }
+  return errors;
+}
+
 export function validateContent(
   content: Content = {
     tree: learningTree,
     concepts,
     files: projectFiles,
     diskFiles: listExampleProjectFiles(),
+    buildSteps,
   },
 ): string[] {
   return [
@@ -208,6 +296,12 @@ export function validateContent(
       content.files ?? [],
       content.diskFiles ?? [],
       content.concepts,
+    ),
+    ...validateBuildSteps(
+      content.buildSteps ?? [],
+      content.tree,
+      content.concepts,
+      content.files ?? [],
     ),
   ];
 }
