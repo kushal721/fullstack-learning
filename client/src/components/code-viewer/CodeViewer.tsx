@@ -1,17 +1,15 @@
 import type { FileResponse } from "@fsl/shared";
-import { useEffect, useRef, useState } from "react";
-import { useApi } from "../../hooks/useApi.ts";
-import { apiPaths } from "../../services/api.ts";
+import { useEffect, useState } from "react";
 import { LayerBadge } from "../file-explorer/LayerBadge.tsx";
-import { ErrorState } from "../ui/ErrorState.tsx";
-import { Loading } from "../ui/Loading.tsx";
 import { CodeBlock } from "./CodeBlock.tsx";
 
 /** Files longer than this (the generated lockfiles) start shortened. */
 const PREVIEW_LINES = 400;
 
 type Props = {
-  path: string;
+  /** The loaded file (GET /api/files/<path>). */
+  file: FileResponse["file"];
+  source: string;
   /** Line to highlight and scroll to (from ?line=). */
   line: number | null;
   /** Called when a line number is clicked, to put it in the URL. */
@@ -22,31 +20,17 @@ type Props = {
  * Shows one example-project file with line numbers. Read-only on purpose:
  * learners read and trace this code, they don't edit it here.
  */
-export function CodeViewer({ path, line, onSelectLine }: Props) {
-  const { data, error, isLoading, reload } = useApi<FileResponse>(
-    apiPaths.file(path),
-  );
+export function CodeViewer({ file, source, line, onSelectLine }: Props) {
   const [showAll, setShowAll] = useState(false);
-  const containerRef = useRef<HTMLElement>(null);
 
-  // Bring the requested line into view, or on small screens (where the tree
-  // sits above) the start of the file, once the code is on the page.
+  // Bring the requested line into view once the code is on the page.
   useEffect(() => {
-    if (!data) return;
     if (line) {
       document
         .getElementById(`L${line}`)
         ?.scrollIntoView?.({ block: "center" });
-    } else if (window.matchMedia?.("(max-width: 767px)").matches) {
-      containerRef.current?.scrollIntoView?.({ block: "start" });
     }
-  }, [data, line]);
-
-  if (isLoading) return <Loading label="Loading the file…" />;
-  if (error) return <ErrorState message={error.message} onRetry={reload} />;
-  if (!data) return null;
-
-  const { file, source } = data;
+  }, [file.path, line]);
   const allLines = source.replace(/\n$/, "").split("\n");
   // Show everything if asked to, or if the wanted line is past the preview.
   const shortened =
@@ -59,9 +43,8 @@ export function CodeViewer({ path, line, onSelectLine }: Props) {
 
   return (
     <section
-      ref={containerRef}
       aria-label={`Code of ${file.path}`}
-      className="scroll-mt-4 overflow-hidden rounded-lg border border-border"
+      className="overflow-hidden rounded-lg border border-border"
     >
       <header className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-border bg-foreground/5 px-4 py-2 text-sm">
         <h2 className="min-w-0 break-all font-mono font-medium">{file.path}</h2>
@@ -79,7 +62,7 @@ export function CodeViewer({ path, line, onSelectLine }: Props) {
         renderLineNumber={(n) => (
           // Mouse shortcut to share a line; keyboard users can use ?line=.
           <a
-            href={`?file=${encodeURIComponent(path)}&line=${n}`}
+            href={`?file=${encodeURIComponent(file.path)}&line=${n}`}
             tabIndex={-1}
             onClick={(event) => {
               event.preventDefault();

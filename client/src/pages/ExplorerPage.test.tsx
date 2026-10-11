@@ -18,12 +18,20 @@ function fileBody(path: string) {
       path,
       layer: "frontend",
       language: "html",
-      purpose: "x",
-      whyItExists: "y",
-      conceptIds: [],
+      purpose: "The single HTML page.",
+      whyItExists: "Every website starts with an HTML document.",
+      conceptIds: ["html-document"],
     },
     source: `<!-- ${path} -->\n`,
-    concepts: [],
+    concepts: [
+      {
+        id: "html-document",
+        slug: "html-document",
+        title: "HTML document",
+        topicId: "html",
+        summary: "The page.",
+      },
+    ],
   };
 }
 
@@ -104,6 +112,20 @@ describe("ExplorerPage", () => {
     );
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Could not reach the server.",
+    );
+  });
+
+  it("shows why the file exists and links its concepts", async () => {
+    renderAt("/explorer?file=frontend/index.html");
+    const about = await screen.findByRole("complementary", {
+      name: "About this file",
+    });
+    expect(about).toHaveTextContent(
+      "Every website starts with an HTML document.",
+    );
+    expect(screen.getByRole("link", { name: "HTML document" })).toHaveAttribute(
+      "href",
+      "/concepts/html-document",
     );
   });
 });

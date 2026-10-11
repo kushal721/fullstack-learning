@@ -15,7 +15,7 @@ export function AppLayout() {
       <main
         id="main"
         tabIndex={-1}
-        className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 focus:outline-none"
+        className="mx-auto w-full max-w-7xl flex-1 px-4 py-10 focus:outline-none"
       >
         <Outlet />
       </main>
