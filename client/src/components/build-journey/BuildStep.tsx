@@ -2,6 +2,7 @@ import type { BuildStepResponse, FileTreeFolder } from "@fsl/shared";
 import { Link } from "react-router";
 import { ConceptSection } from "../concept-explorer/ConceptSection.tsx";
 import { PageHeader } from "../ui/PageHeader.tsx";
+import { NextStep } from "./NextStep.tsx";
 import { StepChanges } from "./StepChanges.tsx";
 import { StepDetails, StepIntro } from "./StepExplanation.tsx";
 
@@ -21,6 +22,8 @@ export function BuildStep({
   step,
   concepts,
   diff,
+  previous,
+  next,
   totalSteps,
   before,
   after,
@@ -51,6 +54,12 @@ export function BuildStep({
         />
       </ConceptSection>
       <StepDetails step={step} concepts={concepts} />
+      <NextStep
+        step={step}
+        concepts={concepts}
+        previous={previous}
+        next={next}
+      />
     </article>
   );
 }

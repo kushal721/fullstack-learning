@@ -23,6 +23,7 @@ const SECTIONS = [
   "Code",
   "Concepts introduced",
   "Common mistakes",
+  "Where you are now",
 ];
 
 const skeleton: BuildStep = {
@@ -177,10 +178,10 @@ describe("BuildStepPage", () => {
       "export function useNotes() {}",
       "const [notes, setNotes] = useState([]);",
     ]);
-    expect(screen.getByRole("link", { name: /useState/ })).toHaveAttribute(
-      "href",
-      "/concepts/react-usestate",
-    );
+    // Linked from "Concepts introduced" and again from the summary.
+    expect(
+      screen.getAllByRole("link", { name: /useState/ })[0],
+    ).toHaveAttribute("href", "/concepts/react-usestate");
     expect(screen.getByText("Changing state directly.")).toBeVisible();
 
     // What changed: diff list and BEFORE/AFTER trees with nested headings.
