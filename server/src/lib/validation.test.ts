@@ -251,6 +251,36 @@ describe("validateContent", () => {
       ]);
     });
 
+    it("reports files changed before they are created, or created twice", () => {
+      const steps = [
+        step("a", 1, { filesModified: ["a.js"] }),
+        step("b", 2, { filesCreated: ["a.js"] }),
+        step("c", 3, { filesCreated: ["a.js"] }),
+      ];
+      expect(
+        validateContent({
+          tree: topic("root", 0),
+          concepts: [],
+          files: [
+            {
+              id: "a.js",
+              path: "a.js",
+              layer: "frontend",
+              language: "js",
+              purpose: "Does a thing.",
+              whyItExists: "Because.",
+              conceptIds: [],
+            },
+          ],
+          diskFiles: ["a.js"],
+          buildSteps: steps,
+        }),
+      ).toEqual([
+        'Build step "a" changes "a.js" before any step creates it.',
+        'Build step "c" creates "a.js", which already exists.',
+      ]);
+    });
+
     it("reports topics that list unknown build steps", () => {
       const tree = topic("root", 0, [
         { ...topic("react", 1), buildStepIds: ["a", "ghost"] },

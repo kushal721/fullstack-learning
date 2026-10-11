@@ -268,6 +268,25 @@ function validateBuildSteps(
     }
   }
 
+  // Replay the journey: a file must exist before it is changed or removed,
+  // and cannot be created while it already exists.
+  const existing = new Set<string>();
+  for (const step of [...steps].sort((a, b) => a.order - b.order)) {
+    const name = `Build step "${step.id}"`;
+    for (const fileId of [...step.filesModified, ...step.filesRemoved]) {
+      if (fileIds.has(fileId) && !existing.has(fileId)) {
+        errors.push(`${name} changes "${fileId}" before any step creates it.`);
+      }
+    }
+    for (const fileId of step.filesRemoved) existing.delete(fileId);
+    for (const fileId of step.filesCreated) {
+      if (existing.has(fileId)) {
+        errors.push(`${name} creates "${fileId}", which already exists.`);
+      }
+      existing.add(fileId);
+    }
+  }
+
   for (const topic of allTopics(tree)) {
     for (const stepId of topic.buildStepIds) {
       if (!stepIds.has(stepId)) {
