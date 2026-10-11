@@ -1,7 +1,7 @@
 import type { FileTreeFile, FileTreeNode, FileTreeResponse } from "@fsl/shared";
 import { useSearchParams } from "react-router";
+import { CodeViewer } from "../components/code-viewer/CodeViewer.tsx";
 import { FileTree } from "../components/file-explorer/FileTree.tsx";
-import { LayerBadge } from "../components/file-explorer/LayerBadge.tsx";
 import { ErrorState } from "../components/ui/ErrorState.tsx";
 import { Loading } from "../components/ui/Loading.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
@@ -25,6 +25,8 @@ export default function ExplorerPage() {
   // file and a reload keeps it.
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedPath = searchParams.get("file");
+  const lineParam = Number(searchParams.get("line"));
+  const line = Number.isInteger(lineParam) && lineParam > 0 ? lineParam : null;
   const { data, error, isLoading, reload } = useApi<FileTreeResponse>(
     apiPaths.fileTree(),
   );
@@ -53,7 +55,7 @@ export default function ExplorerPage() {
               onSelect={(path) => setSearchParams({ file: path })}
             />
           </nav>
-          <section aria-live="polite" className="min-w-0">
+          <div className="min-w-0">
             {!selectedPath && (
               <p className="text-muted">
                 Choose a file to see what it does and why it exists.
@@ -65,17 +67,22 @@ export default function ExplorerPage() {
               </p>
             )}
             {selected && (
-              <div className="flex flex-col gap-2">
-                <h2 className="break-all font-mono text-lg">{selected.path}</h2>
-                <div>
-                  <LayerBadge layer={selected.layer} />
-                </div>
+              <div className="flex flex-col gap-3">
                 <p className="leading-7">
                   <RichText text={selected.purpose} />
                 </p>
+                <CodeViewer
+                  // A new file starts fresh (e.g. shortened again).
+                  key={selected.path}
+                  path={selected.path}
+                  line={line}
+                  onSelectLine={(n) =>
+                    setSearchParams({ file: selected.path, line: String(n) })
+                  }
+                />
               </div>
             )}
-          </section>
+          </div>
         </div>
       )}
     </>
