@@ -127,3 +127,45 @@ export type FileTreeFolder = {
 };
 
 export type FileTreeNode = FileTreeFolder | FileTreeFile;
+
+/**
+ * One step of the Build Journey (spec §6–7): an interactive lesson that
+ * builds part of the Notes App and answers what, why, how to create it,
+ * how to do it from scratch, what changed and what comes next (spec §3).
+ */
+export type BuildStep = {
+  id: string;
+  /** URL segment: /build/<slug>. */
+  slug: string;
+  /** Position in the journey, starting at 1. */
+  order: number;
+  title: string;
+  /** What are we doing? (one sentence) */
+  goal: string;
+  /** Why are we doing it? */
+  why: string;
+  /** What problem does this solve? */
+  problemSolved: string;
+  /** Build step ids that must come first. */
+  prerequisites: string[];
+  explanation: string[];
+  /** How do I create it? Exact commands, files and code, in order. */
+  howToCreate: Instruction[];
+  /** How do I do this in a brand-new project, without the platform? */
+  fromScratch: string[];
+  /** Example-project file ids this step adds, changes or deletes. */
+  filesCreated: string[];
+  filesModified: string[];
+  filesRemoved: string[];
+  /** Concepts introduced in this step. */
+  conceptIds: string[];
+  codeExamples: CodeExample[];
+  /** Connections this step creates (filled once relationship data exists). */
+  relationshipIds: string[];
+  /** "You are now able to …" */
+  enables: string;
+  commonMistakes: string[];
+  nextStepId?: string;
+  /** Why the next step comes next. */
+  nextWhy?: string;
+};
