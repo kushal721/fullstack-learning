@@ -11,8 +11,29 @@ function ShowLocation() {
   return <output data-testid="location">{location.search}</output>;
 }
 
+function fileBody(path: string) {
+  return {
+    file: {
+      id: path,
+      path,
+      layer: "frontend",
+      language: "html",
+      purpose: "x",
+      whyItExists: "y",
+      conceptIds: [],
+    },
+    source: `<!-- ${path} -->\n`,
+    concepts: [],
+  };
+}
+
 function renderAt(url: string) {
-  mockFetchRoutes({ "/api/files": { tree: fileTreeFixture } });
+  Element.prototype.scrollIntoView = () => {};
+  mockFetchRoutes({
+    "/api/files": { tree: fileTreeFixture },
+    "/api/files/frontend/index.html": fileBody("frontend/index.html"),
+    "/api/files/frontend/src/App.jsx": fileBody("frontend/src/App.jsx"),
+  });
   return render(
     <MemoryRouter initialEntries={[url]}>
       <Routes>
@@ -47,10 +68,13 @@ describe("ExplorerPage", () => {
     expect(screen.getByTestId("location")).toHaveTextContent(
       "?file=frontend%2Findex.html",
     );
-    expect(
-      screen.getByRole("heading", { name: "frontend/index.html" }),
-    ).toBeInTheDocument();
     expect(screen.getByText("The single HTML page.")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "frontend/index.html" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("<!-- frontend/index.html -->"),
+    ).toBeInTheDocument();
   });
 
   it("opens the file from the URL, as after a reload", async () => {

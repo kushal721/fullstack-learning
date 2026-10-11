@@ -1,5 +1,6 @@
 import type { CodeExample } from "@fsl/shared";
 import { Highlight } from "prism-react-renderer";
+import type { ReactNode } from "react";
 import { codeTheme } from "./code-theme.ts";
 import "./prism-languages.ts";
 
@@ -20,6 +21,10 @@ const PRISM_LANGUAGE: Record<CodeExample["language"], string> = {
 type Props = {
   example: Pick<CodeExample, "code" | "language" | "highlightLines">;
   showLineNumbers?: boolean;
+  /** Gives each line an id, so a URL or script can jump to it. */
+  lineId?: (lineNumber: number) => string;
+  /** Replaces the plain line number, e.g. with a link to that line. */
+  renderLineNumber?: (lineNumber: number) => ReactNode;
 };
 
 /**
@@ -29,7 +34,12 @@ type Props = {
  * prism-react-renderer turns the code into React elements, so no HTML string
  * is ever injected into the page.
  */
-export function CodeBlock({ example, showLineNumbers = false }: Props) {
+export function CodeBlock({
+  example,
+  showLineNumbers = false,
+  lineId,
+  renderLineNumber,
+}: Props) {
   const highlighted = new Set(example.highlightLines ?? []);
 
   return (
@@ -54,6 +64,7 @@ export function CodeBlock({ example, showLineNumbers = false }: Props) {
                 <div
                   key={index}
                   {...lineProps}
+                  id={lineId?.(lineNumber)}
                   data-line={lineNumber}
                   data-highlighted={isHighlighted || undefined}
                   // min-h-6: an empty line still takes one line of height (otherwise
@@ -69,7 +80,7 @@ export function CodeBlock({ example, showLineNumbers = false }: Props) {
                       aria-hidden="true"
                       className="w-10 shrink-0 select-none pr-3 text-right opacity-50"
                     >
-                      {lineNumber}
+                      {renderLineNumber?.(lineNumber) ?? lineNumber}
                     </span>
                   )}
                   <span className={showLineNumbers ? "" : "pl-4"}>
