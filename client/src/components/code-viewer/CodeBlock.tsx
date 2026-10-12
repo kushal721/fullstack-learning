@@ -25,6 +25,12 @@ type Props = {
   lineId?: (lineNumber: number) => string;
   /** Replaces the plain line number, e.g. with a link to that line. */
   renderLineNumber?: (lineNumber: number) => ReactNode;
+  /**
+   * Content for an extra column before the line numbers (e.g. buttons for
+   * the symbols defined on a line). Unlike the line numbers it is visible
+   * to screen readers, so it may contain controls.
+   */
+  renderMarker?: (lineNumber: number) => ReactNode;
 };
 
 /**
@@ -39,6 +45,7 @@ export function CodeBlock({
   showLineNumbers = false,
   lineId,
   renderLineNumber,
+  renderMarker,
 }: Props) {
   const highlighted = new Set(example.highlightLines ?? []);
 
@@ -75,6 +82,11 @@ export function CodeBlock({
                       : "border-transparent"
                   }`}
                 >
+                  {renderMarker && (
+                    <span className="flex w-6 shrink-0 items-center justify-center gap-0.5">
+                      {renderMarker(lineNumber)}
+                    </span>
+                  )}
                   {showLineNumbers && (
                     <span
                       aria-hidden="true"

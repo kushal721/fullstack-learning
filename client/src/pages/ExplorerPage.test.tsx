@@ -65,7 +65,14 @@ function renderAt(url: string) {
   mockFetchRoutes({
     "/api/files": { tree: fileTreeFixture },
     "/api/files/frontend/index.html": fileBody("frontend/index.html"),
-    "/api/files/frontend/src/App.jsx": fileBody("frontend/src/App.jsx"),
+    "/api/files/frontend/src/App.jsx": {
+      ...fileBody("frontend/src/App.jsx"),
+      // Long enough for the symbols on lines 10 and 27.
+      source: Array.from(
+        { length: 30 },
+        (_, i) => `const line${i + 1} = 1;`,
+      ).join("\n"),
+    },
     "/api/files/frontend/src/App.jsx/symbols": {
       file: {
         id: "frontend/src/App.jsx",
@@ -276,5 +283,28 @@ describe("ExplorerPage", () => {
     expect(
       await screen.findByText("<!-- frontend/index.html -->"),
     ).toBeInTheDocument();
+  });
+
+  it("marks symbols in the code; clicking one opens its connections", async () => {
+    renderAt("/explorer?file=frontend/src/App.jsx");
+    const marker = await screen.findByRole("button", {
+      name: "Show connections of function handleLogout",
+    });
+    expect(document.getElementById("L27")).toContainElement(marker);
+
+    await userEvent.click(marker);
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "?symbol=fn%3Aapp.handleLogout&file=frontend%2Fsrc%2FApp.jsx&line=27",
+    );
+    expect(
+      await screen.findByRole("heading", {
+        name: "Connections of fn:app.handleLogout",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", {
+        name: "Show connections of function handleLogout",
+      }),
+    ).toHaveAttribute("aria-pressed", "true");
   });
 });
