@@ -84,4 +84,10 @@ export const apiPaths = {
   buildStep: (slug: string) => `/build-steps/${encodeURIComponent(slug)}`,
   snapshot: (order: number) => `/project/snapshots/${order}`,
   diff: (from: number, to: number) => `/project/diff?from=${from}&to=${to}`,
+  // Symbol ids contain ":", spaces and "/", so they are encoded whole.
+  symbol: (id: string) => `/symbols/${encodeURIComponent(id)}`,
+  symbolGraph: (id: string, depth = 1) =>
+    `/symbols/${encodeURIComponent(id)}/graph?depth=${depth}`,
+  fileSymbols: (path: string) =>
+    `/files/${path.split("/").map(encodeURIComponent).join("/")}/symbols`,
 };
