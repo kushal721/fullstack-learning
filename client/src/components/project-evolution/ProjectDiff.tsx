@@ -14,6 +14,9 @@ type Props = {
   headingLevel?: 2 | 3;
   /** Heading of the change list (default "What changed in step N"). */
   title?: string;
+  /** Concepts and connections this step introduces, shown in the header. */
+  newConcepts?: number;
+  newConnections?: number;
 };
 
 const SYMBOL: Record<FileMarker, string> = {
@@ -37,6 +40,8 @@ export function ProjectDiff({
   onOpenFile,
   headingLevel = 2,
   title = `What changed in step ${step}`,
+  newConcepts,
+  newConnections,
 }: Props) {
   const Heading = headingLevel === 2 ? "h2" : "h3";
   const beforeMarkers: Record<string, FileMarker> = {};
@@ -63,6 +68,21 @@ export function ProjectDiff({
         <Heading id="changes-heading" className="text-lg font-semibold">
           {title}
         </Heading>
+        {(newConcepts !== undefined || newConnections !== undefined) && (
+          <p className="mt-1 flex flex-wrap gap-x-3 text-sm font-medium">
+            {newConcepts !== undefined && (
+              <span>
+                {newConcepts} new {newConcepts === 1 ? "concept" : "concepts"}
+              </span>
+            )}
+            {newConnections !== undefined && (
+              <span>
+                {newConnections} new{" "}
+                {newConnections === 1 ? "connection" : "connections"}
+              </span>
+            )}
+          </p>
+        )}
         {total === 0 ? (
           <p className="mt-1 text-muted">
             No files change in this step: it is about understanding, not code.

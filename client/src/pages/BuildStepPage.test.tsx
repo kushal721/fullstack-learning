@@ -20,6 +20,7 @@ const SECTIONS = [
   "How do I do this from scratch?",
   "What are we creating?",
   "What changed?",
+  "Connections created",
   "Code",
   "Concepts introduced",
   "Common mistakes",
@@ -112,6 +113,25 @@ function renderStep(step: BuildStep) {
       removed: [],
       modified: [],
     },
+    connections: [
+      {
+        id: "fn:handleSave->calls->fn:useNotes.addNote",
+        type: "calls",
+        explanation: "The new card appears straight away.",
+        source: {
+          id: "fn:handleSave",
+          kind: "function",
+          name: "handleSave",
+          fileId: "frontend/src/components/NoteForm.jsx",
+          line: 14,
+        },
+        target: {
+          id: "fn:useNotes.addNote",
+          kind: "function",
+          name: "addNote",
+        },
+      },
+    ],
   };
   mockFetchRoutes({
     "/api/build-steps": steps,
@@ -247,5 +267,32 @@ describe("BuildPage", () => {
     const nav = await screen.findByRole("navigation", { name: "Build steps" });
     expect(within(nav).getAllByRole("link")).toHaveLength(2);
     expect(within(nav).getByText("A page.")).toBeVisible();
+  });
+});
+
+describe("BuildStepPage connections", () => {
+  beforeEach(() => {
+    clearApiCache();
+    vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+  });
+
+  it("shows the connections the step creates and counts them in the diff", async () => {
+    renderStep(written);
+    await screen.findByRole("heading", { level: 1, name: "Add state" });
+    const section = screen.getByRole("heading", {
+      level: 2,
+      name: "Connections created",
+    }).parentElement!;
+    expect(section).toHaveTextContent(
+      "function handleSave→ calls →function addNote",
+    );
+    expect(
+      within(section).getByRole("link", { name: "function handleSave" }),
+    ).toHaveAttribute(
+      "href",
+      "/explorer?symbol=fn%3AhandleSave&file=frontend%2Fsrc%2Fcomponents%2FNoteForm.jsx&line=14",
+    );
+    expect(await screen.findByText("1 new concept")).toBeInTheDocument();
+    expect(screen.getByText("1 new connection")).toBeInTheDocument();
   });
 });

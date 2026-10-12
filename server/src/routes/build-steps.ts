@@ -1,4 +1,9 @@
-import type { BuildStepListResponse, BuildStepResponse } from "@fsl/shared";
+import type {
+  BuildStepListResponse,
+  BuildStepResponse,
+  StepConnection,
+} from "@fsl/shared";
+import { relationships } from "../content/relationships.js";
 import { Router } from "express";
 import {
   getAdjacentSteps,
@@ -8,6 +13,7 @@ import {
 } from "../lib/build-journey.js";
 import { getConcept, toConceptSummary } from "../lib/concepts.js";
 import { notFoundError, validationError } from "../lib/http-error.js";
+import { getSymbol, toSymbolSummary } from "../lib/project-graph.js";
 import { diffSnapshots } from "../lib/project-evolution.js";
 import { isSlug } from "../lib/slug.js";
 
@@ -44,6 +50,22 @@ buildStepsRouter.get("/:slug", (req, res) => {
     previous: previous && toBuildStepSummary(previous),
     next: next && toBuildStepSummary(next),
     diff: diffSnapshots(step.order - 1, step.order),
+    connections: step.relationshipIds.flatMap((id): StepConnection[] => {
+      // Validation guarantees the relationship and both ends exist.
+      const rel = relationships.find((r) => r.id === id);
+      const source = rel && getSymbol(rel.source);
+      const target = rel && getSymbol(rel.target);
+      if (!rel || !source || !target) return [];
+      return [
+        {
+          id: rel.id,
+          type: rel.type,
+          explanation: rel.explanation,
+          source: toSymbolSummary(source),
+          target: toSymbolSummary(target),
+        },
+      ];
+    }),
   };
   res.json(body);
 });

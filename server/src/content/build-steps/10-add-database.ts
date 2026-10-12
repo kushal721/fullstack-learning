@@ -178,7 +178,16 @@ export const addDatabaseStep: BuildStep = {
         "A foreign key: the database itself refuses a note whose user doesn't exist.",
     },
   ],
-  relationshipIds: [],
+  relationshipIds: [
+    "controller:notesController.createNote->calls->query:insertNote",
+    "query:insertNote->queries->table:notes",
+    "controller:notesController.listNotes->calls->query:selectNotes",
+    "controller:notesController.updateNote->calls->query:updateNote",
+    "controller:notesController.deleteNote->calls->query:deleteNote",
+    "query:selectNotes->queries->table:notes",
+    "query:updateNote->queries->table:notes",
+    "query:deleteNote->queries->table:notes",
+  ],
   enables: "Keep notes permanently in a real database that survives restarts.",
   commonMistakes: [
     "Building SQL with template strings, e.g. `` `WHERE id = ${id}` ``. Anything the user sends becomes part of the query: SQL injection. Use `$1` and pass values separately.",

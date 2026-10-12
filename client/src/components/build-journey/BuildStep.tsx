@@ -4,6 +4,7 @@ import { ConceptSection } from "../concept-explorer/ConceptSection.tsx";
 import { PageHeader } from "../ui/PageHeader.tsx";
 import { NextStep } from "./NextStep.tsx";
 import { StepChanges } from "./StepChanges.tsx";
+import { StepConnections } from "./StepConnections.tsx";
 import { StepDetails, StepIntro } from "./StepExplanation.tsx";
 
 type Props = BuildStepResponse & {
@@ -22,6 +23,7 @@ export function BuildStep({
   step,
   concepts,
   diff,
+  connections,
   previous,
   next,
   totalSteps,
@@ -51,7 +53,12 @@ export function BuildStep({
           before={before}
           after={after}
           error={snapshotError}
+          newConcepts={concepts.length}
+          newConnections={connections.length}
         />
+      </ConceptSection>
+      <ConceptSection id="connections" title="Connections created">
+        <StepConnections step={step} connections={connections} />
       </ConceptSection>
       <StepDetails step={step} concepts={concepts} />
       <NextStep

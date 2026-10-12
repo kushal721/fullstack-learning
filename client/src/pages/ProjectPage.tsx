@@ -1,5 +1,6 @@
 import type {
   BuildStepListResponse,
+  BuildStepResponse,
   DiffResponse,
   SnapshotResponse,
 } from "@fsl/shared";
@@ -47,6 +48,10 @@ export default function ProjectPage() {
   const openFile = (path: string) =>
     navigate(`/explorer?file=${encodeURIComponent(path)}`);
   const current = list?.find((s) => s.order === step);
+  // The step's lesson data, for the "new concepts / connections" counts.
+  const stepDetails = useApi<BuildStepResponse>(
+    current ? apiPaths.buildStep(current.slug) : null,
+  );
   const failed = [steps, after, before, diff].find((state) => state.error);
 
   return (
@@ -105,6 +110,8 @@ export default function ProjectPage() {
                   before={before.data.tree}
                   after={after.data.tree}
                   diff={diff.data}
+                  newConcepts={stepDetails.data?.concepts.length}
+                  newConnections={stepDetails.data?.connections.length}
                   onOpenFile={openFile}
                 />
               )}

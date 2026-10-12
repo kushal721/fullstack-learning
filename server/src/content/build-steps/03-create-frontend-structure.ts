@@ -73,7 +73,7 @@ export const createFrontendStructureStep: BuildStep = {
         "Import the component once at the top of the file, then use it like an HTML element.",
     },
   ],
-  relationshipIds: [],
+  relationshipIds: ["component:App->renders->component:Navbar"],
   enables:
     "Split the screen into components, each in its own file, and assemble them in App.",
   commonMistakes: [

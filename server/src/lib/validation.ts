@@ -216,6 +216,7 @@ function validateBuildSteps(
   tree: Topic,
   concepts: Concept[],
   files: ProjectFile[],
+  relationships: Relationship[],
 ): string[] {
   const stepIds = new Set(steps.map((step) => step.id));
   const conceptIds = new Set(concepts.map((concept) => concept.id));
@@ -301,6 +302,39 @@ function validateBuildSteps(
         errors.push(`${name} creates "${fileId}", which already exists.`);
       }
       existing.add(fileId);
+    }
+  }
+
+  // Every code connection (not file imports) is created by exactly one step.
+  if (relationships.length > 0 && steps.length > 0) {
+    const byId = new Map(relationships.map((rel) => [rel.id, rel]));
+    const claimed = new Map<string, string>();
+    for (const step of steps) {
+      for (const relId of step.relationshipIds) {
+        const rel = byId.get(relId);
+        if (!rel) {
+          errors.push(
+            `Build step "${step.id}" lists unknown relationship "${relId}".`,
+          );
+        } else if (rel.type === "imports") {
+          errors.push(
+            `Build step "${step.id}" lists file import "${relId}"; imports show in the file changes instead.`,
+          );
+        } else if (claimed.has(relId)) {
+          errors.push(
+            `Relationship "${relId}" is created by both "${claimed.get(relId)}" and "${step.id}".`,
+          );
+        } else {
+          claimed.set(relId, step.id);
+        }
+      }
+    }
+    for (const rel of relationships) {
+      if (rel.type !== "imports" && !claimed.has(rel.id)) {
+        errors.push(
+          `Relationship "${rel.id}" isn't created by any build step.`,
+        );
+      }
     }
   }
 
@@ -495,6 +529,7 @@ export function validateContent(
       content.tree,
       content.concepts,
       content.files ?? [],
+      content.relationships ?? [],
     ),
     ...(content.files
       ? validateConceptLinks(
