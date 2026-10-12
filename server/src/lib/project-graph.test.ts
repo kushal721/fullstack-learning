@@ -1,5 +1,7 @@
 import type { CodeSymbol, Relationship, RelationshipType } from "@fsl/shared";
 import { describe, expect, it } from "vitest";
+import { relationships } from "../content/relationships.js";
+import { symbols } from "../content/symbols.js";
 import {
   calledBy,
   calls,
@@ -115,5 +117,64 @@ describe("project graph", () => {
     expect(where?.line).toBeGreaterThan(0);
     // An external symbol lives outside the project.
     expect(definedIn("external:fetch")).toBeUndefined();
+  });
+
+  describe("the Notes App's request chains", () => {
+    // Follow the data: an event leads to its handler, a request to the route
+    // that receives it; everything else in the direction it points.
+    function reachable(from: string): Set<string> {
+      const next = (id: string) =>
+        relationships.flatMap((r) => {
+          if (r.type === "handles" || r.type === "receives") {
+            return r.target === id ? [r.source] : [];
+          }
+          if (r.type === "returns" || r.type === "imports") return [];
+          return r.source === id ? [r.target] : [];
+        });
+      const seen = new Set([from]);
+      const queue = [from];
+      while (queue.length) {
+        for (const id of next(queue.shift()!)) {
+          if (!seen.has(id)) {
+            seen.add(id);
+            queue.push(id);
+          }
+        }
+      }
+      return seen;
+    }
+
+    it.each([
+      ["event:noteForm.submit", "table:notes"],
+      ["event:noteCard.submit", "table:notes"],
+      ["event:noteCard.deleteClick", "table:notes"],
+      ["event:login.submit", "table:users"],
+      ["event:register.submit", "table:users"],
+      ["event:navbar.logoutClick", "controller:authController.logout"],
+    ])("traces %s to %s", (event, end) => {
+      expect(reachable(event)).toContain(end);
+    });
+
+    it("sends every request with fetch, to one route, answered by one controller", () => {
+      const requests = symbols.filter((s) => s.kind === "http-request");
+      expect(requests.length).toBeGreaterThanOrEqual(8);
+      for (const request of requests) {
+        const into = (type: string) =>
+          relationships.filter(
+            (r) => r.type === type && r.target === request.id,
+          );
+        expect(
+          into("sends").map((r) => r.source),
+          request.id,
+        ).toEqual(["external:fetch"]);
+        expect(into("receives"), request.id).toHaveLength(1);
+        expect(into("returns"), request.id).toHaveLength(1);
+        const route = into("receives")[0]!.source;
+        expect(
+          calls(route).map((s) => s.kind),
+          route,
+        ).toEqual(["controller"]);
+      }
+    });
   });
 });
