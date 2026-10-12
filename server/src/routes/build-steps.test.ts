@@ -57,6 +57,31 @@ describe("GET /api/build-steps/:slug", () => {
     expect(last.body.next).toBeUndefined();
   });
 
+  it("lists the connections a step creates, with both ends", async () => {
+    const res = await request(app).get(
+      "/api/build-steps/add-api-communication",
+    );
+    const body = res.body as BuildStepResponse;
+    expect(body.connections).toHaveLength(19);
+    expect(body.connections).toContainEqual({
+      id: "fn:handleSave->calls->fn:notesApi.createNote",
+      type: "calls",
+      explanation: expect.any(String),
+      source: expect.objectContaining({
+        id: "fn:handleSave",
+        line: expect.any(Number),
+      }),
+      target: expect.objectContaining({
+        id: "fn:notesApi.createNote",
+        kind: "function",
+      }),
+    });
+    const first = await request(app).get(
+      "/api/build-steps/understand-the-application",
+    );
+    expect(first.body.connections).toEqual([]);
+  });
+
   it("returns 404 for an unknown step", async () => {
     const res = await request(app).get("/api/build-steps/cooking");
     expect(res.status).toBe(404);

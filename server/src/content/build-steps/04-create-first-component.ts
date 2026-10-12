@@ -94,7 +94,7 @@ export const createFirstComponentStep: BuildStep = {
         "`variant` picks the colour, `type` and `onClick` pass straight through to the real `<button>`, and *Delete* arrives as `children`.",
     },
   ],
-  relationshipIds: [],
+  relationshipIds: ["component:NoteCard->renders->component:Button"],
   enables:
     "Show a note on the screen with a component that receives the note as props and reports clicks back to its parent.",
   commonMistakes: [

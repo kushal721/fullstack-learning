@@ -76,7 +76,10 @@ export const createPageStep: BuildStep = {
         'One NoteCard per note. Without `key`, React warns in the console: "Each child in a list should have a unique key prop".',
     },
   ],
-  relationshipIds: [],
+  relationshipIds: [
+    "component:App->renders->component:Dashboard",
+    "component:Dashboard->renders->component:NoteCard",
+  ],
   enables:
     "Show a whole page of notes from an array, laid out in a responsive grid.",
   commonMistakes: [

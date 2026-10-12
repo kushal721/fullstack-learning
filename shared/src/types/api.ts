@@ -133,6 +133,17 @@ export type BuildStepResponse = {
   next?: BuildStepSummary;
   /** What this step changes in the project (previous step → this step). */
   diff: SnapshotDiff;
+  /** Connections between pieces of code this step creates. */
+  connections: StepConnection[];
+};
+
+/** A relationship a build step creates, with both ends resolved. */
+export type StepConnection = {
+  id: string;
+  type: Relationship["type"];
+  explanation: string;
+  source: SymbolSummary;
+  target: SymbolSummary;
 };
 
 /** GET /api/project/snapshots/:order — the project after a step (0 = empty). */

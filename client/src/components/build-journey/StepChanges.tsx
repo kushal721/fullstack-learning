@@ -10,10 +10,20 @@ type Props = {
   before?: FileTreeFolder;
   after?: FileTreeFolder;
   error?: { message: string; retry: () => void } | null;
+  newConcepts?: number;
+  newConnections?: number;
 };
 
 /** "What changed?": the project before and after this step. */
-export function StepChanges({ order, diff, before, after, error }: Props) {
+export function StepChanges({
+  order,
+  diff,
+  before,
+  after,
+  error,
+  newConcepts,
+  newConnections,
+}: Props) {
   const navigate = useNavigate();
   if (error)
     return <ErrorState message={error.message} onRetry={error.retry} />;
@@ -26,6 +36,8 @@ export function StepChanges({ order, diff, before, after, error }: Props) {
       diff={diff}
       headingLevel={3}
       title="Files changed in this step"
+      newConcepts={newConcepts}
+      newConnections={newConnections}
       onOpenFile={(path) =>
         navigate(`/explorer?file=${encodeURIComponent(path)}`)
       }

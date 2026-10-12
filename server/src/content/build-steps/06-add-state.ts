@@ -123,7 +123,19 @@ export const addStateStep: BuildStep = {
         "A controlled input: React state is the single source of truth for what the field shows.",
     },
   ],
-  relationshipIds: [],
+  relationshipIds: [
+    "fn:handleSave->handles->event:noteForm.submit",
+    "fn:useNotes.removeNote->handles->event:noteCard.deleteClick",
+    "component:Dashboard->renders->component:NoteForm",
+    "component:NoteForm->renders->component:Button",
+    "component:NoteForm->renders->component:Input",
+    "component:Dashboard->uses->hook:useNotes",
+    "hook:useNotes->uses->external:useState",
+    "hook:useNotes->returns->fn:useNotes.addNote",
+    "hook:useNotes->returns->fn:useNotes.removeNote",
+    "fn:handleSave->calls->fn:useNotes.addNote",
+    "component:NoteForm->uses->external:useState",
+  ],
   enables:
     "Add and delete notes in the browser and see the list update immediately.",
   commonMistakes: [

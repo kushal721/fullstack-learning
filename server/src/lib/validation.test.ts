@@ -438,6 +438,42 @@ describe("validateContent", () => {
       ]);
     });
 
+    it("reports connections that are unknown, imports, created twice or by no step", () => {
+      const rel = (
+        id: string,
+        type: Relationship["type"] = "calls",
+      ): Relationship => {
+        const [source, , target] = id.split("->") as [string, string, string];
+        return { id, source, target, type, explanation: "x" };
+      };
+      expect(
+        validateContent({
+          tree: topic("root", 0),
+          concepts: [],
+          buildSteps: [
+            step("a", 1, {
+              relationshipIds: [
+                "fn:a->calls->fn:b",
+                "ghost",
+                "f.js->imports->g.js",
+              ],
+            }),
+            step("b", 2, { relationshipIds: ["fn:a->calls->fn:b"] }),
+          ],
+          relationships: [
+            rel("fn:a->calls->fn:b"),
+            rel("fn:b->calls->fn:c"),
+            rel("f.js->imports->g.js", "imports"),
+          ],
+        }).filter((e) => /build step|created by/i.test(e)),
+      ).toEqual([
+        'Build step "a" lists unknown relationship "ghost".',
+        'Build step "a" lists file import "f.js->imports->g.js"; imports show in the file changes instead.',
+        'Relationship "fn:a->calls->fn:b" is created by both "a" and "b".',
+        'Relationship "fn:b->calls->fn:c" isn\'t created by any build step.',
+      ]);
+    });
+
     it("reports topics that list unknown build steps", () => {
       const tree = topic("root", 0, [
         { ...topic("react", 1), buildStepIds: ["a", "ghost"] },
