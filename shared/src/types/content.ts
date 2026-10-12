@@ -306,3 +306,14 @@ export type Flow = {
   steps: FlowStep[];
   http?: HttpExchange;
 };
+
+/** Why one layer of the app exists, for the "How everything connects" topic. */
+export type LayerOverview = {
+  layer: FlowLayer;
+  title: string;
+  /** Why this layer exists, in a few short paragraphs. */
+  why: string[];
+  conceptIds: string[];
+  buildStepIds: string[];
+  fileIds: string[];
+};

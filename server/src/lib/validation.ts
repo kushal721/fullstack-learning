@@ -4,6 +4,7 @@ import type {
   Concept,
   Flow,
   HttpExchange,
+  LayerOverview,
   ProjectFile,
   Relationship,
   SymbolKind,
@@ -17,6 +18,7 @@ import { concepts } from "../content/concepts/index.js";
 import { projectFiles } from "../content/files.js";
 import { httpExchanges } from "../content/flows/http-exchanges.js";
 import { flows } from "../content/flows/index.js";
+import { layerOverviews } from "../content/how-everything-connects.js";
 import { learningTree } from "../content/learning-tree.js";
 import { relationships } from "../content/relationships.js";
 import { symbols } from "../content/symbols.js";
@@ -39,6 +41,7 @@ export type Content = {
   flows?: Flow[];
   /** HTTP exchanges keyed by their http-request symbol id. */
   httpExchanges?: Record<string, HttpExchange>;
+  layerOverviews?: LayerOverview[];
 };
 
 function allTopics(topic: Topic): Topic[] {
@@ -598,6 +601,42 @@ function validateHttpExchanges(
   return errors;
 }
 
+function validateLayerOverviews(
+  layers: LayerOverview[],
+  concepts: Concept[],
+  steps: BuildStep[],
+  files: ProjectFile[],
+): string[] {
+  const errors = duplicates(
+    layers.map((layer) => layer.layer),
+    (layer) => `Layer "${layer}" is explained more than once.`,
+  );
+  const known = {
+    concept: new Set(concepts.map((c) => c.id)),
+    "build step": new Set(steps.map((s) => s.id)),
+    file: new Set(files.map((f) => f.id)),
+  };
+  for (const layer of layers) {
+    const name = `Layer overview "${layer.layer}"`;
+    if (!layer.title.trim() || layer.why.length === 0) {
+      errors.push(`${name} needs a title and why it exists.`);
+    }
+    const refs: [keyof typeof known, string[]][] = [
+      ["concept", layer.conceptIds],
+      ["build step", layer.buildStepIds],
+      ["file", layer.fileIds],
+    ];
+    for (const [kind, ids] of refs) {
+      if (ids.length === 0) errors.push(`${name} links no ${kind}.`);
+      for (const id of ids) {
+        if (!known[kind].has(id))
+          errors.push(`${name} links unknown ${kind} "${id}".`);
+      }
+    }
+  }
+  return errors;
+}
+
 export function validateContent(
   content: Content = {
     tree: learningTree,
@@ -611,6 +650,7 @@ export function validateContent(
     relationships,
     flows,
     httpExchanges,
+    layerOverviews,
   },
 ): string[] {
   return [
@@ -653,6 +693,14 @@ export function validateContent(
           content.httpExchanges,
           content.symbols ?? [],
           content.flows ?? [],
+        )
+      : []),
+    ...(content.layerOverviews
+      ? validateLayerOverviews(
+          content.layerOverviews,
+          content.concepts,
+          content.buildSteps ?? [],
+          content.files ?? [],
         )
       : []),
   ];

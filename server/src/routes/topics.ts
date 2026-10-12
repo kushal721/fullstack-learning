@@ -1,6 +1,13 @@
-import type { TopicResponse, TopicTreeResponse } from "@fsl/shared";
+import type { LayerView, TopicResponse, TopicTreeResponse } from "@fsl/shared";
+import { layerOverviews } from "../content/how-everything-connects.js";
 import { Router } from "express";
-import { getStepsForTopic, toBuildStepSummary } from "../lib/build-journey.js";
+import {
+  getStep,
+  getStepsForTopic,
+  toBuildStepSummary,
+} from "../lib/build-journey.js";
+import { getFile } from "../lib/project-files.js";
+import { toFileSummary } from "../lib/project-graph.js";
 import { getConcept, toConceptSummary } from "../lib/concepts.js";
 import { notFoundError, validationError } from "../lib/http-error.js";
 import {
@@ -46,6 +53,29 @@ topicsRouter.get("/:slug", (req, res) => {
       .filter((concept) => concept !== undefined)
       .map(toConceptSummary),
     buildSteps: getStepsForTopic(topic).map(toBuildStepSummary),
+    ...(topic.id === "how-everything-connects" ? { layers: layerViews() } : {}),
   };
   res.json(body);
 });
+
+// The five layers of "How everything connects", with links resolved.
+// Validation guarantees every id exists.
+function layerViews(): LayerView[] {
+  return layerOverviews.map((layer) => ({
+    layer: layer.layer,
+    title: layer.title,
+    why: layer.why,
+    concepts: layer.conceptIds
+      .map((id) => getConcept(id))
+      .filter((c) => c !== undefined)
+      .map(toConceptSummary),
+    buildSteps: layer.buildStepIds
+      .map((id) => getStep(id))
+      .filter((s) => s !== undefined)
+      .map(toBuildStepSummary),
+    files: layer.fileIds
+      .map((id) => getFile(id))
+      .filter((f) => f !== undefined)
+      .map((f) => toFileSummary(f)),
+  }));
+}
