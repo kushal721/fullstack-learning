@@ -1,8 +1,8 @@
 import type { Flow } from "@fsl/shared";
 
 // Creating a note, from the Save click to the database and back. The
-// frontend steps are from M07.1.2 and the backend steps from M07.1.3; the
-// database and response steps follow in M07.1.4–M07.1.5 and the HTTP details in M07.1.6.
+// frontend, backend and database steps are from M07.1.2–M07.1.4; the
+// response steps follow in M07.1.5 and the HTTP details in M07.1.6.
 export const createNoteFlow: Flow = {
   id: "create-note",
   title: "Create a note",
@@ -208,6 +208,54 @@ export const createNoteFlow: Flow = {
         language: "js",
         code: 'validateNote({ title: "Shopping", content: "Milk, bread" }); // → undefined: carry on\n\nvalidateNote({ title: "" }); // → "Title is required"\n// the controller answers:\nres.status(400).json({ error: "Title is required" });',
         fileName: "backend/src/validation/noteValidation.js",
+      },
+    },
+    // Database: the INSERT, the stored row and what PostgreSQL returns.
+    {
+      id: "insert-query",
+      symbolId: "query:insertNote",
+      layer: "backend",
+      title: "The controller runs a parameterized INSERT",
+      explanation:
+        "The controller sends one SQL statement to PostgreSQL through the shared connection pool. The SQL text only has placeholders (`$1`, `$2`, `$3`); the values travel separately in an array, so a title like `'); DROP TABLE notes; --` is stored as plain text and can never change the query.",
+      relationshipId:
+        "controller:notesController.createNote->calls->query:insertNote",
+      dataShape: {
+        language: "js",
+        code: 'await pool.query(\n  `INSERT INTO notes (user_id, title, content)\n   VALUES ($1, $2, $3)\n   RETURNING id, title, content, created_at, updated_at`,\n  [1, "Shopping", "Milk, bread"], // req.user.id, title.trim(), content\n);',
+        fileName: "backend/src/controllers/notesController.js",
+        caption:
+          '$1 is filled with 1, $2 with "Shopping", $3 with "Milk, bread".',
+      },
+    },
+    {
+      id: "store-row",
+      symbolId: "table:notes",
+      layer: "database",
+      title: "PostgreSQL stores a new row",
+      explanation:
+        "PostgreSQL adds one row to the `notes` table and fills in what the app didn't send: the next `id` and the times (`DEFAULT now()`). Its `user_id` must be the `id` of an existing user (a foreign key), so the database itself refuses a note that belongs to nobody. One statement is its own transaction: the row is saved completely or not at all.",
+      relationshipId: "query:insertNote->queries->table:notes",
+      dataShape: {
+        language: "sql",
+        code: "-- users                          notes\n-- id | email                     id | user_id | title    | content\n-- 1  | demo@example.com   <──    7  | 1       | Shopping | Milk, bread\n\nuser_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE",
+        fileName: "database/schema.sql",
+        caption:
+          "One user has many notes: each note's user_id points at its user's id.",
+      },
+    },
+    {
+      id: "returning",
+      symbolId: "query:insertNote",
+      layer: "database",
+      title: "RETURNING sends the saved row back",
+      explanation:
+        "Because the INSERT ends with `RETURNING`, PostgreSQL answers with the row it just wrote, including the `id` and times it created. The `pg` library turns it into a JavaScript object in `result.rows`, so the controller can answer without a second query.",
+      relationshipId: "query:insertNote->queries->table:notes",
+      dataShape: {
+        language: "js",
+        code: 'result.rows[0] = {\n  id: 7,\n  title: "Shopping",\n  content: "Milk, bread",\n  created_at: 2026-10-12T09:30:00.000Z, // a Date\n  updated_at: 2026-10-12T09:30:00.000Z,\n};',
+        caption: "user_id isn't returned: the frontend doesn't need it.",
       },
     },
   ],

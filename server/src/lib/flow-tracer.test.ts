@@ -127,4 +127,20 @@ describe("flow tracer", () => {
       'res.status(400).json({ error: "Title is required" })',
     );
   });
+
+  it("continues create-note into the database with SQL, values and the stored row", () => {
+    const steps = getFlow("create-note")!.steps;
+    expect(steps.slice(14, 17).map((s) => `${s.layer} ${s.symbolId}`)).toEqual([
+      "backend query:insertNote",
+      "database table:notes",
+      "database query:insertNote",
+    ]);
+    const [query, row, returned] = steps
+      .slice(14, 17)
+      .map((s) => s.dataShape!.code);
+    expect(query).toContain("VALUES ($1, $2, $3)");
+    expect(query).toContain('[1, "Shopping", "Milk, bread"]');
+    expect(row).toContain("REFERENCES users (id)");
+    expect(returned).toContain("id: 7");
+  });
 });
