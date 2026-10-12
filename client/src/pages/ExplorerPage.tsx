@@ -7,6 +7,10 @@ import type {
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
 import { CodeViewer } from "../components/code-viewer/CodeViewer.tsx";
+import {
+  ConnectionsPanel,
+  FileSymbolList,
+} from "../components/connection-graph/ConnectionsPanel.tsx";
 import { FileMetadata } from "../components/file-explorer/FileMetadata.tsx";
 import { FileTree } from "../components/file-explorer/FileTree.tsx";
 import { ErrorState } from "../components/ui/ErrorState.tsx";
@@ -31,6 +35,8 @@ export default function ExplorerPage() {
   // file and a reload keeps it.
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedPath = searchParams.get("file");
+  // ?symbol=fn:handleSave shows that symbol's connections.
+  const symbolId = searchParams.get("symbol");
   const lineParam = Number(searchParams.get("line"));
   const line = Number.isInteger(lineParam) && lineParam > 0 ? lineParam : null;
   const { data, error, isLoading, reload } = useApi<FileTreeResponse>(
@@ -79,12 +85,24 @@ export default function ExplorerPage() {
               onSelect={(path) => setSearchParams({ file: path })}
             />
           </nav>
-          <div ref={detailsRef} className="min-w-0 scroll-mt-4">
-            {!selectedPath && (
+          <div
+            ref={detailsRef}
+            className="flex min-w-0 scroll-mt-4 flex-col gap-6"
+          >
+            {symbolId && (
+              <ConnectionsPanel
+                // A new symbol starts with a fresh graph.
+                key={symbolId}
+                symbolId={symbolId}
+                file={selected ? selected.path : null}
+              />
+            )}
+            {!selectedPath && !symbolId && (
               <p className="text-muted">
                 Choose a file to see what it does and why it exists.
               </p>
             )}
+            {selected && !symbolId && <FileSymbolList path={selected.path} />}
             {selectedPath && !selected && (
               <p role="alert">
                 There is no file &ldquo;{selectedPath}&rdquo; in the Notes App.
