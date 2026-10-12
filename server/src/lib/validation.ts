@@ -2,6 +2,7 @@ import type {
   BuildStep,
   CodeSymbol,
   Concept,
+  Flow,
   ProjectFile,
   Relationship,
   SymbolKind,
@@ -13,6 +14,7 @@ import { config } from "../config.js";
 import { buildSteps } from "../content/build-steps/index.js";
 import { concepts } from "../content/concepts/index.js";
 import { projectFiles } from "../content/files.js";
+import { flows } from "../content/flows/index.js";
 import { learningTree } from "../content/learning-tree.js";
 import { relationships } from "../content/relationships.js";
 import { symbols } from "../content/symbols.js";
@@ -32,6 +34,7 @@ export type Content = {
   readSource?: (fileId: string) => string | undefined;
   symbols?: CodeSymbol[];
   relationships?: Relationship[];
+  flows?: Flow[];
 };
 
 function allTopics(topic: Topic): Topic[] {
@@ -503,6 +506,54 @@ function validateGraph(
   return errors;
 }
 
+function validateFlows(
+  flows: Flow[],
+  symbols: CodeSymbol[],
+  relationships: Relationship[],
+): string[] {
+  const symbolIds = new Set(symbols.map((symbol) => symbol.id));
+  const relationshipIds = new Set(relationships.map((rel) => rel.id));
+  const errors = duplicates(
+    flows.map((flow) => flow.id),
+    (id) => `Flow id "${id}" is used more than once.`,
+  );
+  for (const flow of flows) {
+    const name = `Flow "${flow.id}"`;
+    if (!SLUG_PATTERN.test(flow.id)) {
+      errors.push(
+        `${name} needs an id of lowercase letters, numbers and single hyphens.`,
+      );
+    }
+    if (!flow.title.trim() || !flow.summary.trim()) {
+      errors.push(`${name} needs a title and a summary.`);
+    }
+    errors.push(
+      ...duplicates(
+        flow.steps.map((step) => step.id),
+        (id) => `${name} has step id "${id}" more than once.`,
+      ),
+    );
+    for (const step of flow.steps) {
+      const where = `${name} step "${step.id}"`;
+      if (!symbolIds.has(step.symbolId)) {
+        errors.push(`${where} is at unknown symbol "${step.symbolId}".`);
+      }
+      if (
+        step.relationshipId !== undefined &&
+        !relationshipIds.has(step.relationshipId)
+      ) {
+        errors.push(
+          `${where} follows unknown relationship "${step.relationshipId}".`,
+        );
+      }
+      if (!step.title.trim() || !step.explanation.trim()) {
+        errors.push(`${where} needs a title and an explanation.`);
+      }
+    }
+  }
+  return errors;
+}
+
 export function validateContent(
   content: Content = {
     tree: learningTree,
@@ -514,6 +565,7 @@ export function validateContent(
       readFileSync(path.join(config.exampleProjectDir, fileId), "utf8"),
     symbols,
     relationships,
+    flows,
   },
 ): string[] {
   return [
@@ -545,6 +597,11 @@ export function validateContent(
       content.concepts,
       content.files ?? [],
       content.readSource ?? (() => undefined),
+    ),
+    ...validateFlows(
+      content.flows ?? [],
+      content.symbols ?? [],
+      content.relationships ?? [],
     ),
   ];
 }

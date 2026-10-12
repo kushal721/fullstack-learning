@@ -254,3 +254,51 @@ export type Relationship = {
   /** One or two sentences of cause and effect. */
   explanation: string;
 };
+
+/** Where a flow step happens. */
+export type FlowLayer =
+  "user" | "frontend" | "network" | "backend" | "database";
+
+/**
+ * One step of a request or response flow: what happens at one symbol, why,
+ * and what the data looks like there (spec §11, §14).
+ */
+export type FlowStep = {
+  /** Unique within its flow, e.g. "submit". */
+  id: string;
+  symbolId: string;
+  layer: FlowLayer;
+  title: string;
+  explanation: string;
+  /** The data at this point, e.g. the React state or the JSON body. */
+  dataShape?: CodeExample;
+  /** The relationship this step follows from the previous one. */
+  relationshipId?: string;
+};
+
+/** One HTTP request and its answer, as it travels over the network. */
+export type HttpExchange = {
+  method: string;
+  path: string;
+  purpose: string;
+  headers: Record<string, string>;
+  body?: string;
+  status: number;
+  response: string;
+  errorCases: { status: number; when: string; body: string }[];
+};
+
+/**
+ * A path through the Notes App, step by step: a request from the click to
+ * the database, the response back, or a security flow.
+ */
+export type Flow = {
+  /** URL segment: /flow/<id>. */
+  id: string;
+  title: string;
+  summary: string;
+  group: "request" | "security";
+  direction: "request" | "response" | "round-trip";
+  steps: FlowStep[];
+  http?: HttpExchange;
+};

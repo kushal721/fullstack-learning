@@ -340,6 +340,61 @@ describe("validateContent", () => {
     });
   });
 
+  describe("flows", () => {
+    it("reports unknown symbols and relationships, bad ids and duplicates", () => {
+      const sym = {
+        id: "fn:a",
+        kind: "function" as const,
+        name: "a",
+        summary: "x",
+        dataHandled: "x",
+        conceptIds: [],
+      };
+      const steps = [
+        {
+          id: "one",
+          symbolId: "fn:a",
+          layer: "frontend" as const,
+          title: "One",
+          explanation: "x",
+        },
+        {
+          id: "one",
+          symbolId: "fn:ghost",
+          layer: "frontend" as const,
+          title: "Two",
+          explanation: "x",
+          relationshipId: "fn:a->calls->fn:ghost",
+        },
+      ];
+      const flow = (id: string) => ({
+        id,
+        title: "T",
+        summary: "S",
+        group: "request" as const,
+        direction: "request" as const,
+        steps,
+      });
+      expect(
+        validateContent({
+          tree: topic("root", 0),
+          concepts: [],
+          symbols: [sym],
+          relationships: [],
+          flows: [flow("save"), flow("Bad Id")],
+        }).filter((e) => e.startsWith("Flow")),
+      ).toEqual([
+        'Flow "save" has step id "one" more than once.',
+        'Flow "save" step "one" is at unknown symbol "fn:ghost".',
+        'Flow "save" step "one" follows unknown relationship "fn:a->calls->fn:ghost".',
+        'Flow "Bad Id" needs an id of lowercase letters, numbers and single hyphens.',
+        'Flow "Bad Id" has step id "one" more than once.',
+        'Flow "Bad Id" step "one" is at unknown symbol "fn:ghost".',
+        'Flow "Bad Id" step "one" follows unknown relationship "fn:a->calls->fn:ghost".',
+      ]);
+    });
+  });
+
   describe("build steps", () => {
     const step = (
       id: string,
