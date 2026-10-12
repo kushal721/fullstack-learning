@@ -1,6 +1,7 @@
 import type { CodeSymbol, FlowStep } from "@fsl/shared";
 import {
   Background,
+  Controls,
   ReactFlow,
   ReactFlowProvider,
   useReactFlow,
@@ -21,6 +22,11 @@ type Props = {
   current: number;
   onSelect?: (index: number) => void;
   reducedMotion?: boolean;
+  /**
+   * Show the whole flow at once with no current step (e.g. on a topic
+   * page). Steps can't be selected.
+   */
+  readOnly?: boolean;
 };
 
 function Canvas({
@@ -29,6 +35,7 @@ function Canvas({
   current,
   onSelect,
   reducedMotion = false,
+  readOnly = false,
 }: Props) {
   const flow = useMemo(() => {
     const laid = layoutFlow(steps, symbols, current, onSelect);
@@ -46,11 +53,12 @@ function Canvas({
   // Keep the current step in the middle of the view.
   const { setCenter } = useReactFlow();
   useEffect(() => {
+    if (readOnly) return;
     const step = steps[current];
     if (!step) return;
     const { x, y } = stepCenter(step, current);
     void setCenter(x, y, { zoom: 0.85, duration: reducedMotion ? 0 : 400 });
-  }, [steps, current, reducedMotion, setCenter]);
+  }, [steps, current, reducedMotion, setCenter, readOnly]);
 
   return (
     <ReactFlow
@@ -63,10 +71,14 @@ function Canvas({
       nodesConnectable={false}
       nodesFocusable={false}
       edgesFocusable={false}
-      minZoom={0.3}
+      // Read-only shows the whole journey's shape at once, however small;
+      // the zoom controls let a learner look closer.
+      minZoom={readOnly ? 0.05 : 0.2}
+      fitView={readOnly}
       proOptions={{ hideAttribution: true }}
     >
       <Background />
+      {readOnly && <Controls showInteractive={false} />}
     </ReactFlow>
   );
 }
@@ -77,7 +89,10 @@ function Canvas({
  */
 export default function FlowCanvas(props: Props) {
   return (
-    <div className="h-[30rem] rounded-lg border border-border">
+    // Read-only fits the whole flow by width, so it needs less height.
+    <div
+      className={`${props.readOnly ? "h-48" : "h-[30rem]"} rounded-lg border border-border`}
+    >
       <ReactFlowProvider>
         <Canvas {...props} />
       </ReactFlowProvider>

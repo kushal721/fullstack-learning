@@ -455,6 +455,36 @@ describe("validateContent", () => {
     });
   });
 
+  describe("layer overviews", () => {
+    it("reports unknown links, empty link lists and duplicate layers", () => {
+      const layer = {
+        layer: "user" as const,
+        title: "The user",
+        why: ["x"],
+        conceptIds: ["ghost"],
+        buildStepIds: [],
+        fileIds: ["nope.js"],
+      };
+      expect(
+        validateContent({
+          tree: topic("root", 0),
+          concepts: [],
+          files: [],
+          buildSteps: [],
+          layerOverviews: [layer, layer],
+        }).filter((e) => e.startsWith("Layer")),
+      ).toEqual([
+        'Layer "user" is explained more than once.',
+        'Layer overview "user" links unknown concept "ghost".',
+        'Layer overview "user" links no build step.',
+        'Layer overview "user" links unknown file "nope.js".',
+        'Layer overview "user" links unknown concept "ghost".',
+        'Layer overview "user" links no build step.',
+        'Layer overview "user" links unknown file "nope.js".',
+      ]);
+    });
+  });
+
   describe("build steps", () => {
     const step = (
       id: string,

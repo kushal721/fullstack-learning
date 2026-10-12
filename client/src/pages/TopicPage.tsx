@@ -1,8 +1,15 @@
-import type { TopicResponse, TopicTreeResponse } from "@fsl/shared";
-import type { ReactNode } from "react";
+import type {
+  FlowResponse,
+  LayerView,
+  TopicResponse,
+  TopicTreeResponse,
+} from "@fsl/shared";
+import { lazy, type ReactNode, Suspense } from "react";
+import { Link } from "react-router";
 import { useParams } from "react-router";
 import { LearningTree } from "../components/learning-tree/LearningTree.tsx";
 import { TopicNav } from "../components/learning-tree/TopicNav.tsx";
+import { explorerFileHref } from "../components/connection-graph/links.ts";
 import { Card } from "../components/ui/Card.tsx";
 import { ErrorState } from "../components/ui/ErrorState.tsx";
 import { Loading } from "../components/ui/Loading.tsx";
@@ -129,6 +136,8 @@ function TopicContent({
         </TopicSection>
       )}
 
+      {data.layers && <HowEverythingConnects layers={data.layers} />}
+
       {buildSteps.length > 0 && (
         <TopicSection title="Where you build it">
           {buildSteps.map((step) => (
@@ -161,6 +170,107 @@ function TopicSection({
     <section className="mt-10">
       <h2 className="mb-3 text-xl font-semibold">{title}</h2>
       <ul className="grid gap-3 sm:grid-cols-2">{children}</ul>
+    </section>
+  );
+}
+
+// React Flow is large; it is only downloaded on this topic.
+const FlowCanvas = lazy(
+  () => import("../components/flow-tracer/FlowCanvas.tsx"),
+);
+
+const chip =
+  "rounded-full border border-border px-2.5 py-0.5 text-sm hover:border-accent hover:text-accent";
+
+/**
+ * "How everything connects": the whole create-note round trip at a glance,
+ * then why each layer exists, with its concepts, build steps and files.
+ */
+function HowEverythingConnects({ layers }: { layers: LayerView[] }) {
+  const flow = useApi<FlowResponse>(apiPaths.flow("create-note"));
+  return (
+    <section
+      aria-labelledby="layers-heading"
+      className="mt-10 flex flex-col gap-6"
+    >
+      <h2 id="layers-heading" className="text-xl font-semibold">
+        One note, every layer
+      </h2>
+      <p className="leading-7">
+        Saving a note crosses all five layers and comes back. Each box is one
+        step; read it left to right, from the user down to the database and back
+        up.{" "}
+        <Link
+          to="/flow?flow=create-note&step=1"
+          className="text-accent hover:underline"
+        >
+          Step through it on the Flow page
+        </Link>
+        .
+      </p>
+      {flow.isLoading && <Loading label="Loading the flow…" />}
+      {flow.error && (
+        <ErrorState message={flow.error.message} onRetry={flow.reload} />
+      )}
+      {flow.data && (
+        <Suspense fallback={<Loading label="Loading the flow canvas…" />}>
+          <div
+            role="img"
+            aria-label={`The ${flow.data.flow.steps.length} steps of creating a note, from the user through the frontend, network, backend and database and back.`}
+          >
+            <FlowCanvas
+              steps={flow.data.flow.steps}
+              symbols={flow.data.symbols}
+              current={flow.data.flow.steps.length}
+              readOnly
+            />
+          </div>
+        </Suspense>
+      )}
+      <ol className="flex flex-col gap-6">
+        {layers.map((layer) => (
+          <li key={layer.layer} className="rounded-lg border border-border p-5">
+            <h3 className="text-lg font-semibold">{layer.title}</h3>
+            <div className="mt-2 flex flex-col gap-3 leading-7">
+              {layer.why.map((paragraph, i) => (
+                <p key={i}>
+                  <RichText text={paragraph} />
+                </p>
+              ))}
+            </div>
+            <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-[8rem_minmax(0,1fr)]">
+              <dt className="font-medium">Concepts</dt>
+              <dd className="flex flex-wrap gap-2">
+                {layer.concepts.map((c) => (
+                  <Link key={c.id} to={`/concepts/${c.slug}`} className={chip}>
+                    {c.title}
+                  </Link>
+                ))}
+              </dd>
+              <dt className="font-medium">Build steps</dt>
+              <dd className="flex flex-wrap gap-2">
+                {layer.buildSteps.map((s) => (
+                  <Link key={s.id} to={`/build/${s.slug}`} className={chip}>
+                    {s.order}. {s.title}
+                  </Link>
+                ))}
+              </dd>
+              <dt className="font-medium">Files</dt>
+              <dd className="flex flex-wrap gap-2">
+                {layer.files.map((f) => (
+                  <Link
+                    key={f.id}
+                    to={explorerFileHref(f)}
+                    className={`${chip} font-mono`}
+                  >
+                    {f.path}
+                  </Link>
+                ))}
+              </dd>
+            </dl>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }

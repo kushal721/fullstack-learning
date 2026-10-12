@@ -6,6 +6,15 @@ import { reactTopicFixture, topicTreeFixture } from "../test/fixtures.ts";
 import { mockFetchRoutes } from "../test/mock-fetch.ts";
 import TopicPage from "./TopicPage.tsx";
 
+// React Flow needs a real browser; the canvas is checked there.
+vi.mock("../components/flow-tracer/FlowCanvas.tsx", () => ({
+  default: ({ steps, readOnly }: { steps: unknown[]; readOnly?: boolean }) => (
+    <p data-testid="flow-canvas">
+      {steps.length} steps{readOnly ? ", read-only" : ""}
+    </p>
+  ),
+}));
+
 function renderAt(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
@@ -137,5 +146,103 @@ describe("TopicPage", () => {
     expect(
       screen.getByRole("button", { name: "Try again" }),
     ).toBeInTheDocument();
+  });
+});
+
+describe("How everything connects", () => {
+  beforeEach(() => {
+    vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+  });
+
+  const layer = (name: "user" | "database", title: string) => ({
+    layer: name,
+    title,
+    why: [`Why ${title} exists.`],
+    concepts: [
+      {
+        id: "c",
+        slug: "html-form",
+        title: "HTML forms",
+        topicId: "html",
+        summary: "x",
+      },
+    ],
+    buildSteps: [
+      {
+        id: "s",
+        slug: "add-database",
+        order: 10,
+        title: "Add the database",
+        goal: "x",
+      },
+    ],
+    files: [
+      {
+        id: "database/schema.sql",
+        path: "database/schema.sql",
+        layer: "database" as const,
+        purpose: "x",
+      },
+    ],
+  });
+
+  it("shows the whole flow and why each layer exists, with links", async () => {
+    mockFetchRoutes({
+      "/api/topics": { tree: topicTreeFixture },
+      "/api/topics/react": {
+        ...reactTopicFixture,
+        layers: [layer("user", "The user"), layer("database", "The database")],
+      },
+      "/api/flows/create-note": {
+        flow: {
+          id: "create-note",
+          title: "Create a note",
+          summary: "x",
+          group: "request",
+          direction: "round-trip",
+          steps: [{ id: "a" }, { id: "b" }],
+        },
+        symbols: {},
+      },
+    });
+    renderAt("/learn/react");
+    expect(
+      await screen.findByRole("heading", { name: "One note, every layer" }),
+    ).toBeInTheDocument();
+    expect(await screen.findByTestId("flow-canvas")).toHaveTextContent(
+      "2 steps, read-only",
+    );
+    expect(
+      screen.getByRole("link", { name: "Step through it on the Flow page" }),
+    ).toHaveAttribute("href", "/flow?flow=create-note&step=1");
+    const section = screen
+      .getByRole("heading", { name: "One note, every layer" })
+      .closest("section")!;
+    const cards = within(section)
+      .getAllByRole("heading", { level: 3 })
+      .map((h) => h.closest("li")!);
+    expect(cards).toHaveLength(2);
+    const db = cards[1]!;
+    expect(
+      within(db).getByText("Why The database exists."),
+    ).toBeInTheDocument();
+    expect(
+      within(db).getByRole("link", { name: "HTML forms" }),
+    ).toHaveAttribute("href", "/concepts/html-form");
+    expect(
+      within(db).getByRole("link", { name: "10. Add the database" }),
+    ).toHaveAttribute("href", "/build/add-database");
+    expect(
+      within(db).getByRole("link", { name: "database/schema.sql" }),
+    ).toHaveAttribute("href", "/explorer?file=database%2Fschema.sql");
+  });
+
+  it("is not shown on other topics", async () => {
+    mockApi();
+    renderAt("/learn/react");
+    await screen.findByRole("heading", { level: 1 });
+    expect(
+      screen.queryByRole("heading", { name: "One note, every layer" }),
+    ).toBeNull();
   });
 });

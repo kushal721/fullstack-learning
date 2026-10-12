@@ -4,6 +4,7 @@ import type {
   Concept,
   FileTreeFolder,
   Flow,
+  LayerOverview,
   ProjectFile,
   Relationship,
   SymbolKind,
@@ -74,6 +75,15 @@ export type TopicResponse = {
   concepts: ConceptSummary[];
   /** Build steps that use this topic's concepts, in journey order. */
   buildSteps: BuildStepSummary[];
+  /** Only on "How everything connects": why each layer exists, linked. */
+  layers?: LayerView[];
+};
+
+/** A layer overview with its links resolved for display. */
+export type LayerView = Pick<LayerOverview, "layer" | "title" | "why"> & {
+  concepts: ConceptSummary[];
+  buildSteps: BuildStepSummary[];
+  files: FileSummary[];
 };
 
 /** GET /api/concepts — grouped by topic, in learning-tree order. */

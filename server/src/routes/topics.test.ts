@@ -82,3 +82,33 @@ describe("GET /api/topics/:slug", () => {
     },
   );
 });
+
+describe("GET /api/topics/how-everything-connects", () => {
+  it("explains every layer with its concepts, steps and files", async () => {
+    const res = await request(app).get("/api/topics/how-everything-connects");
+    const body = res.body as TopicResponse;
+    expect(res.status).toBe(200);
+    expect(body.layers?.map((l) => l.layer)).toEqual([
+      "user",
+      "frontend",
+      "network",
+      "backend",
+      "database",
+    ]);
+    for (const layer of body.layers!) {
+      expect(layer.why.length, layer.layer).toBeGreaterThan(0);
+      expect(layer.concepts.length, layer.layer).toBeGreaterThan(0);
+      expect(layer.buildSteps.length, layer.layer).toBeGreaterThan(0);
+      expect(layer.files.length, layer.layer).toBeGreaterThan(0);
+    }
+    expect(body.layers![4]!.files[0]).toMatchObject({
+      id: "database/schema.sql",
+      layer: "database",
+    });
+  });
+
+  it("is not added to other topics", async () => {
+    const res = await request(app).get("/api/topics/html");
+    expect(res.body).not.toHaveProperty("layers");
+  });
+});
