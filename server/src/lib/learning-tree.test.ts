@@ -7,6 +7,13 @@ import {
 } from "./learning-tree.js";
 
 describe("learning tree", () => {
+  it("links every topic page to at least one concept or build step", () => {
+    const unlinked = getAllTopics()
+      .filter((t) => t.conceptIds.length === 0 && t.buildStepIds.length === 0)
+      .map((t) => t.id);
+    expect(unlinked).toEqual([]);
+  });
+
   it("has the 14 topics of the spec in order", () => {
     expect(getAllTopics().map((topic) => topic.id)).toEqual([
       "how-the-web-works",
@@ -35,7 +42,7 @@ describe("learning tree", () => {
   });
 
   it("uses unique ids and URL-safe unique slugs", () => {
-    const topics = [getTree(), ...getAllTopics()];
+    const topics = getAllTopics();
     expect(new Set(topics.map((t) => t.id)).size).toBe(topics.length);
     expect(new Set(topics.map((t) => t.slug)).size).toBe(topics.length);
     for (const topic of topics) {
@@ -72,7 +79,7 @@ describe("learning tree", () => {
   });
 
   it("only uses formatting the client can render (inline `code`)", () => {
-    for (const topic of [getTree(), ...getAllTopics()]) {
+    for (const topic of getAllTopics()) {
       const text = [topic.summary, ...topic.overview, topic.whereToStart].join(
         " ",
       );

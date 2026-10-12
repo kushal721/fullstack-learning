@@ -5,7 +5,9 @@ import {
   getOrderedSteps,
   getStep,
   getStepBySlug,
+  getStepsForTopic,
 } from "./build-journey.js";
+import { getTopicBySlug } from "./learning-tree.js";
 
 describe("build journey", () => {
   it("has the 14 steps of the journey in order", () => {
@@ -43,5 +45,21 @@ describe("build journey", () => {
     const steps = [step("b", 2), step("a", 1)];
     expect(getOrderedSteps(steps).map((s) => s.id)).toEqual(["a", "b"]);
     expect(getAdjacentSteps("a", steps).next?.id).toBe("b");
+  });
+
+  it("returns a topic's listed steps in journey order", () => {
+    const security = getTopicBySlug("security")!;
+    expect(security.buildStepIds).toEqual([
+      "add-authentication",
+      "add-security",
+    ]);
+    expect(getStepsForTopic(security).map((s) => s.order)).toEqual([11, 12]);
+
+    const reversed = {
+      ...security,
+      buildStepIds: ["add-security", "add-authentication"],
+    };
+    expect(getStepsForTopic(reversed).map((s) => s.order)).toEqual([11, 12]);
+    expect(getStepsForTopic({ ...security, buildStepIds: [] })).toEqual([]);
   });
 });

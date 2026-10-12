@@ -22,6 +22,7 @@ function topic(order: number, input: TopicInput): Topic {
 const topics: TopicInput[] = [
   {
     id: "how-the-web-works",
+    buildStepIds: ["understand-the-application"],
     conceptIds: ["how-the-web-works"],
     title: "How the Web Works",
     summary:
@@ -38,6 +39,7 @@ const topics: TopicInput[] = [
   },
   {
     id: "html",
+    buildStepIds: ["create-project", "create-frontend-structure"],
     conceptIds: [
       "html-document",
       "html-element",
@@ -59,6 +61,13 @@ const topics: TopicInput[] = [
   },
   {
     id: "css",
+    buildStepIds: [
+      "create-project",
+      "create-frontend-structure",
+      "create-first-component",
+      "create-page",
+      "add-state",
+    ],
     conceptIds: [
       "css-selector",
       "css-box-model",
@@ -78,6 +87,11 @@ const topics: TopicInput[] = [
   },
   {
     id: "javascript",
+    buildStepIds: [
+      "create-first-component",
+      "add-state",
+      "add-api-communication",
+    ],
     conceptIds: [
       "js-variable",
       "js-function",
@@ -107,6 +121,7 @@ const topics: TopicInput[] = [
   },
   {
     id: "git",
+    buildStepIds: ["create-backend", "deploy"],
     conceptIds: [
       "git-repository",
       "git-commit",
@@ -130,6 +145,14 @@ const topics: TopicInput[] = [
   },
   {
     id: "react",
+    buildStepIds: [
+      "create-project",
+      "create-frontend-structure",
+      "create-first-component",
+      "create-page",
+      "add-state",
+      "add-api-communication",
+    ],
     conceptIds: [
       "react-why",
       "react-component",
@@ -160,6 +183,11 @@ const topics: TopicInput[] = [
   },
   {
     id: "http",
+    buildStepIds: [
+      "add-api-communication",
+      "create-api-routes",
+      "add-authentication",
+    ],
     conceptIds: [
       "http-request-response",
       "http-methods",
@@ -183,6 +211,7 @@ const topics: TopicInput[] = [
   },
   {
     id: "backend",
+    buildStepIds: ["create-backend", "create-api-routes"],
     conceptIds: [
       "nodejs",
       "npm-packages",
@@ -206,6 +235,7 @@ const topics: TopicInput[] = [
   },
   {
     id: "databases",
+    buildStepIds: ["add-database"],
     conceptIds: [
       "database",
       "sql",
@@ -235,6 +265,7 @@ const topics: TopicInput[] = [
   },
   {
     id: "authentication",
+    buildStepIds: ["add-authentication"],
     title: "Authentication",
     summary:
       "Knowing who the user is: registering, logging in, protecting passwords and remembering a logged-in user.",
@@ -248,6 +279,7 @@ const topics: TopicInput[] = [
   },
   {
     id: "security",
+    buildStepIds: ["add-authentication", "add-security"],
     title: "Security",
     summary:
       "Keeping users and data safe: authorization, validating input and avoiding common attacks.",
@@ -261,6 +293,7 @@ const topics: TopicInput[] = [
   },
   {
     id: "testing",
+    buildStepIds: ["test"],
     conceptIds: ["why-test", "unit-test", "integration-test", "e2e-test"],
     title: "Testing",
     summary:
@@ -275,6 +308,7 @@ const topics: TopicInput[] = [
   },
   {
     id: "deployment",
+    buildStepIds: ["deploy"],
     conceptIds: [
       "production-build",
       "environment-config",
@@ -299,6 +333,11 @@ const topics: TopicInput[] = [
   },
   {
     id: "how-everything-connects",
+    buildStepIds: [
+      "understand-the-application",
+      "add-api-communication",
+      "add-database",
+    ],
     title: "How Everything Connects",
     summary:
       "Following one action from the button, through the backend and database, and back to the screen.",
