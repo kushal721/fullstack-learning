@@ -18,7 +18,8 @@ function rel(
 }
 
 // Function-level connections for every note and auth request (M06.1.1–
-// M06.1.2). Components, hooks and imports are added in M06.1.3–M06.1.4.
+// M06.1.2) and how components and hooks fit together (M06.1.3). Imports
+// are added in M06.1.4.
 export const relationships: Relationship[] = [
   rel(
     "fn:handleSave",
@@ -547,5 +548,191 @@ export const relationships: Relationship[] = [
     "returns",
     "http-request:GET /api/auth/me",
     "Answers with the user's id and email, or 401 if the account no longer exists.",
+  ),
+  rel(
+    "component:App",
+    "renders",
+    "component:Navbar",
+    "App always renders the Navbar and passes it `user` and `onLogout`, so the bar shows who is logged in on every page.",
+  ),
+  rel(
+    "component:App",
+    "renders",
+    "component:Login",
+    'When `page` is `"login"`, App renders Login and passes `onLoggedIn`, so a successful login switches App to the Dashboard.',
+  ),
+  rel(
+    "component:App",
+    "renders",
+    "component:Register",
+    'When `page` is `"register"`, App renders Register; switching pages is just a state change, so no router library is needed.',
+  ),
+  rel(
+    "component:App",
+    "renders",
+    "component:Dashboard",
+    'When `page` is `"dashboard"`, App renders the Dashboard, which loads and shows the notes.',
+  ),
+  rel(
+    "component:Dashboard",
+    "renders",
+    "component:NoteForm",
+    "The Dashboard renders one NoteForm and passes `addNote` as `onSaved`, so a saved note appears in the list straight away.",
+  ),
+  rel(
+    "component:Dashboard",
+    "renders",
+    "component:NoteCard",
+    "The Dashboard renders one NoteCard per note with `key={note.id}`, passing `replaceNote` and `removeNote` so edits and deletes update the list.",
+  ),
+  rel(
+    "component:Login",
+    "renders",
+    "component:Button",
+    'Login uses Button for *Log in* and, with `variant="link"`, for *Register*, so its buttons look exactly like the rest of the app without repeating any styles.',
+  ),
+  rel(
+    "component:Register",
+    "renders",
+    "component:Button",
+    "Register uses the same Button for *Register* and its *Log in* link, so a style change in Button.jsx updates these too.",
+  ),
+  rel(
+    "component:NoteForm",
+    "renders",
+    "component:Button",
+    "NoteForm's Save is a Button with `disabled={isSaving}`; because Button passes every other prop on, it works like a normal button without extra code.",
+  ),
+  rel(
+    "component:NoteCard",
+    "renders",
+    "component:Button",
+    "NoteCard uses Button four times (Edit, Delete, Save, Cancel) with different variants instead of four hand-styled buttons.",
+  ),
+  rel(
+    "component:Navbar",
+    "renders",
+    "component:Button",
+    'The Navbar\'s Log out is a `variant="secondary"` Button, so it matches the Cancel and Edit buttons elsewhere.',
+  ),
+  rel(
+    "component:Login",
+    "renders",
+    "component:Input",
+    "Login renders an Input for the email and one for the password; each gets a working label without writing `htmlFor` by hand.",
+  ),
+  rel(
+    "component:Register",
+    "renders",
+    "component:Input",
+    "Register reuses the same Input for its email and password, so both forms behave and look the same.",
+  ),
+  rel(
+    "component:NoteForm",
+    "renders",
+    "component:Input",
+    "NoteForm uses Input for the title and Input with `multiline` for the content, so one component covers both kinds of field.",
+  ),
+  rel(
+    "component:NoteCard",
+    "renders",
+    "component:Input",
+    "NoteCard's edit form reuses Input for the title and content, so editing looks exactly like creating a note.",
+  ),
+  rel(
+    "component:Dashboard",
+    "uses",
+    "hook:useNotes",
+    "`const { notes, isLoading, error, addNote, replaceNote, removeNote } = useNotes();` gives the page everything about notes, so the component only decides what to show.",
+  ),
+  rel(
+    "hook:useNotes",
+    "uses",
+    "external:useState",
+    "useNotes keeps `notes`, `isLoading` and `error` in state, so changing them re-renders the Dashboard that uses the hook.",
+  ),
+  rel(
+    "hook:useNotes",
+    "uses",
+    "external:useEffect",
+    "The hook loads the notes in a `useEffect` with an empty dependency list, so it happens once when the Dashboard appears, not on every render.",
+  ),
+  rel(
+    "hook:useNotes",
+    "calls",
+    "fn:notesApi.getNotes",
+    "Inside its effect, useNotes calls `getNotes()` and stores the result, or the error message if loading fails.",
+  ),
+  rel(
+    "hook:useNotes",
+    "returns",
+    "fn:useNotes.addNote",
+    "useNotes returns `addNote`, which the Dashboard passes to NoteForm as `onSaved`.",
+  ),
+  rel(
+    "hook:useNotes",
+    "returns",
+    "fn:useNotes.replaceNote",
+    "useNotes returns `replaceNote`, which the Dashboard passes to each NoteCard as `onUpdated`.",
+  ),
+  rel(
+    "hook:useNotes",
+    "returns",
+    "fn:useNotes.removeNote",
+    "useNotes returns `removeNote`, which the Dashboard passes to each NoteCard as `onDelete`.",
+  ),
+  rel(
+    "fn:handleSave",
+    "calls",
+    "fn:useNotes.addNote",
+    "After the API saves the note, `handleSave` calls `onSaved(note)`, which is `addNote`, so the new card appears at the top without reloading.",
+  ),
+  rel(
+    "fn:noteCard.handleUpdate",
+    "calls",
+    "fn:useNotes.replaceNote",
+    "After the API saves the change, `handleUpdate` calls `onUpdated(updated)`, which is `replaceNote`, so the card shows the new text.",
+  ),
+  rel(
+    "component:App",
+    "uses",
+    "external:useState",
+    "App keeps `user` and `page` in state; changing `page` is how it switches between Login, Register and the Dashboard.",
+  ),
+  rel(
+    "component:App",
+    "uses",
+    "external:useEffect",
+    "On first load, an effect asks the API who is logged in and sets `page` to the Dashboard or the Login page.",
+  ),
+  rel(
+    "component:App",
+    "calls",
+    "fn:authApi.getCurrentUser",
+    "The effect calls `getCurrentUser()`, because the httpOnly login cookie can't be read from JavaScript.",
+  ),
+  rel(
+    "component:Login",
+    "uses",
+    "external:useState",
+    "Login keeps `email`, `password` and `error` in state, so the inputs always show what was typed and the error appears when it is set.",
+  ),
+  rel(
+    "component:Register",
+    "uses",
+    "external:useState",
+    "Register keeps `email`, `password` and `error` in state, so the inputs always show what was typed and the error appears when it is set.",
+  ),
+  rel(
+    "component:NoteForm",
+    "uses",
+    "external:useState",
+    "NoteForm keeps `title`, `content`, `isSaving` and `error` in state, so the inputs always show what was typed and the error appears when it is set.",
+  ),
+  rel(
+    "component:NoteCard",
+    "uses",
+    "external:useState",
+    "NoteCard keeps `isEditing`, `title`, `content` and `error` in state, so the inputs always show what was typed and the error appears when it is set.",
   ),
 ];
