@@ -10,6 +10,8 @@ export type ConnectionNodeData = {
   symbol: CodeSymbol;
   /** The symbol the graph is centred on. */
   isCenter: boolean;
+  /** Called when the learner picks this node. */
+  onSelect?: (symbol: CodeSymbol) => void;
 };
 
 export type ConnectionFlowNode = Node<ConnectionNodeData, "symbol">;
@@ -23,6 +25,7 @@ export function layoutConnections(
   nodes: CodeSymbol[],
   edges: Relationship[],
   centerId: string,
+  onSelect?: (symbol: CodeSymbol) => void,
 ): { nodes: ConnectionFlowNode[]; edges: Edge[] } {
   const graph = new Graph();
   graph.setGraph({ rankdir: "LR", nodesep: 24, ranksep: 90 });
@@ -41,7 +44,7 @@ export function layoutConnections(
         type: "symbol",
         // dagre gives the centre; React Flow wants the top-left corner.
         position: { x: x - NODE_WIDTH / 2, y: y - NODE_HEIGHT / 2 },
-        data: { symbol, isCenter: symbol.id === centerId },
+        data: { symbol, isCenter: symbol.id === centerId, onSelect },
       };
     }),
     edges: edges.map((edge) => ({

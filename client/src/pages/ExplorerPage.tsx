@@ -5,7 +5,7 @@ import type {
   FileTreeResponse,
 } from "@fsl/shared";
 import { useEffect, useRef } from "react";
-import { useSearchParams } from "react-router";
+import { useLocation, useSearchParams } from "react-router";
 import { CodeViewer } from "../components/code-viewer/CodeViewer.tsx";
 import {
   ConnectionsPanel,
@@ -37,6 +37,11 @@ export default function ExplorerPage() {
   const selectedPath = searchParams.get("file");
   // ?symbol=fn:handleSave shows that symbol's connections.
   const symbolId = searchParams.get("symbol");
+  // Walking the graph opens each symbol's file at its line; keep the graph
+  // on screen instead of jumping down to the code.
+  const fromGraph = Boolean(
+    (useLocation().state as { fromGraph?: boolean } | null)?.fromGraph,
+  );
   const lineParam = Number(searchParams.get("line"));
   const line = Number.isInteger(lineParam) && lineParam > 0 ? lineParam : null;
   const { data, error, isLoading, reload } = useApi<FileTreeResponse>(
@@ -128,6 +133,7 @@ export default function ExplorerPage() {
                     file={file.data.file}
                     source={file.data.source}
                     line={line}
+                    scrollToLine={!fromGraph}
                     onSelectLine={(n) =>
                       setSearchParams({ file: selected.path, line: String(n) })
                     }

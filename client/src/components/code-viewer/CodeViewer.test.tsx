@@ -27,6 +27,7 @@ function renderViewer(
   path: string,
   lineCount: number,
   line: number | null = null,
+  scrollToLine?: boolean,
 ) {
   const { file, source } = fileResponse(path, lineCount);
   const onSelectLine = vi.fn();
@@ -38,6 +39,7 @@ function renderViewer(
       source={source}
       line={line}
       onSelectLine={onSelectLine}
+      scrollToLine={scrollToLine}
     />,
   );
   return { onSelectLine, scrollIntoView };
@@ -63,6 +65,14 @@ describe("CodeViewer", () => {
     expect(lineEl(11)).not.toHaveAttribute("data-highlighted");
     expect(scrollIntoView).toHaveBeenCalledWith({ block: "center" });
     expect(scrollIntoView.mock.contexts[0]).toBe(lineEl(12));
+  });
+
+  it("can highlight the line without scrolling to it", async () => {
+    const { scrollIntoView } = renderViewer("backend/src/db.js", 20, 12, false);
+    await screen.findByRole("heading", { name: "backend/src/db.js" });
+
+    expect(lineEl(12)).toHaveAttribute("data-highlighted", "true");
+    expect(scrollIntoView).not.toHaveBeenCalled();
   });
 
   it("puts a clicked line number in the URL", async () => {
