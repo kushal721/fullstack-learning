@@ -132,13 +132,13 @@ curl -i http://localhost:3000/api/notes/99`,
   projectUsage: [
     {
       explanation:
-        "`backend/src/routes/notes.js` creates a router with `express.Router()`, adds `router.use(requireAuth)`, then maps `GET /` to `listNotes`, `POST /` to `createNote`, `PUT /:id` to `updateNote` and `DELETE /:id` to `deleteNote` from `notesController`.",
+        "`backend/src/routes/notes.js` creates a router with `express.Router()`, adds `notesRoutes.use(requireAuth)`, then maps `GET /` to `listNotes`, `POST /` to `createNote`, `PUT /:id` to `updateNote` and `DELETE /:id` to `deleteNote` from `notesController`.",
       fileId: "backend/src/routes/notes.js",
       match: "export const notesRoutes = express.Router();",
     },
     {
       explanation:
-        '`backend/src/server.js` mounts it with `app.use("/api/notes", notesRoutes)`, so the router\'s `PUT /:id` becomes `PUT /api/notes/:id` and the controller reads the note id from `req.params.id`.',
+        '`backend/src/app.js` mounts it with `app.use("/api/notes", notesRoutes)`, so the router\'s `PUT /:id` becomes `PUT /api/notes/:id` and the controller reads the note id from `req.params.id`.',
       fileId: "backend/src/app.js",
       match: 'app.use("/api/notes", notesRoutes);',
     },

@@ -93,7 +93,7 @@ export const htmlButton: Concept = {
     },
     {
       explanation:
-        'In `NoteForm.jsx`, `<Button type="submit">Save</Button>` submits the note form, which calls `handleSave()`. That function calls `createNote()`, which sends `POST /api/notes`.',
+        'In `NoteForm.jsx`, `<Button type="submit" disabled={isSaving}>` (labelled Save) submits the note form, which calls `handleSave()`. That function calls `createNote()`, which sends `POST /api/notes`.',
       fileId: "frontend/src/components/NoteForm.jsx",
       match: '<Button type="submit" disabled={isSaving}>',
     },

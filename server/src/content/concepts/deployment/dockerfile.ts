@@ -109,7 +109,7 @@ docker run -p 3000:3000 notes-api`,
     },
     {
       explanation:
-        "This learning platform's `Dockerfile` is a real multi-stage example. The `deps` stage installs all packages, the `build` stage compiles the TypeScript server and builds the React client, and the `runtime` stage starts again from `node:22-alpine`, installs only the server's production packages and copies in just the two `dist` folders.",
+        "This learning platform's `Dockerfile` is a real multi-stage example. The `deps` stage installs all packages, the `build` stage compiles the TypeScript server and builds the React client, and the `runtime` stage starts again from `node:22-alpine`, installs only the server's production packages and copies in the two `dist` folders plus `example-project/`, the Notes App source the Explorer shows.",
     },
     {
       explanation:

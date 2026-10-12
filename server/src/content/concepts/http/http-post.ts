@@ -117,7 +117,7 @@ const note = await response.json();`,
   projectUsage: [
     {
       explanation:
-        '`createNote()` in `frontend/src/services/notesApi.js` sends `POST /api/notes` with the title and content as JSON, including the login cookie (`credentials: "include"`).',
+        '`createNote()` in `frontend/src/services/notesApi.js` sends `POST /api/notes` with the title and content as JSON through `request()`, which includes the login cookie (`credentials: "include"`).',
       fileId: "frontend/src/services/notesApi.js",
       match: "export function createNote({ title, content }) {",
     },

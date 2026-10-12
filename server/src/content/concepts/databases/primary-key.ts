@@ -99,7 +99,7 @@ SELECT * FROM todos;`,
     },
     {
       explanation:
-        "Creating a note runs `INSERT INTO notes (user_id, title, content) VALUES ($1, $2, $3) RETURNING *`, so the `201` response includes the new `id` and the frontend can use it right away.",
+        "Creating a note runs `INSERT INTO notes (user_id, title, content) VALUES ($1, $2, $3) RETURNING id, title, content, created_at, updated_at`, so the `201` response includes the new `id` and the frontend can use it right away.",
       fileId: "backend/src/controllers/notesController.js",
       match: "INSERT INTO notes (user_id, title, content)",
     },

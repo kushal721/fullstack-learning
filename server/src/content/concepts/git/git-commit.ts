@@ -91,7 +91,7 @@ git status`,
   projectUsage: [
     {
       explanation:
-        "Commits in the Notes App use conventional commit messages such as `feat: add note form` and `fix(api): return 404 for unknown notes`, never `update` or `fix stuff`.",
+        "Commits to the Notes App should use conventional commit messages such as `feat: add note form` and `fix(api): return 404 for unknown notes`, not `update` or `fix stuff`.",
     },
     {
       explanation:

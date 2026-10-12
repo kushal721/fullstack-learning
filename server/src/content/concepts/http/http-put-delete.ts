@@ -125,7 +125,7 @@ curl -i -X DELETE http://localhost:3000/api/notes/42`,
   projectUsage: [
     {
       explanation:
-        '`backend/src/routes/notes.js` registers `router.put("/:id", notesController.updateNote)` and `router.delete("/:id", notesController.deleteNote)`, mounted at `/api/notes`, so the paths are `PUT /api/notes/:id` and `DELETE /api/notes/:id`. The Notes App uses PUT, not PATCH, because the edit form always sends the whole note.',
+        '`backend/src/routes/notes.js` registers `notesRoutes.put("/:id", notesController.updateNote)` and `notesRoutes.delete("/:id", notesController.deleteNote)`, mounted at `/api/notes`, so the paths are `PUT /api/notes/:id` and `DELETE /api/notes/:id`. The Notes App uses PUT, not PATCH, because the edit form always sends the whole note.',
       fileId: "backend/src/routes/notes.js",
       match: 'notesRoutes.put("/:id", notesController.updateNote);',
     },
@@ -137,7 +137,7 @@ curl -i -X DELETE http://localhost:3000/api/notes/42`,
     },
     {
       explanation:
-        '`frontend/src/services/notesApi.js` sends these requests with `fetch()`, setting `method: "PUT"` or `method: "DELETE"` and `credentials: "include"` so the login cookie goes along.',
+        '`frontend/src/services/notesApi.js` sends these requests through `request()`, setting `method: "PUT"` or `method: "DELETE"`; `request()` calls `fetch()` with `credentials: "include"` so the login cookie goes along.',
       fileId: "frontend/src/services/notesApi.js",
       match: 'method: "PUT",',
     },

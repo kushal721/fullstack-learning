@@ -97,7 +97,7 @@ console.log("End of file");`,
   projectUsage: [
     {
       explanation:
-        "Every function in `frontend/src/services/notesApi.js` returns a promise, because it is `async` and waits for `fetch()`. Callers such as `useNotes` and `NoteForm` wait for those promises before updating the screen.",
+        "Every function in `frontend/src/services/notesApi.js` returns a promise, because it returns the result of the `async` `request()` function, which waits for `fetch()`. Callers such as `useNotes` and `NoteForm` wait for those promises before updating the screen.",
       fileId: "frontend/src/services/request.js",
       match:
         'export async function request(path, { method = "GET", body } = {}) {',

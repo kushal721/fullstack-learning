@@ -101,13 +101,13 @@ console.log(missing.status, missing.ok);`,
   projectUsage: [
     {
       explanation:
-        '`frontend/src/services/notesApi.js` exports `getNotes`, `createNote`, `updateNote` and `deleteNote`. Each calls `fetch("/api/notes...", { credentials: "include", ... })`, checks `response.ok`, throws an `Error` with the server\'s message if it is false, and returns `await response.json()`.',
+        '`frontend/src/services/notesApi.js` exports `getNotes`, `createNote`, `updateNote` and `deleteNote`. Each calls `request()` in `request.js`, which calls `fetch(path, { method, credentials: "include", ... })`, checks `response.ok`, throws an `Error` with the server\'s message if it is false, and returns the parsed JSON.',
       fileId: "frontend/src/services/request.js",
       match: "const response = await fetch(path, {",
     },
     {
       explanation:
-        '`credentials: "include"` makes the browser send the login cookie with every notes request, so the backend knows which user\'s notes to return. `authApi.js` uses `fetch()` the same way for logging in and registering.',
+        '`credentials: "include"` makes the browser send the login cookie with every notes request, so the backend knows which user\'s notes to return. `authApi.js` sends its login and register requests through the same `request()` function.',
       fileId: "frontend/src/services/request.js",
       match: 'credentials: "include",',
     },

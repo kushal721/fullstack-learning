@@ -88,15 +88,15 @@ git push -u origin docs/readme`,
   projectUsage: [
     {
       explanation:
-        "The Notes App lives in one GitHub repository with `frontend/`, `backend/` and `database/` folders. Each change is made on its own branch, such as `feature/note-form`, and pushed with `git push -u origin feature/note-form`.",
+        "The Notes App lives in one GitHub repository with `frontend/`, `backend/` and `database/` folders. Build step 14 pushes `main` with `git push -u origin main`; later changes can each go on their own branch, such as `feature/note-form`, pushed with `git push -u origin feature/note-form`.",
     },
     {
       explanation:
-        "Pushing a branch is what makes the next step possible: opening a pull request for it, which runs the automatic checks before anything reaches `main`.",
+        "Pushing a branch is what makes the next step possible: opening a pull request for it, which on this platform runs the automatic checks before anything reaches `main` (the Notes App has no CI workflow; you would add one).",
     },
     {
       explanation:
-        "The real secrets for the backend stay in `.env`, which is listed in `.gitignore` and never pushed. Only `.env.example`, with placeholder values, is on GitHub.",
+        "The real secrets for the backend stay in `.env`, which the `.gitignore` you create in `notes-app/` (build step 8) keeps out of Git. Only `.env.example`, with placeholder values, is on GitHub.",
       fileId: "backend/.env.example",
       match: "JWT_SECRET=change-me-to-a-long-random-string",
     },

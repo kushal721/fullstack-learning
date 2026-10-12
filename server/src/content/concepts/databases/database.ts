@@ -90,7 +90,7 @@ SELECT * FROM notes;`,
     },
     {
       explanation:
-        "`backend/src/db.js` creates one shared connection pool with `new Pool({ connectionString: process.env.DATABASE_URL })`, and every controller uses it to run queries.",
+        "`backend/src/db.js` creates one shared connection pool with `new pg.Pool({ connectionString: process.env.DATABASE_URL })`, and every controller uses it to run queries.",
       fileId: "backend/src/db.js",
       match: "new pg.Pool({ connectionString: process.env.DATABASE_URL })",
     },

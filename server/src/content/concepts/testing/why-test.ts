@@ -107,13 +107,13 @@ it("refuses a note whose title is only spaces", () => {
   projectUsage: [
     {
       explanation:
-        "The Notes App adds tests in build step 13 at every level of the pyramid: a Vitest unit test for `validateNote`, Supertest integration tests for the notes routes, a React Testing Library test for the `NoteForm` component and one Playwright end-to-end test of the main journey.",
+        "The Notes App adds tests in build step 13 at the lower levels of the pyramid: a Vitest unit test for `validateNote`, Supertest integration tests for the notes and auth routes and a React Testing Library test for the `NoteForm` component. It has no Playwright end-to-end test; you would add one for the main journey.",
       fileId: "backend/src/validation/noteValidation.test.js",
       match: 'describe("validateNote", () => {',
     },
     {
       explanation:
-        "The chosen tests follow the rules above: the validation rules, the API behaviour (`401` without a login, `404` for another user's note) and the register, log in and create a note journey are tested; the CSS is not.",
+        "The chosen tests follow the rules above: the validation rules and the API behaviour (`401` without a login, `404` for another user's note, register and log in) are tested; the CSS is not.",
       fileId: "backend/src/routes/notes.test.js",
       match: 'it("rejects requests without a login cookie", async () => {',
     },

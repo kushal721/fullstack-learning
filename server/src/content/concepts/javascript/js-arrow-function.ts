@@ -97,7 +97,7 @@ console.log(notes);`,
   projectUsage: [
     {
       explanation:
-        "The Dashboard renders the list with `notes.map((note) => <NoteCard key={note.id} note={note} />)`. The arrow function receives each note and implicitly returns a `NoteCard` for it.",
+        "The Dashboard renders the list with `notes.map((note) => (<NoteCard key={note.id} note={note} … />))`. The arrow function receives each note and implicitly returns a `NoteCard` for it.",
       fileId: "frontend/src/pages/Dashboard.jsx",
       match: "{notes.map((note) => (",
     },

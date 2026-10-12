@@ -134,13 +134,13 @@ export default function App() {
   projectUsage: [
     {
       explanation:
-        '`Button.jsx` is `Button({ children, variant = "primary", ...props })` and renders a `button` with the class `button` plus `button-` and the variant. Login, Register, NoteForm and NoteCard all use it, for example `<Button type="submit">Save</Button>` in the form and a Delete button in each card.',
+        '`Button.jsx` is `Button({ children, variant = "primary", ...props })` and renders a `button` with the class `button` plus `button-` and the variant. Login, Register, NoteForm and NoteCard all use it, for example `<Button type="submit" disabled={isSaving}>` in the form and a Delete button in each card.',
       fileId: "frontend/src/components/Button.jsx",
       match: 'function Button({ children, variant = "primary", ...props })',
     },
     {
       explanation:
-        "`Input.jsx` is `Input({ label, id, ...props })` and renders a label linked to its input through `id`, so every field in Login, Register and NoteForm is accessible without anyone remembering to add the link by hand.",
+        "`Input.jsx` is `Input({ label, id, multiline = false, ...props })` and renders a label linked to its input through `id`, so every field in Login, Register and NoteForm is accessible without anyone remembering to add the link by hand.",
       fileId: "frontend/src/components/Input.jsx",
       match: "function Input({ label, id, multiline = false, ...props })",
     },

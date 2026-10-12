@@ -129,13 +129,13 @@ button {
     },
     {
       explanation:
-        'Components add those classes with `className`: `NoteCard.jsx` renders an article with `className="note-card"`, and `Button.jsx` renders a button with `className="button"`, so every card and button looks the same.',
+        'Components add those classes with `className`: `NoteCard.jsx` renders an article with `className="note-card"`, and `Button.jsx` gives its button the classes `button` and `button-${variant}`, so every card and button looks the same.',
       fileId: "frontend/src/components/NoteCard.jsx",
       match: '<article className="note-card">',
     },
     {
       explanation:
-        "Pseudo-classes such as `.button:hover` and `.button:focus-visible` give buttons a hover colour and a visible keyboard focus outline without any JavaScript.",
+        "Pseudo-classes such as `.button:focus-visible` and `.button:disabled` give buttons a visible keyboard focus outline and a faded look while disabled, without any JavaScript.",
       fileId: "frontend/src/index.css",
       match: ".button:focus-visible {",
     },

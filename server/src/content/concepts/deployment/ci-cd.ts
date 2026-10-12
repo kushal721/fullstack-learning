@@ -125,7 +125,7 @@ git push -u origin add-ci`,
     },
     {
       explanation:
-        "For the Notes App, a CI workflow would run the Vitest unit and integration tests and `npm run build` for the frontend on every PR, and only a green `main` would be deployed in build step 14.",
+        "The Notes App doesn't have a CI workflow yet; one would run the Vitest unit and integration tests and `npm run build` for the frontend on every PR, and only a green `main` would be deployed in build step 14.",
     },
   ],
   commonMistakes: [

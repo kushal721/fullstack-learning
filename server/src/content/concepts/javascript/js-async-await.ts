@@ -107,7 +107,7 @@ console.log("main() started, this line does not wait");`,
   projectUsage: [
     {
       explanation:
-        "Each function in `frontend/src/services/notesApi.js` is `async`: it awaits `fetch()`, throws an `Error` with the server's message if the response is not ok, and returns `await response.json()`.",
+        "The `request()` function in `frontend/src/services/request.js` is `async`: it awaits `fetch()`, throws an `Error` with the server's message if the response is not ok, and returns the data from `await response.json()`.",
       fileId: "frontend/src/services/request.js",
       match: "const response = await fetch(path, {",
     },

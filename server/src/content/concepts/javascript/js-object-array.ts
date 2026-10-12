@@ -112,13 +112,13 @@ console.log(notes === updated); // false: a different array`,
   projectUsage: [
     {
       explanation:
-        "`useNotes` (`frontend/src/hooks/useNotes.js`) keeps the notes array in state and adds a saved note with `setNotes([...notes, note])`, creating a new array so React re-renders the Dashboard.",
+        "`useNotes` (`frontend/src/hooks/useNotes.js`) keeps the notes array in state and adds a saved note with `setNotes((current) => [note, ...current])`, creating a new array so React re-renders the Dashboard.",
       fileId: "frontend/src/hooks/useNotes.js",
       match: "setNotes((current) => [note, ...current]);",
     },
     {
       explanation:
-        "The Dashboard turns the array into components with `notes.map((note) => <NoteCard key={note.id} note={note} />)`, reading each note's `id` with dot access.",
+        "The Dashboard turns the array into components with `notes.map((note) => (<NoteCard key={note.id} note={note} … />))`, reading each note's `id` with dot access.",
       fileId: "frontend/src/pages/Dashboard.jsx",
       match: "key={note.id}",
     },

@@ -111,7 +111,7 @@ await handleSave("");`,
   projectUsage: [
     {
       explanation:
-        '`frontend/src/services/notesApi.js` checks `response.ok`; when it is false, it reads the server\'s `{ "error": "..." }` body and throws `new Error(message)` so the calling code knows the request failed and why.',
+        '`frontend/src/services/request.js` checks `response.ok`; when it is false, it reads the server\'s `{ "error": "..." }` body and throws `new Error(data?.error ?? "Something went wrong")` so the calling code knows the request failed and why.',
       fileId: "frontend/src/services/request.js",
       match: 'throw new Error(data?.error ?? "Something went wrong");',
     },
@@ -123,7 +123,7 @@ await handleSave("");`,
     },
     {
       explanation:
-        "The backend controllers in `backend/src/` catch database errors, log the full details on the server, and reply `500` with a generic message, never the stack trace, which could reveal how the server is built.",
+        "The backend controllers in `backend/src/` don't catch database errors themselves; the central error handler in `app.js` logs the full details on the server and replies `500` with a generic message, never the stack trace, which could reveal how the server is built.",
       fileId: "backend/src/app.js",
       match: 'res.status(500).json({ error: "Something went wrong" });',
     },

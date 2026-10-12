@@ -119,11 +119,11 @@ test("register, log in and create a note", async ({ page }) => {
   projectUsage: [
     {
       explanation:
-        "The Notes App has one Playwright test, run with `npx playwright test`, that opens the real app in a browser, registers a new user, logs in, creates a note and checks that it appears in the list.",
+        "The Notes App doesn't include a Playwright test; you would add one, run with `npx playwright test`, that opens the real app in a browser, registers a new user, logs in, creates a note and checks that it appears in the list.",
     },
     {
       explanation:
-        "All the detailed rules (validation messages, `401` and `404` responses) are left to the faster unit and integration tests, so the E2E test only covers the main journey, following the testing pyramid.",
+        "All the detailed rules (validation messages, `401` and `404` responses) are left to the faster unit and integration tests, so an E2E test you add only needs to cover the main journey, following the testing pyramid.",
     },
   ],
   commonMistakes: [

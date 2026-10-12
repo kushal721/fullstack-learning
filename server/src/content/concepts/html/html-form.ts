@@ -124,7 +124,7 @@ export const htmlForm: Concept = {
     },
     {
       explanation:
-        "The form's `onSubmit` handler, `handleSave()`, calls `event.preventDefault()` so the page does not reload, then calls `createNote()` from `frontend/src/services/notesApi.js`, which sends `POST /api/notes` to the Express backend with `fetch()`.",
+        "The form's `onSubmit` handler, `handleSave()`, calls `event.preventDefault()` so the page does not reload, then calls `createNote()` from `frontend/src/services/notesApi.js`, which sends `POST /api/notes` to the Express backend through the shared `request()` helper (where `fetch()` lives).",
       fileId: "frontend/src/components/NoteForm.jsx",
       match: "async function handleSave(event) {",
     },

@@ -108,7 +108,7 @@ export const cssFlexbox: Concept = {
   projectUsage: [
     {
       explanation:
-        "The `.navbar` rule in `frontend/src/index.css` uses `display: flex` with `justify-content: space-between` so the `Navbar` component shows the app name on one side and its links on the other, all in one row.",
+        "The `.navbar` rule in `frontend/src/index.css` uses `display: flex` with `justify-content: space-between` so the `Navbar` component shows the app name on one side and the user's email and Log out button on the other, all in one row.",
       fileId: "frontend/src/index.css",
       match: "justify-content: space-between;",
     },

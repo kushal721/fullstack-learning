@@ -160,13 +160,13 @@ describe("notes API", () => {
   projectUsage: [
     {
       explanation:
-        "`backend/src/routes/notes.test.js` uses Supertest against the Notes App's Express app: `POST /api/notes` without a login cookie gets `401`, with one it gets `201`, and asking for another user's note gets `404`.",
+        "`backend/src/routes/notes.test.js` uses Supertest against the Notes App's Express app: `GET /api/notes` without a login cookie gets `401`, `POST /api/notes` with one gets `201`, and changing another user's note gets `404`.",
       fileId: "backend/src/routes/notes.test.js",
       match: 'const res = await request(app).get("/api/notes");',
     },
     {
       explanation:
-        "These tests run against a separate test database: `DATABASE_URL` points at a `notes_test` database, so running the tests can never touch your real notes.",
+        "These tests run against a separate test database: unless `DATABASE_URL` is already set, it points at a `notes_test` database, so running the tests won't touch your real notes.",
       fileId: "backend/src/routes/notes.test.js",
       match: '"postgres://postgres:dev@localhost:5432/notes_test";',
     },

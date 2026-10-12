@@ -115,7 +115,7 @@ console.log(notes.map(describe));`,
     },
     {
       explanation:
-        "The Notes App stays in plain JavaScript, but its note objects have the same idea of a shape: `{ id, title, content }`. Writing that shape as a `Note` type would be the first step in converting it to TypeScript.",
+        "The Notes App stays in plain JavaScript, but its note objects have the same idea of a shape: `{ id, title, content, created_at, updated_at }`. Writing that shape as a `Note` type would be the first step in converting it to TypeScript.",
     },
   ],
   commonMistakes: [

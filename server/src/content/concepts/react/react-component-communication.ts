@@ -172,7 +172,7 @@ export default function App() {
     },
     {
       explanation:
-        "It renders `notes.map((note) => <NoteCard key={note.id} note={note} onDelete={removeNote} />)`. Each `NoteCard` receives its note as a prop and calls `onDelete(note.id)` when its Delete button is pressed; `NoteForm` and `NoteCard` never talk to each other directly.",
+        "It renders `notes.map((note) => <NoteCard key={note.id} note={note} onUpdated={replaceNote} onDelete={removeNote} />)`. Each `NoteCard` receives its note as a prop and calls `onDelete(note.id)` when its Delete button is pressed; `NoteForm` and `NoteCard` never talk to each other directly.",
       fileId: "frontend/src/pages/Dashboard.jsx",
       match: "{notes.map((note) => (",
     },

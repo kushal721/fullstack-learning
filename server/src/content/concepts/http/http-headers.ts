@@ -112,7 +112,7 @@ curl -i -X POST http://localhost:3000/echo \\
   projectUsage: [
     {
       explanation:
-        'The frontend\'s `notesApi.js` sends `headers: { "Content-Type": "application/json" }` with every note it creates or updates, so `express.json()` in `backend/src/server.js` fills `req.body`.',
+        'The frontend\'s `request.js` sends `headers: { "Content-Type": "application/json" }` whenever there is a body, such as a note being created or updated, so `express.json()` in `backend/src/app.js` fills `req.body`.',
       fileId: "frontend/src/services/request.js",
       match:
         'headers: body ? { "Content-Type": "application/json" } : undefined,',

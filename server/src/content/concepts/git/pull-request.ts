@@ -93,11 +93,11 @@ git push`,
   projectUsage: [
     {
       explanation:
-        "Every change to the Notes App starts from a GitHub issue and arrives through a pull request from a branch such as `feature/note-form` or `fix/empty-title`, with `Closes #<issue number>` in the description.",
+        "Every change to this platform starts from a GitHub issue and arrives through a pull request from a branch such as `feature/note-form` or `fix/empty-title`, with `Closes #<issue number>` in the description; you can work on the Notes App the same way.",
     },
     {
       explanation:
-        "The PR runs the automatic checks (formatting, linting, type checking and tests) and is merged only when they pass. It is squash-merged, so the PR title, for example `feat: add note form`, becomes the single commit on `main`, and the branch is deleted afterwards.",
+        "On this platform the PR runs the automatic checks (formatting, linting, type checking and tests) and is merged only when they pass. It is squash-merged, so the PR title, for example `feat: add note form`, becomes the single commit on `main`, and the branch is deleted afterwards.",
     },
     {
       explanation:

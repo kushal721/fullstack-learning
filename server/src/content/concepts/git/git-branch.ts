@@ -104,7 +104,7 @@ git branch -d feature/note-form`,
   projectUsage: [
     {
       explanation:
-        "In the Notes App and this platform, every change starts from a GitHub issue and gets its own branch named `feature/...`, `fix/...`, `docs/...` or `chore/...`, so `main` always stays working.",
+        "On this platform every change starts from a GitHub issue and gets its own branch named `feature/...`, `fix/...`, `docs/...` or `chore/...`, so `main` always stays working; you can use the same habit for the Notes App.",
     },
     {
       explanation:

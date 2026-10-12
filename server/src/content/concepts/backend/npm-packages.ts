@@ -102,13 +102,13 @@ npm run dev`,
   projectUsage: [
     {
       explanation:
-        '`backend/package.json` sets `"type": "module"`, lists the runtime dependencies (`express` and the `pg` database driver among them) and defines the `dev` and `start` scripts that run `src/server.js` with `node --env-file=.env`.',
+        '`backend/package.json` sets `"type": "module"`, lists the runtime dependencies (`express` and the `pg` database driver among them) and defines the `dev` script (`node --env-file=.env --watch src/server.js`) and the `start` script (`node src/server.js`).',
       fileId: "backend/package.json",
       match: '"dependencies": {',
     },
     {
       explanation:
-        "`node_modules` is git-ignored and `package-lock.json` is committed, so a fresh clone needs only `npm ci` in `backend/` before `npm run dev` works.",
+        "The `.gitignore` you create in `notes-app/` in build step 8 ignores `node_modules`, while `package-lock.json` is kept, so a fresh clone needs only `npm ci` in `backend/` before `npm run dev` works.",
     },
     {
       explanation:

@@ -113,7 +113,7 @@ JOIN users ON users.id = notes.user_id;`,
   projectUsage: [
     {
       explanation:
-        "`database/schema.sql` creates `notes` with `user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE` and adds the index `notes_user_id_idx` so one user's notes are found quickly.",
+        "`database/schema.sql` creates `notes` with `user_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE` and adds the index `notes_user_id_idx` so one user's notes are found quickly.",
       fileId: "database/schema.sql",
       match:
         "user_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,",

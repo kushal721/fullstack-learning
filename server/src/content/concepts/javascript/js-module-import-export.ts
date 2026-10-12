@@ -113,7 +113,7 @@ console.log(sayBye("Ada"));`,
     },
     {
       explanation:
-        'On the backend, `backend/src/server.js` starts with `import express from "express"`, a default import of a package from npm, and imports its routes from local files.',
+        'On the backend, `backend/src/app.js` uses `import express from "express"`, a default import of a package from npm, and imports its routes from local files.',
       fileId: "backend/src/app.js",
       match: 'import express from "express";',
     },
