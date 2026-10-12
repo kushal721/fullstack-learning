@@ -12,13 +12,22 @@ vi.mock("../components/connection-graph/ConnectionGraph.tsx", () => ({
   default: ({
     nodes,
     centerId,
+    onSelect,
   }: {
-    nodes: { id: string }[];
+    nodes: { id: string; name: string }[];
     centerId: string;
+    onSelect: (symbol: unknown) => void;
   }) => (
-    <p data-testid="graph">
-      {centerId}: {nodes.map((n) => n.id).join(", ")}
-    </p>
+    <div data-testid="graph">
+      <p>
+        {centerId}: {nodes.map((n) => n.id).join(", ")}
+      </p>
+      {nodes.map((n) => (
+        <button key={n.id} type="button" onClick={() => onSelect(n)}>
+          pick {n.name}
+        </button>
+      ))}
+    </div>
   ),
 }));
 
@@ -97,6 +106,27 @@ function renderAt(url: string) {
           id: "fn:authApi.logout",
           kind: "function",
           name: "logout",
+          fileId: "frontend/index.html",
+          line: 2,
+          summary: "x",
+          conceptIds: [],
+        },
+      ],
+      edges: [],
+    },
+    "/api/symbols/fn%3AauthApi.logout/graph?depth=1": {
+      nodes: [
+        {
+          id: "fn:authApi.logout",
+          kind: "function",
+          name: "logout",
+          summary: "x",
+          conceptIds: [],
+        },
+        {
+          id: "fn:request",
+          kind: "function",
+          name: "request",
           summary: "x",
           conceptIds: [],
         },
@@ -223,5 +253,28 @@ describe("ExplorerPage", () => {
       renderAt("/explorer?symbol=fn:nope");
       expect(await screen.findByRole("alert")).toBeInTheDocument();
     });
+  });
+
+  it("walks to a picked node: new ?symbol=, and its file at its line", async () => {
+    renderAt("/explorer?symbol=fn:app.handleLogout");
+    await userEvent.click(
+      await screen.findByRole("button", { name: "pick logout" }),
+    );
+
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "?symbol=fn%3AauthApi.logout&file=frontend%2Findex.html&line=2",
+    );
+    expect(
+      await screen.findByRole("heading", {
+        name: "Connections of fn:authApi.logout",
+      }),
+    ).toBeInTheDocument();
+    expect(await screen.findByTestId("graph")).toHaveTextContent(
+      "fn:authApi.logout: fn:authApi.logout, fn:request",
+    );
+    // The file opens in the code viewer.
+    expect(
+      await screen.findByText("<!-- frontend/index.html -->"),
+    ).toBeInTheDocument();
   });
 });

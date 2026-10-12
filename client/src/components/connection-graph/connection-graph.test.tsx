@@ -1,7 +1,8 @@
 import type { CodeSymbol, Relationship } from "@fsl/shared";
 import { render, screen } from "@testing-library/react";
 import { type NodeProps, ReactFlowProvider } from "@xyflow/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { ConnectionNode } from "./ConnectionNode.tsx";
 import {
   type ConnectionFlowNode,
@@ -58,17 +59,19 @@ describe("layoutConnections", () => {
 });
 
 describe("ConnectionNode", () => {
-  const renderNode = (s: CodeSymbol, isCenter = false) =>
+  const renderNode = (s: CodeSymbol, isCenter = false, onSelect = vi.fn()) => {
     render(
       <ReactFlowProvider>
         <ConnectionNode
           {...({
             id: s.id,
-            data: { symbol: s, isCenter },
+            data: { symbol: s, isCenter, onSelect },
           } as unknown as NodeProps<ConnectionFlowNode>)}
         />
       </ReactFlowProvider>,
     );
+    return onSelect;
+  };
 
   it("shows the kind, name and file:line", () => {
     renderNode(
@@ -85,5 +88,28 @@ describe("ConnectionNode", () => {
   it("says when a symbol lives outside the project", () => {
     renderNode(symbol("external:fetch", { kind: "external" }));
     expect(screen.getByText("outside the project")).toBeInTheDocument();
+  });
+
+  it("is a button that selects the symbol by mouse or keyboard", async () => {
+    const s = symbol("fn:handleSave", {
+      fileId: "frontend/src/components/NoteForm.jsx",
+      line: 15,
+    });
+    const onSelect = renderNode(s, true);
+    const button = screen.getByRole("button", {
+      name: "function handleSave, NoteForm.jsx:15 (shown)",
+    });
+    expect(button).toHaveAttribute("aria-current", "true");
+
+    await userEvent.click(button);
+    expect(onSelect).toHaveBeenCalledWith(s);
+
+    // Reachable with Tab from outside the node.
+    button.blur();
+    await userEvent.tab();
+    expect(button).toHaveFocus();
+    await userEvent.keyboard("{Enter}");
+    await userEvent.keyboard(" ");
+    expect(onSelect).toHaveBeenCalledTimes(3);
   });
 });

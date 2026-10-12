@@ -14,23 +14,35 @@ type Props = {
   line: number | null;
   /** Called when a line number is clicked, to put it in the URL. */
   onSelectLine: (line: number) => void;
+  /**
+   * Scroll the line into view (default). Off when the learner is walking
+   * the connection graph, so the graph stays on screen; the line is still
+   * highlighted.
+   */
+  scrollToLine?: boolean;
 };
 
 /**
  * Shows one example-project file with line numbers. Read-only on purpose:
  * learners read and trace this code, they don't edit it here.
  */
-export function CodeViewer({ file, source, line, onSelectLine }: Props) {
+export function CodeViewer({
+  file,
+  source,
+  line,
+  onSelectLine,
+  scrollToLine = true,
+}: Props) {
   const [showAll, setShowAll] = useState(false);
 
   // Bring the requested line into view once the code is on the page.
   useEffect(() => {
-    if (line) {
+    if (line && scrollToLine) {
       document
         .getElementById(`L${line}`)
         ?.scrollIntoView?.({ block: "center" });
     }
-  }, [file.path, line]);
+  }, [file.path, line, scrollToLine]);
   const allLines = source.replace(/\n$/, "").split("\n");
   // Show everything if asked to, or if the wanted line is past the preview.
   const shortened =

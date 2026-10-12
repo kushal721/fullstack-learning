@@ -1,6 +1,10 @@
-import type { FileSymbolsResponse, SymbolGraphResponse } from "@fsl/shared";
-import { lazy, Suspense } from "react";
-import { Link } from "react-router";
+import type {
+  CodeSymbol,
+  FileSymbolsResponse,
+  SymbolGraphResponse,
+} from "@fsl/shared";
+import { lazy, Suspense, useCallback } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useApi } from "../../hooks/useApi.ts";
 import { apiPaths } from "../../services/api.ts";
 import { ErrorState } from "../ui/ErrorState.tsx";
@@ -16,7 +20,7 @@ const explorerLink = (file: string | null, symbol?: string) => {
   return `/explorer?${params}`;
 };
 
-/** The graph of one symbol's direct connections. */
+/** The graph of one symbol's direct connections; pick a node to walk on. */
 export function ConnectionsPanel({
   symbolId,
   file,
@@ -26,6 +30,22 @@ export function ConnectionsPanel({
 }) {
   const { data, error, isLoading, reload } = useApi<SymbolGraphResponse>(
     apiPaths.symbolGraph(symbolId),
+  );
+  const navigate = useNavigate();
+  const location = useLocation();
+  const cameFromGraph = (location.state as { fromGraph?: boolean } | null)
+    ?.fromGraph;
+
+  // Picking a node is a new history entry: the graph re-centres on it, the
+  // code viewer opens its file at its line, and Back walks back.
+  const select = useCallback(
+    (symbol: CodeSymbol) => {
+      const params = new URLSearchParams({ symbol: symbol.id });
+      if (symbol.fileId) params.set("file", symbol.fileId);
+      if (symbol.fileId && symbol.line) params.set("line", String(symbol.line));
+      navigate(`/explorer?${params}`, { state: { fromGraph: true } });
+    },
+    [navigate],
   );
   return (
     <section
@@ -47,7 +67,12 @@ export function ConnectionsPanel({
       {error && <ErrorState message={error.message} onRetry={reload} />}
       {data && (
         <Suspense fallback={<Loading label="Loading the graph…" />}>
-          <ConnectionGraph {...data} centerId={symbolId} />
+          <ConnectionGraph
+            {...data}
+            centerId={symbolId}
+            onSelect={select}
+            focusCenter={cameFromGraph}
+          />
         </Suspense>
       )}
     </section>
