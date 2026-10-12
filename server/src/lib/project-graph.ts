@@ -7,6 +7,11 @@ import { findLine, getFile } from "./project-files.js";
  * The Notes App as a graph: symbols are the nodes, relationships the
  * directed edges (source <type> target). Every helper takes the graph as
  * an optional last argument so tests can use small sample graphs.
+ *
+ * `imports` relationships are the one exception: their ends are file ids
+ * (e.g. "frontend/src/App.jsx"), one per local import statement, so the
+ * graph also answers "which files depend on which" (fileDependencies,
+ * fileDependents). Symbol ids always contain ":", file ids never do.
  */
 export type ProjectGraph = {
   symbols: CodeSymbol[];
@@ -119,4 +124,34 @@ export function neighborhood(
       (rel) => seen.has(rel.source) && seen.has(rel.target),
     ),
   };
+}
+
+function filesFor(ids: string[]): ProjectFile[] {
+  return [...new Set(ids)]
+    .map((fileId) => getFile(fileId))
+    .filter((file): file is ProjectFile => file !== undefined);
+}
+
+/** Files this file imports, in the order they are imported. */
+export function fileDependencies(
+  fileId: string,
+  graph: ProjectGraph = defaultGraph,
+): ProjectFile[] {
+  return filesFor(
+    graph.relationships
+      .filter((rel) => rel.type === "imports" && rel.source === fileId)
+      .map((rel) => rel.target),
+  );
+}
+
+/** Files that import this file. */
+export function fileDependents(
+  fileId: string,
+  graph: ProjectGraph = defaultGraph,
+): ProjectFile[] {
+  return filesFor(
+    graph.relationships
+      .filter((rel) => rel.type === "imports" && rel.target === fileId)
+      .map((rel) => rel.source),
+  );
 }

@@ -1,5 +1,8 @@
 import type { CodeSymbol, Relationship, RelationshipType } from "@fsl/shared";
+import { readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { config } from "../config.js";
 import { relationships } from "../content/relationships.js";
 import { symbols } from "../content/symbols.js";
 import {
@@ -7,6 +10,8 @@ import {
   calls,
   connectedFiles,
   definedIn,
+  fileDependencies,
+  fileDependents,
   getSymbol,
   neighborhood,
 } from "./project-graph.js";
@@ -234,6 +239,71 @@ describe("project graph", () => {
         ),
       ).toBe(true);
       expect(into("hook:useNotes", "uses")).toEqual(["component:Dashboard"]);
+    });
+  });
+
+  describe("file imports", () => {
+    // Read every import statement from the real source, so the data can't
+    // drift from the code.
+    function importsInSource(): string[] {
+      const root = config.exampleProjectDir;
+      const found: string[] = [];
+      const walk = (dir: string) => {
+        for (const entry of readdirSync(dir, { withFileTypes: true })) {
+          const full = path.join(dir, entry.name);
+          if (entry.name === "node_modules") continue;
+          if (entry.isDirectory()) walk(full);
+          else if (/\.jsx?$/.test(entry.name)) {
+            const id = path.relative(root, full).split(path.sep).join("/");
+            const source = readFileSync(full, "utf8");
+            const specifiers = [
+              ...source.matchAll(
+                /^import\s+(?:[^"']*?\s+from\s+)?["'](\.{1,2}\/[^"']+)["']/gm,
+              ),
+              ...source.matchAll(/await import\(["'](\.{1,2}\/[^"']+)["']\)/g),
+            ].map((m) => m[1]!);
+            for (const specifier of specifiers) {
+              found.push(
+                `${id} -> ${path.posix.normalize(path.posix.join(path.posix.dirname(id), specifier))}`,
+              );
+            }
+          }
+        }
+      };
+      walk(root);
+      return found.sort();
+    }
+
+    it("has one imports relationship per local import in the source", () => {
+      const inData = relationships
+        .filter((r) => r.type === "imports")
+        .map((r) => `${r.source} -> ${r.target}`)
+        .sort();
+      expect(inData).toEqual(importsInSource());
+      expect(inData.length).toBeGreaterThan(30);
+    });
+
+    it("lists a file's dependencies and dependents", () => {
+      expect(ids(fileDependencies("frontend/src/pages/Login.jsx"))).toEqual([
+        "frontend/src/components/Button.jsx",
+        "frontend/src/components/Input.jsx",
+        "frontend/src/services/authApi.js",
+      ]);
+      expect(
+        ids(fileDependents("frontend/src/services/request.js")).sort(),
+      ).toEqual([
+        "frontend/src/services/authApi.js",
+        "frontend/src/services/notesApi.js",
+      ]);
+      expect(ids(fileDependents("backend/src/db.js")).sort()).toEqual([
+        "backend/src/controllers/authController.js",
+        "backend/src/controllers/notesController.js",
+        "backend/src/routes/notes.test.js",
+      ]);
+      expect(fileDependencies("frontend/src/components/Button.jsx")).toEqual(
+        [],
+      );
+      expect(fileDependents("frontend/src/main.jsx")).toEqual([]);
     });
   });
 });

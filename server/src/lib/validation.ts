@@ -446,9 +446,12 @@ function validateGraph(
     if (rel.id !== expectedId) {
       errors.push(`${name} must have the id "${expectedId}".`);
     }
+    // `imports` connects files; every other type connects symbols.
     for (const end of [rel.source, rel.target]) {
-      if (!symbolIds.has(end)) {
-        errors.push(`${name} connects unknown symbol "${end}".`);
+      if (rel.type === "imports" ? !fileIds.has(end) : !symbolIds.has(end)) {
+        errors.push(
+          `${name} connects unknown ${rel.type === "imports" ? "file" : "symbol"} "${end}".`,
+        );
       }
     }
     if (rel.source === rel.target) {
