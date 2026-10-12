@@ -214,6 +214,7 @@ export function relationshipViews(
             {
               id: rel.id,
               type: rel.type,
+              direction,
               explanation: rel.explanation,
               symbol: toSymbolSummary(other),
             },
@@ -243,4 +244,74 @@ export function fileSymbols(
     defined,
     referenced: symbolsFor(otherIds, graph).map(toSymbolSummary),
   };
+}
+
+// `handles` and `receives` point back in time: an event triggers its
+// handler, a request reaches its route. Every other type points forward.
+const BACKWARD: Relationship["type"][] = ["handles", "receives"];
+
+function viewsOfTypes(
+  id: string,
+  types: Relationship["type"][],
+  direction: "in" | "out",
+  graph: ProjectGraph,
+): RelationshipView[] {
+  return types.flatMap((type) => relationshipViews(id, type, direction, graph));
+}
+
+function forwardTypes(graph: ProjectGraph): Relationship["type"][] {
+  return [...new Set(graph.relationships.map((rel) => rel.type))].filter(
+    (type) => type !== "imports" && !BACKWARD.includes(type),
+  );
+}
+
+/**
+ * What comes before a symbol and uses it: relationships pointing at it,
+ * plus the event that triggers it (a handler) or the request that reaches
+ * it (a route). File imports are left out.
+ */
+export function usedByViews(
+  id: string,
+  graph: ProjectGraph = defaultGraph,
+): RelationshipView[] {
+  return [
+    ...viewsOfTypes(id, BACKWARD, "out", graph),
+    ...viewsOfTypes(id, forwardTypes(graph), "in", graph),
+  ];
+}
+
+/** What a symbol calls, renders, uses, queries… (file imports left out). */
+export function usesViews(
+  id: string,
+  graph: ProjectGraph = defaultGraph,
+): RelationshipView[] {
+  return viewsOfTypes(id, forwardTypes(graph), "out", graph);
+}
+
+// Order steps happen in: middleware runs before the route calls the
+// controller, a component renders before…, a controller answers last.
+const FLOW_ORDER: Relationship["type"][] = [
+  "handles",
+  "receives",
+  "uses",
+  "calls",
+  "renders",
+  "sends",
+  "queries",
+  "returns",
+];
+
+/**
+ * What happens next, following the data: what it calls, uses, sends… plus
+ * the handler of an event and the route that receives a request. Empty for
+ * dead ends, where control returns to the caller.
+ */
+export function nextSteps(
+  id: string,
+  graph: ProjectGraph = defaultGraph,
+): RelationshipView[] {
+  return [
+    ...viewsOfTypes(id, BACKWARD, "in", graph),
+    ...usesViews(id, graph),
+  ].sort((a, b) => FLOW_ORDER.indexOf(a.type) - FLOW_ORDER.indexOf(b.type));
 }

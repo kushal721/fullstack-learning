@@ -41,6 +41,55 @@ describe("GET /api/symbols/:id", () => {
     expect(body.files[0]!.id).toBe("frontend/src/components/NoteForm.jsx");
   });
 
+  it("answers what happens next, in the order it happens", async () => {
+    const route = (await request(app).get(url("route:POST /api/notes")))
+      .body as SymbolResponse;
+    // The request comes before the route; then middleware, then the controller.
+    expect(
+      route.usedBy.map((u) => `${u.direction} ${u.type} ${u.symbol.id}`),
+    ).toEqual(["out receives http-request:POST /api/notes"]);
+    expect(route.next.map((n) => `${n.type} ${n.symbol.id}`)).toEqual([
+      "uses middleware:requireAuth",
+      "uses middleware:express.json",
+      "calls controller:notesController.createNote",
+    ]);
+    expect(route.uses.map((u) => u.type)).not.toContain("receives");
+    // An event is fired by the browser; its handler comes next.
+    const event = (await request(app).get(url("event:noteForm.submit")))
+      .body as SymbolResponse;
+    expect(event.usedBy).toEqual([]);
+    expect(event.next.map((n) => n.symbol.id)).toEqual(["fn:handleSave"]);
+    // A handler is triggered by its event and goes on to the service call.
+    const handler = (await request(app).get(url("fn:handleSave")))
+      .body as SymbolResponse;
+    expect(handler.usedBy.map((u) => u.symbol.id)).toEqual([
+      "event:noteForm.submit",
+    ]);
+    expect(handler.next.map((n) => n.symbol.id)).toEqual([
+      "fn:notesApi.createNote",
+      "fn:useNotes.addNote",
+    ]);
+    // A request is sent by fetch and answered by the controller; the route is next.
+    const req = (await request(app).get(url("http-request:POST /api/notes")))
+      .body as SymbolResponse;
+    expect(req.usedBy.map((u) => u.symbol.id)).toEqual([
+      "external:fetch",
+      "controller:notesController.createNote",
+    ]);
+    expect(req.next.map((n) => n.symbol.id)).toEqual(["route:POST /api/notes"]);
+    // A dead end: nothing next, but it is used by its caller.
+    const validate = (await request(app).get(url("fn:validateNote")))
+      .body as SymbolResponse;
+    expect(validate.next).toEqual([]);
+    expect(validate.usedBy.map((u) => u.symbol.id)).toContain(
+      "controller:notesController.createNote",
+    );
+    const button = (await request(app).get(url("component:Button")))
+      .body as SymbolResponse;
+    expect(button.usedBy).toHaveLength(5);
+    expect(button.usedBy.every((u) => u.type === "renders")).toBe(true);
+  });
+
   it("accepts ids with spaces and slashes when URL-encoded", async () => {
     const res = await request(app).get(url("route:POST /api/notes"));
     const body = res.body as SymbolResponse;

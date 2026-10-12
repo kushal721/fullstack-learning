@@ -15,6 +15,8 @@ export const symbols: CodeSymbol[] = [
     match: '<form className="note-form" onSubmit={handleSave}>',
     summary:
       "The browser fires `submit` when the user presses Save or Enter in the note form.",
+    dataHandled:
+      "the note form's current title and content (read by `handleSave` from state)",
     conceptIds: ["js-event", "html-form"],
   },
   {
@@ -54,6 +56,8 @@ export const symbols: CodeSymbol[] = [
     kind: "external",
     name: "fetch",
     summary: "The browser's built-in function for sending HTTP requests.",
+    dataHandled:
+      "the URL, method, headers and JSON body going out; the response coming back",
     conceptIds: ["js-fetch"],
   },
   {
@@ -73,6 +77,7 @@ export const symbols: CodeSymbol[] = [
     match: 'notesRoutes.post("/", notesController.createNote);',
     summary:
       "The backend route that receives the request and hands it to the controller.",
+    dataHandled: "the request body (title, content) and the `token` cookie",
     conceptIds: ["express-route", "rest-endpoint"],
   },
   {
@@ -136,6 +141,7 @@ export const symbols: CodeSymbol[] = [
     fileId: "frontend/src/pages/Login.jsx",
     match: "<form onSubmit={handleSubmit}>",
     summary: "Fires when the user presses Log in on the login form.",
+    dataHandled: "the email and password typed into the login form",
     conceptIds: ["js-event", "html-form"],
   },
   {
@@ -156,6 +162,7 @@ export const symbols: CodeSymbol[] = [
     fileId: "frontend/src/pages/Register.jsx",
     match: "<form onSubmit={handleSubmit}>",
     summary: "Fires when the user presses Register on the registration form.",
+    dataHandled: "the email and password typed into the registration form",
     conceptIds: ["js-event", "html-form"],
   },
   {
@@ -177,6 +184,7 @@ export const symbols: CodeSymbol[] = [
     match: "<form onSubmit={handleUpdate}>",
     summary:
       "Fires when the user presses Save while editing a note on its card.",
+    dataHandled: "the edited title and content of one note",
     conceptIds: ["js-event", "html-form"],
   },
   {
@@ -197,6 +205,7 @@ export const symbols: CodeSymbol[] = [
     fileId: "frontend/src/components/NoteCard.jsx",
     match: "onClick={() => onDelete(note.id)}",
     summary: "Fires when the user clicks Delete on a note card.",
+    dataHandled: "the id of the note on that card",
     conceptIds: ["js-event-listener", "html-button"],
   },
   {
@@ -217,6 +226,7 @@ export const symbols: CodeSymbol[] = [
     fileId: "frontend/src/components/Navbar.jsx",
     match: "onClick={onLogout}",
     summary: "Fires when the user clicks Log out in the Navbar.",
+    dataHandled: "nothing from the page; it only starts logging out",
     conceptIds: ["js-event-listener", "html-button"],
   },
   {
@@ -227,6 +237,7 @@ export const symbols: CodeSymbol[] = [
     match: "async function handleLogout() {",
     summary:
       "Asks the API to log out, forgets the user and shows the login page.",
+    dataHandled: "the logged-in user in App's state, which it clears",
     conceptIds: ["react-state", "js-async-await"],
   },
   {
@@ -236,6 +247,7 @@ export const symbols: CodeSymbol[] = [
     fileId: "frontend/src/services/notesApi.js",
     match: "export function getNotes() {",
     summary: "Asks the API for the logged-in user's notes: `GET /api/notes`.",
+    dataHandled: "nothing in; the logged-in user's notes out",
     conceptIds: ["http-get", "js-module-import-export"],
   },
   {
@@ -288,6 +300,7 @@ export const symbols: CodeSymbol[] = [
     match: "export function logout() {",
     summary:
       "Asks the API to log out: `POST /api/auth/logout`, which clears the login cookie.",
+    dataHandled: "nothing in; the server clears the `token` cookie",
     conceptIds: ["http-post", "js-module-import-export"],
   },
   {
@@ -348,6 +361,7 @@ export const symbols: CodeSymbol[] = [
     kind: "http-request",
     name: "POST /api/auth/logout",
     summary: "The request that logs out; its answer clears the login cookie.",
+    dataHandled: "the `token` cookie in; a header that deletes it out",
     conceptIds: ["http-post", "http-headers"],
   },
   {
@@ -365,6 +379,7 @@ export const symbols: CodeSymbol[] = [
     fileId: "backend/src/routes/notes.js",
     match: 'notesRoutes.get("/", notesController.listNotes);',
     summary: "Lists the logged-in user's notes.",
+    dataHandled: "the `token` cookie; answers with the user's notes",
     conceptIds: ["express-route", "rest-endpoint"],
   },
   {
@@ -374,6 +389,8 @@ export const symbols: CodeSymbol[] = [
     fileId: "backend/src/routes/notes.js",
     match: 'notesRoutes.put("/:id", notesController.updateNote);',
     summary: "Updates one of the logged-in user's notes.",
+    dataHandled:
+      "the note id in the URL, the new title and content, and the `token` cookie",
     conceptIds: ["express-route", "rest-endpoint"],
   },
   {
@@ -383,6 +400,7 @@ export const symbols: CodeSymbol[] = [
     fileId: "backend/src/routes/notes.js",
     match: 'notesRoutes.delete("/:id", notesController.deleteNote);',
     summary: "Deletes one of the logged-in user's notes.",
+    dataHandled: "the note id in the URL and the `token` cookie",
     conceptIds: ["express-route", "rest-endpoint"],
   },
   {
@@ -392,6 +410,7 @@ export const symbols: CodeSymbol[] = [
     fileId: "backend/src/routes/auth.js",
     match: 'authRoutes.post("/register", authController.register);',
     summary: "Creates an account.",
+    dataHandled: "the email and password in the request body",
     conceptIds: ["express-route", "rest-endpoint"],
   },
   {
@@ -401,6 +420,7 @@ export const symbols: CodeSymbol[] = [
     fileId: "backend/src/routes/auth.js",
     match: 'authRoutes.post("/login", authController.login);',
     summary: "Logs in and sets the login cookie.",
+    dataHandled: "the email and password in; the `token` cookie out",
     conceptIds: ["express-route", "rest-endpoint"],
   },
   {
@@ -410,6 +430,7 @@ export const symbols: CodeSymbol[] = [
     fileId: "backend/src/routes/auth.js",
     match: 'authRoutes.post("/logout", authController.logout);',
     summary: "Clears the login cookie.",
+    dataHandled: "the `token` cookie, which the answer clears",
     conceptIds: ["express-route", "rest-endpoint"],
   },
   {
@@ -419,6 +440,7 @@ export const symbols: CodeSymbol[] = [
     fileId: "backend/src/routes/auth.js",
     match: 'authRoutes.get("/me", requireAuth, authController.currentUser);',
     summary: "Tells the frontend who is logged in.",
+    dataHandled: "the `token` cookie; answers with the user's id and email",
     conceptIds: ["express-route", "rest-endpoint"],
   },
   {
@@ -504,6 +526,7 @@ export const symbols: CodeSymbol[] = [
     fileId: "backend/src/controllers/authController.js",
     match: "export function logout(req, res) {",
     summary: "Clears the login cookie and answers 204.",
+    dataHandled: "the `token` cookie, which it tells the browser to delete",
     conceptIds: ["controller", "http-headers"],
   },
   {
@@ -618,6 +641,7 @@ export const symbols: CodeSymbol[] = [
     name: "bcrypt",
     summary:
       "The library that hashes passwords slowly with a salt and checks a password against a hash.",
+    dataHandled: "a password and, to check a login, the stored hash",
     conceptIds: ["npm-packages"],
   },
   {
@@ -626,6 +650,8 @@ export const symbols: CodeSymbol[] = [
     name: "jsonwebtoken",
     summary:
       "The library that signs login tokens and checks their signature and expiry.",
+    dataHandled:
+      "the user id and `JWT_SECRET` to sign; a token and the secret to verify",
     conceptIds: ["npm-packages"],
   },
   {
@@ -713,6 +739,8 @@ export const symbols: CodeSymbol[] = [
       'export default function Button({ children, variant = "primary", ...props }) {',
     summary:
       "The one button component for the whole app: a real `<button>` with the app's classes and a `variant` for its colour.",
+    dataHandled:
+      "its label (`children`), `variant` and every other prop, passed to the real `<button>`",
     conceptIds: ["react-reusable-component", "react-props"],
   },
   {
@@ -724,6 +752,8 @@ export const symbols: CodeSymbol[] = [
       "export default function Input({ label, id, multiline = false, ...props }) {",
     summary:
       "A labelled form field that renders an `<input>`, or a `<textarea>` when `multiline` is set.",
+    dataHandled:
+      "its `label`, `id` and the field's `value`/`onChange`, passed to the real field",
     conceptIds: ["react-reusable-component", "html-input"],
   },
   {
@@ -765,6 +795,7 @@ export const symbols: CodeSymbol[] = [
     name: "useState",
     summary:
       "React's hook for remembering a value between renders; calling its setter re-renders the component.",
+    dataHandled: "one value per call, kept between renders",
     conceptIds: ["react-usestate"],
   },
   {
@@ -773,6 +804,7 @@ export const symbols: CodeSymbol[] = [
     name: "useEffect",
     summary:
       "React's hook for side effects such as loading data after a component appears.",
+    dataHandled: "the effect to run and the values it depends on",
     conceptIds: ["react-useeffect"],
   },
 ];
