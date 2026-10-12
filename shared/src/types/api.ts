@@ -3,6 +3,7 @@ import type {
   CodeSymbol,
   Concept,
   FileTreeFolder,
+  Flow,
   ProjectFile,
   Relationship,
   SymbolKind,
@@ -221,4 +222,22 @@ export type FileSymbolsResponse = {
   /** Files this file imports, and files that import it. */
   imports: FileSummary[];
   importedBy: FileSummary[];
+};
+
+/** A flow in a list, without its steps. */
+export type FlowSummary = Pick<
+  Flow,
+  "id" | "title" | "summary" | "group" | "direction"
+> & {
+  stepCount: number;
+};
+
+/** GET /api/flows?group=request|security */
+export type FlowListResponse = { flows: FlowSummary[] };
+
+/** GET /api/flows/:id */
+export type FlowResponse = {
+  flow: Flow;
+  /** Every symbol the steps are at, with lines resolved, by id. */
+  symbols: Record<string, CodeSymbol>;
 };
