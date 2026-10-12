@@ -38,17 +38,12 @@ export function toBuildStepSummary({
   return { id, slug, order, title, goal };
 }
 
-/**
- * Steps that apply a topic: the ones it lists in `buildStepIds`, plus the
- * ones that introduce any of its concepts, in journey order.
- */
+/** The build steps a topic lists in `buildStepIds`, in journey order. */
 export function getStepsForTopic(
   topic: Topic,
   steps: BuildStep[] = buildSteps,
 ): BuildStep[] {
-  return getOrderedSteps(steps).filter(
-    (step) =>
-      topic.buildStepIds.includes(step.id) ||
-      step.conceptIds.some((id) => topic.conceptIds.includes(id)),
+  return getOrderedSteps(steps).filter((step) =>
+    topic.buildStepIds.includes(step.id),
   );
 }
