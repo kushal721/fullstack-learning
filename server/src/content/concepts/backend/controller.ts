@@ -141,14 +141,20 @@ curl -i -X POST http://localhost:3000/api/notes \\
     {
       explanation:
         "`backend/src/controllers/notesController.js` exports `listNotes`, `createNote`, `updateNote` and `deleteNote`, and `backend/src/routes/notes.js` maps each one to its method and path.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "export async function listNotes(req, res) {",
     },
     {
       explanation:
         '`createNote` validates `req.body` with `validateNote` from `validation/noteValidation.js` (answering `400` with `{ "error": "Title is required" }` if invalid), runs a parameterized `INSERT ... RETURNING *` with `req.user.id` and replies `201` with the saved note.',
+      fileId: "backend/src/controllers/notesController.js",
+      match: "export async function createNote(req, res) {",
     },
     {
       explanation:
         "`updateNote` replies `200` with the changed note and `deleteNote` replies `204` with no body; both answer `404` when the note does not exist for this user. Login and registration live in `authController` in the same way.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "export async function updateNote(req, res) {",
     },
   ],
   commonMistakes: [

@@ -47,6 +47,20 @@ export type CodeExample = {
 /** One step of "how do I create this?". */
 export type Instruction = { text: string; code?: CodeExample };
 
+/** One place the Notes App uses a concept. */
+export type ProjectUsage = {
+  explanation: string;
+  /** The example-project file it is about. */
+  fileId?: string;
+  /**
+   * Exact text on one line of that file, so the platform can link to the
+   * line. Text instead of a line number keeps working when lines move;
+   * `npm run validate` fails if the text disappears.
+   */
+  match?: string;
+  symbolId?: string;
+};
+
 /**
  * One concept, always explained in the same structure (spec §5) and from the
  * basics (spec §2). Text may use `backticks` for inline code.
@@ -78,14 +92,21 @@ export type Concept = {
   whereUsed: string[];
   /** What does it connect to? */
   connectsTo: string[];
-  /** Where the Notes App uses it. File/symbol ids are linked in later milestones. */
-  projectUsage: { explanation: string; fileId?: string; symbolId?: string }[];
+  /** Where the Notes App uses it. */
+  projectUsage: ProjectUsage[];
   commonMistakes: string[];
   /** Concept ids; links back from those concepts are added automatically. */
   relatedConcepts: string[];
-  /** Example-project file ids (filled once file data exists, M4). */
+  /**
+   * Extra example-project files to show under "Used in". Files from
+   * `projectUsage` and files whose `conceptIds` list this concept are added
+   * automatically.
+   */
   relatedFiles: string[];
-  /** Build step ids (filled once build steps exist, M5). */
+  /**
+   * Extra build steps to show under "Introduced in". Steps whose
+   * `conceptIds` list this concept are added automatically.
+   */
   relatedBuildSteps: string[];
 };
 

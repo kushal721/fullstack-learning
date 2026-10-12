@@ -41,6 +41,7 @@ describe("ConceptPage", () => {
       "Where is it used?",
       "What does it connect to?",
       "In the Notes App",
+      "Where to find it",
       "Common mistakes",
       "Related",
     ]);
@@ -115,5 +116,30 @@ describe("ConceptPage", () => {
       await screen.findByRole("heading", { level: 1, name: "HTML <button>" }),
     ).toBeInTheDocument();
     expect(screen.getByText("No related concepts yet.")).toBeInTheDocument();
+  });
+
+  it("links to the files that use the concept and the steps that introduce it", async () => {
+    mockFetchRoutes({ "/api/concepts/react-usestate": useStateConceptFixture });
+    renderAt("/concepts/react-usestate");
+    await screen.findByRole("heading", { level: 1, name: "useState" });
+
+    expect(
+      screen.getByRole("link", { name: "frontend/src/hooks/useNotes.js:6" }),
+    ).toHaveAttribute(
+      "href",
+      "/explorer?file=frontend%2Fsrc%2Fhooks%2FuseNotes.js&line=6",
+    );
+    // Without a known line the link opens the file.
+    expect(
+      screen.getByRole("link", {
+        name: "frontend/src/components/NoteForm.jsx",
+      }),
+    ).toHaveAttribute(
+      "href",
+      "/explorer?file=frontend%2Fsrc%2Fcomponents%2FNoteForm.jsx",
+    );
+    expect(
+      screen.getByRole("link", { name: /Step 6: Add state/ }),
+    ).toHaveAttribute("href", "/build/add-state");
   });
 });

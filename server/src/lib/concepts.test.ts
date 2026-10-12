@@ -4,8 +4,11 @@ import {
   getConcept,
   getConceptBySlug,
   getConceptsByTopic,
+  getFileUses,
   getRelatedConcepts,
+  getStepsIntroducing,
 } from "./concepts.js";
+import { findLine } from "./project-files.js";
 
 describe("concepts", () => {
   it("registers concepts with unique ids, including the reference concepts", () => {
@@ -68,5 +71,52 @@ describe("concepts", () => {
       const prose = text.replace(/`[^`]*`/g, "");
       expect(prose, concept.id).not.toMatch(/\*\*|<[a-z]/i);
     }
+  });
+
+  describe("links to the Notes App", () => {
+    const useState = () => getConcept("react-usestate")!;
+
+    it("lists the build steps that introduce a concept, in journey order", () => {
+      expect(getStepsIntroducing(useState()).map((s) => s.id)).toEqual([
+        "add-state",
+      ]);
+      // A concept can add a step the step itself doesn't list.
+      expect(
+        getStepsIntroducing({
+          ...useState(),
+          relatedBuildSteps: ["deploy"],
+        }).map((s) => s.order),
+      ).toEqual([6, 14]);
+    });
+
+    it("lists each file once, usages with their line first", () => {
+      const uses = getFileUses(useState());
+      const ids = uses.map((use) => use.fileId);
+      expect(new Set(ids).size).toBe(ids.length);
+      expect(uses[0]).toMatchObject({
+        fileId: "frontend/src/components/NoteForm.jsx",
+        line: findLine(
+          "frontend/src/components/NoteForm.jsx",
+          'const [title, setTitle] = useState("");',
+        ),
+        explanation: expect.stringContaining("NoteForm.jsx"),
+      });
+      expect(uses[0]!.line).toBeGreaterThan(0);
+    });
+
+    it("adds files whose concept list names the concept, without a line", () => {
+      const concept = { ...useState(), projectUsage: [], relatedFiles: [] };
+      const uses = getFileUses(concept);
+      expect(uses.length).toBeGreaterThan(0);
+      expect(uses.every((use) => use.line === undefined)).toBe(true);
+    });
+
+    it("finds the line of a text, or nothing", () => {
+      expect(findLine("frontend/src/main.jsx", "createRoot(")).toBe(6);
+      expect(
+        findLine("frontend/src/main.jsx", "not in the file"),
+      ).toBeUndefined();
+      expect(findLine("no/such/file.js", "x")).toBeUndefined();
+    });
   });
 });

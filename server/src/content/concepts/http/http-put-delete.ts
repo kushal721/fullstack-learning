@@ -126,14 +126,20 @@ curl -i -X DELETE http://localhost:3000/api/notes/42`,
     {
       explanation:
         '`backend/src/routes/notes.js` registers `router.put("/:id", notesController.updateNote)` and `router.delete("/:id", notesController.deleteNote)`, mounted at `/api/notes`, so the paths are `PUT /api/notes/:id` and `DELETE /api/notes/:id`. The Notes App uses PUT, not PATCH, because the edit form always sends the whole note.',
+      fileId: "backend/src/routes/notes.js",
+      match: 'notesRoutes.put("/:id", notesController.updateNote);',
     },
     {
       explanation:
         "`updateNote` answers `200` with the updated note, and `deleteNote` answers `204` with no body. Both answer `404` when no note with that id exists for the logged-in user, so nobody can edit or delete someone else's note.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "export async function updateNote(req, res) {",
     },
     {
       explanation:
         '`frontend/src/services/notesApi.js` sends these requests with `fetch()`, setting `method: "PUT"` or `method: "DELETE"` and `credentials: "include"` so the login cookie goes along.',
+      fileId: "frontend/src/services/notesApi.js",
+      match: 'method: "PUT",',
     },
   ],
   commonMistakes: [

@@ -97,6 +97,8 @@ git push -u origin docs/readme`,
     {
       explanation:
         "The real secrets for the backend stay in `.env`, which is listed in `.gitignore` and never pushed. Only `.env.example`, with placeholder values, is on GitHub.",
+      fileId: "backend/.env.example",
+      match: "JWT_SECRET=change-me-to-a-long-random-string",
     },
   ],
   commonMistakes: [

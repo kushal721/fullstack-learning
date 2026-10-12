@@ -129,10 +129,14 @@ export default function App() {
     {
       explanation:
         "`useNotes` (`src/hooks/useNotes.js`) has a `useEffect(() => { ... getNotes() ... }, [])` that loads the notes once when the Dashboard appears, then stores them with `setNotes` and clears `isLoading`.",
+      fileId: "frontend/src/hooks/useNotes.js",
+      match: "useEffect(() => {",
     },
     {
       explanation:
         "Saving and deleting are not done in effects: `NoteForm` calls `createNote` inside its `handleSave` submit handler, and `removeNote` runs when a Delete button is clicked, because those happen in response to a user event.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: "const note = await createNote({ title, content });",
     },
   ],
   commonMistakes: [

@@ -104,6 +104,8 @@ docker run -p 3000:3000 notes-api`,
     {
       explanation:
         "The Notes App backend is plain JavaScript with nothing to compile, so `backend/Dockerfile` can stay a simple single-stage recipe like the example above that installs production packages, copies the code and starts it with `node`. Secrets like `JWT_SECRET` are not in the Dockerfile; the host passes them as environment variables.",
+      fileId: "backend/Dockerfile",
+      match: "FROM node:22-alpine",
     },
     {
       explanation:

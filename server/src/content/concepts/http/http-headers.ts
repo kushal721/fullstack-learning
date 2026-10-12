@@ -113,14 +113,21 @@ curl -i -X POST http://localhost:3000/echo \\
     {
       explanation:
         'The frontend\'s `notesApi.js` sends `headers: { "Content-Type": "application/json" }` with every note it creates or updates, so `express.json()` in `backend/src/server.js` fills `req.body`.',
+      fileId: "frontend/src/services/request.js",
+      match:
+        'headers: body ? { "Content-Type": "application/json" } : undefined,',
     },
     {
       explanation:
         'When you log in, `POST /api/auth/login` replies with a `Set-Cookie` header holding the JWT in an `httpOnly` cookie named `token`. Because the frontend uses `credentials: "include"`, the browser sends it back in the `Cookie` header on every later request.',
+      fileId: "backend/src/controllers/authController.js",
+      match: 'res.cookie("token", token, cookieOptions);',
     },
     {
       explanation:
         "`requireAuth` in `backend/src/middleware/authMiddleware.js` reads that `token` cookie from the request; if it is missing or invalid, the request is answered with `401` before any note is touched.",
+      fileId: "backend/src/middleware/authMiddleware.js",
+      match: "const token = req.cookies.token;",
     },
   ],
   commonMistakes: [

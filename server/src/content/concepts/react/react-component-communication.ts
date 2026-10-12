@@ -160,14 +160,21 @@ export default function App() {
     {
       explanation:
         "`Dashboard.jsx` is the closest common parent of the form and the cards. It gets the shared notes and the functions that change them from `useNotes()`: `const { notes, isLoading, error, addNote, replaceNote, removeNote } = useNotes();`, and passes `addNote` to `NoteForm` and `replaceNote`/`removeNote` to each `NoteCard`.",
+      fileId: "frontend/src/pages/Dashboard.jsx",
+      match:
+        "const { notes, isLoading, error, addNote, replaceNote, removeNote } =",
     },
     {
       explanation:
         "It renders `<NoteForm onSaved={addNote} />`. After `createNote()` succeeds, `NoteForm` calls `onSaved(note)`, which adds the note to the list in `useNotes`, and the Dashboard re-renders with it.",
+      fileId: "frontend/src/pages/Dashboard.jsx",
+      match: "<NoteForm onSaved={addNote} />",
     },
     {
       explanation:
         "It renders `notes.map((note) => <NoteCard key={note.id} note={note} onDelete={removeNote} />)`. Each `NoteCard` receives its note as a prop and calls `onDelete(note.id)` when its Delete button is pressed; `NoteForm` and `NoteCard` never talk to each other directly.",
+      fileId: "frontend/src/pages/Dashboard.jsx",
+      match: "{notes.map((note) => (",
     },
   ],
   commonMistakes: [

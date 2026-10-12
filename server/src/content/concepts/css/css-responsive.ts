@@ -128,10 +128,15 @@ export const cssResponsive: Concept = {
     {
       explanation:
         "The Notes App's `frontend/index.html` includes the viewport meta tag, so phones show the app at their real width instead of a shrunken desktop view.",
+      fileId: "frontend/index.html",
+      match:
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
     },
     {
       explanation:
         "On the Dashboard, the `.notes-grid` rule in `frontend/src/index.css` shows `NoteCard` components in one column on phones, and a `min-width` media query adds more columns on wider screens.",
+      fileId: "frontend/src/index.css",
+      match: "grid-template-columns: 1fr;",
     },
     {
       explanation:

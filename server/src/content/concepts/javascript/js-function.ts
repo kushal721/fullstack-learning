@@ -103,14 +103,20 @@ forEachTitle(["read book", " walk dog "], printTitle);`,
     {
       explanation:
         "`createNote({ title, content })` in `frontend/src/services/notesApi.js` is a function: `NoteForm` calls it with the note as its argument, and it sends `POST /api/notes` with `fetch` so no component has to repeat that code.",
+      fileId: "frontend/src/services/notesApi.js",
+      match: "export function createNote({ title, content }) {",
     },
     {
       explanation:
         "In `NoteForm.jsx`, `handleSave(event)` is a function passed to the form as a callback; React calls it for you when the form is submitted.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: "async function handleSave(event) {",
     },
     {
       explanation:
         "On the backend, `notesController.createNote(req, res)` is a function that Express calls with the request and response objects whenever `POST /api/notes` arrives.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "export async function createNote(req, res) {",
     },
   ],
   commonMistakes: [

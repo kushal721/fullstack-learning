@@ -125,14 +125,20 @@ export const htmlSemanticStructure: Concept = {
     {
       explanation:
         "The Notes App's `Navbar` component (`frontend/src/components/Navbar.jsx`) renders the main navigation inside a `<nav>`, so screen readers announce it as navigation.",
+      fileId: "frontend/src/components/Navbar.jsx",
+      match: '<nav className="navbar-user">',
     },
     {
       explanation:
         "`App.jsx` renders the current page (Login, Register or Dashboard) inside a single `<main>` element, so users can jump straight past the navigation to the content.",
+      fileId: "frontend/src/App.jsx",
+      match: '{page === "dashboard" && <Dashboard />}',
     },
     {
       explanation:
         "`NoteCard.jsx` shows each note as an `<article>` with the note title as its heading, because every note is a self-contained piece of content.",
+      fileId: "frontend/src/components/NoteCard.jsx",
+      match: '<article className="note-card">',
     },
   ],
   commonMistakes: [

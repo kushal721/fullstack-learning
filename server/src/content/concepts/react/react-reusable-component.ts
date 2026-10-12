@@ -135,14 +135,21 @@ export default function App() {
     {
       explanation:
         '`Button.jsx` is `Button({ children, variant = "primary", ...props })` and renders a `button` with the class `button` plus `button-` and the variant. Login, Register, NoteForm and NoteCard all use it, for example `<Button type="submit">Save</Button>` in the form and a Delete button in each card.',
+      fileId: "frontend/src/components/Button.jsx",
+      match: 'function Button({ children, variant = "primary", ...props })',
     },
     {
       explanation:
         "`Input.jsx` is `Input({ label, id, ...props })` and renders a label linked to its input through `id`, so every field in Login, Register and NoteForm is accessible without anyone remembering to add the link by hand.",
+      fileId: "frontend/src/components/Input.jsx",
+      match: "function Input({ label, id, multiline = false, ...props })",
     },
     {
       explanation:
         "Changing the button style in `index.css` or adding a default inside `Button.jsx` updates every button in the app at once: the login form, the register form, the note form and every note card.",
+      fileId: "frontend/src/components/Button.jsx",
+      match:
+        "// One button for the whole app: change the style here and every form,",
     },
   ],
   commonMistakes: [

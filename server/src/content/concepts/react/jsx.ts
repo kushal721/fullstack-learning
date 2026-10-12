@@ -107,14 +107,20 @@ export default function App() {
     {
       explanation:
         '`Button.jsx` uses `className={"button button-" + variant}` to build the CSS class from a prop, and puts `{children}` between the button tags to show its label.',
+      fileId: "frontend/src/components/Button.jsx",
+      match: "<button className={`button button-${variant}`} {...props}>",
     },
     {
       explanation:
         "`NoteCard.jsx` shows a note with `{note.title}` and `{note.content}` inside an `article` element.",
+      fileId: "frontend/src/components/NoteCard.jsx",
+      match: "<h2>{note.title}</h2>",
     },
     {
       explanation:
         "`Dashboard.jsx` uses `notes.map((note) => <NoteCard key={note.id} note={note} onDelete={removeNote} />)` inside `{ }` to render one card per note, and conditions with `&&` to show the loading and error messages.",
+      fileId: "frontend/src/pages/Dashboard.jsx",
+      match: "{notes.map((note) => (",
     },
   ],
   commonMistakes: [

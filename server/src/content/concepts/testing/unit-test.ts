@@ -132,10 +132,14 @@ describe("validateNote", () => {
     {
       explanation:
         "`backend/src/validation/noteValidation.test.js` unit-tests `validateNote`, for example that a note with an empty title produces the error `Title is required`.",
+      fileId: "backend/src/validation/noteValidation.test.js",
+      match: 'expect(validateNote(body)).toBe("Title is required");',
     },
     {
       explanation:
         "On the frontend, a React Testing Library test renders `NoteForm` with Vitest and checks the form's behaviour without starting the backend.",
+      fileId: "frontend/src/components/NoteForm.test.jsx",
+      match: "render(<NoteForm onSaved={onSaved} />);",
     },
   ],
   commonMistakes: [

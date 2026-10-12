@@ -103,14 +103,20 @@ python3 -m http.server 8000
     {
       explanation:
         "In development the Notes App runs two servers on your computer: the Vite server at `http://localhost:5173` sends the React app (`frontend/index.html` plus the JavaScript and CSS), and the Express API at `http://localhost:3000` answers requests for data.",
+      fileId: "frontend/vite.config.js",
+      match: '"/api": "http://localhost:3000",',
     },
     {
       explanation:
         "When you save a note, the browser is the client and the Express backend is the server: `createNote()` in `frontend/src/services/notesApi.js` sends `POST /api/notes`, and the backend stores the note in PostgreSQL and sends a response back.",
+      fileId: "frontend/src/services/notesApi.js",
+      match: "export function createNote({ title, content }) {",
     },
     {
       explanation:
         "Logging in follows the same pattern: the Login page sends `POST /api/auth/login` and waits for the server's response before showing the Dashboard.",
+      fileId: "frontend/src/pages/Login.jsx",
+      match: "const user = await login({ email, password });",
     },
   ],
   commonMistakes: [

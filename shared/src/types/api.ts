@@ -82,6 +82,21 @@ export type ConceptResponse = {
   topic: TopicSummary;
   /** Related concepts, including ones that link to this concept. */
   related: ConceptSummary[];
+  /** Example-project files that use the concept, with the line when known. */
+  usedIn: ConceptFileUse[];
+  /** Build steps that introduce the concept, in journey order. */
+  introducedIn: BuildStepSummary[];
+};
+
+/** A file that uses a concept, for "Used in" links. */
+export type ConceptFileUse = {
+  fileId: string;
+  layer: ProjectFile["layer"];
+  purpose: string;
+  /** 1-based line the usage points at, when the content names one. */
+  line?: number;
+  /** What this file does with the concept, when the content says. */
+  explanation?: string;
 };
 
 /** GET /api/files — the example project as nested folders. */

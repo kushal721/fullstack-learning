@@ -112,14 +112,20 @@ await handleSave("");`,
     {
       explanation:
         '`frontend/src/services/notesApi.js` checks `response.ok`; when it is false, it reads the server\'s `{ "error": "..." }` body and throws `new Error(message)` so the calling code knows the request failed and why.',
+      fileId: "frontend/src/services/request.js",
+      match: 'throw new Error(data?.error ?? "Something went wrong");',
     },
     {
       explanation:
         "`handleSave` in `frontend/src/components/NoteForm.jsx` wraps the save call in `try/catch` and shows the error's message under the form instead of leaving the user wondering what happened.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: "setError(err.message);",
     },
     {
       explanation:
         "The backend controllers in `backend/src/` catch database errors, log the full details on the server, and reply `500` with a generic message, never the stack trace, which could reveal how the server is built.",
+      fileId: "backend/src/app.js",
+      match: 'res.status(500).json({ error: "Something went wrong" });',
     },
   ],
   commonMistakes: [

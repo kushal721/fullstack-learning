@@ -119,14 +119,21 @@ export default function App() {
     {
       explanation:
         "The whole Notes App frontend in `frontend/` is a React app. `src/main.jsx` tells React to draw the `App` component inside the `#root` element of `index.html`.",
+      fileId: "frontend/src/main.jsx",
+      match: 'createRoot(document.getElementById("root")).render(',
     },
     {
       explanation:
         "When a note is saved, `useNotes` only adds it to the `notes` state. The Dashboard re-renders and a new `NoteCard` appears — no code ever searches the page for the list.",
+      fileId: "frontend/src/hooks/useNotes.js",
+      match: "setNotes((current) => [note, ...current]);",
     },
     {
       explanation:
         "Storing notes permanently is not React's job: `notesApi.js` sends requests like `POST /api/notes` to the Express API, which saves them in the database.",
+      fileId: "frontend/src/services/notesApi.js",
+      match:
+        'request("/api/notes", { method: "POST", body: { title, content } })',
     },
   ],
   commonMistakes: [

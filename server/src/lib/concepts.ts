@@ -1,6 +1,14 @@
-import type { Concept, ConceptSummary } from "@fsl/shared";
+import type {
+  BuildStep,
+  Concept,
+  ConceptFileUse,
+  ConceptSummary,
+} from "@fsl/shared";
+import { buildSteps } from "../content/build-steps/index.js";
 import { concepts } from "../content/concepts/index.js";
+import { getOrderedSteps } from "./build-journey.js";
 import { getAllTopics } from "./learning-tree.js";
+import { findLine, getAllFiles, getFile } from "./project-files.js";
 
 const byId = new Map(concepts.map((concept) => [concept.id, concept]));
 const bySlug = new Map(concepts.map((concept) => [concept.slug, concept]));
@@ -78,4 +86,52 @@ export function getConceptsInReadingOrder(): Concept[] {
         a.registryIndex - b.registryIndex,
     )
     .map(({ concept }) => concept);
+}
+
+/**
+ * Build steps that introduce a concept: steps whose `conceptIds` list it
+ * (written once, on the step) plus any the concept adds itself.
+ */
+export function getStepsIntroducing(
+  concept: Concept,
+  steps: BuildStep[] = buildSteps,
+): BuildStep[] {
+  return getOrderedSteps(steps).filter(
+    (step) =>
+      step.conceptIds.includes(concept.id) ||
+      concept.relatedBuildSteps.includes(step.id),
+  );
+}
+
+/**
+ * Files that use a concept, most specific first: the files its
+ * `projectUsage` explains (with the line), then `relatedFiles`, then files
+ * whose `conceptIds` list the concept. Each file appears once.
+ */
+export function getFileUses(concept: Concept): ConceptFileUse[] {
+  const uses = new Map<string, ConceptFileUse>();
+  const add = (fileId: string, extra: Partial<ConceptFileUse> = {}) => {
+    const file = getFile(fileId);
+    if (!file || uses.has(fileId)) return;
+    uses.set(fileId, {
+      fileId,
+      layer: file.layer,
+      purpose: file.purpose,
+      ...extra,
+    });
+  };
+
+  for (const usage of concept.projectUsage) {
+    if (!usage.fileId) continue;
+    const line = usage.match ? findLine(usage.fileId, usage.match) : undefined;
+    add(usage.fileId, {
+      explanation: usage.explanation,
+      ...(line ? { line } : {}),
+    });
+  }
+  for (const fileId of concept.relatedFiles) add(fileId);
+  for (const file of getAllFiles()) {
+    if (file.conceptIds.includes(concept.id)) add(file.id);
+  }
+  return [...uses.values()];
 }

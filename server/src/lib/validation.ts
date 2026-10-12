@@ -1,4 +1,7 @@
 import type { BuildStep, Concept, ProjectFile, Topic } from "@fsl/shared";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { config } from "../config.js";
 import { buildSteps } from "../content/build-steps/index.js";
 import { concepts } from "../content/concepts/index.js";
 import { projectFiles } from "../content/files.js";
@@ -15,6 +18,8 @@ export type Content = {
   /** Paths actually found on disk in example-project/. */
   diskFiles?: string[];
   buildSteps?: BuildStep[];
+  /** Reads an example file's source (for checking `projectUsage.match`). */
+  readSource?: (fileId: string) => string | undefined;
 };
 
 function allTopics(topic: Topic): Topic[] {
@@ -299,6 +304,49 @@ function validateBuildSteps(
   return errors;
 }
 
+function validateConceptLinks(
+  concepts: Concept[],
+  files: ProjectFile[],
+  steps: BuildStep[],
+  readSource: (fileId: string) => string | undefined,
+): string[] {
+  const fileIds = new Set(files.map((file) => file.id));
+  const stepIds = new Set(steps.map((step) => step.id));
+  const errors: string[] = [];
+  for (const concept of concepts) {
+    const name = `Concept "${concept.id}"`;
+    for (const fileId of concept.relatedFiles) {
+      if (!fileIds.has(fileId)) {
+        errors.push(`${name} lists unknown related file "${fileId}".`);
+      }
+    }
+    for (const stepId of concept.relatedBuildSteps) {
+      if (!stepIds.has(stepId)) {
+        errors.push(`${name} lists unknown build step "${stepId}".`);
+      }
+    }
+    concept.projectUsage.forEach((usage, index) => {
+      const where = `${name} projectUsage[${index}]`;
+      if (usage.match !== undefined && usage.fileId === undefined) {
+        errors.push(`${where} has a match but no fileId.`);
+      }
+      if (usage.fileId === undefined) return;
+      if (!fileIds.has(usage.fileId)) {
+        errors.push(`${where} points at unknown file "${usage.fileId}".`);
+        return;
+      }
+      if (usage.match === undefined) return;
+      const lines = readSource(usage.fileId)?.split("\n") ?? [];
+      if (!lines.some((line) => line.includes(usage.match!))) {
+        errors.push(
+          `${where}: "${usage.match}" is not on any line of ${usage.fileId}.`,
+        );
+      }
+    });
+  }
+  return errors;
+}
+
 export function validateContent(
   content: Content = {
     tree: learningTree,
@@ -306,6 +354,8 @@ export function validateContent(
     files: projectFiles,
     diskFiles: listExampleProjectFiles(),
     buildSteps,
+    readSource: (fileId) =>
+      readFileSync(path.join(config.exampleProjectDir, fileId), "utf8"),
   },
 ): string[] {
   return [
@@ -322,5 +372,13 @@ export function validateContent(
       content.concepts,
       content.files ?? [],
     ),
+    ...(content.files
+      ? validateConceptLinks(
+          content.concepts,
+          content.files,
+          content.buildSteps ?? [],
+          content.readSource ?? (() => undefined),
+        )
+      : []),
   ];
 }

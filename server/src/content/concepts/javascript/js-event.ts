@@ -117,14 +117,20 @@ form.addEventListener("click", (event) => {
     {
       explanation:
         "`NoteForm.jsx` handles the form's submit event with `handleSave(event)`. It first calls `event.preventDefault()` so the browser does not reload, then calls `createNote({ title, content })`, which sends `POST /api/notes`.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: "event.preventDefault();",
     },
     {
       explanation:
         "The title and content inputs in `NoteForm` react to change events and read `event.target.value` to store the typed text in state.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: "onChange={(event) => setTitle(event.target.value)}",
     },
     {
       explanation:
         "The Login and Register pages handle their form submits the same way: a handler that calls `event.preventDefault()` first and then sends the data with a function from `authApi.js`.",
+      fileId: "frontend/src/pages/Login.jsx",
+      match: "async function handleSubmit(event) {",
     },
   ],
   commonMistakes: [

@@ -102,14 +102,20 @@ console.log(sayBye("Ada"));`,
     {
       explanation:
         '`frontend/src/services/notesApi.js` has named exports `getNotes`, `createNote`, `updateNote` and `deleteNote`; `NoteForm.jsx` imports only what it needs with `import { createNote } from "../services/notesApi.js"`.',
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: 'import { createNote } from "../services/notesApi.js";',
     },
     {
       explanation:
         'Each component file has one default export, such as `export default function NoteForm`, and pages import it without braces: `import NoteForm from "../components/NoteForm.jsx"`.',
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: "export default function NoteForm({ onSaved }) {",
     },
     {
       explanation:
         'On the backend, `backend/src/server.js` starts with `import express from "express"`, a default import of a package from npm, and imports its routes from local files.',
+      fileId: "backend/src/app.js",
+      match: 'import express from "express";',
     },
   ],
   commonMistakes: [

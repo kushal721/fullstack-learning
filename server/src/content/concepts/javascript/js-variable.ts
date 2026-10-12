@@ -102,10 +102,14 @@ appName = "Other"; // TypeError: Assignment to constant variable.`,
     {
       explanation:
         'In `NoteForm.jsx`, `const [title, setTitle] = useState("")` declares the current title and its setter as `const` variables; the title changes only through the setter, never by reassigning the name.',
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: 'const [title, setTitle] = useState("");',
     },
     {
       explanation:
         "In the backend, `notesController.createNote(req, res)` keeps values such as the incoming title and content in `const` variables while it saves the note, because they never need to be reassigned.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "export async function createNote(req, res) {",
     },
   ],
   commonMistakes: [

@@ -91,10 +91,14 @@ ls dist dist/assets`,
     {
       explanation:
         "The Notes App frontend is built with `npm run build`, which makes Vite write static files to `frontend/dist/`. Those files are what is deployed, never the `src/` folder.",
+      fileId: "frontend/package.json",
+      match: '"build": "vite build",',
     },
     {
       explanation:
         "The Notes App backend has no build step: it is plain JavaScript that `node` runs directly, started with `NODE_ENV=production` and its other settings as environment variables on the host.",
+      fileId: "backend/package.json",
+      match: '"start": "node src/server.js",',
     },
     {
       explanation:

@@ -109,14 +109,21 @@ SELECT count(*) FROM notes;`,
     {
       explanation:
         "`database/schema.sql` declares `notes.user_id` as `INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE` and creates `notes_user_id_idx` on it.",
+      fileId: "database/schema.sql",
+      match:
+        "user_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,",
     },
     {
       explanation:
         "When a note is created, `notesController` fills `user_id` with `req.user.id` — the id of the logged-in user — never with a value sent by the browser, so a note always belongs to whoever created it.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "[req.user.id, title.trim(), content],",
     },
     {
       explanation:
         "Listing (`WHERE user_id = $1`), updating and deleting (`AND user_id = $n`) all filter on this column, which is how one user can never see or change another user's notes. The index keeps these queries fast as the table grows.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "WHERE user_id = $1",
     },
   ],
   commonMistakes: [

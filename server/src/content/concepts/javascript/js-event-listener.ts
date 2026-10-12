@@ -99,10 +99,14 @@ button.removeEventListener("click", handleClick);`,
     {
       explanation:
         "`NoteForm.jsx` passes its `handleSave` function to the form as `onSubmit`. React calls it when the user presses Save, and it calls `event.preventDefault()` so the page does not reload before saving the note.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: '<form className="note-form" onSubmit={handleSave}>',
     },
     {
       explanation:
         "The `Input` component passes an `onChange` handler, so every keystroke updates the text kept in state, and `NoteCard.jsx` uses `onClick` on its delete button.",
+      fileId: "frontend/src/components/Input.jsx",
+      match: "<Field id={id} {...props} />",
     },
   ],
   commonMistakes: [

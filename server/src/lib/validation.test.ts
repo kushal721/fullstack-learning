@@ -183,6 +183,57 @@ describe("validateContent", () => {
     });
   });
 
+  describe("concept links", () => {
+    const base = realConcepts[0]!;
+    const file = {
+      id: "a.js",
+      path: "a.js",
+      layer: "frontend" as const,
+      language: "js" as const,
+      purpose: "Does a thing.",
+      whyItExists: "Because.",
+      conceptIds: [],
+    };
+    const check = (overrides: Partial<Concept>) =>
+      validateContent({
+        tree: topic("root", 0, [topic(base.topicId, 1)]),
+        concepts: [{ ...base, relatedConcepts: [], ...overrides }],
+        files: [file],
+        diskFiles: ["a.js"],
+        readSource: () => "const a = 1;\nexport default a;",
+      });
+
+    it("accepts usages whose text is on a line of the file", () => {
+      expect(
+        check({
+          projectUsage: [
+            { explanation: "x", fileId: "a.js", match: "export default a;" },
+          ],
+        }),
+      ).toEqual([]);
+    });
+
+    it("reports unknown files and steps, and text that is not in the file", () => {
+      expect(
+        check({
+          relatedFiles: ["ghost.js"],
+          relatedBuildSteps: ["ghost-step"],
+          projectUsage: [
+            { explanation: "x", fileId: "ghost.js" },
+            { explanation: "x", fileId: "a.js", match: "const b" },
+            { explanation: "x", match: "const a" },
+          ],
+        }),
+      ).toEqual([
+        `Concept "${base.id}" lists unknown related file "ghost.js".`,
+        `Concept "${base.id}" lists unknown build step "ghost-step".`,
+        `Concept "${base.id}" projectUsage[0] points at unknown file "ghost.js".`,
+        `Concept "${base.id}" projectUsage[1]: "const b" is not on any line of a.js.`,
+        `Concept "${base.id}" projectUsage[2] has a match but no fileId.`,
+      ]);
+    });
+  });
+
   describe("build steps", () => {
     const step = (
       id: string,

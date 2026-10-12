@@ -111,6 +111,8 @@ node --env-file=.env config.js`,
     {
       explanation:
         "The Notes App backend needs `DATABASE_URL`, `JWT_SECRET` and `PORT`. In development they come from a local `.env` file, in the integration tests `DATABASE_URL` points at the separate `notes_test` database, and in production they are set on the host, never in code.",
+      fileId: "backend/.env.example",
+      match: "DATABASE_URL=postgres://postgres:dev@localhost:5432/notes",
     },
     {
       explanation:

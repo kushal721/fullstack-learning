@@ -122,14 +122,20 @@ await pool.end(); // close every connection before the program exits`,
     {
       explanation:
         "`backend/src/db.js` creates the only pool in the Notes App with `new Pool({ connectionString: process.env.DATABASE_URL })` and exports it as `pool`.",
+      fileId: "backend/src/db.js",
+      match: "new pg.Pool({ connectionString: process.env.DATABASE_URL })",
     },
     {
       explanation:
         "`notesController` and `authController` import that pool and call `pool.query` with parameterized SQL, such as `SELECT id, title, content, created_at, updated_at FROM notes WHERE user_id = $1 ORDER BY created_at DESC`.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: 'import { pool } from "../db.js";',
     },
     {
       explanation:
         "Because all controllers share one pool, the backend never has more than the pool's maximum number of connections open, however many people are using the app.",
+      fileId: "backend/src/db.js",
+      match: "One pool for the whole app",
     },
   ],
   commonMistakes: [

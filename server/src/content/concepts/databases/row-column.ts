@@ -95,14 +95,20 @@ SELECT title FROM books WHERE subtitle IS NULL;`,
     {
       explanation:
         "Each note in the Notes App is one row in `notes`, with the columns `id`, `user_id`, `title`, `content`, `created_at` and `updated_at`.",
+      fileId: "database/schema.sql",
+      match: "CREATE TABLE notes (",
     },
     {
       explanation:
         "`notesController` lists notes with `SELECT id, title, content, created_at, updated_at FROM notes WHERE user_id = $1 ORDER BY created_at DESC`: it chooses only the columns the frontend needs, and `ORDER BY` puts the newest note first.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "SELECT id, title, content, created_at, updated_at",
     },
     {
       explanation:
         "The `pg` package returns the rows in `result.rows` as an array of objects, so the controller can send them straight back with `res.json(result.rows)`.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "res.json(result.rows);",
     },
   ],
   commonMistakes: [

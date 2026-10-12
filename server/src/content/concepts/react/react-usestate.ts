@@ -111,10 +111,14 @@ export default function App() {
     {
       explanation:
         '`NoteForm.jsx` keeps the title and content being typed in state (`useState("")`) so the inputs always show the current text.',
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: 'const [title, setTitle] = useState("");',
     },
     {
       explanation:
         "The custom hook `useNotes` (`frontend/src/hooks/useNotes.js`) keeps the list of notes in `useState`. After `createNote()` succeeds, it calls the setter with a new array that includes the saved note, and the Dashboard re-renders with it.",
+      fileId: "frontend/src/hooks/useNotes.js",
+      match: "const [notes, setNotes] = useState([]);",
     },
   ],
   commonMistakes: [

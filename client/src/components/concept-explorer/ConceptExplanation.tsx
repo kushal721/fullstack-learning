@@ -1,5 +1,6 @@
 import type { ConceptResponse } from "@fsl/shared";
 import { CodeExample } from "./CodeExample.tsx";
+import { ConceptConnections } from "./ConceptConnections.tsx";
 import { BulletList, ConceptSection, Paragraphs } from "./ConceptSection.tsx";
 import { HowToCreate } from "./HowToCreate.tsx";
 import { RelatedConcepts } from "./RelatedConcepts.tsx";
@@ -11,7 +12,9 @@ import { RelatedConcepts } from "./RelatedConcepts.tsx";
 export function ConceptExplanation({
   concept,
   related,
-}: Pick<ConceptResponse, "concept" | "related">) {
+  usedIn,
+  introducedIn,
+}: Pick<ConceptResponse, "concept" | "related" | "usedIn" | "introducedIn">) {
   return (
     <div className="flex flex-col gap-10">
       <ConceptSection id="basics" title="Start from the basics">
@@ -48,6 +51,9 @@ export function ConceptExplanation({
         <BulletList
           items={concept.projectUsage.map((usage) => usage.explanation)}
         />
+      </ConceptSection>
+      <ConceptSection id="where-to-find-it" title="Where to find it">
+        <ConceptConnections usedIn={usedIn} introducedIn={introducedIn} />
       </ConceptSection>
       <ConceptSection id="mistakes" title="Common mistakes">
         <BulletList items={concept.commonMistakes} />

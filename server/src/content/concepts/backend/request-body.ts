@@ -114,14 +114,20 @@ curl -i -X POST http://localhost:3000/api/notes \\
     {
       explanation:
         "`backend/src/server.js` adds `app.use(express.json())` before mounting the routes, so every controller can read `req.body`.",
+      fileId: "backend/src/app.js",
+      match: "app.use(express.json());",
     },
     {
       explanation:
         '`notesController.createNote` checks `req.body` with `validateNote` from `validation/noteValidation.js` and answers `400` with `{ "error": "Title is required" }` when the title is missing, before running the `INSERT`.',
+      fileId: "backend/src/controllers/notesController.js",
+      match: "export async function createNote(req, res) {",
     },
     {
       explanation:
         "On the frontend, `frontend/src/services/notesApi.js` sends the note with `JSON.stringify` and `Content-Type: application/json`; the login form sends the email and password in the body of `POST /api/auth/login`, never in the URL.",
+      fileId: "frontend/src/services/request.js",
+      match: "body: body ? JSON.stringify(body) : undefined,",
     },
   ],
   commonMistakes: [

@@ -89,10 +89,14 @@ DELETE FROM notes WHERE id = 1;`,
     {
       explanation:
         "`database/schema.sql` is pure SQL: two `CREATE TABLE` statements for `users` and `notes` and one `CREATE INDEX`. `database/seed.sql` uses `INSERT` to add one demo user and two notes.",
+      fileId: "database/schema.sql",
+      match: "CREATE TABLE users (",
     },
     {
       explanation:
         "`notesController.js` sends one SQL statement per action through `pool.query()` from `backend/src/db.js`: `SELECT` in `listNotes`, `INSERT` in `createNote`, `UPDATE` in `updateNote` and `DELETE` in `deleteNote`.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "export async function listNotes(req, res) {",
     },
   ],
   commonMistakes: [

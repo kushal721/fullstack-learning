@@ -145,14 +145,20 @@ export default function App() {
     {
       explanation:
         '`NoteForm.jsx` keeps `title` and `content` in `useState("")` and passes them to the shared `Input` component as `value` with an `onChange` that calls the setter.',
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: 'const [title, setTitle] = useState("");',
     },
     {
       explanation:
         "Its `handleSave(event)` calls `event.preventDefault()`, then `await createNote({ title, content })` from `notesApi.js`, which sends `POST /api/notes`. On success it calls `onSaved(note)` and clears both fields; on failure it stores the error message and shows it under the form.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: "async function handleSave(event) {",
     },
     {
       explanation:
         "The Login and Register pages follow the same pattern for email and password, sending the values with the functions in `authApi.js`.",
+      fileId: "frontend/src/pages/Login.jsx",
+      match: 'const [email, setEmail] = useState("");',
     },
   ],
   commonMistakes: [

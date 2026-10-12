@@ -107,6 +107,8 @@ git commit -m "chore: stop tracking .env"`,
     {
       explanation:
         "Instead of `.env`, the repository commits `.env.example` with the variable names and no real values, so a new developer knows exactly what to fill in. `package-lock.json` is committed too, so everyone installs the same package versions.",
+      fileId: "backend/.env.example",
+      match: ".env is never committed.",
     },
   ],
   commonMistakes: [

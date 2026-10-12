@@ -105,14 +105,20 @@ app.listen(3000, () => console.log("http://localhost:3000"));`,
     {
       explanation:
         'Every function in `frontend/src/services/notesApi.js` sends one request with `fetch("/api/notes", { credentials: "include", ... })` and reads the one response that comes back. In development, Vite forwards these requests from http://localhost:5173 to the backend on http://localhost:3000.',
+      fileId: "frontend/src/services/request.js",
+      match: "const response = await fetch(path, {",
     },
     {
       explanation:
         'Because HTTP is stateless, the backend does not remember who logged in. The browser sends the `token` cookie with each request, and `requireAuth` in `backend/src/middleware/authMiddleware.js` checks it every time, replying `401` with `{ "error": "Please log in" }` if it is missing or invalid.',
+      fileId: "backend/src/middleware/authMiddleware.js",
+      match: 'res.status(401).json({ error: "Please log in" });',
     },
     {
       explanation:
         "In `backend/src/server.js`, `app.use(express.json())` reads the body of each incoming request, and controllers like `createNote` build the response with `res.status(201).json(note)`.",
+      fileId: "backend/src/app.js",
+      match: "app.use(express.json());",
     },
   ],
   commonMistakes: [

@@ -128,14 +128,20 @@ export default function App() {
     {
       explanation:
         '`Button({ children, variant = "primary", ...props })` uses `children` for its label, a default `variant`, and passes all other props (like `type` or `onClick`) on to the real button element.',
+      fileId: "frontend/src/components/Button.jsx",
+      match: 'function Button({ children, variant = "primary", ...props })',
     },
     {
       explanation:
         "`Dashboard` renders `<NoteCard key={note.id} note={note} onDelete={removeNote} />` for each note: the note data goes down, and `NoteCard` calls `onDelete(note.id)` to send the delete request back up.",
+      fileId: "frontend/src/pages/Dashboard.jsx",
+      match: "onDelete={removeNote}",
     },
     {
       explanation:
         "`<NoteForm onSaved={addNote} />` gives the form a callback. After the note is saved, `NoteForm` calls `onSaved(note)` and `useNotes` adds it to the list — props down, callbacks up.",
+      fileId: "frontend/src/pages/Dashboard.jsx",
+      match: "<NoteForm onSaved={addNote} />",
     },
   ],
   commonMistakes: [

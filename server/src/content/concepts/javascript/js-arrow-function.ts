@@ -98,10 +98,14 @@ console.log(notes);`,
     {
       explanation:
         "The Dashboard renders the list with `notes.map((note) => <NoteCard key={note.id} note={note} />)`. The arrow function receives each note and implicitly returns a `NoteCard` for it.",
+      fileId: "frontend/src/pages/Dashboard.jsx",
+      match: "{notes.map((note) => (",
     },
     {
       explanation:
         "In `NoteForm.jsx`, the inputs update state with inline arrow functions such as `onChange={(event) => setTitle(event.target.value)}`, so every keystroke updates the title.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: "onChange={(event) => setTitle(event.target.value)}",
     },
   ],
   commonMistakes: [

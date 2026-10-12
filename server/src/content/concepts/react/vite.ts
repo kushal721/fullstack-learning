@@ -113,14 +113,20 @@ npm run preview`,
     {
       explanation:
         'The Notes App frontend lives in `frontend/` and is a Vite project. `frontend/index.html` contains the root div, and `src/main.jsx` calls `createRoot(document.getElementById("root")).render(<App />)` to start React there.',
+      fileId: "frontend/index.html",
+      match: '<div id="root"></div>',
     },
     {
       explanation:
         '`frontend/vite.config.js` proxies `/api` to the Express API on http://localhost:3000. That is why `notesApi.js` can simply call `fetch("/api/notes")` while the page itself is served by Vite at http://localhost:5173.',
+      fileId: "frontend/vite.config.js",
+      match: '"/api": "http://localhost:3000",',
     },
     {
       explanation:
         "During development you run `npm run dev` in `frontend/`; for production `npm run build` writes the finished app to `frontend/dist/`.",
+      fileId: "frontend/package.json",
+      match: '"dev": "vite",',
     },
   ],
   commonMistakes: [

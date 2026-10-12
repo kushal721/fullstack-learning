@@ -1,9 +1,12 @@
 import type { ConceptListResponse, ConceptResponse } from "@fsl/shared";
 import { Router } from "express";
+import { toBuildStepSummary } from "../lib/build-journey.js";
 import {
   getConceptBySlug,
   getConceptsInReadingOrder,
+  getFileUses,
   getRelatedConcepts,
+  getStepsIntroducing,
   toConceptSummary,
 } from "../lib/concepts.js";
 import { notFoundError, validationError } from "../lib/http-error.js";
@@ -36,7 +39,8 @@ conceptsRouter.get("/", (req, res) => {
   res.json(body);
 });
 
-// GET /api/concepts/:slug — one concept with its topic and related concepts.
+// GET /api/concepts/:slug — one concept with its topic, related concepts,
+// the files that use it and the build steps that introduce it.
 conceptsRouter.get("/:slug", (req, res) => {
   const { slug } = req.params;
   if (!isSlug(slug)) {
@@ -56,6 +60,8 @@ conceptsRouter.get("/:slug", (req, res) => {
     concept,
     topic: toTopicSummary(topic),
     related: getRelatedConcepts(concept.id).map(toConceptSummary),
+    usedIn: getFileUses(concept),
+    introducedIn: getStepsIntroducing(concept).map(toBuildStepSummary),
   };
   res.json(body);
 });

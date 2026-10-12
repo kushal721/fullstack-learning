@@ -184,14 +184,21 @@ export default function App() {
     {
       explanation:
         "`src/hooks/useNotes.js` keeps `notes`, `isLoading` and `error` in `useState`, loads the notes once with `useEffect(() => { ... getNotes() ... }, [])`, and returns `{ notes, isLoading, error, addNote, replaceNote, removeNote }`.",
+      fileId: "frontend/src/hooks/useNotes.js",
+      match: "export function useNotes() {",
     },
     {
       explanation:
         "`addNote(note)` uses `setNotes((current) => [note, ...current])` (newest first, like the list from the API), and `removeNote(id)` first awaits `deleteNote(id)` from `notesApi.js`, then filters the note out of state.",
+      fileId: "frontend/src/hooks/useNotes.js",
+      match: "setNotes((current) => [note, ...current]);",
     },
     {
       explanation:
         "`Dashboard` calls `useNotes()` once and passes the results down: `addNote` becomes the `onSaved` prop of `NoteForm`, and `removeNote` becomes the `onDelete` prop of each `NoteCard`. Calling the hook once in the common parent is what lets all of them share one list.",
+      fileId: "frontend/src/pages/Dashboard.jsx",
+      match:
+        "const { notes, isLoading, error, addNote, replaceNote, removeNote } =",
     },
   ],
   commonMistakes: [

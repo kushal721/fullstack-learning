@@ -127,14 +127,20 @@ export default function App() {
     {
       explanation:
         "`NoteForm.jsx` uses `onSubmit={handleSave}`. `handleSave(event)` calls `event.preventDefault()`, then `createNote({ title, content })`, then `onSaved(note)` and clears the fields.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: '<form className="note-form" onSubmit={handleSave}>',
     },
     {
       explanation:
         "The title and content inputs in `NoteForm.jsx` use `onChange` to copy `event.target.value` into state on every keystroke.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: "onChange={(event) => setTitle(event.target.value)}",
     },
     {
       explanation:
         "`NoteCard.jsx` gives its Delete `Button` `onClick={() => onDelete(note.id)}`, so the click passes the right note's id up to `removeNote` in `useNotes`.",
+      fileId: "frontend/src/components/NoteCard.jsx",
+      match: "onClick={() => onDelete(note.id)}",
     },
   ],
   commonMistakes: [

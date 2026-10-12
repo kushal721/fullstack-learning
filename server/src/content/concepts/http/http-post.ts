@@ -118,14 +118,20 @@ const note = await response.json();`,
     {
       explanation:
         '`createNote()` in `frontend/src/services/notesApi.js` sends `POST /api/notes` with the title and content as JSON, including the login cookie (`credentials: "include"`).',
+      fileId: "frontend/src/services/notesApi.js",
+      match: "export function createNote({ title, content }) {",
     },
     {
       explanation:
         "On the backend, `routes/notes.js` maps `POST /api/notes` to `notesController.createNote`, which validates the note, runs a parameterized `INSERT` and answers `201 Created` with the saved note.",
+      fileId: "backend/src/routes/notes.js",
+      match: 'notesRoutes.post("/", notesController.createNote);',
     },
     {
       explanation:
         "Registering and logging in also use POST: `POST /api/auth/register` and `POST /api/auth/login`.",
+      fileId: "backend/src/routes/auth.js",
+      match: 'authRoutes.post("/register", authController.register);',
     },
   ],
   commonMistakes: [
