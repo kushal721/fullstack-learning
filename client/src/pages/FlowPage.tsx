@@ -10,6 +10,7 @@ import {
 } from "react";
 import { Link, useSearchParams } from "react-router";
 import { FlowDetails } from "../components/flow-tracer/FlowDetails.tsx";
+import { HttpDetails } from "../components/flow-tracer/HttpDetails.tsx";
 import { ErrorState } from "../components/ui/ErrorState.tsx";
 import { Loading } from "../components/ui/Loading.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
@@ -224,6 +225,7 @@ export default function FlowPage() {
             total={steps.length}
             symbol={detail.data!.symbols[currentStep.symbolId]}
           />
+          {flow.http && <HttpDetails exchange={flow.http} />}
         </div>
       )}
     </>
