@@ -403,8 +403,13 @@ function validateGraph(
         `${name} is a ${symbol.kind}, so its id must start with "${prefix}".`,
       );
     }
-    if (!symbol.name.trim() || !symbol.summary.trim()) {
-      errors.push(`${name} needs a name and a summary.`);
+    // The tracer answers "what data does it handle?" for every symbol.
+    if (
+      !symbol.name.trim() ||
+      !symbol.summary.trim() ||
+      !symbol.dataHandled?.trim()
+    ) {
+      errors.push(`${name} needs a name, a summary and dataHandled.`);
     }
     for (const conceptId of symbol.conceptIds) {
       if (!conceptIds.has(conceptId)) {

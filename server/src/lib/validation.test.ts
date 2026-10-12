@@ -257,6 +257,7 @@ describe("validateContent", () => {
       fileId: "a.js",
       match: "const a = 1;",
       summary: "Does a.",
+      dataHandled: "a",
       conceptIds: [],
       ...overrides,
     });

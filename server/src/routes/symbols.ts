@@ -6,8 +6,11 @@ import {
   definedIn,
   getSymbol,
   neighborhood,
+  nextSteps,
   relationshipViews,
   toFileSummary,
+  usedByViews,
+  usesViews,
   withLine,
 } from "../lib/project-graph.js";
 
@@ -23,7 +26,8 @@ function findSymbol(id: string) {
 }
 
 // GET /api/symbols/:id — one symbol, where it is defined, what calls it,
-// what it calls and the files involved.
+// what it calls, everything else it connects to, the files involved and
+// what happens next.
 symbolsRouter.get("/:id", (req, res) => {
   const symbol = findSymbol(req.params.id);
   const where = definedIn(symbol.id);
@@ -33,6 +37,9 @@ symbolsRouter.get("/:id", (req, res) => {
     calledBy: relationshipViews(symbol.id, "calls", "in"),
     calls: relationshipViews(symbol.id, "calls", "out"),
     files: connectedFiles(symbol.id).map((file) => toFileSummary(file)),
+    usedBy: usedByViews(symbol.id),
+    uses: usesViews(symbol.id),
+    next: nextSteps(symbol.id),
   };
   res.json(body);
 });

@@ -2,6 +2,7 @@ import type {
   CodeSymbol,
   FileSymbolsResponse,
   SymbolGraphResponse,
+  SymbolResponse,
 } from "@fsl/shared";
 import { lazy, Suspense, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
@@ -9,6 +10,8 @@ import { useApi } from "../../hooks/useApi.ts";
 import { apiPaths } from "../../services/api.ts";
 import { ErrorState } from "../ui/ErrorState.tsx";
 import { Loading } from "../ui/Loading.tsx";
+import { ConnectionDetails } from "./ConnectionDetails.tsx";
+import { explorerSymbolHref } from "./links.ts";
 
 // React Flow is large; it is only downloaded when a graph is shown.
 const ConnectionGraph = lazy(() => import("./ConnectionGraph.tsx"));
@@ -31,6 +34,7 @@ export function ConnectionsPanel({
   const { data, error, isLoading, reload } = useApi<SymbolGraphResponse>(
     apiPaths.symbolGraph(symbolId),
   );
+  const details = useApi<SymbolResponse>(apiPaths.symbol(symbolId));
   const navigate = useNavigate();
   const location = useLocation();
   const cameFromGraph = (location.state as { fromGraph?: boolean } | null)
@@ -40,10 +44,7 @@ export function ConnectionsPanel({
   // code viewer opens its file at its line, and Back walks back.
   const select = useCallback(
     (symbol: CodeSymbol) => {
-      const params = new URLSearchParams({ symbol: symbol.id });
-      if (symbol.fileId) params.set("file", symbol.fileId);
-      if (symbol.fileId && symbol.line) params.set("line", String(symbol.line));
-      navigate(`/explorer?${params}`, { state: { fromGraph: true } });
+      navigate(explorerSymbolHref(symbol), { state: { fromGraph: true } });
     },
     [navigate],
   );
@@ -75,6 +76,7 @@ export function ConnectionsPanel({
           />
         </Suspense>
       )}
+      {details.data && <ConnectionDetails data={details.data} />}
     </section>
   );
 }

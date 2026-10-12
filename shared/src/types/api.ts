@@ -163,6 +163,11 @@ export type SymbolSummary = {
 export type RelationshipView = {
   id: string;
   type: Relationship["type"];
+  /**
+   * "in": the other symbol is the relationship's source (it points here);
+   * "out": this symbol is the source.
+   */
+  direction: "in" | "out";
   explanation: string;
   symbol: SymbolSummary;
 };
@@ -178,6 +183,15 @@ export type SymbolResponse = {
   calls: RelationshipView[];
   /** Files involved: its own first, then its neighbours'. */
   files: FileSummary[];
+  /**
+   * What comes before it and uses it: relationships pointing at it, plus
+   * the event that triggers a handler and the request that reaches a route.
+   */
+  usedBy: RelationshipView[];
+  /** What it calls, renders, uses, queries… (not imports). */
+  uses: RelationshipView[];
+  /** What happens next, in the order it happens; empty for dead ends. */
+  next: RelationshipView[];
 };
 
 /** GET /api/symbols/:id/graph?depth=1..3 */
