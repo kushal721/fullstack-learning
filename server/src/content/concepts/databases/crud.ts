@@ -150,7 +150,7 @@ curl -i -X DELETE localhost:3000/api/notes/1`,
     },
     {
       explanation:
-        "The frontend's notes service calls those four endpoints, and the notes page shows the list (Read), the form (Create and Update) and a delete button (Delete).",
+        "The frontend's notes service calls those four endpoints, and the notes page shows the list (Read), the form (Create), each card's Edit form (Update) and a Delete button (Delete).",
       fileId: "frontend/src/services/notesApi.js",
       match: "export function getNotes() {",
     },

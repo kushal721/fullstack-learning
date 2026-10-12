@@ -97,7 +97,7 @@ git commit -am "docs: describe the project"`,
   projectUsage: [
     {
       explanation:
-        "Every commit in the Notes App uses this format, for example `feat: add note form`, `fix(api): return 404 for unknown notes` or `chore: update dependencies`, never `update` or `fix stuff`.",
+        "Every commit you make to the Notes App should use this format, for example `feat: add note form`, `fix(api): return 404 for unknown notes` or `chore: update dependencies`, not `update` or `fix stuff`.",
     },
     {
       explanation:

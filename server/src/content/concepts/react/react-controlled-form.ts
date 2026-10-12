@@ -150,7 +150,7 @@ export default function App() {
     },
     {
       explanation:
-        "Its `handleSave(event)` calls `event.preventDefault()`, then `await createNote({ title, content })` from `notesApi.js`, which sends `POST /api/notes`. On success it calls `onSaved(note)` and clears both fields; on failure it stores the error message and shows it under the form.",
+        "Its `handleSave(event)` calls `event.preventDefault()`, then `await createNote({ title, content })` from `notesApi.js`, which sends `POST /api/notes`. On success it calls `onSaved(note)` and clears both fields; on failure it stores the error message and shows it above the Save button.",
       fileId: "frontend/src/components/NoteForm.jsx",
       match: "async function handleSave(event) {",
     },

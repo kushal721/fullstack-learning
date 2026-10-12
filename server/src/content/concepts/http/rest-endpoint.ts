@@ -127,7 +127,7 @@ curl -i -X DELETE http://localhost:3000/api/notes/2`,
   projectUsage: [
     {
       explanation:
-        "The Notes App API is: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/notes`, `POST /api/notes`, `PUT /api/notes/:id` and `DELETE /api/notes/:id`. Auth actions use POST because they send data and change state, even though they do not create a visible item.",
+        "The Notes App API is: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`, `GET /api/notes`, `POST /api/notes`, `PUT /api/notes/:id` and `DELETE /api/notes/:id` (plus `GET /api/health`). Auth actions use POST because they send data and change state, even though they do not create a visible item.",
       fileId: "backend/src/routes/auth.js",
       match: 'authRoutes.post("/register", authController.register);',
     },

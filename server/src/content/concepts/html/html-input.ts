@@ -142,7 +142,7 @@ export default function EmailField() {
     },
     {
       explanation:
-        "`NoteForm.jsx` uses `Input` for the note title and a `<textarea>` for the content. When the form is submitted, `handleSave()` calls `createNote()`, which sends both values with `POST /api/notes`.",
+        "`NoteForm.jsx` uses `Input` for the note title and `Input` with `multiline` (which renders a `<textarea>`) for the content. When the form is submitted, `handleSave()` calls `createNote()`, which sends both values with `POST /api/notes`.",
       fileId: "frontend/src/components/NoteForm.jsx",
       match: 'id="note-title"',
     },

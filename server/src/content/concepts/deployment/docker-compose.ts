@@ -153,7 +153,7 @@ volumes:
   projectUsage: [
     {
       explanation:
-        "The Notes App's `compose.yaml` runs three services for local development: `frontend`, `backend` and `postgres`. The backend's `DATABASE_URL` points at `postgres:5432`, and a named volume keeps the database's data between restarts. In production the database is a managed PostgreSQL service instead.",
+        "The Notes App doesn't include a `compose.yaml`; one for local development would run three services: `frontend`, `backend` and `postgres`. The backend's `DATABASE_URL` would point at `postgres:5432`, and a named volume would keep the database's data between restarts. In production the database is a managed PostgreSQL service instead.",
     },
     {
       explanation:

@@ -128,7 +128,7 @@ curl http://localhost:3000/api/notes`,
   projectUsage: [
     {
       explanation:
-        '`backend/src/routes/notes.js` maps each note action to a method: `router.get("/")` lists notes, `router.post("/")` creates one, `router.put("/:id")` updates one and `router.delete("/:id")` deletes one. Mounted at `/api/notes` in `server.js`, these become `GET /api/notes`, `POST /api/notes`, `PUT /api/notes/:id` and `DELETE /api/notes/:id`.',
+        '`backend/src/routes/notes.js` maps each note action to a method: `notesRoutes.get("/")` lists notes, `notesRoutes.post("/")` creates one, `notesRoutes.put("/:id")` updates one and `notesRoutes.delete("/:id")` deletes one. Mounted at `/api/notes` in `app.js`, these become `GET /api/notes`, `POST /api/notes`, `PUT /api/notes/:id` and `DELETE /api/notes/:id`.',
       fileId: "backend/src/routes/notes.js",
       match: 'notesRoutes.get("/", notesController.listNotes);',
     },

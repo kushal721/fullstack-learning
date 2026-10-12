@@ -103,7 +103,7 @@ document.body.append(note);`,
     },
     {
       explanation:
-        "The reusable `Input` component in `frontend/src/components/Input.jsx` wraps the void `<input>` element and passes attributes like `name`, `type` and `value` through to it, so Login, Register and NoteForm all get the same input.",
+        "The reusable `Input` component in `frontend/src/components/Input.jsx` wraps the void `<input>` element (or a `<textarea>` when `multiline` is set) and passes attributes like `type`, `value` and `onChange` through to it, so Login, Register and NoteForm all get the same input.",
       fileId: "frontend/src/components/Input.jsx",
       match: "<Field id={id} {...props} />",
     },

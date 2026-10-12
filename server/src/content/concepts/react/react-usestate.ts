@@ -116,7 +116,7 @@ export default function App() {
     },
     {
       explanation:
-        "The custom hook `useNotes` (`frontend/src/hooks/useNotes.js`) keeps the list of notes in `useState`. After `createNote()` succeeds, it calls the setter with a new array that includes the saved note, and the Dashboard re-renders with it.",
+        "The custom hook `useNotes` (`frontend/src/hooks/useNotes.js`) keeps the list of notes in `useState`. After `NoteForm`'s `createNote()` call succeeds, its `addNote` function calls the setter with a new array that includes the saved note, and the Dashboard re-renders with it.",
       fileId: "frontend/src/hooks/useNotes.js",
       match: "const [notes, setNotes] = useState([]);",
     },

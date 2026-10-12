@@ -112,13 +112,13 @@ const notes = await response.json();`,
   projectUsage: [
     {
       explanation:
-        'When the notes page loads, `frontend/src/services/notesApi.js` sends `GET /api/notes` with `credentials: "include"`, so the login cookie goes with it.',
+        'When the notes page loads, `getNotes()` in `frontend/src/services/notesApi.js` sends `GET /api/notes` through `request()`, which adds `credentials: "include"` so the login cookie goes with it.',
       fileId: "frontend/src/services/notesApi.js",
       match: 'return request("/api/notes");',
     },
     {
       explanation:
-        'In `backend/src/routes/notes.js`, `router.get("/", notesController.listNotes)` handles it after `requireAuth` has checked the login. `listNotes` selects only the notes that belong to `req.user.id` and replies `200` with them as JSON.',
+        'In `backend/src/routes/notes.js`, `notesRoutes.get("/", notesController.listNotes)` handles it after `requireAuth` has checked the login. `listNotes` selects only the notes that belong to `req.user.id` and replies `200` with them as JSON.',
       fileId: "backend/src/routes/notes.js",
       match: 'notesRoutes.get("/", notesController.listNotes);',
     },

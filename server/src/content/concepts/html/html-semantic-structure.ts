@@ -124,13 +124,13 @@ export const htmlSemanticStructure: Concept = {
   projectUsage: [
     {
       explanation:
-        "The Notes App's `Navbar` component (`frontend/src/components/Navbar.jsx`) renders the main navigation inside a `<nav>`, so screen readers announce it as navigation.",
+        "The Notes App's `Navbar` component (`frontend/src/components/Navbar.jsx`) is a `<header>`, and the logged-in user's email and Log out button sit inside a `<nav>`, so screen readers announce them as navigation.",
       fileId: "frontend/src/components/Navbar.jsx",
       match: '<nav className="navbar-user">',
     },
     {
       explanation:
-        "`App.jsx` renders the current page (Login, Register or Dashboard) inside a single `<main>` element, so users can jump straight past the navigation to the content.",
+        "`App.jsx` switches between the pages (Login, Register or Dashboard), and each page renders its own single `<main>` element, so users can jump straight past the navigation to the content.",
       fileId: "frontend/src/App.jsx",
       match: '{page === "dashboard" && <Dashboard />}',
     },

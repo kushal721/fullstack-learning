@@ -123,7 +123,7 @@ curl -i http://localhost:3000/api/broken`,
   projectUsage: [
     {
       explanation:
-        '`backend/src/server.js` adds `app.use(express.json())` before the routes and finishes with an error-handling middleware `(err, req, res, next)` that logs the error and replies `500` with `{ "error": "Something went wrong" }`.',
+        '`backend/src/app.js` adds `app.use(express.json())` before the routes and finishes with an error-handling middleware `(err, req, res, next)` that logs the error and replies `500` with `{ "error": "Something went wrong" }`.',
       fileId: "backend/src/app.js",
       match: "app.use(express.json());",
     },
@@ -135,7 +135,7 @@ curl -i http://localhost:3000/api/broken`,
     },
     {
       explanation:
-        "`backend/src/routes/notes.js` calls `router.use(requireAuth)` before its routes, so every `/api/notes` request must come from a logged-in user.",
+        "`backend/src/routes/notes.js` calls `notesRoutes.use(requireAuth)` before its routes, so every `/api/notes` request must come from a logged-in user.",
       fileId: "backend/src/routes/notes.js",
       match: "notesRoutes.use(requireAuth);",
     },

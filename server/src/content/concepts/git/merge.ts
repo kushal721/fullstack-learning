@@ -104,7 +104,7 @@ git commit -m "fix: resolve note title conflict"`,
   projectUsage: [
     {
       explanation:
-        "The Notes App and this learning platform squash-merge every pull request into `main`. Each feature arrives as one commit whose message is the PR title, such as `feat: add note form`, so `git log --oneline` on `main` reads like a changelog.",
+        "This learning platform squash-merges every pull request into `main`. Each feature arrives as one commit whose message is the PR title, such as `feat: add note form`, so `git log --oneline` on `main` reads like a changelog.",
     },
     {
       explanation:

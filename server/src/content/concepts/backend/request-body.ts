@@ -113,7 +113,7 @@ curl -i -X POST http://localhost:3000/api/notes \\
   projectUsage: [
     {
       explanation:
-        "`backend/src/server.js` adds `app.use(express.json())` before mounting the routes, so every controller can read `req.body`.",
+        "`backend/src/app.js` adds `app.use(express.json())` before mounting the routes, so every controller can read `req.body`.",
       fileId: "backend/src/app.js",
       match: "app.use(express.json());",
     },
@@ -125,7 +125,7 @@ curl -i -X POST http://localhost:3000/api/notes \\
     },
     {
       explanation:
-        "On the frontend, `frontend/src/services/notesApi.js` sends the note with `JSON.stringify` and `Content-Type: application/json`; the login form sends the email and password in the body of `POST /api/auth/login`, never in the URL.",
+        "On the frontend, `frontend/src/services/request.js` sends the note with `JSON.stringify` and `Content-Type: application/json`; the login form sends the email and password in the body of `POST /api/auth/login`, never in the URL.",
       fileId: "frontend/src/services/request.js",
       match: "body: body ? JSON.stringify(body) : undefined,",
     },

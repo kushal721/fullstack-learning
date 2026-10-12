@@ -134,7 +134,7 @@ export default function App() {
     },
     {
       explanation:
-        "`NoteCard` has no state of its own: it only receives a `note` and an `onDelete` callback as props, because it just displays data owned by its parent.",
+        "`NoteCard` also has state of its own: `useState` for `isEditing`, `title`, `content` and `error`, because only that card needs to know it is being edited; the `note` itself still comes from its parent as a prop.",
       fileId: "frontend/src/components/NoteCard.jsx",
       match: "function NoteCard({ note, onUpdated, onDelete })",
     },

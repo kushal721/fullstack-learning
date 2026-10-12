@@ -98,7 +98,7 @@ INSERT INTO users (email) VALUES (NULL);`,
   projectUsage: [
     {
       explanation:
-        "`createNote` in `backend/src/controllers/notesController.js` runs `INSERT INTO notes (user_id, title, content) VALUES ($1, $2, $3) RETURNING *` with `req.user.id` and the request body, then answers `201` with `result.rows[0]`.",
+        "`createNote` in `backend/src/controllers/notesController.js` runs `INSERT INTO notes (user_id, title, content) VALUES ($1, $2, $3) RETURNING id, title, content, created_at, updated_at` with `req.user.id` and the request body, then answers `201` with `result.rows[0]`.",
       fileId: "backend/src/controllers/notesController.js",
       match: "INSERT INTO notes (user_id, title, content)",
     },

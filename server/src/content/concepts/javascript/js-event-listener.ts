@@ -104,7 +104,7 @@ button.removeEventListener("click", handleClick);`,
     },
     {
       explanation:
-        "The `Input` component passes an `onChange` handler, so every keystroke updates the text kept in state, and `NoteCard.jsx` uses `onClick` on its delete button.",
+        "The `Input` component passes the `onChange` handler it receives on to its field, so every keystroke updates the text kept in state, and `NoteCard.jsx` uses `onClick` on its Delete button.",
       fileId: "frontend/src/components/Input.jsx",
       match: "<Field id={id} {...props} />",
     },

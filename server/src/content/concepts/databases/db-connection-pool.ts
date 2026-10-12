@@ -121,7 +121,7 @@ await pool.end(); // close every connection before the program exits`,
   projectUsage: [
     {
       explanation:
-        "`backend/src/db.js` creates the only pool in the Notes App with `new Pool({ connectionString: process.env.DATABASE_URL })` and exports it as `pool`.",
+        "`backend/src/db.js` creates the only pool in the Notes App with `new pg.Pool({ connectionString: process.env.DATABASE_URL })` and exports it as `pool`.",
       fileId: "backend/src/db.js",
       match: "new pg.Pool({ connectionString: process.env.DATABASE_URL })",
     },

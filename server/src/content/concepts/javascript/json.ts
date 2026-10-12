@@ -98,7 +98,7 @@ console.log(back.content);`,
   projectUsage: [
     {
       explanation:
-        "`frontend/src/services/notesApi.js` sends a new note with `body: JSON.stringify({ title, content })` and reads every response with `await response.json()`, which parses the JSON body into an object.",
+        "`frontend/src/services/request.js` sends a new note with `body: body ? JSON.stringify(body) : undefined` and reads every response with `await response.json()`, which parses the JSON body into an object.",
       fileId: "frontend/src/services/request.js",
       match: "body: body ? JSON.stringify(body) : undefined,",
     },
@@ -110,7 +110,7 @@ console.log(back.content);`,
     },
     {
       explanation:
-        'Error replies are JSON too: the backend sends `{ "error": "..." }`, and `notesApi.js` reads that `error` field to show a helpful message.',
+        'Error replies are JSON too: the backend sends `{ "error": "..." }`, and `request.js` reads that `error` field to show a helpful message.',
       fileId: "frontend/src/services/request.js",
       match: 'throw new Error(data?.error ?? "Something went wrong");',
     },

@@ -102,7 +102,7 @@ git commit -m "chore: stop tracking .env"`,
   projectUsage: [
     {
       explanation:
-        "The Notes App ignores `node_modules/`, build output in `dist/` and `.env` files, so the database password never reaches GitHub.",
+        "The `.gitignore` you create in `notes-app/` in build step 8 ignores `node_modules/`, build output in `dist/` and `.env` files, so the database password never reaches GitHub.",
     },
     {
       explanation:

@@ -111,7 +111,7 @@ export default function App() {
   projectUsage: [
     {
       explanation:
-        '`frontend/src/main.jsx` calls `createRoot(document.getElementById("root")).render(<App />)`, drawing the whole app into the `div` with id `root` in `index.html`.',
+        '`frontend/src/main.jsx` calls `createRoot(document.getElementById("root")).render(...)` with `<App />` wrapped in `<StrictMode>`, drawing the whole app into the `div` with id `root` in `index.html`.',
       fileId: "frontend/src/main.jsx",
       match: 'createRoot(document.getElementById("root")).render(',
     },

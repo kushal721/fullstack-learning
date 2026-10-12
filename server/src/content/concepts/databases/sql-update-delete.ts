@@ -124,7 +124,7 @@ SELECT count(*) FROM notes;  -- 2 again`,
   projectUsage: [
     {
       explanation:
-        '`notesController.updateNote` runs `UPDATE notes SET title = $1, content = $2, updated_at = now() WHERE id = $3 AND user_id = $4 RETURNING *` and answers `200` with the returned row, or `404` with `{ "error": "Note not found" }` when no row matched.',
+        '`notesController.updateNote` runs `UPDATE notes SET title = $1, content = $2, updated_at = now() WHERE id = $3 AND user_id = $4 RETURNING id, title, content, created_at, updated_at` and answers `200` with the returned row, or `404` with `{ "error": "Note not found" }` when no row matched.',
       fileId: "backend/src/controllers/notesController.js",
       match: "SET title = $1, content = $2, updated_at = now()",
     },

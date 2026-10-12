@@ -146,13 +146,13 @@ if (!response.ok) {
     },
     {
       explanation:
-        '`requireAuth` in `backend/src/middleware/authMiddleware.js` answers `401` with `{ "error": "Please log in" }` when the `token` cookie is missing or invalid, and the final error-handling middleware in `server.js` answers `500` with `{ "error": "Something went wrong" }` for anything unexpected.',
+        '`requireAuth` in `backend/src/middleware/authMiddleware.js` answers `401` with `{ "error": "Please log in" }` when the `token` cookie is missing or invalid, and the final error-handling middleware in `app.js` answers `500` with `{ "error": "Something went wrong" }` for anything unexpected.',
       fileId: "backend/src/middleware/authMiddleware.js",
       match: 'res.status(401).json({ error: "Please log in" });',
     },
     {
       explanation:
-        "Because `fetch()` resolves even for a `401` or `400`, the functions in `frontend/src/services/notesApi.js` must check `response.ok` before using the body, so an error like `Please log in` is shown to the user instead of being treated as notes.",
+        "Because `fetch()` resolves even for a `401` or `400`, the shared `request()` function in `frontend/src/services/request.js` checks `response.ok` before using the body, so an error like `Please log in` is shown to the user instead of being treated as notes.",
       fileId: "frontend/src/services/request.js",
       match: "if (!response.ok) {",
     },

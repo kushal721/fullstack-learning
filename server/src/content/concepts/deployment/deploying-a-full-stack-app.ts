@@ -114,7 +114,7 @@ curl -b cookies.txt -X POST $SITE/api/notes -H "Content-Type: application/json" 
     },
     {
       explanation:
-        "Before it ships, the tests from build step 13 — Vitest unit and integration tests and the Playwright end-to-end test — are what CI should run, and the smoke test repeats the end-to-end path by hand against the real site: register, log in, create a note.",
+        "Before it ships, the tests from build step 13 — the Vitest unit, component and integration tests — are what CI should run, and the smoke test checks the main path by hand against the real site: register, log in, create a note.",
     },
     {
       explanation:

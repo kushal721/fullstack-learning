@@ -103,13 +103,13 @@ node --env-file=.env server.js`,
   projectUsage: [
     {
       explanation:
-        "`backend/.env.example` lists `PORT=3000`, `DATABASE_URL=postgres://...` and `JWT_SECRET=change-me`. You copy it to `.env` and fill in real values; `.env` is git-ignored.",
+        "`backend/.env.example` lists `PORT=3000`, `DATABASE_URL=postgres://...`, `JWT_SECRET=change-me-to-a-long-random-string` and `NODE_ENV=development`. You copy it to `.env` and fill in real values; `.env` is never committed.",
       fileId: "backend/.env.example",
       match: "PORT=3000",
     },
     {
       explanation:
-        "The backend starts with `node --env-file=.env src/server.js`. `server.js` listens on `process.env.PORT ?? 3000` and `db.js` creates the `pg` pool from `process.env.DATABASE_URL`.",
+        "In development the backend starts with `node --env-file=.env --watch src/server.js`. `server.js` listens on `process.env.PORT ?? 3000` and `db.js` creates the `pg` pool from `process.env.DATABASE_URL`.",
       fileId: "backend/src/server.js",
       match: "const port = Number(process.env.PORT ?? 3000);",
     },

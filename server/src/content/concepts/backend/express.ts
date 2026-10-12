@@ -112,19 +112,19 @@ app.listen(3000, () => console.log("Listening on http://localhost:3000"));`,
   projectUsage: [
     {
       explanation:
-        '`backend/src/server.js` creates the Notes App server with `express()`, adds `app.use(express.json())` and mounts the routes with `app.use("/api/auth", authRoutes)` and `app.use("/api/notes", notesRoutes)`.',
+        '`backend/src/app.js` creates the Notes App server with `express()` inside `createApp()`, adds `app.use(express.json())` and mounts the routes with `app.use("/api/auth", authRoutes)` and `app.use("/api/notes", notesRoutes)`.',
       fileId: "backend/src/app.js",
       match: "const app = express();",
     },
     {
       explanation:
-        'The same file ends with an error-handling middleware that logs the error and replies `500` with `{ "error": "Something went wrong" }`, then starts listening with `app.listen(process.env.PORT ?? 3000)`.',
+        'The same file ends with an error-handling middleware that logs the error and replies `500` with `{ "error": "Something went wrong" }`; `server.js` then starts it with `createApp().listen(port)`.',
       fileId: "backend/src/app.js",
       match: 'res.status(500).json({ error: "Something went wrong" });',
     },
     {
       explanation:
-        "The backend is started with `node --env-file=.env src/server.js`, and in development Vite forwards every `/api` request from http://localhost:5173 to this Express server on port 3000.",
+        "In development the backend is started with `node --env-file=.env --watch src/server.js` (`npm run dev`), and Vite forwards every `/api` request from http://localhost:5173 to this Express server on port 3000.",
       fileId: "frontend/vite.config.js",
       match: '"/api": "http://localhost:3000",',
     },

@@ -104,7 +104,7 @@ app.listen(3000, () => console.log("http://localhost:3000"));`,
   projectUsage: [
     {
       explanation:
-        'Every function in `frontend/src/services/notesApi.js` sends one request with `fetch("/api/notes", { credentials: "include", ... })` and reads the one response that comes back. In development, Vite forwards these requests from http://localhost:5173 to the backend on http://localhost:3000.',
+        'Every function in `frontend/src/services/notesApi.js` calls `request()` in `services/request.js`, which sends one request with `fetch(path, { credentials: "include", ... })` and reads the one response that comes back. In development, Vite forwards these requests from http://localhost:5173 to the backend on http://localhost:3000.',
       fileId: "frontend/src/services/request.js",
       match: "const response = await fetch(path, {",
     },
@@ -116,7 +116,7 @@ app.listen(3000, () => console.log("http://localhost:3000"));`,
     },
     {
       explanation:
-        "In `backend/src/server.js`, `app.use(express.json())` reads the body of each incoming request, and controllers like `createNote` build the response with `res.status(201).json(note)`.",
+        "In `backend/src/app.js`, `app.use(express.json())` reads the body of each incoming request, and controllers like `createNote` build the response with `res.status(201).json(result.rows[0])`.",
       fileId: "backend/src/app.js",
       match: "app.use(express.json());",
     },

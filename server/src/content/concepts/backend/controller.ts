@@ -146,7 +146,7 @@ curl -i -X POST http://localhost:3000/api/notes \\
     },
     {
       explanation:
-        '`createNote` validates `req.body` with `validateNote` from `validation/noteValidation.js` (answering `400` with `{ "error": "Title is required" }` if invalid), runs a parameterized `INSERT ... RETURNING *` with `req.user.id` and replies `201` with the saved note.',
+        '`createNote` validates `req.body` with `validateNote` from `validation/noteValidation.js` (answering `400` with `{ "error": "Title is required" }` if invalid), runs a parameterized `INSERT ... RETURNING id, title, content, created_at, updated_at` with `req.user.id` and replies `201` with the saved note.',
       fileId: "backend/src/controllers/notesController.js",
       match: "export async function createNote(req, res) {",
     },

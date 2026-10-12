@@ -108,7 +108,7 @@ SELECT count(*) FROM notes;`,
   projectUsage: [
     {
       explanation:
-        "`database/schema.sql` declares `notes.user_id` as `INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE` and creates `notes_user_id_idx` on it.",
+        "`database/schema.sql` declares `notes.user_id` as `INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE` and creates `notes_user_id_idx` on it.",
       fileId: "database/schema.sql",
       match:
         "user_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,",

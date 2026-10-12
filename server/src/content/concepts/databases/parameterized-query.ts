@@ -129,13 +129,13 @@ node find-note.js "0 OR true --"`,
   projectUsage: [
     {
       explanation:
-        "Every query in `notesController` uses placeholders. Creating a note runs `INSERT INTO notes (user_id, title, content) VALUES ($1, $2, $3) RETURNING *` with `[req.user.id, title, content]`.",
+        "Every query in `notesController` uses placeholders. Creating a note runs `INSERT INTO notes (user_id, title, content) VALUES ($1, $2, $3) RETURNING id, title, content, created_at, updated_at` with `[req.user.id, title.trim(), content]`.",
       fileId: "backend/src/controllers/notesController.js",
       match: "[req.user.id, title.trim(), content],",
     },
     {
       explanation:
-        "Updating runs `UPDATE notes SET title = $1, content = $2, updated_at = now() WHERE id = $3 AND user_id = $4 RETURNING *`. The note id from the URL and the user id from the login are both parameters, so neither can change the condition.",
+        "Updating runs `UPDATE notes SET title = $1, content = $2, updated_at = now() WHERE id = $3 AND user_id = $4 RETURNING id, title, content, created_at, updated_at`. The note id from the URL and the user id from the login are both parameters, so neither can change the condition.",
       fileId: "backend/src/controllers/notesController.js",
       match: "WHERE id = $3 AND user_id = $4",
     },

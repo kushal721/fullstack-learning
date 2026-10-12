@@ -102,7 +102,7 @@ forEachTitle(["read book", " walk dog "], printTitle);`,
   projectUsage: [
     {
       explanation:
-        "`createNote({ title, content })` in `frontend/src/services/notesApi.js` is a function: `NoteForm` calls it with the note as its argument, and it sends `POST /api/notes` with `fetch` so no component has to repeat that code.",
+        "`createNote({ title, content })` in `frontend/src/services/notesApi.js` is a function: `NoteForm` calls it with the note as its argument, and it sends `POST /api/notes` through the shared `request()` helper so no component has to repeat that code.",
       fileId: "frontend/src/services/notesApi.js",
       match: "export function createNote({ title, content }) {",
     },

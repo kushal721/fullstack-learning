@@ -133,7 +133,7 @@ export default function App() {
     },
     {
       explanation:
-        "`Dashboard` renders `<NoteCard key={note.id} note={note} onDelete={removeNote} />` for each note: the note data goes down, and `NoteCard` calls `onDelete(note.id)` to send the delete request back up.",
+        "`Dashboard` renders `<NoteCard key={note.id} note={note} onUpdated={replaceNote} onDelete={removeNote} />` for each note: the note data goes down, and `NoteCard` calls `onDelete(note.id)` to send the delete request back up.",
       fileId: "frontend/src/pages/Dashboard.jsx",
       match: "onDelete={removeNote}",
     },

@@ -110,7 +110,7 @@ server.listen(3000, () => console.log("http://localhost:3000"));`,
     },
     {
       explanation:
-        "Its `npm` scripts start it with `node --env-file=.env src/server.js`. `server.js` creates the Express app and calls `app.listen(process.env.PORT ?? 3000)`, which keeps the process running and waiting for requests.",
+        "Its `dev` script starts it with `node --env-file=.env --watch src/server.js`. `server.js` builds the Express app with `createApp()` from `app.js` and calls `createApp().listen(port)` (port is `process.env.PORT ?? 3000`), which keeps the process running and waiting for requests.",
       fileId: "backend/src/server.js",
       match: "createApp().listen(port, () => {",
     },
