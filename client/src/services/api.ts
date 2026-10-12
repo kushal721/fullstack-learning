@@ -88,6 +88,9 @@ export const apiPaths = {
   symbol: (id: string) => `/symbols/${encodeURIComponent(id)}`,
   symbolGraph: (id: string, depth = 1) =>
     `/symbols/${encodeURIComponent(id)}/graph?depth=${depth}`,
+  flows: (group?: string) =>
+    group ? `/flows?group=${encodeURIComponent(group)}` : "/flows",
+  flow: (id: string) => `/flows/${encodeURIComponent(id)}`,
   fileSymbols: (path: string) =>
     `/files/${path.split("/").map(encodeURIComponent).join("/")}/symbols`,
 };
