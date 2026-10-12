@@ -1,8 +1,8 @@
 import type { Flow } from "@fsl/shared";
 
 // Creating a note, from the Save click to the database and back. The
-// frontend steps are from M07.1.2; the backend, database and response steps
-// follow in M07.1.3–M07.1.5 and the HTTP details in M07.1.6.
+// frontend steps are from M07.1.2 and the backend steps from M07.1.3; the
+// database and response steps follow in M07.1.4–M07.1.5 and the HTTP details in M07.1.6.
 export const createNoteFlow: Flow = {
   id: "create-note",
   title: "Create a note",
@@ -122,6 +122,92 @@ export const createNoteFlow: Flow = {
         language: "http",
         code: 'POST /api/notes HTTP/1.1\nHost: localhost:5173\nContent-Type: application/json\nCookie: token=eyJhbGciOiJIUzI1NiIs…\n\n{"title":"Shopping","content":"Milk, bread"}',
         caption: "Method and path, headers, a blank line, then the body.",
+      },
+    },
+    // Backend: from the request arriving to the input being checked.
+    {
+      id: "parse-json",
+      symbolId: "middleware:express.json",
+      layer: "backend",
+      title: "express.json reads the body",
+      explanation:
+        "Before any route runs, `app.use(express.json())` reads the request body. It arrives as text; because the `Content-Type` header says JSON, `express.json` parses it into an object and puts it in `req.body`. Without it, `req.body` would be `undefined`.",
+      dataShape: {
+        language: "js",
+        code: '// before: the body is text\n\'{"title":"Shopping","content":"Milk, bread"}\'\n\n// after: req.body is an object\nreq.body = { title: "Shopping", content: "Milk, bread" };',
+        fileName: "backend/src/app.js",
+      },
+    },
+    {
+      id: "parse-cookies",
+      symbolId: "middleware:cookieParser",
+      layer: "backend",
+      title: "cookieParser reads the login cookie",
+      explanation:
+        "Next, `cookieParser()` turns the `Cookie` header into an object in `req.cookies`, so the login check further on can find the token by name instead of picking the header apart.",
+      dataShape: {
+        language: "js",
+        code: '// header: Cookie: token=eyJhbGciOiJIUzI1NiIs…\nreq.cookies = { token: "eyJhbGciOiJIUzI1NiIs…" };',
+        fileName: "backend/src/app.js",
+      },
+    },
+    {
+      id: "match-route",
+      symbolId: "route:POST /api/notes",
+      layer: "backend",
+      title: "Express matches the route",
+      explanation:
+        'Express compares the method and path with its routes. The notes router is mounted at `/api/notes`, and inside it `notesRoutes.post("/", …)` matches `POST` on the router\'s root, so this route handles the request.',
+      relationshipId:
+        "route:POST /api/notes->receives->http-request:POST /api/notes",
+      dataShape: {
+        language: "js",
+        code: 'app.use("/api/notes", notesRoutes);                 // app.js\nnotesRoutes.post("/", notesController.createNote); // routes/notes.js',
+        caption: "Mount path + route path = POST /api/notes.",
+      },
+    },
+    {
+      id: "require-auth",
+      symbolId: "middleware:requireAuth",
+      layer: "backend",
+      title: "requireAuth checks who is asking",
+      explanation:
+        "Every notes route runs `requireAuth` first. It verifies the token's signature and expiry with `JWT_SECRET`; if that works it puts the user's id in `req.user` and calls `next()`. If the cookie is missing, forged or expired, it answers `401` right here and the controller never runs.",
+      relationshipId: "route:POST /api/notes->uses->middleware:requireAuth",
+      dataShape: {
+        language: "js",
+        code: 'jwt.verify(req.cookies.token, process.env.JWT_SECRET);\n// → { sub: 1, iat: 1760000000, exp: 1760604800 }\nreq.user = { id: 1 };\n\n// no valid token instead:\n// 401 { "error": "Please log in" }',
+        fileName: "backend/src/middleware/authMiddleware.js",
+      },
+    },
+    {
+      id: "controller",
+      symbolId: "controller:notesController.createNote",
+      layer: "backend",
+      title: "The controller receives the request",
+      explanation:
+        "Now `createNote(req, res)` runs with everything prepared by the steps before: the note in `req.body` and the logged-in user in `req.user`. The user id comes from the verified token, never from the body, so nobody can create notes for someone else.",
+      relationshipId:
+        "route:POST /api/notes->calls->controller:notesController.createNote",
+      dataShape: {
+        language: "js",
+        code: 'req.body = { title: "Shopping", content: "Milk, bread" };\nreq.user = { id: 1 };',
+        fileName: "backend/src/controllers/notesController.js",
+      },
+    },
+    {
+      id: "validate",
+      symbolId: "fn:validateNote",
+      layer: "backend",
+      title: "validateNote checks the input",
+      explanation:
+        "The browser checked the form too, but anyone can send a request without it, so the server checks again. `validateNote` returns nothing for a valid note and the controller carries on. For an invalid one it returns a message, and the controller answers `400` with it at once, so bad input never reaches the database.",
+      relationshipId:
+        "controller:notesController.createNote->calls->fn:validateNote",
+      dataShape: {
+        language: "js",
+        code: 'validateNote({ title: "Shopping", content: "Milk, bread" }); // → undefined: carry on\n\nvalidateNote({ title: "" }); // → "Title is required"\n// the controller answers:\nres.status(400).json({ error: "Title is required" });',
+        fileName: "backend/src/validation/noteValidation.js",
       },
     },
   ],

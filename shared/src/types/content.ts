@@ -272,7 +272,11 @@ export type FlowStep = {
   explanation: string;
   /** The data at this point, e.g. the React state or the JSON body. */
   dataShape?: CodeExample;
-  /** The relationship this step follows from the previous one. */
+  /**
+   * The relationship that leads to this step from an earlier one. Not
+   * always the step just before: Express runs express.json before it
+   * matches the route, yet the route is what uses it.
+   */
   relationshipId?: string;
 };
 
