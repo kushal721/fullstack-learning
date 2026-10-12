@@ -1,4 +1,11 @@
-import type { CodeSymbol, ProjectFile, Relationship } from "@fsl/shared";
+import type {
+  CodeSymbol,
+  FileSummary,
+  ProjectFile,
+  Relationship,
+  RelationshipView,
+  SymbolSummary,
+} from "@fsl/shared";
 import { relationships } from "../content/relationships.js";
 import { symbols } from "../content/symbols.js";
 import { findLine, getFile } from "./project-files.js";
@@ -154,4 +161,86 @@ export function fileDependents(
       .filter((rel) => rel.type === "imports" && rel.target === fileId)
       .map((rel) => rel.source),
   );
+}
+
+// --- Views for the API -----------------------------------------------------
+
+/** The symbol with `line` resolved from its `match` text. */
+export function withLine(symbol: CodeSymbol): CodeSymbol {
+  if (!symbol.fileId || !symbol.match) return symbol;
+  const line = findLine(symbol.fileId, symbol.match);
+  return line ? { ...symbol, line } : symbol;
+}
+
+export function toSymbolSummary(symbol: CodeSymbol): SymbolSummary {
+  const { id, kind, name, fileId, line } = withLine(symbol);
+  return {
+    id,
+    kind,
+    name,
+    ...(fileId ? { fileId } : {}),
+    ...(line ? { line } : {}),
+  };
+}
+
+export function toFileSummary(file: ProjectFile, line?: number): FileSummary {
+  const { id, path, layer, purpose } = file;
+  return { id, path, layer, purpose, ...(line ? { line } : {}) };
+}
+
+/**
+ * Relationships of one type that end (`"in"`) or start (`"out"`) at a
+ * symbol, each with the symbol at the other end.
+ */
+export function relationshipViews(
+  id: string,
+  type: Relationship["type"],
+  direction: "in" | "out",
+  graph: ProjectGraph = defaultGraph,
+): RelationshipView[] {
+  return graph.relationships
+    .filter(
+      (rel) =>
+        rel.type === type &&
+        (direction === "in" ? rel.target : rel.source) === id,
+    )
+    .flatMap((rel) => {
+      const other = getSymbol(
+        direction === "in" ? rel.source : rel.target,
+        graph,
+      );
+      return other
+        ? [
+            {
+              id: rel.id,
+              type: rel.type,
+              explanation: rel.explanation,
+              symbol: toSymbolSummary(other),
+            },
+          ]
+        : [];
+    });
+}
+
+/** Symbols defined in a file (by line) and the symbols they connect to. */
+export function fileSymbols(
+  fileId: string,
+  graph: ProjectGraph = defaultGraph,
+): { defined: SymbolSummary[]; referenced: SymbolSummary[] } {
+  const defined = graph.symbols
+    .filter((symbol) => symbol.fileId === fileId)
+    .map(toSymbolSummary)
+    .sort((a, b) => (a.line ?? 0) - (b.line ?? 0));
+  const here = new Set(defined.map((symbol) => symbol.id));
+  const otherIds = graph.relationships.flatMap((rel) =>
+    here.has(rel.source) && !here.has(rel.target)
+      ? [rel.target]
+      : here.has(rel.target) && !here.has(rel.source)
+        ? [rel.source]
+        : [],
+  );
+  return {
+    defined,
+    referenced: symbolsFor(otherIds, graph).map(toSymbolSummary),
+  };
 }

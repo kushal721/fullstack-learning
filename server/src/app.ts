@@ -8,6 +8,7 @@ import { conceptsRouter } from "./routes/concepts.js";
 import { filesRouter } from "./routes/files.js";
 import { healthRouter } from "./routes/health.js";
 import { projectRouter } from "./routes/project.js";
+import { symbolsRouter } from "./routes/symbols.js";
 import { topicsRouter } from "./routes/topics.js";
 
 type AppOptions = {
@@ -27,6 +28,7 @@ export function createApp({ clientDist = config.clientDist }: AppOptions = {}) {
   app.use("/api/files", filesRouter);
   app.use("/api/build-steps", buildStepsRouter);
   app.use("/api/project", projectRouter);
+  app.use("/api/symbols", symbolsRouter);
   app.use("/api", notFound);
 
   if (clientDist) app.use(serveClient(clientDist));

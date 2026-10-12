@@ -1,4 +1,8 @@
-import type { FileResponse, FileTreeResponse } from "@fsl/shared";
+import type {
+  FileResponse,
+  FileSymbolsResponse,
+  FileTreeResponse,
+} from "@fsl/shared";
 import { Router } from "express";
 import { getConcept, toConceptSummary } from "../lib/concepts.js";
 import { notFoundError, validationError } from "../lib/http-error.js";
@@ -8,6 +12,12 @@ import {
   getFile,
   readFileSource,
 } from "../lib/project-files.js";
+import {
+  fileDependencies,
+  fileDependents,
+  fileSymbols,
+  toFileSummary,
+} from "../lib/project-graph.js";
 
 export const filesRouter = Router();
 
@@ -19,9 +29,12 @@ filesRouter.get("/", (_req, res) => {
 
 // GET /api/files/frontend/src/App.jsx (or …/frontend%2Fsrc%2FApp.jsx)
 // The rest of the URL is the file's path inside example-project/.
+// GET /api/files/<path>/symbols — the symbols in that file instead (no
+// example file is called "symbols", so the last segment is unambiguous).
 filesRouter.get("/*path", async (req, res) => {
   const segments = (req.params as { path: string[] }).path;
-  const id = segments.join("/");
+  const wantsSymbols = segments.length > 1 && segments.at(-1) === "symbols";
+  const id = (wantsSymbols ? segments.slice(0, -1) : segments).join("/");
 
   // Only plain relative paths are ever valid file ids. Reject anything that
   // tries to climb out of the project, before even looking it up.
@@ -38,6 +51,17 @@ filesRouter.get("/*path", async (req, res) => {
 
   const file = getFile(id);
   if (!file) throw notFoundError(`No file "${id}" in the example project.`);
+
+  if (wantsSymbols) {
+    const body: FileSymbolsResponse = {
+      file: toFileSummary(file),
+      ...fileSymbols(file.id),
+      imports: fileDependencies(file.id).map((f) => toFileSummary(f)),
+      importedBy: fileDependents(file.id).map((f) => toFileSummary(f)),
+    };
+    res.json(body);
+    return;
+  }
 
   const source = await readFileSource(id);
   if (source === undefined) throw notFoundError(`No file "${id}".`);
