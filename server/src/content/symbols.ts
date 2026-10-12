@@ -5,7 +5,7 @@ import type { CodeSymbol } from "@fsl/shared";
 // line; `npm run validate` fails if it disappears from the file.
 //
 // Functions, events, requests, routes, middleware, controllers, queries
-// and tables (M06.1.1–M06.1.2). Components and hooks are added in M06.1.3.
+// and tables (M06.1.1–M06.1.2), components and hooks (M06.1.3).
 export const symbols: CodeSymbol[] = [
   {
     id: "event:noteForm.submit",
@@ -627,5 +627,152 @@ export const symbols: CodeSymbol[] = [
     summary:
       "The library that signs login tokens and checks their signature and expiry.",
     conceptIds: ["npm-packages"],
+  },
+  {
+    id: "component:App",
+    kind: "component",
+    name: "App",
+    fileId: "frontend/src/App.jsx",
+    match: "export default function App() {",
+    summary:
+      "The top component: knows who is logged in and shows the Navbar plus the Login, Register or Dashboard page.",
+    dataHandled: "the logged-in user and the current page",
+    conceptIds: ["react-component", "react-state"],
+  },
+  {
+    id: "component:Navbar",
+    kind: "component",
+    name: "Navbar",
+    fileId: "frontend/src/components/Navbar.jsx",
+    match: "export default function Navbar({ user, onLogout }) {",
+    summary:
+      "The bar at the top: the app name and, when someone is logged in, their email and a Log out button.",
+    dataHandled: "the logged-in user",
+    conceptIds: ["react-component", "react-props"],
+  },
+  {
+    id: "component:Login",
+    kind: "component",
+    name: "Login",
+    fileId: "frontend/src/pages/Login.jsx",
+    match: "export default function Login({ onLoggedIn, onShowRegister }) {",
+    summary: "The login page: an email and password form.",
+    dataHandled: "the typed email and password",
+    conceptIds: ["react-component", "react-controlled-form"],
+  },
+  {
+    id: "component:Register",
+    kind: "component",
+    name: "Register",
+    fileId: "frontend/src/pages/Register.jsx",
+    match: "export default function Register({ onLoggedIn, onShowLogin }) {",
+    summary:
+      "The registration page: an email and password form that creates an account and logs in.",
+    dataHandled: "the typed email and password",
+    conceptIds: ["react-component", "react-controlled-form"],
+  },
+  {
+    id: "component:Dashboard",
+    kind: "component",
+    name: "Dashboard",
+    fileId: "frontend/src/pages/Dashboard.jsx",
+    match: "export default function Dashboard() {",
+    summary:
+      "The notes page: the form for a new note and one card per note, with loading and error messages.",
+    dataHandled: "the list of notes from useNotes",
+    conceptIds: ["react-component", "react-component-communication"],
+  },
+  {
+    id: "component:NoteForm",
+    kind: "component",
+    name: "NoteForm",
+    fileId: "frontend/src/components/NoteForm.jsx",
+    match: "export default function NoteForm({ onSaved }) {",
+    summary:
+      "The form for a new note; it reports the saved note to its parent with `onSaved`.",
+    dataHandled: "the title and content being typed",
+    conceptIds: ["react-component", "react-controlled-form"],
+  },
+  {
+    id: "component:NoteCard",
+    kind: "component",
+    name: "NoteCard",
+    fileId: "frontend/src/components/NoteCard.jsx",
+    match: "export default function NoteCard({ note, onUpdated, onDelete }) {",
+    summary:
+      "Shows one note with Edit and Delete, and switches to a small edit form in place.",
+    dataHandled: "one note, and its edited title and content",
+    conceptIds: ["react-component", "react-props"],
+  },
+  {
+    id: "component:Button",
+    kind: "component",
+    name: "Button",
+    fileId: "frontend/src/components/Button.jsx",
+    match:
+      'export default function Button({ children, variant = "primary", ...props }) {',
+    summary:
+      "The one button component for the whole app: a real `<button>` with the app's classes and a `variant` for its colour.",
+    conceptIds: ["react-reusable-component", "react-props"],
+  },
+  {
+    id: "component:Input",
+    kind: "component",
+    name: "Input",
+    fileId: "frontend/src/components/Input.jsx",
+    match:
+      "export default function Input({ label, id, multiline = false, ...props }) {",
+    summary:
+      "A labelled form field that renders an `<input>`, or a `<textarea>` when `multiline` is set.",
+    conceptIds: ["react-reusable-component", "html-input"],
+  },
+  {
+    id: "hook:useNotes",
+    kind: "hook",
+    name: "useNotes",
+    fileId: "frontend/src/hooks/useNotes.js",
+    match: "export function useNotes() {",
+    summary:
+      "A custom hook that loads the notes once and keeps them in state, with functions to add, replace and remove a note.",
+    dataHandled: "the notes array, loading flag and error",
+    conceptIds: ["react-custom-hook", "react-how-hooks-work"],
+  },
+  {
+    id: "fn:useNotes.addNote",
+    kind: "function",
+    name: "addNote",
+    fileId: "frontend/src/hooks/useNotes.js",
+    match: "function addNote(note) {",
+    summary:
+      "Puts a newly saved note first in the list, as a new array so React re-renders.",
+    dataHandled: "the saved note",
+    conceptIds: ["react-state", "js-object-array"],
+  },
+  {
+    id: "fn:useNotes.replaceNote",
+    kind: "function",
+    name: "replaceNote",
+    fileId: "frontend/src/hooks/useNotes.js",
+    match: "function replaceNote(updated) {",
+    summary:
+      "Swaps an edited note into the list, as a new array so React re-renders.",
+    dataHandled: "the updated note",
+    conceptIds: ["react-state", "js-object-array"],
+  },
+  {
+    id: "external:useState",
+    kind: "external",
+    name: "useState",
+    summary:
+      "React's hook for remembering a value between renders; calling its setter re-renders the component.",
+    conceptIds: ["react-usestate"],
+  },
+  {
+    id: "external:useEffect",
+    kind: "external",
+    name: "useEffect",
+    summary:
+      "React's hook for side effects such as loading data after a component appears.",
+    conceptIds: ["react-useeffect"],
   },
 ];

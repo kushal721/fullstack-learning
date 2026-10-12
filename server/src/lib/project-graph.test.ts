@@ -99,7 +99,7 @@ describe("project graph", () => {
   });
 
   it("follows the real create-note chain from the form to the table", () => {
-    expect(ids(calls("fn:handleSave"))).toEqual(["fn:notesApi.createNote"]);
+    expect(ids(calls("fn:handleSave"))).toContain("fn:notesApi.createNote");
     expect(ids(calls("controller:notesController.createNote"))).toEqual([
       "fn:validateNote",
       "query:insertNote",
@@ -175,6 +175,65 @@ describe("project graph", () => {
           route,
         ).toEqual(["controller"]);
       }
+    });
+  });
+
+  describe("components and hooks", () => {
+    const into = (target: string, type: string) =>
+      relationships
+        .filter((r) => r.target === target && r.type === type)
+        .map((r) => r.source)
+        .sort();
+
+    it("shows Button and Input reused across the app", () => {
+      expect(into("component:Button", "renders")).toEqual([
+        "component:Login",
+        "component:Navbar",
+        "component:NoteCard",
+        "component:NoteForm",
+        "component:Register",
+      ]);
+      expect(into("component:Input", "renders")).toEqual([
+        "component:Login",
+        "component:NoteCard",
+        "component:NoteForm",
+        "component:Register",
+      ]);
+      // The same answer through the graph helper, with Button's file first.
+      const around = neighborhood("component:Button", 1);
+      expect(ids(around.symbols)).toHaveLength(6);
+      expect(ids(connectedFiles("component:Button"))[0]).toBe(
+        "frontend/src/components/Button.jsx",
+      );
+    });
+
+    it("renders every component from App down", () => {
+      const rendered = new Set(
+        relationships.filter((r) => r.type === "renders").map((r) => r.target),
+      );
+      const components = symbols
+        .filter((s) => s.kind === "component")
+        .map((s) => s.id);
+      expect(components.filter((id) => !rendered.has(id))).toEqual([
+        "component:App",
+      ]);
+    });
+
+    it("connects the saved note back to the screen", () => {
+      // handleSave → addNote, which useNotes returns and the Dashboard uses.
+      expect(ids(calls("fn:handleSave"))).toEqual([
+        "fn:notesApi.createNote",
+        "fn:useNotes.addNote",
+      ]);
+      expect(
+        relationships.some(
+          (r) =>
+            r.source === "hook:useNotes" &&
+            r.type === "returns" &&
+            r.target === "fn:useNotes.addNote",
+        ),
+      ).toBe(true);
+      expect(into("hook:useNotes", "uses")).toEqual(["component:Dashboard"]);
     });
   });
 });
