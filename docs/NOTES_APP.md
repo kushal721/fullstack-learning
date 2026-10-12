@@ -303,17 +303,19 @@ User clicks Save
 The platform describes connections between pieces of code with ids of the
 form `<kind>:<name>`. Use these exact forms so content can reference them:
 
-| Kind          | Form                        | Examples                                               |
-| ------------- | --------------------------- | ------------------------------------------------------ |
-| Component     | `component:<Name>`          | `component:NoteForm`, `component:Button`               |
-| Hook          | `hook:<name>`               | `hook:useNotes`                                        |
-| Function      | `fn:<name>`                 | `fn:handleSave`, `fn:createNote`, `fn:validateNote`    |
-| Event         | `event:<component>.<event>` | `event:noteForm.submit`                                |
-| Route         | `route:<METHOD> <path>`     | `route:POST /api/notes`, `route:DELETE /api/notes/:id` |
-| Middleware    | `middleware:<name>`         | `middleware:requireAuth`, `middleware:express.json`    |
-| Controller fn | `controller:<file>.<fn>`    | `controller:notesController.createNote`                |
-| Table         | `table:<name>`              | `table:notes`, `table:users`                           |
-| External      | `external:<name>`           | `external:fetch`, `external:bcrypt`                    |
+| Kind          | Form                           | Examples                                               |
+| ------------- | ------------------------------ | ------------------------------------------------------ |
+| Component     | `component:<Name>`             | `component:NoteForm`, `component:Button`               |
+| Hook          | `hook:<name>`                  | `hook:useNotes`                                        |
+| Function      | `fn:<name>`                    | `fn:handleSave`, `fn:createNote`, `fn:validateNote`    |
+| Event         | `event:<component>.<event>`    | `event:noteForm.submit`                                |
+| Route         | `route:<METHOD> <path>`        | `route:POST /api/notes`, `route:DELETE /api/notes/:id` |
+| Middleware    | `middleware:<name>`            | `middleware:requireAuth`, `middleware:express.json`    |
+| Controller fn | `controller:<file>.<fn>`       | `controller:notesController.createNote`                |
+| Table         | `table:<name>`                 | `table:notes`, `table:users`                           |
+| SQL query     | `query:<name>`                 | `query:insertNote`, `query:selectNotes`                |
+| HTTP request  | `http-request:<METHOD> <path>` | `http-request:POST /api/notes`                         |
+| External      | `external:<name>`              | `external:fetch`, `external:bcrypt`                    |
 
 Where a name is ambiguous (two functions with the same name in different
 files), prefix the file: `fn:notesApi.createNote` vs

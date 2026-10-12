@@ -1,4 +1,10 @@
-import type { BuildStep, Concept, Topic } from "@fsl/shared";
+import type {
+  BuildStep,
+  CodeSymbol,
+  Concept,
+  Relationship,
+  Topic,
+} from "@fsl/shared";
 import { describe, expect, it } from "vitest";
 import { buildSteps as realSteps } from "../content/build-steps/index.js";
 import { concepts as realConcepts } from "../content/concepts/index.js";
@@ -230,6 +236,105 @@ describe("validateContent", () => {
         `Concept "${base.id}" projectUsage[0] points at unknown file "ghost.js".`,
         `Concept "${base.id}" projectUsage[1]: "const b" is not on any line of a.js.`,
         `Concept "${base.id}" projectUsage[2] has a match but no fileId.`,
+      ]);
+    });
+  });
+
+  describe("symbols and relationships", () => {
+    const file = {
+      id: "a.js",
+      path: "a.js",
+      layer: "frontend" as const,
+      language: "js" as const,
+      purpose: "Does a thing.",
+      whyItExists: "Because.",
+      conceptIds: [],
+    };
+    const symbol = (overrides: Partial<CodeSymbol>): CodeSymbol => ({
+      id: "fn:a",
+      kind: "function",
+      name: "a",
+      fileId: "a.js",
+      match: "const a = 1;",
+      summary: "Does a.",
+      conceptIds: [],
+      ...overrides,
+    });
+    const check = (symbols: CodeSymbol[], relationships: Relationship[] = []) =>
+      validateContent({
+        tree: topic("root", 0),
+        concepts: [],
+        files: [file],
+        diskFiles: ["a.js"],
+        readSource: () => "const a = 1;\nexport default a;",
+        symbols,
+        relationships,
+      });
+    const rel = (
+      source: string,
+      target: string,
+      id = `${source}->calls->${target}`,
+    ): Relationship => ({
+      id,
+      source,
+      target,
+      type: "calls",
+      explanation: "Because.",
+    });
+
+    it("accepts a consistent graph", () => {
+      expect(
+        check(
+          [
+            symbol({}),
+            symbol({
+              id: "external:fetch",
+              kind: "external",
+              fileId: undefined,
+              match: undefined,
+            }),
+          ],
+          [rel("fn:a", "external:fetch")],
+        ),
+      ).toEqual([]);
+    });
+
+    it("reports bad ids, files, anchors and concepts on symbols", () => {
+      expect(
+        check([
+          symbol({ id: "component:a" }),
+          symbol({ id: "fn:b", match: "nowhere" }),
+          symbol({ id: "fn:c", match: undefined, line: 9 }),
+          symbol({ id: "fn:d", fileId: "ghost.js" }),
+          symbol({ id: "fn:e", fileId: undefined }),
+          symbol({ id: "fn:f", conceptIds: ["ghost"] }),
+        ]),
+      ).toEqual([
+        'Symbol "component:a" is a function, so its id must start with "fn:".',
+        'Symbol "fn:b": "nowhere" is not on any line of a.js.',
+        'Symbol "fn:c" points at line 9, but a.js has 2 lines.',
+        'Symbol "fn:d" is in unknown file "ghost.js".',
+        'Symbol "fn:e" has a match or line but no fileId.',
+        'Symbol "fn:f" links to unknown concept "ghost".',
+      ]);
+    });
+
+    it("reports relationships with unknown ends, wrong ids or no explanation", () => {
+      expect(
+        check(
+          [symbol({}), symbol({ id: "fn:b" })],
+          [
+            rel("fn:a", "fn:ghost"),
+            rel("fn:a", "fn:b", "a-b"),
+            { ...rel("fn:b", "fn:a"), explanation: " " },
+            rel("fn:a", "fn:a"),
+          ],
+        ),
+      ).toEqual([
+        'Relationship "fn:a->calls->fn:ghost" connects unknown symbol "fn:ghost".',
+        'Relationship "a-b" must have the id "fn:a->calls->fn:b".',
+        'Relationship "fn:b->calls->fn:a" needs an explanation.',
+        'Relationship "fn:a->calls->fn:a" connects a symbol to itself.',
       ]);
     });
   });

@@ -1,4 +1,12 @@
-import type { BuildStep, Concept, ProjectFile, Topic } from "@fsl/shared";
+import type {
+  BuildStep,
+  CodeSymbol,
+  Concept,
+  ProjectFile,
+  Relationship,
+  SymbolKind,
+  Topic,
+} from "@fsl/shared";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { config } from "../config.js";
@@ -6,6 +14,8 @@ import { buildSteps } from "../content/build-steps/index.js";
 import { concepts } from "../content/concepts/index.js";
 import { projectFiles } from "../content/files.js";
 import { learningTree } from "../content/learning-tree.js";
+import { relationships } from "../content/relationships.js";
+import { symbols } from "../content/symbols.js";
 import { listExampleProjectFiles } from "./project-files.js";
 import { SLUG_PATTERN } from "./slug.js";
 
@@ -18,8 +28,10 @@ export type Content = {
   /** Paths actually found on disk in example-project/. */
   diskFiles?: string[];
   buildSteps?: BuildStep[];
-  /** Reads an example file's source (for checking `projectUsage.match`). */
+  /** Reads an example file's source (for checking `match` texts). */
   readSource?: (fileId: string) => string | undefined;
+  symbols?: CodeSymbol[];
+  relationships?: Relationship[];
 };
 
 function allTopics(topic: Topic): Topic[] {
@@ -347,6 +359,108 @@ function validateConceptLinks(
   return errors;
 }
 
+/** The id prefix each symbol kind uses (docs/NOTES_APP.md "Symbol ids"). */
+const SYMBOL_PREFIX: Record<SymbolKind, string> = {
+  function: "fn",
+  component: "component",
+  hook: "hook",
+  event: "event",
+  route: "route",
+  middleware: "middleware",
+  controller: "controller",
+  query: "query",
+  table: "table",
+  "http-request": "http-request",
+  external: "external",
+};
+
+function validateGraph(
+  symbols: CodeSymbol[],
+  relationships: Relationship[],
+  concepts: Concept[],
+  files: ProjectFile[],
+  readSource: (fileId: string) => string | undefined,
+): string[] {
+  const symbolIds = new Set(symbols.map((symbol) => symbol.id));
+  const conceptIds = new Set(concepts.map((concept) => concept.id));
+  const fileIds = new Set(files.map((file) => file.id));
+  const errors = [
+    ...duplicates(
+      symbols.map((symbol) => symbol.id),
+      (id) => `Symbol id "${id}" is used more than once.`,
+    ),
+    ...duplicates(
+      relationships.map((rel) => rel.id),
+      (id) => `Relationship "${id}" is listed more than once.`,
+    ),
+  ];
+
+  for (const symbol of symbols) {
+    const name = `Symbol "${symbol.id}"`;
+    const prefix = `${SYMBOL_PREFIX[symbol.kind]}:`;
+    if (!symbol.id.startsWith(prefix) || symbol.id === prefix) {
+      errors.push(
+        `${name} is a ${symbol.kind}, so its id must start with "${prefix}".`,
+      );
+    }
+    if (!symbol.name.trim() || !symbol.summary.trim()) {
+      errors.push(`${name} needs a name and a summary.`);
+    }
+    for (const conceptId of symbol.conceptIds) {
+      if (!conceptIds.has(conceptId)) {
+        errors.push(`${name} links to unknown concept "${conceptId}".`);
+      }
+    }
+    if (symbol.fileId === undefined) {
+      if (symbol.match !== undefined || symbol.line !== undefined) {
+        errors.push(`${name} has a match or line but no fileId.`);
+      }
+      continue;
+    }
+    if (!fileIds.has(symbol.fileId)) {
+      errors.push(`${name} is in unknown file "${symbol.fileId}".`);
+      continue;
+    }
+    const lines = readSource(symbol.fileId)?.split("\n") ?? [];
+    if (
+      symbol.match !== undefined &&
+      !lines.some((l) => l.includes(symbol.match!))
+    ) {
+      errors.push(
+        `${name}: "${symbol.match}" is not on any line of ${symbol.fileId}.`,
+      );
+    }
+    if (
+      symbol.line !== undefined &&
+      (symbol.line < 1 || symbol.line > lines.length)
+    ) {
+      errors.push(
+        `${name} points at line ${symbol.line}, but ${symbol.fileId} has ${lines.length} lines.`,
+      );
+    }
+  }
+
+  for (const rel of relationships) {
+    const name = `Relationship "${rel.id}"`;
+    const expectedId = `${rel.source}->${rel.type}->${rel.target}`;
+    if (rel.id !== expectedId) {
+      errors.push(`${name} must have the id "${expectedId}".`);
+    }
+    for (const end of [rel.source, rel.target]) {
+      if (!symbolIds.has(end)) {
+        errors.push(`${name} connects unknown symbol "${end}".`);
+      }
+    }
+    if (rel.source === rel.target) {
+      errors.push(`${name} connects a symbol to itself.`);
+    }
+    if (!rel.explanation.trim()) {
+      errors.push(`${name} needs an explanation.`);
+    }
+  }
+  return errors;
+}
+
 export function validateContent(
   content: Content = {
     tree: learningTree,
@@ -356,6 +470,8 @@ export function validateContent(
     buildSteps,
     readSource: (fileId) =>
       readFileSync(path.join(config.exampleProjectDir, fileId), "utf8"),
+    symbols,
+    relationships,
   },
 ): string[] {
   return [
@@ -380,5 +496,12 @@ export function validateContent(
           content.readSource ?? (() => undefined),
         )
       : []),
+    ...validateGraph(
+      content.symbols ?? [],
+      content.relationships ?? [],
+      content.concepts,
+      content.files ?? [],
+      content.readSource ?? (() => undefined),
+    ),
   ];
 }
