@@ -63,18 +63,16 @@ describe("flow tracer", () => {
   });
 
   describe.each(flows.map((f) => [f.id, f] as const))("flow %s", (_id, f) => {
-    it("is one unbroken chain: each step's relationship joins it to the step before", () => {
+    it("connects every step with a relationship to an earlier step", () => {
       f.steps.forEach((step, i) => {
         if (!step.relationshipId) return;
         const rel = relationships.find((r) => r.id === step.relationshipId)!;
-        const previous = f.steps[i - 1];
+        const other = rel.source === step.symbolId ? rel.target : rel.source;
+        expect([rel.source, rel.target], step.id).toContain(step.symbolId);
         expect(
-          previous,
-          `${step.id} has a relationship but no step before it`,
-        ).toBeDefined();
-        expect([rel.source, rel.target].sort(), step.id).toEqual(
-          [previous!.symbolId, step.symbolId].sort(),
-        );
+          f.steps.slice(0, i).map((s) => s.symbolId),
+          `${step.id}: ${other} is not an earlier step`,
+        ).toContain(other);
       });
     });
 
@@ -105,5 +103,28 @@ describe("flow tracer", () => {
       "frontend",
       "network",
     ]);
+  });
+
+  it("continues create-note through the backend in the order Express runs it", () => {
+    const steps = getFlow("create-note")!.steps;
+    expect(steps.slice(8, 14).map((s) => s.symbolId)).toEqual([
+      "middleware:express.json",
+      "middleware:cookieParser",
+      "route:POST /api/notes",
+      "middleware:requireAuth",
+      "controller:notesController.createNote",
+      "fn:validateNote",
+    ]);
+    expect(steps.slice(8, 14).every((s) => s.layer === "backend")).toBe(true);
+    // The shapes show req.body, req.user and what a failed validation answers.
+    const shapes = steps
+      .slice(8, 14)
+      .map((s) => s.dataShape!.code)
+      .join("\n");
+    expect(shapes).toContain("req.body = {");
+    expect(shapes).toContain("req.user = { id: 1 }");
+    expect(shapes).toContain(
+      'res.status(400).json({ error: "Title is required" })',
+    );
   });
 });
