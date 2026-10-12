@@ -190,3 +190,67 @@ export type BuildStep = {
   /** Why the next step comes next. */
   nextWhy?: string;
 };
+
+/** What kind of code a symbol is; the id starts with the same word. */
+export type SymbolKind =
+  | "function"
+  | "component"
+  | "hook"
+  | "event"
+  | "route"
+  | "middleware"
+  | "controller"
+  | "query"
+  | "table"
+  | "http-request"
+  | "external";
+
+/**
+ * One named piece of the Notes App (spec §13, docs/NOTES_APP.md "Symbol
+ * ids"): a component, a function, a route, a table… Ids look like
+ * `fn:handleSave` or `route:POST /api/notes`.
+ */
+export type CodeSymbol = {
+  id: string;
+  kind: SymbolKind;
+  /** Display name, e.g. `handleSave` or `POST /api/notes`. */
+  name: string;
+  /** The example-project file it is defined in (none for externals). */
+  fileId?: string;
+  /**
+   * Exact text on the line that defines it. Content writes this; the
+   * server turns it into `line`, so links survive code moving.
+   */
+  match?: string;
+  /** 1-based line, resolved from `match` when served. */
+  line?: number;
+  summary: string;
+  /** The data it reads or produces, e.g. "the note's title and content". */
+  dataHandled?: string;
+  conceptIds: string[];
+};
+
+export type RelationshipType =
+  | "calls"
+  | "imports"
+  | "renders"
+  | "sends"
+  | "receives"
+  | "queries"
+  | "returns"
+  | "uses"
+  | "handles";
+
+/**
+ * A directed connection: `source` <type> `target`, e.g.
+ * `fn:handleSave` calls `fn:notesApi.createNote`. The id is always
+ * `${source}->${type}->${target}`.
+ */
+export type Relationship = {
+  id: string;
+  source: string;
+  target: string;
+  type: RelationshipType;
+  /** One or two sentences of cause and effect. */
+  explanation: string;
+};
