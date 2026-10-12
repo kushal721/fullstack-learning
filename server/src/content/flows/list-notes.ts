@@ -1,4 +1,5 @@
 import type { Flow } from "@fsl/shared";
+import { httpExchanges } from "./http-exchanges.js";
 
 // Loading the notes when the Dashboard appears: the whole round trip from
 // useNotes' effect to the database and back to the cards on screen.
@@ -9,6 +10,7 @@ export const listNotesFlow: Flow = {
     "Follow the request that loads your notes when the Dashboard appears, through the backend and the database, and back as cards on screen.",
   group: "request",
   direction: "round-trip",
+  http: httpExchanges["http-request:GET /api/notes"],
   steps: [
     {
       id: "dashboard-appears",

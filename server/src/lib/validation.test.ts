@@ -395,6 +395,66 @@ describe("validateContent", () => {
     });
   });
 
+  describe("HTTP exchanges", () => {
+    it("reports missing, extra and mismatched exchanges and a flow's wrong one", () => {
+      const request = (name: string) => ({
+        id: `http-request:${name}`,
+        kind: "http-request" as const,
+        name,
+        summary: "x",
+        dataHandled: "x",
+        conceptIds: [],
+      });
+      const exchange = (method: string, p: string) => ({
+        method,
+        path: p,
+        purpose: "x",
+        headers: {},
+        status: 200,
+        response: "HTTP/1.1 200 OK",
+        errorCases: [],
+      });
+      const get = exchange("GET", "/a");
+      expect(
+        validateContent({
+          tree: topic("root", 0),
+          concepts: [],
+          symbols: [request("GET /a"), request("GET /b"), request("POST /c")],
+          relationships: [],
+          flows: [
+            {
+              id: "f",
+              title: "F",
+              summary: "S",
+              group: "request",
+              direction: "request",
+              http: get,
+              steps: [
+                {
+                  id: "s",
+                  symbolId: "http-request:GET /b",
+                  layer: "network",
+                  title: "T",
+                  explanation: "x",
+                },
+              ],
+            },
+          ],
+          httpExchanges: {
+            "http-request:GET /a": get,
+            "http-request:POST /c": exchange("PUT", "/c"),
+            "http-request:GET /zzz": exchange("GET", "/zzz"),
+          },
+        }).filter((e) => e.startsWith("HTTP") || e.includes("HTTP exchange")),
+      ).toEqual([
+        'HTTP request "http-request:GET /b" has no exchange in http-exchanges.ts.',
+        'HTTP exchange "http-request:POST /c" says PUT /c, but the symbol is POST /c.',
+        'HTTP exchange "http-request:GET /zzz" is not an http-request symbol.',
+        'Flow "f" shows an HTTP exchange that none of its steps sends.',
+      ]);
+    });
+  });
+
   describe("build steps", () => {
     const step = (
       id: string,

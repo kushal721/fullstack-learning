@@ -1,7 +1,8 @@
 import type { Flow } from "@fsl/shared";
+import { httpExchanges } from "./http-exchanges.js";
 
 // Creating a note, from the Save click to the database and back onto the
-// screen (M07.1.2–M07.1.5). The HTTP details are added in M07.1.6.
+// screen, with the HTTP exchange of POST /api/notes.
 export const createNoteFlow: Flow = {
   id: "create-note",
   title: "Create a note",
@@ -9,6 +10,7 @@ export const createNoteFlow: Flow = {
     "Follow a new note from the Save button, through the API and the database, and back onto the screen.",
   group: "request",
   direction: "round-trip",
+  http: httpExchanges["http-request:POST /api/notes"],
   steps: [
     // Frontend: from the user's click to the request leaving the browser.
     {
