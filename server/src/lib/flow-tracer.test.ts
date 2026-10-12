@@ -143,4 +143,35 @@ describe("flow tracer", () => {
     expect(row).toContain("REFERENCES users (id)");
     expect(returned).toContain("id: 7");
   });
+
+  it("brings create-note back onto the screen", () => {
+    const steps = getFlow("create-note")!.steps;
+    expect(steps.slice(17).map((s) => `${s.layer} ${s.symbolId}`)).toEqual([
+      "backend controller:notesController.createNote",
+      "network http-request:POST /api/notes",
+      "frontend fn:request",
+      "frontend fn:handleSave",
+      "frontend fn:useNotes.addNote",
+      "frontend hook:useNotes",
+      "frontend component:Dashboard",
+      "user component:NoteCard",
+    ]);
+    // It starts and ends with the user.
+    expect(steps[0]!.layer).toBe("user");
+    expect(steps.at(-1)!.layer).toBe("user");
+  });
+
+  it("has a list-notes round trip through every layer and back", () => {
+    const steps = getFlow("list-notes")!.steps;
+    const layers = steps.map((s) => s.layer);
+    expect(layers[0]).toBe("user");
+    expect(layers.at(-1)).toBe("user");
+    expect(new Set(layers)).toEqual(
+      new Set(["user", "frontend", "network", "backend", "database"]),
+    );
+    expect(steps.map((s) => s.symbolId)).toContain("query:selectNotes");
+    expect(flowsForSymbol("query:selectNotes").map((f) => f.id)).toEqual([
+      "list-notes",
+    ]);
+  });
 });

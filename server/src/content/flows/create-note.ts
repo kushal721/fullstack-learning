@@ -1,8 +1,7 @@
 import type { Flow } from "@fsl/shared";
 
-// Creating a note, from the Save click to the database and back. The
-// frontend, backend and database steps are from M07.1.2–M07.1.4; the
-// response steps follow in M07.1.5 and the HTTP details in M07.1.6.
+// Creating a note, from the Save click to the database and back onto the
+// screen (M07.1.2–M07.1.5). The HTTP details are added in M07.1.6.
 export const createNoteFlow: Flow = {
   id: "create-note",
   title: "Create a note",
@@ -256,6 +255,119 @@ export const createNoteFlow: Flow = {
         language: "js",
         code: 'result.rows[0] = {\n  id: 7,\n  title: "Shopping",\n  content: "Milk, bread",\n  created_at: 2026-10-12T09:30:00.000Z, // a Date\n  updated_at: 2026-10-12T09:30:00.000Z,\n};',
         caption: "user_id isn't returned: the frontend doesn't need it.",
+      },
+    },
+    // Response: from the saved row back to the new card on screen.
+    {
+      id: "answer",
+      symbolId: "controller:notesController.createNote",
+      layer: "backend",
+      title: "The controller answers 201 Created",
+      explanation:
+        'The note is saved, so the controller answers `201 Created` ("something new was made") with the saved row. `res.json` turns the object into JSON text; the `Date` times become ISO strings because JSON has no date type.',
+      relationshipId:
+        "controller:notesController.createNote->returns->http-request:POST /api/notes",
+      dataShape: {
+        language: "js",
+        code: 'res.status(201).json(result.rows[0]);\n// sends: {"id":7,"title":"Shopping","content":"Milk, bread","created_at":"2026-10-12T09:30:00.000Z","updated_at":"2026-10-12T09:30:00.000Z"}',
+        fileName: "backend/src/controllers/notesController.js",
+      },
+    },
+    {
+      id: "http-response",
+      symbolId: "http-request:POST /api/notes",
+      layer: "network",
+      title: "The HTTP response travels back",
+      explanation:
+        "The answer goes back the way the request came: from Express, through the Vite proxy in development, to the browser that is still waiting for it.",
+      dataShape: {
+        language: "http",
+        code: 'HTTP/1.1 201 Created\nContent-Type: application/json; charset=utf-8\n\n{"id":7,"title":"Shopping","content":"Milk, bread","created_at":"2026-10-12T09:30:00.000Z","updated_at":"2026-10-12T09:30:00.000Z"}',
+        caption: "Status line, headers, a blank line, then the JSON body.",
+      },
+    },
+    {
+      id: "read-response",
+      symbolId: "fn:request",
+      layer: "frontend",
+      title: "request() reads the answer",
+      explanation:
+        "`fetch` resolves with the response. `request` turns the JSON text back into an object with `response.json()`, checks `response.ok` (true for 201) and returns the note. For a 400 or 401 it would throw an `Error` with the server's message instead.",
+      relationshipId: "fn:request->calls->external:fetch",
+      dataShape: {
+        language: "js",
+        code: 'const data = await response.json();\n// response.ok is true for 201, so request() returns:\n{\n  id: 7,\n  title: "Shopping",\n  content: "Milk, bread",\n  created_at: "2026-10-12T09:30:00.000Z",\n  updated_at: "2026-10-12T09:30:00.000Z",\n}',
+        fileName: "frontend/src/services/request.js",
+      },
+    },
+    {
+      id: "note-saved",
+      symbolId: "fn:handleSave",
+      layer: "frontend",
+      title: "handleSave gets the saved note",
+      explanation:
+        "`await createNote(…)` now has a value: the note as the server stored it, with its real `id`. `handleSave` passes it up with `onSaved(note)`, empties both fields, and in `finally` sets `isSaving` back to `false` so Save works again.",
+      relationshipId: "fn:handleSave->calls->fn:notesApi.createNote",
+      dataShape: {
+        language: "js",
+        code: 'const note = await createNote({ title, content }); // { id: 7, title: "Shopping", … }\nonSaved(note);\nsetTitle("");\nsetContent("");',
+        fileName: "frontend/src/components/NoteForm.jsx",
+      },
+    },
+    {
+      id: "add-note",
+      symbolId: "fn:useNotes.addNote",
+      layer: "frontend",
+      title: "addNote puts it first in the list",
+      explanation:
+        "`onSaved` is `addNote` from `useNotes`. It builds a new array with the saved note first, because React only re-renders when state gets a new value, never when an array is changed in place.",
+      relationshipId: "fn:handleSave->calls->fn:useNotes.addNote",
+      dataShape: {
+        language: "js",
+        code: 'setNotes((current) => [note, ...current]);\n// notes: [{ id: 7, title: "Shopping", … }, { id: 2, … }, { id: 1, … }]',
+        fileName: "frontend/src/hooks/useNotes.js",
+      },
+    },
+    {
+      id: "state-changes",
+      symbolId: "hook:useNotes",
+      layer: "frontend",
+      title: "useNotes' state changes",
+      explanation:
+        "The notes array lives in `useNotes`' state. Setting it to a new array tells React that the component using the hook, the Dashboard, must render again with the new list.",
+      relationshipId: "hook:useNotes->returns->fn:useNotes.addNote",
+      dataShape: {
+        language: "js",
+        code: "const [notes, setNotes] = useState([]); // now three notes",
+        fileName: "frontend/src/hooks/useNotes.js",
+      },
+    },
+    {
+      id: "dashboard-renders",
+      symbolId: "component:Dashboard",
+      layer: "frontend",
+      title: "The Dashboard renders again",
+      explanation:
+        "React calls `Dashboard` again. It gets the new `notes` from `useNotes` and maps them to cards; the `key` lets React see that only one card is new, so it adds just that one instead of rebuilding the list.",
+      relationshipId: "component:Dashboard->uses->hook:useNotes",
+      dataShape: {
+        language: "jsx",
+        code: "{notes.map((note) => (\n  <NoteCard key={note.id} note={note} onUpdated={replaceNote} onDelete={removeNote} />\n))}",
+        fileName: "frontend/src/pages/Dashboard.jsx",
+      },
+    },
+    {
+      id: "card-appears",
+      symbolId: "component:NoteCard",
+      layer: "user",
+      title: "The new card appears",
+      explanation:
+        "The new NoteCard shows the title and content at the top of the list, and the form is empty and ready again. No page reload happened: only the changed part of the screen was updated.",
+      relationshipId: "component:Dashboard->renders->component:NoteCard",
+      dataShape: {
+        language: "jsx",
+        code: '<article className="note-card">\n  <h2>Shopping</h2>\n  <p>Milk, bread</p>\n</article>',
+        fileName: "frontend/src/components/NoteCard.jsx",
       },
     },
   ],
