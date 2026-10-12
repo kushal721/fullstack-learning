@@ -1,8 +1,11 @@
 import type {
   BuildStep,
+  CodeSymbol,
   Concept,
   FileTreeFolder,
   ProjectFile,
+  Relationship,
+  SymbolKind,
   Topic,
 } from "./content.ts";
 
@@ -137,3 +140,60 @@ export type SnapshotResponse = { order: number; tree: FileTreeFolder };
 
 /** GET /api/project/diff?from=&to= */
 export type DiffResponse = SnapshotDiff;
+
+/** A file in a list, optionally with the line something is on. */
+export type FileSummary = Pick<
+  ProjectFile,
+  "id" | "path" | "layer" | "purpose"
+> & {
+  line?: number;
+};
+
+/** A symbol in a list: enough to show and link it. */
+export type SymbolSummary = {
+  id: string;
+  kind: SymbolKind;
+  name: string;
+  fileId?: string;
+  /** 1-based line it is defined on, when it lives in the project. */
+  line?: number;
+};
+
+/** A relationship seen from one symbol: the type, why, and the other end. */
+export type RelationshipView = {
+  id: string;
+  type: Relationship["type"];
+  explanation: string;
+  symbol: SymbolSummary;
+};
+
+/** GET /api/symbols/:id */
+export type SymbolResponse = {
+  /** The symbol with its line resolved. */
+  symbol: CodeSymbol;
+  definedIn?: FileSummary;
+  /** Symbols that call this one, with why. */
+  calledBy: RelationshipView[];
+  /** Symbols this one calls, with why. */
+  calls: RelationshipView[];
+  /** Files involved: its own first, then its neighbours'. */
+  files: FileSummary[];
+};
+
+/** GET /api/symbols/:id/graph?depth=1..3 */
+export type SymbolGraphResponse = {
+  nodes: CodeSymbol[];
+  edges: Relationship[];
+};
+
+/** GET /api/files/<path>/symbols */
+export type FileSymbolsResponse = {
+  file: FileSummary;
+  /** Symbols defined in this file, by line. */
+  defined: SymbolSummary[];
+  /** Symbols elsewhere that this file's symbols connect to. */
+  referenced: SymbolSummary[];
+  /** Files this file imports, and files that import it. */
+  imports: FileSummary[];
+  importedBy: FileSummary[];
+};
