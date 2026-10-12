@@ -6,6 +6,7 @@ import { serveClient } from "./middleware/serveClient.js";
 import { buildStepsRouter } from "./routes/build-steps.js";
 import { conceptsRouter } from "./routes/concepts.js";
 import { filesRouter } from "./routes/files.js";
+import { flowsRouter } from "./routes/flows.js";
 import { healthRouter } from "./routes/health.js";
 import { projectRouter } from "./routes/project.js";
 import { symbolsRouter } from "./routes/symbols.js";
@@ -29,6 +30,7 @@ export function createApp({ clientDist = config.clientDist }: AppOptions = {}) {
   app.use("/api/build-steps", buildStepsRouter);
   app.use("/api/project", projectRouter);
   app.use("/api/symbols", symbolsRouter);
+  app.use("/api/flows", flowsRouter);
   app.use("/api", notFound);
 
   if (clientDist) app.use(serveClient(clientDist));
