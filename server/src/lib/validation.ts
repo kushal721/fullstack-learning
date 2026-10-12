@@ -3,6 +3,7 @@ import type {
   CodeSymbol,
   Concept,
   Flow,
+  HttpExchange,
   ProjectFile,
   Relationship,
   SymbolKind,
@@ -14,6 +15,7 @@ import { config } from "../config.js";
 import { buildSteps } from "../content/build-steps/index.js";
 import { concepts } from "../content/concepts/index.js";
 import { projectFiles } from "../content/files.js";
+import { httpExchanges } from "../content/flows/http-exchanges.js";
 import { flows } from "../content/flows/index.js";
 import { learningTree } from "../content/learning-tree.js";
 import { relationships } from "../content/relationships.js";
@@ -35,6 +37,8 @@ export type Content = {
   symbols?: CodeSymbol[];
   relationships?: Relationship[];
   flows?: Flow[];
+  /** HTTP exchanges keyed by their http-request symbol id. */
+  httpExchanges?: Record<string, HttpExchange>;
 };
 
 function allTopics(topic: Topic): Topic[] {
@@ -554,6 +558,46 @@ function validateFlows(
   return errors;
 }
 
+function validateHttpExchanges(
+  exchanges: Record<string, HttpExchange>,
+  symbols: CodeSymbol[],
+  flows: Flow[],
+): string[] {
+  const errors: string[] = [];
+  const requests = symbols.filter((symbol) => symbol.kind === "http-request");
+  for (const request of requests) {
+    if (!exchanges[request.id]) {
+      errors.push(
+        `HTTP request "${request.id}" has no exchange in http-exchanges.ts.`,
+      );
+    }
+  }
+  for (const [id, exchange] of Object.entries(exchanges)) {
+    const request = requests.find((symbol) => symbol.id === id);
+    if (!request) {
+      errors.push(`HTTP exchange "${id}" is not an http-request symbol.`);
+      continue;
+    }
+    if (`${exchange.method} ${exchange.path}` !== request.name) {
+      errors.push(
+        `HTTP exchange "${id}" says ${exchange.method} ${exchange.path}, but the symbol is ${request.name}.`,
+      );
+    }
+  }
+  for (const flow of flows) {
+    if (!flow.http) continue;
+    const own = flow.steps
+      .map((step) => exchanges[step.symbolId])
+      .filter((exchange) => exchange !== undefined);
+    if (!own.includes(flow.http)) {
+      errors.push(
+        `Flow "${flow.id}" shows an HTTP exchange that none of its steps sends.`,
+      );
+    }
+  }
+  return errors;
+}
+
 export function validateContent(
   content: Content = {
     tree: learningTree,
@@ -566,6 +610,7 @@ export function validateContent(
     symbols,
     relationships,
     flows,
+    httpExchanges,
   },
 ): string[] {
   return [
@@ -603,5 +648,12 @@ export function validateContent(
       content.symbols ?? [],
       content.relationships ?? [],
     ),
+    ...(content.httpExchanges
+      ? validateHttpExchanges(
+          content.httpExchanges,
+          content.symbols ?? [],
+          content.flows ?? [],
+        )
+      : []),
   ];
 }
