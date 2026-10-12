@@ -18,8 +18,21 @@ function rel(
 }
 
 // Function-level connections for every note and auth request (M06.1.1–
-// M06.1.2) and how components and hooks fit together (M06.1.3). Imports
-// are added in M06.1.4.
+// M06.1.2), how components and hooks fit together (M06.1.3) and which
+// files import which (M06.1.4).
+/**
+ * `importer` imports `imported`. Unlike other relationships, both ends
+ * are example-project file ids, not symbols: one entry per local import
+ * statement. Imports of npm packages are not listed (they have no file).
+ */
+function fileImport(
+  importer: string,
+  imported: string,
+  explanation: string,
+): Relationship {
+  return rel(importer, "imports", imported, explanation);
+}
+
 export const relationships: Relationship[] = [
   rel(
     "fn:handleSave",
@@ -734,5 +747,210 @@ export const relationships: Relationship[] = [
     "uses",
     "external:useState",
     "NoteCard keeps `isEditing`, `title`, `content` and `error` in state, so the inputs always show what was typed and the error appears when it is set.",
+  ),
+  fileImport(
+    "backend/src/app.js",
+    "backend/src/routes/auth.js",
+    "`app.js` imports `authRoutes` from `auth.js` — maps the `/api/auth` URLs (register, login, logout, me) to the auth controller.",
+  ),
+  fileImport(
+    "backend/src/app.js",
+    "backend/src/routes/notes.js",
+    "`app.js` imports `notesRoutes` from `notes.js` — requires a logged-in user for every notes route and maps the `/api/notes` URLs to the notes controller.",
+  ),
+  fileImport(
+    "backend/src/controllers/authController.js",
+    "backend/src/db.js",
+    "`authController.js` imports `pool` from `db.js` — creates the one shared PostgreSQL connection pool from `DATABASE_URL`.",
+  ),
+  fileImport(
+    "backend/src/controllers/notesController.js",
+    "backend/src/db.js",
+    "`notesController.js` imports `pool` from `db.js` — creates the one shared PostgreSQL connection pool from `DATABASE_URL`.",
+  ),
+  fileImport(
+    "backend/src/controllers/notesController.js",
+    "backend/src/validation/noteValidation.js",
+    "`notesController.js` imports `validateNote` from `noteValidation.js` — `validateNote(body)`: returns an error message when a note is invalid (missing or too-long title, too-long content), or nothing.",
+  ),
+  fileImport(
+    "backend/src/routes/auth.js",
+    "backend/src/controllers/authController.js",
+    "`auth.js` imports everything, as `authController` from `authController.js` — registers users (bcrypt hash), logs them in (JWT in an `httpOnly` cookie), logs them out and says who is logged in.",
+  ),
+  fileImport(
+    "backend/src/routes/auth.js",
+    "backend/src/middleware/authMiddleware.js",
+    "`auth.js` imports `requireAuth` from `authMiddleware.js` — `requireAuth`: reads and verifies the login cookie and sets `req.user`, or answers `401`.",
+  ),
+  fileImport(
+    "backend/src/routes/notes.js",
+    "backend/src/controllers/notesController.js",
+    "`notes.js` imports everything, as `notesController` from `notesController.js` — lists, creates, updates and deletes notes with parameterized SQL that always filters by the logged-in user.",
+  ),
+  fileImport(
+    "backend/src/routes/notes.js",
+    "backend/src/middleware/authMiddleware.js",
+    "`notes.js` imports `requireAuth` from `authMiddleware.js` — `requireAuth`: reads and verifies the login cookie and sets `req.user`, or answers `401`.",
+  ),
+  fileImport(
+    "backend/src/routes/notes.test.js",
+    "backend/src/db.js",
+    "`notes.test.js` loads `pool` from `db.js` with `await import()`, so the test database settings are in place before the file reads them.",
+  ),
+  fileImport(
+    "backend/src/routes/notes.test.js",
+    "backend/src/app.js",
+    "`notes.test.js` loads `createApp` from `app.js` with `await import()`, so the test database settings are in place before the file reads them.",
+  ),
+  fileImport(
+    "backend/src/server.js",
+    "backend/src/app.js",
+    "`server.js` imports `createApp` from `app.js` — builds the Express app: JSON and cookie middleware, the health check, the auth and notes routers, and the error handler.",
+  ),
+  fileImport(
+    "backend/src/validation/noteValidation.test.js",
+    "backend/src/validation/noteValidation.js",
+    "`noteValidation.test.js` imports `validateNote` from `noteValidation.js` — `validateNote(body)`: returns an error message when a note is invalid (missing or too-long title, too-long content), or nothing.",
+  ),
+  fileImport(
+    "frontend/src/App.jsx",
+    "frontend/src/components/Navbar.jsx",
+    "`App.jsx` imports `Navbar` from `Navbar.jsx` — the bar at the top: the app name, and for a logged-in user their email and a Log out button.",
+  ),
+  fileImport(
+    "frontend/src/App.jsx",
+    "frontend/src/pages/Dashboard.jsx",
+    "`App.jsx` imports `Dashboard` from `Dashboard.jsx` — the logged-in home page: the `NoteForm` and the list of `NoteCard`s, using the notes from `useNotes()`.",
+  ),
+  fileImport(
+    "frontend/src/App.jsx",
+    "frontend/src/pages/Login.jsx",
+    "`App.jsx` imports `Login` from `Login.jsx` — the login page: an email and password form that calls `login()` and tells `App` who logged in.",
+  ),
+  fileImport(
+    "frontend/src/App.jsx",
+    "frontend/src/pages/Register.jsx",
+    "`App.jsx` imports `Register` from `Register.jsx` — the sign-up page: creates an account with `register()` and then logs the new user in.",
+  ),
+  fileImport(
+    "frontend/src/App.jsx",
+    "frontend/src/services/authApi.js",
+    "`App.jsx` imports `getCurrentUser` and `logout` from `authApi.js` — the frontend's functions for the auth API: `register`, `login`, `logout`, `getCurrentUser`.",
+  ),
+  fileImport(
+    "frontend/src/components/Navbar.jsx",
+    "frontend/src/components/Button.jsx",
+    "`Navbar.jsx` imports `Button` from `Button.jsx` — one reusable button with a `variant` (primary, secondary, danger, link); other props go straight to the real `<button>`.",
+  ),
+  fileImport(
+    "frontend/src/components/NoteCard.jsx",
+    "frontend/src/services/notesApi.js",
+    "`NoteCard.jsx` imports `updateNote` from `notesApi.js` — the frontend's functions for the notes API: `getNotes`, `createNote`, `updateNote`, `deleteNote`.",
+  ),
+  fileImport(
+    "frontend/src/components/NoteCard.jsx",
+    "frontend/src/components/Button.jsx",
+    "`NoteCard.jsx` imports `Button` from `Button.jsx` — one reusable button with a `variant` (primary, secondary, danger, link); other props go straight to the real `<button>`.",
+  ),
+  fileImport(
+    "frontend/src/components/NoteCard.jsx",
+    "frontend/src/components/Input.jsx",
+    "`NoteCard.jsx` imports `Input` from `Input.jsx` — a reusable form field: a label linked to an input (or a textarea with `multiline`).",
+  ),
+  fileImport(
+    "frontend/src/components/NoteForm.jsx",
+    "frontend/src/services/notesApi.js",
+    "`NoteForm.jsx` imports `createNote` from `notesApi.js` — the frontend's functions for the notes API: `getNotes`, `createNote`, `updateNote`, `deleteNote`.",
+  ),
+  fileImport(
+    "frontend/src/components/NoteForm.jsx",
+    "frontend/src/components/Button.jsx",
+    "`NoteForm.jsx` imports `Button` from `Button.jsx` — one reusable button with a `variant` (primary, secondary, danger, link); other props go straight to the real `<button>`.",
+  ),
+  fileImport(
+    "frontend/src/components/NoteForm.jsx",
+    "frontend/src/components/Input.jsx",
+    "`NoteForm.jsx` imports `Input` from `Input.jsx` — a reusable form field: a label linked to an input (or a textarea with `multiline`).",
+  ),
+  fileImport(
+    "frontend/src/components/NoteForm.test.jsx",
+    "frontend/src/services/notesApi.js",
+    "`NoteForm.test.jsx` imports `createNote` from `notesApi.js` — the frontend's functions for the notes API: `getNotes`, `createNote`, `updateNote`, `deleteNote`.",
+  ),
+  fileImport(
+    "frontend/src/components/NoteForm.test.jsx",
+    "frontend/src/components/NoteForm.jsx",
+    "`NoteForm.test.jsx` imports `NoteForm` from `NoteForm.jsx` — the form for a new note: keeps the typed title and content in state and, on Save, calls `createNote()` and reports the saved note with `onSaved`.",
+  ),
+  fileImport(
+    "frontend/src/hooks/useNotes.js",
+    "frontend/src/services/notesApi.js",
+    "`useNotes.js` imports `deleteNote` and `getNotes` from `notesApi.js` — the frontend's functions for the notes API: `getNotes`, `createNote`, `updateNote`, `deleteNote`.",
+  ),
+  fileImport(
+    "frontend/src/main.jsx",
+    "frontend/src/App.jsx",
+    "`main.jsx` imports `App` from `App.jsx` — the top component: knows who is logged in and shows the `Navbar` plus the current page (Login, Register or Dashboard).",
+  ),
+  fileImport(
+    "frontend/src/main.jsx",
+    "frontend/src/index.css",
+    "`main.jsx` imports `index.css` only for its side effect: Vite adds the styles to the page, so they apply to the whole app.",
+  ),
+  fileImport(
+    "frontend/src/pages/Dashboard.jsx",
+    "frontend/src/components/NoteCard.jsx",
+    "`Dashboard.jsx` imports `NoteCard` from `NoteCard.jsx` — shows one note; Edit switches the card to inputs and saves with `updateNote()`, Delete asks the parent to remove it.",
+  ),
+  fileImport(
+    "frontend/src/pages/Dashboard.jsx",
+    "frontend/src/components/NoteForm.jsx",
+    "`Dashboard.jsx` imports `NoteForm` from `NoteForm.jsx` — the form for a new note: keeps the typed title and content in state and, on Save, calls `createNote()` and reports the saved note with `onSaved`.",
+  ),
+  fileImport(
+    "frontend/src/pages/Dashboard.jsx",
+    "frontend/src/hooks/useNotes.js",
+    "`Dashboard.jsx` imports `useNotes` from `useNotes.js` — a custom hook that loads the notes once and keeps them in state, with `addNote`, `replaceNote` and `removeNote` to change them.",
+  ),
+  fileImport(
+    "frontend/src/pages/Login.jsx",
+    "frontend/src/components/Button.jsx",
+    "`Login.jsx` imports `Button` from `Button.jsx` — one reusable button with a `variant` (primary, secondary, danger, link); other props go straight to the real `<button>`.",
+  ),
+  fileImport(
+    "frontend/src/pages/Login.jsx",
+    "frontend/src/components/Input.jsx",
+    "`Login.jsx` imports `Input` from `Input.jsx` — a reusable form field: a label linked to an input (or a textarea with `multiline`).",
+  ),
+  fileImport(
+    "frontend/src/pages/Login.jsx",
+    "frontend/src/services/authApi.js",
+    "`Login.jsx` imports `login` from `authApi.js` — the frontend's functions for the auth API: `register`, `login`, `logout`, `getCurrentUser`.",
+  ),
+  fileImport(
+    "frontend/src/pages/Register.jsx",
+    "frontend/src/components/Button.jsx",
+    "`Register.jsx` imports `Button` from `Button.jsx` — one reusable button with a `variant` (primary, secondary, danger, link); other props go straight to the real `<button>`.",
+  ),
+  fileImport(
+    "frontend/src/pages/Register.jsx",
+    "frontend/src/components/Input.jsx",
+    "`Register.jsx` imports `Input` from `Input.jsx` — a reusable form field: a label linked to an input (or a textarea with `multiline`).",
+  ),
+  fileImport(
+    "frontend/src/pages/Register.jsx",
+    "frontend/src/services/authApi.js",
+    "`Register.jsx` imports `login` and `register` from `authApi.js` — the frontend's functions for the auth API: `register`, `login`, `logout`, `getCurrentUser`.",
+  ),
+  fileImport(
+    "frontend/src/services/authApi.js",
+    "frontend/src/services/request.js",
+    "`authApi.js` imports `request` from `request.js` — the one function every API call goes through: sends the cookie and JSON, and turns error responses into errors with the server's message.",
+  ),
+  fileImport(
+    "frontend/src/services/notesApi.js",
+    "frontend/src/services/request.js",
+    "`notesApi.js` imports `request` from `request.js` — the one function every API call goes through: sends the cookie and JSON, and turns error responses into errors with the server's message.",
   ),
 ];
