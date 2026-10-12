@@ -129,14 +129,20 @@ curl http://localhost:3000/api/notes`,
     {
       explanation:
         '`backend/src/routes/notes.js` maps each note action to a method: `router.get("/")` lists notes, `router.post("/")` creates one, `router.put("/:id")` updates one and `router.delete("/:id")` deletes one. Mounted at `/api/notes` in `server.js`, these become `GET /api/notes`, `POST /api/notes`, `PUT /api/notes/:id` and `DELETE /api/notes/:id`.',
+      fileId: "backend/src/routes/notes.js",
+      match: 'notesRoutes.get("/", notesController.listNotes);',
     },
     {
       explanation:
         "The Notes App uses PUT rather than PATCH for editing, because the edit form always sends the whole note (title and content), so the request is a full replacement.",
+      fileId: "frontend/src/services/notesApi.js",
+      match: 'method: "PUT",',
     },
     {
       explanation:
         "Register, login and logout are all POST (`/api/auth/register`, `/api/auth/login`, `/api/auth/logout`) because they send data or change the login state, so they must never be GET requests a browser might repeat or preload.",
+      fileId: "backend/src/routes/auth.js",
+      match: 'authRoutes.post("/register", authController.register);',
     },
   ],
   commonMistakes: [

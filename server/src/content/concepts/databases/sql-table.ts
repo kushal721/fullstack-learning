@@ -106,14 +106,20 @@ SELECT * FROM users;`,
     {
       explanation:
         "`database/schema.sql` creates the `users` and `notes` tables and an index on `notes.user_id`. Running it once sets up an empty database for the Notes App.",
+      fileId: "database/schema.sql",
+      match: "CREATE TABLE users (",
     },
     {
       explanation:
         'The `UNIQUE` rule on `users.email` is what makes registration safe: when someone signs up with an email that already exists, PostgreSQL refuses with error code `23505` and `authController` answers `409 { "error": "Email already registered" }`.',
+      fileId: "database/schema.sql",
+      match: "email TEXT NOT NULL UNIQUE,",
     },
     {
       explanation:
         "Because `content` has `DEFAULT ''` and `created_at`/`updated_at` default to `now()`, the controller's insert only needs `user_id`, `title` and `content`.",
+      fileId: "database/schema.sql",
+      match: "content TEXT NOT NULL DEFAULT '',",
     },
   ],
   commonMistakes: [

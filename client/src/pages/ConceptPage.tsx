@@ -49,7 +49,12 @@ export default function ConceptPage() {
     <article className="max-w-3xl">
       <title>{`${data.concept.title} · Full-Stack Learning`}</title>
       <ConceptHeader concept={data.concept} topic={data.topic} />
-      <ConceptExplanation concept={data.concept} related={data.related} />
+      <ConceptExplanation
+        concept={data.concept}
+        related={data.related}
+        usedIn={data.usedIn}
+        introducedIn={data.introducedIn}
+      />
     </article>
   );
 }

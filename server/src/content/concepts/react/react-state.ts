@@ -123,14 +123,20 @@ export default function App() {
     {
       explanation:
         "`NoteForm.jsx` keeps the `title` and `content` being typed in state, because they change on every keystroke and the inputs must show them.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: 'const [title, setTitle] = useState("");',
     },
     {
       explanation:
         "The list of notes, plus `isLoading` and `error`, live in the `useNotes` hook called by the Dashboard. Dashboard is the closest common parent of `NoteForm` and every `NoteCard`, so the shared state lives there and flows down as props.",
+      fileId: "frontend/src/hooks/useNotes.js",
+      match: "const [notes, setNotes] = useState([]);",
     },
     {
       explanation:
         "`NoteCard` has no state of its own: it only receives a `note` and an `onDelete` callback as props, because it just displays data owned by its parent.",
+      fileId: "frontend/src/components/NoteCard.jsx",
+      match: "function NoteCard({ note, onUpdated, onDelete })",
     },
   ],
   commonMistakes: [

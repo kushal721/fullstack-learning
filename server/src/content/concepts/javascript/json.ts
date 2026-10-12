@@ -99,14 +99,20 @@ console.log(back.content);`,
     {
       explanation:
         "`frontend/src/services/notesApi.js` sends a new note with `body: JSON.stringify({ title, content })` and reads every response with `await response.json()`, which parses the JSON body into an object.",
+      fileId: "frontend/src/services/request.js",
+      match: "body: body ? JSON.stringify(body) : undefined,",
     },
     {
       explanation:
         "On the backend, `express.json()` in `backend/src/` parses the JSON request body so controllers can read `req.body.title`, and they answer with `res.json(...)`, which turns the result back into JSON text.",
+      fileId: "backend/src/app.js",
+      match: "app.use(express.json());",
     },
     {
       explanation:
         'Error replies are JSON too: the backend sends `{ "error": "..." }`, and `notesApi.js` reads that `error` field to show a helpful message.',
+      fileId: "frontend/src/services/request.js",
+      match: 'throw new Error(data?.error ?? "Something went wrong");',
     },
   ],
   commonMistakes: [

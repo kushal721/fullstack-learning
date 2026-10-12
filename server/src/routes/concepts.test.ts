@@ -91,6 +91,21 @@ describe("GET /api/concepts/:slug", () => {
     expect(body.related[0]).not.toHaveProperty("basics");
   });
 
+  it("links the concept to the files that use it and the steps that introduce it", async () => {
+    const res = await request(app).get("/api/concepts/react-usestate");
+    const body = res.body as ConceptResponse;
+
+    expect(body.introducedIn.map((step) => step.slug)).toEqual(["add-state"]);
+    expect(body.introducedIn[0]).not.toHaveProperty("howToCreate");
+    expect(body.usedIn[0]).toEqual({
+      fileId: "frontend/src/components/NoteForm.jsx",
+      layer: "frontend",
+      purpose: expect.any(String),
+      line: expect.any(Number),
+      explanation: expect.any(String),
+    });
+  });
+
   it("returns 404 for an unknown concept", async () => {
     const res = await request(app).get("/api/concepts/flux-capacitor");
     expect(res.status).toBe(404);

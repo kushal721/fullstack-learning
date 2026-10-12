@@ -114,14 +114,21 @@ JOIN users ON users.id = notes.user_id;`,
     {
       explanation:
         "`database/schema.sql` creates `notes` with `user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE` and adds the index `notes_user_id_idx` so one user's notes are found quickly.",
+      fileId: "database/schema.sql",
+      match:
+        "user_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,",
     },
     {
       explanation:
         "`listNotes` in `backend/src/controllers/notesController.js` runs `SELECT id, title, content, created_at, updated_at FROM notes WHERE user_id = $1 ORDER BY created_at DESC` with `req.user.id`, so each user only ever receives their own notes.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "SELECT id, title, content, created_at, updated_at",
     },
     {
       explanation:
         "`updateNote` and `deleteNote` add `AND user_id = $n` to their `WHERE`, which uses the same relationship to stop one user changing another user's notes.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "WHERE id = $3 AND user_id = $4",
     },
   ],
   commonMistakes: [

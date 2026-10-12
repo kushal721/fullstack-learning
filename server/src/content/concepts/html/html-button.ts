@@ -88,14 +88,20 @@ export const htmlButton: Concept = {
     {
       explanation:
         "The Notes App wraps `<button>` in a reusable `Button` component (`frontend/src/components/Button.jsx`) so every button has the same style and behaviour.",
+      fileId: "frontend/src/components/Button.jsx",
+      match: "<button className={`button button-${variant}`} {...props}>",
     },
     {
       explanation:
         'In `NoteForm.jsx`, `<Button type="submit">Save</Button>` submits the note form, which calls `handleSave()`. That function calls `createNote()`, which sends `POST /api/notes`.',
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: '<Button type="submit" disabled={isSaving}>',
     },
     {
       explanation:
         "The Login and Register pages use the same `Button` component to submit their forms.",
+      fileId: "frontend/src/pages/Login.jsx",
+      match: '<Button type="submit">Log in</Button>',
     },
   ],
   commonMistakes: [

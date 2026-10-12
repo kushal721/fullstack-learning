@@ -125,14 +125,20 @@ SELECT count(*) FROM notes;  -- 2 again`,
     {
       explanation:
         '`notesController.updateNote` runs `UPDATE notes SET title = $1, content = $2, updated_at = now() WHERE id = $3 AND user_id = $4 RETURNING *` and answers `200` with the returned row, or `404` with `{ "error": "Note not found" }` when no row matched.',
+      fileId: "backend/src/controllers/notesController.js",
+      match: "SET title = $1, content = $2, updated_at = now()",
     },
     {
       explanation:
         "`notesController.deleteNote` runs `DELETE FROM notes WHERE id = $1 AND user_id = $2`. If `rowCount` is `1` it answers `204 No Content`; if it is `0` it answers `404`.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "DELETE FROM notes WHERE id = $1 AND user_id = $2",
     },
     {
       explanation:
         "In both statements the `user_id` value comes from `req.user.id`, set by the login check, never from the request body. That is why one user cannot edit or delete another user's notes.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "[title.trim(), content, id, req.user.id],",
     },
   ],
   commonMistakes: [

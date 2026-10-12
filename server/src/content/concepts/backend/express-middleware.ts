@@ -124,14 +124,20 @@ curl -i http://localhost:3000/api/broken`,
     {
       explanation:
         '`backend/src/server.js` adds `app.use(express.json())` before the routes and finishes with an error-handling middleware `(err, req, res, next)` that logs the error and replies `500` with `{ "error": "Something went wrong" }`.',
+      fileId: "backend/src/app.js",
+      match: "app.use(express.json());",
     },
     {
       explanation:
         '`backend/src/middleware/authMiddleware.js` exports `requireAuth(req, res, next)`. It reads the JWT from the `token` cookie, verifies it with `process.env.JWT_SECRET`, sets `req.user = { id }` and calls `next()`, or replies `401` with `{ "error": "Please log in" }`.',
+      fileId: "backend/src/middleware/authMiddleware.js",
+      match: "export function requireAuth(req, res, next) {",
     },
     {
       explanation:
         "`backend/src/routes/notes.js` calls `router.use(requireAuth)` before its routes, so every `/api/notes` request must come from a logged-in user.",
+      fileId: "backend/src/routes/notes.js",
+      match: "notesRoutes.use(requireAuth);",
     },
   ],
   commonMistakes: [

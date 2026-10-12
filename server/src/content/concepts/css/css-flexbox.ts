@@ -109,14 +109,20 @@ export const cssFlexbox: Concept = {
     {
       explanation:
         "The `.navbar` rule in `frontend/src/index.css` uses `display: flex` with `justify-content: space-between` so the `Navbar` component shows the app name on one side and its links on the other, all in one row.",
+      fileId: "frontend/src/index.css",
+      match: "justify-content: space-between;",
     },
     {
       explanation:
         "The `.form-field` rule uses `flex-direction: column` and `gap` so every label in `NoteForm`, `Login` and `Register` sits directly above its input with the same spacing.",
+      fileId: "frontend/src/index.css",
+      match: "flex-direction: column;",
     },
     {
       explanation:
         "Because flexbox handles the spacing with `gap`, the components themselves (`Navbar.jsx`, `NoteForm.jsx`) only need class names; all the layout lives in `index.css`.",
+      fileId: "frontend/src/index.css",
+      match: "gap: 0.25rem;",
     },
   ],
   commonMistakes: [

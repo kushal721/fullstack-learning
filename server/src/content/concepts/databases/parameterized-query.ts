@@ -130,14 +130,21 @@ node find-note.js "0 OR true --"`,
     {
       explanation:
         "Every query in `notesController` uses placeholders. Creating a note runs `INSERT INTO notes (user_id, title, content) VALUES ($1, $2, $3) RETURNING *` with `[req.user.id, title, content]`.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "[req.user.id, title.trim(), content],",
     },
     {
       explanation:
         "Updating runs `UPDATE notes SET title = $1, content = $2, updated_at = now() WHERE id = $3 AND user_id = $4 RETURNING *`. The note id from the URL and the user id from the login are both parameters, so neither can change the condition.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "WHERE id = $3 AND user_id = $4",
     },
     {
       explanation:
         "`authController` registers users with `INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email`, so an email address full of quotes and semicolons is stored as harmless text.",
+      fileId: "backend/src/controllers/authController.js",
+      match:
+        "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email",
     },
   ],
   commonMistakes: [

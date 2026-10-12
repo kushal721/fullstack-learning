@@ -105,14 +105,21 @@ server.listen(3000, () => console.log("http://localhost:3000"));`,
     {
       explanation:
         'The Notes App backend in `backend/` is a Node.js 22 program. Its `package.json` sets `"type": "module"` so every file uses `import` and `export`, just like the frontend.',
+      fileId: "backend/package.json",
+      match: '"type": "module",',
     },
     {
       explanation:
         "Its `npm` scripts start it with `node --env-file=.env src/server.js`. `server.js` creates the Express app and calls `app.listen(process.env.PORT ?? 3000)`, which keeps the process running and waiting for requests.",
+      fileId: "backend/src/server.js",
+      match: "createApp().listen(port, () => {",
     },
     {
       explanation:
         "Every controller `await`s the database through the `pg` pool in `db.js`. While one user's query is running, the event loop keeps serving other users' requests.",
+      fileId: "backend/src/db.js",
+      match:
+        "export const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });",
     },
   ],
   commonMistakes: [

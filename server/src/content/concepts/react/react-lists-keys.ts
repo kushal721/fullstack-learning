@@ -131,14 +131,20 @@ export default function App() {
     {
       explanation:
         "`Dashboard.jsx` renders the notes with `notes.map((note) => <NoteCard key={note.id} note={note} onDelete={removeNote} />)`. The `id` comes from the database, so it is unique and never changes.",
+      fileId: "frontend/src/pages/Dashboard.jsx",
+      match: "key={note.id}",
     },
     {
       explanation:
         "When a note is deleted, `useNotes` calls `setNotes((current) => current.filter((n) => n.id !== id))`. React sees that one key is missing and removes only that `NoteCard`; the other cards are left as they are.",
+      fileId: "frontend/src/hooks/useNotes.js",
+      match: "setNotes((current) => current.filter((note) => note.id !== id));",
     },
     {
       explanation:
         "When a note is saved, `addNote` puts it first with `[note, ...current]`, so the newest note is at the top, matching the order the API returns. Its new id is a key React has not seen before, so React creates exactly one new `NoteCard` at the end.",
+      fileId: "frontend/src/hooks/useNotes.js",
+      match: "setNotes((current) => [note, ...current]);",
     },
   ],
   commonMistakes: [

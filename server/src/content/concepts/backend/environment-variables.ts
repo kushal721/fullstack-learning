@@ -104,14 +104,20 @@ node --env-file=.env server.js`,
     {
       explanation:
         "`backend/.env.example` lists `PORT=3000`, `DATABASE_URL=postgres://...` and `JWT_SECRET=change-me`. You copy it to `.env` and fill in real values; `.env` is git-ignored.",
+      fileId: "backend/.env.example",
+      match: "PORT=3000",
     },
     {
       explanation:
         "The backend starts with `node --env-file=.env src/server.js`. `server.js` listens on `process.env.PORT ?? 3000` and `db.js` creates the `pg` pool from `process.env.DATABASE_URL`.",
+      fileId: "backend/src/server.js",
+      match: "const port = Number(process.env.PORT ?? 3000);",
     },
     {
       explanation:
         "`requireAuth` in `middleware/authMiddleware.js` verifies the login token with `process.env.JWT_SECRET`. The secret never reaches the frontend, which only ever sees the `httpOnly` cookie.",
+      fileId: "backend/src/middleware/authMiddleware.js",
+      match: "const payload = jwt.verify(token, process.env.JWT_SECRET);",
     },
   ],
   commonMistakes: [

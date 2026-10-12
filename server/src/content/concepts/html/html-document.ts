@@ -102,14 +102,20 @@ document.querySelector("h1").textContent = "Changed by JavaScript";`,
     {
       explanation:
         'The Notes App has exactly one HTML document, `frontend/index.html`. Its `<body>` contains an empty `<div id="root">` and a `<script type="module" src="/src/main.jsx">` that loads the React app.',
+      fileId: "frontend/index.html",
+      match: '<div id="root"></div>',
     },
     {
       explanation:
         '`frontend/src/main.jsx` finds that `root` element in the DOM with `document.getElementById("root")` and tells React to draw the `App` component inside it. Everything else you see, from the Navbar to the notes, is added to the DOM by React.',
+      fileId: "frontend/src/main.jsx",
+      match: 'createRoot(document.getElementById("root")).render(',
     },
     {
       explanation:
         "The `<title>` and the viewport `<meta>` in `frontend/index.html` set the browser tab text and make the Notes App readable on phones, where the styles in `src/index.css` can then adapt the layout.",
+      fileId: "frontend/index.html",
+      match: "<title>Notes</title>",
     },
   ],
   commonMistakes: [

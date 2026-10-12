@@ -92,10 +92,14 @@ SELECT id, title FROM notes WHERE user_id = 1 ORDER BY created_at DESC LIMIT 1;`
     {
       explanation:
         "`listNotes` in `backend/src/controllers/notesController.js` runs `SELECT id, title, content, created_at, updated_at FROM notes WHERE user_id = $1 ORDER BY created_at DESC` with `req.user.id`, so each user gets only their own notes, newest first.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "SELECT id, title, content, created_at, updated_at",
     },
     {
       explanation:
         "The controller sends `result.rows` with `res.json`, so `GET /api/notes` answers with a JSON array of note objects that the frontend renders as the notes list.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "res.json(result.rows);",
     },
   ],
   commonMistakes: [

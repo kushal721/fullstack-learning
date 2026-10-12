@@ -98,10 +98,15 @@ console.log("End of file");`,
     {
       explanation:
         "Every function in `frontend/src/services/notesApi.js` returns a promise, because it is `async` and waits for `fetch()`. Callers such as `useNotes` and `NoteForm` wait for those promises before updating the screen.",
+      fileId: "frontend/src/services/request.js",
+      match:
+        'export async function request(path, { method = "GET", body } = {}) {',
     },
     {
       explanation:
         "On the backend, the database queries return promises, which is why the Express controllers are `async` and `await` the query results before sending a response.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "export async function listNotes(req, res) {",
     },
   ],
   commonMistakes: [

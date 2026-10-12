@@ -119,14 +119,20 @@ export const htmlForm: Concept = {
     {
       explanation:
         '`frontend/src/components/NoteForm.jsx` renders a `<form>` with `Input` components for the title and the content and a `Button` with `type="submit"` labelled Save.',
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: '<form className="note-form" onSubmit={handleSave}>',
     },
     {
       explanation:
         "The form's `onSubmit` handler, `handleSave()`, calls `event.preventDefault()` so the page does not reload, then calls `createNote()` from `frontend/src/services/notesApi.js`, which sends `POST /api/notes` to the Express backend with `fetch()`.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: "async function handleSave(event) {",
     },
     {
       explanation:
         "The Login and Register pages use the same pattern with their own forms. Login sends the email and password with `POST /api/auth/login` instead of letting the browser submit the form.",
+      fileId: "frontend/src/pages/Login.jsx",
+      match: "<form onSubmit={handleSubmit}>",
     },
   ],
   commonMistakes: [

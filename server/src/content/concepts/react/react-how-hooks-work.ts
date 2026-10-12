@@ -116,14 +116,21 @@ export default function App() {
     {
       explanation:
         "`useNotes` calls `useState` for `notes`, `isLoading` and `error`, then `useEffect`, always in that order and at the top level. Each render of Dashboard therefore lines up the same four hook items.",
+      fileId: "frontend/src/hooks/useNotes.js",
+      match: "const [notes, setNotes] = useState([]);",
     },
     {
       explanation:
         "`Dashboard` calls `useNotes()` as the first line of the component, outside any condition, so the same hooks run on every render whether it is showing a loading message, an error or the notes.",
+      fileId: "frontend/src/pages/Dashboard.jsx",
+      match:
+        "const { notes, isLoading, error, addNote, replaceNote, removeNote } =",
     },
     {
       explanation:
         "`NoteForm` declares `title` and `content` with two `useState` calls at its top level; the save logic that changes them lives in the `handleSave` event handler, which only calls setters, never hooks.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: 'const [title, setTitle] = useState("");',
     },
   ],
   commonMistakes: [

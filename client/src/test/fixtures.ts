@@ -129,6 +129,29 @@ export const useStateConceptFixture: ConceptResponse = {
       summary: "Trigger an action.",
     },
   ],
+  usedIn: [
+    {
+      fileId: "frontend/src/hooks/useNotes.js",
+      layer: "frontend",
+      purpose: "Keeps the list of notes.",
+      line: 6,
+      explanation: "useNotes keeps the notes in state.",
+    },
+    {
+      fileId: "frontend/src/components/NoteForm.jsx",
+      layer: "frontend",
+      purpose: "The form for a new note; reports it with `onSaved`.",
+    },
+  ],
+  introducedIn: [
+    {
+      id: "add-state",
+      slug: "add-state",
+      order: 6,
+      title: "Add state",
+      goal: "Keep the notes in state.",
+    },
+  ],
 };
 
 /** GET /api/files for tests: a small example project. */

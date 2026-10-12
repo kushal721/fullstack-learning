@@ -131,14 +131,20 @@ export default function EmailField() {
     {
       explanation:
         "The Notes App wraps a label and an input in a reusable `Input` component (`frontend/src/components/Input.jsx`), so every field is labelled and styled the same way with the `.form-field` class.",
+      fileId: "frontend/src/components/Input.jsx",
+      match: '<div className="form-field">',
     },
     {
       explanation:
         'The Login and Register pages use `Input` with `type="email"` and `type="password"`. Each value is kept in React state through `value` and `onChange`, then sent to the backend by `authApi.js`.',
+      fileId: "frontend/src/pages/Login.jsx",
+      match: 'type="email"',
     },
     {
       explanation:
         "`NoteForm.jsx` uses `Input` for the note title and a `<textarea>` for the content. When the form is submitted, `handleSave()` calls `createNote()`, which sends both values with `POST /api/notes`.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: 'id="note-title"',
     },
   ],
   commonMistakes: [

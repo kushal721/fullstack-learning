@@ -139,14 +139,20 @@ curl -i -X DELETE localhost:3000/api/notes/1`,
     {
       explanation:
         "`backend/src/routes/notes.js` maps `GET /` to `listNotes`, `POST /` to `createNote`, `PUT /:id` to `updateNote` and `DELETE /:id` to `deleteNote`, giving the full set of CRUD endpoints under `/api/notes`.",
+      fileId: "backend/src/routes/notes.js",
+      match: 'notesRoutes.get("/", notesController.listNotes);',
     },
     {
       explanation:
         "`backend/src/controllers/notesController.js` runs one SQL statement per function, each with `req.user.id`, so every operation only touches the logged-in user's notes.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "Every query includes `user_id = $n`",
     },
     {
       explanation:
         "The frontend's notes service calls those four endpoints, and the notes page shows the list (Read), the form (Create and Update) and a delete button (Delete).",
+      fileId: "frontend/src/services/notesApi.js",
+      match: "export function getNotes() {",
     },
   ],
   commonMistakes: [

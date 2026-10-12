@@ -128,14 +128,20 @@ curl -i -X DELETE http://localhost:3000/api/notes/2`,
     {
       explanation:
         "The Notes App API is: `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/notes`, `POST /api/notes`, `PUT /api/notes/:id` and `DELETE /api/notes/:id`. Auth actions use POST because they send data and change state, even though they do not create a visible item.",
+      fileId: "backend/src/routes/auth.js",
+      match: 'authRoutes.post("/register", authController.register);',
     },
     {
       explanation:
         "`backend/src/routes/notes.js` maps these to `notesController`: `listNotes` answers `200`, `createNote` `201`, `updateNote` `200` or `404`, and `deleteNote` `204` or `404`.",
+      fileId: "backend/src/routes/notes.js",
+      match: 'notesRoutes.get("/", notesController.listNotes);',
     },
     {
       explanation:
         'Every error body has the same shape, `{ "error": "message" }` — from validation (`Title is required`), from `requireAuth` (`Please log in`) and from the final error handler (`Something went wrong`) — so the frontend reads `error` in one place.',
+      fileId: "frontend/src/services/request.js",
+      match: 'throw new Error(data?.error ?? "Something went wrong");',
     },
   ],
   commonMistakes: [

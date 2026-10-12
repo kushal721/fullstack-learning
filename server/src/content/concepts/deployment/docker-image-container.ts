@@ -110,6 +110,8 @@ docker run -p 3000:3000 notes-api`,
     {
       explanation:
         "The Notes App backend is packaged as a Docker image built from `backend/Dockerfile`. The host runs it as a container with `DATABASE_URL`, `JWT_SECRET` and `PORT` set as environment variables, so the same image works with any database.",
+      fileId: "backend/Dockerfile",
+      match: "FROM node:22-alpine",
     },
     {
       explanation:

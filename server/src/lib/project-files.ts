@@ -1,5 +1,5 @@
 import type { FileTreeFolder, FileTreeNode, ProjectFile } from "@fsl/shared";
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { config } from "../config.js";
@@ -84,6 +84,32 @@ export async function readFileSource(id: string): Promise<string | undefined> {
   let source = sourceCache.get(id);
   if (source === undefined) {
     source = await readFile(
+      path.join(config.exampleProjectDir, file.path),
+      "utf8",
+    );
+    sourceCache.set(id, source);
+  }
+  return source;
+}
+
+/**
+ * The 1-based line of the first line containing `text`, or undefined when
+ * the file or the text doesn't exist. Content uses text instead of line
+ * numbers so links keep working when code moves.
+ */
+export function findLine(id: string, text: string): number | undefined {
+  const source = readSourceSync(id);
+  if (source === undefined) return undefined;
+  const index = source.split("\n").findIndex((line) => line.includes(text));
+  return index === -1 ? undefined : index + 1;
+}
+
+function readSourceSync(id: string): string | undefined {
+  const file = byId.get(id);
+  if (!file) return undefined;
+  let source = sourceCache.get(id);
+  if (source === undefined) {
+    source = readFileSync(
       path.join(config.exampleProjectDir, file.path),
       "utf8",
     );

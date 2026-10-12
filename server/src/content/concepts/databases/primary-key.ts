@@ -94,14 +94,20 @@ SELECT * FROM todos;`,
     {
       explanation:
         "Both Notes App tables start with `id SERIAL PRIMARY KEY`, so every user and every note gets its own number automatically.",
+      fileId: "database/schema.sql",
+      match: "id SERIAL PRIMARY KEY,",
     },
     {
       explanation:
         "Creating a note runs `INSERT INTO notes (user_id, title, content) VALUES ($1, $2, $3) RETURNING *`, so the `201` response includes the new `id` and the frontend can use it right away.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "INSERT INTO notes (user_id, title, content)",
     },
     {
       explanation:
         'Editing note 42 sends `PUT /api/notes/42`; the controller runs `UPDATE notes ... WHERE id = $3 AND user_id = $4`, and answers `404 { "error": "Note not found" }` if that id does not exist or belongs to someone else.',
+      fileId: "backend/src/controllers/notesController.js",
+      match: "WHERE id = $3 AND user_id = $4",
     },
   ],
   commonMistakes: [

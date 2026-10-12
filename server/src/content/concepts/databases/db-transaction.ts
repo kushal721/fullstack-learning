@@ -159,10 +159,15 @@ docker exec -it notes-db psql -U postgres -c "SELECT id, email FROM users"`,
     {
       explanation:
         "Each action in the Notes App, such as creating, updating or deleting a note, is a single SQL statement. PostgreSQL already runs each one as its own small transaction, so `notesController` can safely use `pool.query` without `BEGIN`.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: 'import { pool } from "../db.js";',
     },
     {
       explanation:
         "Registration in `authController` is also a single `INSERT INTO users`. If you extend it to create a welcome note as well, that is the moment to switch to `pool.connect()` and wrap both inserts in `BEGIN` and `COMMIT`, exactly as in the example.",
+      fileId: "backend/src/controllers/authController.js",
+      match:
+        "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email",
     },
   ],
   commonMistakes: [

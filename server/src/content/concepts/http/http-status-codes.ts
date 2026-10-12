@@ -141,14 +141,20 @@ if (!response.ok) {
     {
       explanation:
         '`notesController.js` uses `201` after creating a note, `200` for listing and updating, `204` after deleting, `400` with `{ "error": "Title is required" }` when validation fails, and `404` when a note does not exist for this user.',
+      fileId: "backend/src/controllers/notesController.js",
+      match: "res.status(201).json(result.rows[0]);",
     },
     {
       explanation:
         '`requireAuth` in `backend/src/middleware/authMiddleware.js` answers `401` with `{ "error": "Please log in" }` when the `token` cookie is missing or invalid, and the final error-handling middleware in `server.js` answers `500` with `{ "error": "Something went wrong" }` for anything unexpected.',
+      fileId: "backend/src/middleware/authMiddleware.js",
+      match: 'res.status(401).json({ error: "Please log in" });',
     },
     {
       explanation:
         "Because `fetch()` resolves even for a `401` or `400`, the functions in `frontend/src/services/notesApi.js` must check `response.ok` before using the body, so an error like `Please log in` is shown to the user instead of being treated as notes.",
+      fileId: "frontend/src/services/request.js",
+      match: "if (!response.ok) {",
     },
   ],
   commonMistakes: [

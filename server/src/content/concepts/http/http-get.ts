@@ -113,14 +113,20 @@ const notes = await response.json();`,
     {
       explanation:
         'When the notes page loads, `frontend/src/services/notesApi.js` sends `GET /api/notes` with `credentials: "include"`, so the login cookie goes with it.',
+      fileId: "frontend/src/services/notesApi.js",
+      match: 'return request("/api/notes");',
     },
     {
       explanation:
         'In `backend/src/routes/notes.js`, `router.get("/", notesController.listNotes)` handles it after `requireAuth` has checked the login. `listNotes` selects only the notes that belong to `req.user.id` and replies `200` with them as JSON.',
+      fileId: "backend/src/routes/notes.js",
+      match: 'notesRoutes.get("/", notesController.listNotes);',
     },
     {
       explanation:
         "Every other note action (create, edit, delete) uses POST, PUT or DELETE, so loading or refreshing the notes page can never change your notes.",
+      fileId: "backend/src/routes/notes.js",
+      match: 'notesRoutes.post("/", notesController.createNote);',
     },
   ],
   commonMistakes: [

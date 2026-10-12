@@ -99,14 +99,22 @@ INSERT INTO users (email) VALUES (NULL);`,
     {
       explanation:
         "`createNote` in `backend/src/controllers/notesController.js` runs `INSERT INTO notes (user_id, title, content) VALUES ($1, $2, $3) RETURNING *` with `req.user.id` and the request body, then answers `201` with `result.rows[0]`.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "INSERT INTO notes (user_id, title, content)",
     },
     {
       explanation:
         "`register` in `authController` runs `INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email`. Returning only those two columns keeps the password hash out of the response.",
+      fileId: "backend/src/controllers/authController.js",
+      match:
+        "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email",
     },
     {
       explanation:
         'When the email is already taken, PostgreSQL reports error code `23505`, and the controller answers `409` with `{ "error": "Email already registered" }` instead of crashing.',
+      fileId: "backend/src/controllers/authController.js",
+      match:
+        'return res.status(409).json({ error: "Email already registered" });',
     },
   ],
   commonMistakes: [

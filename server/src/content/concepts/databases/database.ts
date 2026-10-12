@@ -85,14 +85,20 @@ SELECT * FROM notes;`,
     {
       explanation:
         "The Notes App stores all its data in PostgreSQL: the `users` and `notes` tables are created by `database/schema.sql`, and `database/seed.sql` adds a demo user with two notes.",
+      fileId: "database/schema.sql",
+      match: "CREATE TABLE users (",
     },
     {
       explanation:
         "`backend/src/db.js` creates one shared connection pool with `new Pool({ connectionString: process.env.DATABASE_URL })`, and every controller uses it to run queries.",
+      fileId: "backend/src/db.js",
+      match: "new pg.Pool({ connectionString: process.env.DATABASE_URL })",
     },
     {
       explanation:
         "The React frontend never connects to the database. It calls the backend's API (for example `GET /api/notes`), and the backend queries the database for the logged-in user's notes only.",
+      fileId: "frontend/src/services/notesApi.js",
+      match: 'return request("/api/notes");',
     },
   ],
   commonMistakes: [

@@ -112,6 +112,8 @@ export default function App() {
     {
       explanation:
         '`frontend/src/main.jsx` calls `createRoot(document.getElementById("root")).render(<App />)`, drawing the whole app into the `div` with id `root` in `index.html`.',
+      fileId: "frontend/src/main.jsx",
+      match: 'createRoot(document.getElementById("root")).render(',
     },
     {
       explanation:
@@ -120,6 +122,8 @@ export default function App() {
     {
       explanation:
         "`App.jsx` renders `Navbar` and the current page; `Dashboard` renders one `NoteForm` and one `NoteCard` per note, forming a tree of components.",
+      fileId: "frontend/src/App.jsx",
+      match: "<Navbar user={user} onLogout={handleLogout} />",
     },
   ],
   commonMistakes: [

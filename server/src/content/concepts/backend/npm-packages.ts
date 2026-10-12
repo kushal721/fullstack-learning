@@ -103,6 +103,8 @@ npm run dev`,
     {
       explanation:
         '`backend/package.json` sets `"type": "module"`, lists the runtime dependencies (`express` and the `pg` database driver among them) and defines the `dev` and `start` scripts that run `src/server.js` with `node --env-file=.env`.',
+      fileId: "backend/package.json",
+      match: '"dependencies": {',
     },
     {
       explanation:
@@ -111,6 +113,8 @@ npm run dev`,
     {
       explanation:
         "The frontend has its own `package.json` with React and Vite. Frontend and backend each install their own packages in their own `node_modules`.",
+      fileId: "frontend/package.json",
+      match: '"react": "^19.3.0",',
     },
   ],
   commonMistakes: [

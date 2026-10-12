@@ -116,14 +116,20 @@ export const cssBoxModel: Concept = {
     {
       explanation:
         "The Notes App styles live in plain CSS in `frontend/src/index.css`. Its class names, such as `.note-card`, `.button` and `.form-field`, each describe one kind of box and set its padding, border and margin.",
+      fileId: "frontend/src/index.css",
+      match: ".note-card {",
     },
     {
       explanation:
         "Each `.note-card` uses padding to keep the note text away from its border, and the cards are spaced apart so they read as separate notes on the Dashboard.",
+      fileId: "frontend/src/index.css",
+      match: ".note-card {",
     },
     {
       explanation:
         "The `.form-field` rule gives every label and input in the Login, Register and note forms the same spacing, so all forms line up the same way.",
+      fileId: "frontend/src/index.css",
+      match: ".form-field {",
     },
   ],
   commonMistakes: [

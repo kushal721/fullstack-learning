@@ -113,14 +113,20 @@ console.log(notes === updated); // false: a different array`,
     {
       explanation:
         "`useNotes` (`frontend/src/hooks/useNotes.js`) keeps the notes array in state and adds a saved note with `setNotes([...notes, note])`, creating a new array so React re-renders the Dashboard.",
+      fileId: "frontend/src/hooks/useNotes.js",
+      match: "setNotes((current) => [note, ...current]);",
     },
     {
       explanation:
         "The Dashboard turns the array into components with `notes.map((note) => <NoteCard key={note.id} note={note} />)`, reading each note's `id` with dot access.",
+      fileId: "frontend/src/pages/Dashboard.jsx",
+      match: "key={note.id}",
     },
     {
       explanation:
         "`NoteForm` sends the note as one object, `createNote({ title, content })`. That shorthand builds an object whose keys `title` and `content` take the values of the variables with the same names.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: "const note = await createNote({ title, content });",
     },
   ],
   commonMistakes: [

@@ -108,6 +108,8 @@ curl http://localhost:8080/api/health`,
     {
       explanation:
         "The Notes App is deployed in build step 14 as a Docker image built from `backend/Dockerfile` that runs the backend with `node`, a managed PostgreSQL database, and the frontend built with `npm run build` into `frontend/dist/`. The host provides HTTPS and the environment variables.",
+      fileId: "backend/Dockerfile",
+      match: 'CMD ["node", "src/server.js"]',
     },
     {
       explanation:

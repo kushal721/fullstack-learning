@@ -109,6 +109,8 @@ curl -b cookies.txt -X POST $SITE/api/notes -H "Content-Type: application/json" 
     {
       explanation:
         "In build step 14 the Notes App goes live this way: a managed PostgreSQL database set up with `database/schema.sql`, the backend as a Docker image from `backend/Dockerfile` with `DATABASE_URL`, `JWT_SECRET` and `PORT` set on the host, the frontend built with `npm run build` into `frontend/dist/`, and one domain with HTTPS where the API lives under `/api`.",
+      fileId: "database/schema.sql",
+      match: 'psql "$DATABASE_URL" -f database/schema.sql',
     },
     {
       explanation:

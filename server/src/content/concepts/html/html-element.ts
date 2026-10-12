@@ -98,14 +98,20 @@ document.body.append(note);`,
     {
       explanation:
         "`NoteCard.jsx` builds each note from plain elements such as a heading for the title and a paragraph for the content. React turns that JSX into real DOM nodes on the Dashboard.",
+      fileId: "frontend/src/components/NoteCard.jsx",
+      match: "<h2>{note.title}</h2>",
     },
     {
       explanation:
         "The reusable `Input` component in `frontend/src/components/Input.jsx` wraps the void `<input>` element and passes attributes like `name`, `type` and `value` through to it, so Login, Register and NoteForm all get the same input.",
+      fileId: "frontend/src/components/Input.jsx",
+      match: "<Field id={id} {...props} />",
     },
     {
       explanation:
         "In JSX the `class` attribute is written `className`, because `class` is a reserved word in JavaScript. The Notes App uses `className` to connect elements to the styles in `src/index.css`.",
+      fileId: "frontend/src/components/Button.jsx",
+      match: "<button className={`button button-${variant}`} {...props}>",
     },
   ],
   commonMistakes: [

@@ -108,14 +108,20 @@ console.log("main() started, this line does not wait");`,
     {
       explanation:
         "Each function in `frontend/src/services/notesApi.js` is `async`: it awaits `fetch()`, throws an `Error` with the server's message if the response is not ok, and returns `await response.json()`.",
+      fileId: "frontend/src/services/request.js",
+      match: "const response = await fetch(path, {",
     },
     {
       explanation:
         "`NoteForm.jsx` has an `async` `handleSave` that does `await createNote(...)` inside `try/catch`. If saving fails, the `catch` block shows the error message to the user instead of letting it disappear.",
+      fileId: "frontend/src/components/NoteForm.jsx",
+      match: "const note = await createNote({ title, content });",
     },
     {
       explanation:
         "The backend controllers are `async` functions because database queries return promises; they `await` the query and then send the result with Express.",
+      fileId: "backend/src/controllers/notesController.js",
+      match: "export async function listNotes(req, res) {",
     },
   ],
   commonMistakes: [
