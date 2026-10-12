@@ -1,16 +1,18 @@
 import type {
   FileResponse,
+  FileSymbolsResponse,
   FileTreeFile,
   FileTreeNode,
   FileTreeResponse,
 } from "@fsl/shared";
 import { useEffect, useRef } from "react";
-import { useLocation, useSearchParams } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { CodeViewer } from "../components/code-viewer/CodeViewer.tsx";
 import {
   ConnectionsPanel,
   FileSymbolList,
 } from "../components/connection-graph/ConnectionsPanel.tsx";
+import { explorerSymbolHref } from "../components/connection-graph/links.ts";
 import { FileMetadata } from "../components/file-explorer/FileMetadata.tsx";
 import { FileTree } from "../components/file-explorer/FileTree.tsx";
 import { ErrorState } from "../components/ui/ErrorState.tsx";
@@ -39,9 +41,14 @@ export default function ExplorerPage() {
   const symbolId = searchParams.get("symbol");
   // Walking the graph opens each symbol's file at its line; keep the graph
   // on screen instead of jumping down to the code.
-  const fromGraph = Boolean(
-    (useLocation().state as { fromGraph?: boolean } | null)?.fromGraph,
-  );
+  const navState = useLocation().state as {
+    fromGraph?: boolean;
+    fromCode?: boolean;
+  } | null;
+  const fromGraph = Boolean(navState?.fromGraph);
+  // Clicking a symbol's marker in the code opens its connections above.
+  const fromCode = Boolean(navState?.fromCode);
+  const navigate = useNavigate();
   const lineParam = Number(searchParams.get("line"));
   const line = Number.isInteger(lineParam) && lineParam > 0 ? lineParam : null;
   const { data, error, isLoading, reload } = useApi<FileTreeResponse>(
@@ -54,6 +61,19 @@ export default function ExplorerPage() {
   const file = useApi<FileResponse>(
     selected ? apiPaths.file(selected.path) : null,
   );
+  // Symbols defined in the file, marked in the code viewer's gutter.
+  const fileSymbols = useApi<FileSymbolsResponse>(
+    selected ? apiPaths.fileSymbols(selected.path) : null,
+  );
+
+  // After picking a symbol in the code, bring its connections into view.
+  useEffect(() => {
+    if (fromCode && symbolId) {
+      document
+        .getElementById("connections-heading")
+        ?.scrollIntoView?.({ block: "start" });
+    }
+  }, [fromCode, symbolId]);
 
   // On phones the tree is above the file, so after choosing a file bring
   // its details into view (unless a ?line= link scrolls to a line instead).
@@ -133,7 +153,14 @@ export default function ExplorerPage() {
                     file={file.data.file}
                     source={file.data.source}
                     line={line}
-                    scrollToLine={!fromGraph}
+                    scrollToLine={!fromGraph && !fromCode}
+                    symbols={fileSymbols.data?.defined}
+                    selectedSymbolId={symbolId}
+                    onSelectSymbol={(symbol) =>
+                      navigate(explorerSymbolHref(symbol), {
+                        state: { fromCode: true },
+                      })
+                    }
                     onSelectLine={(n) =>
                       setSearchParams({ file: selected.path, line: String(n) })
                     }

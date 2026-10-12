@@ -1,5 +1,5 @@
-import type { FileResponse } from "@fsl/shared";
-import { useEffect, useState } from "react";
+import type { FileResponse, SymbolSummary } from "@fsl/shared";
+import { useEffect, useMemo, useState } from "react";
 import { LayerBadge } from "../file-explorer/LayerBadge.tsx";
 import { CodeBlock } from "./CodeBlock.tsx";
 
@@ -20,6 +20,16 @@ type Props = {
    * highlighted.
    */
   scrollToLine?: boolean;
+  /** Symbols defined in this file; their lines get a marker button. */
+  symbols?: SymbolSummary[];
+  /** The symbol whose connections are open (its marker shows as pressed). */
+  selectedSymbolId?: string | null;
+  /** Called when a symbol's marker is clicked or activated with Enter/Space. */
+  onSelectSymbol?: (symbol: SymbolSummary) => void;
+};
+
+const KIND_LABEL: Partial<Record<SymbolSummary["kind"], string>> = {
+  "http-request": "request",
 };
 
 /**
@@ -32,8 +42,21 @@ export function CodeViewer({
   line,
   onSelectLine,
   scrollToLine = true,
+  symbols = [],
+  selectedSymbolId = null,
+  onSelectSymbol,
 }: Props) {
   const [showAll, setShowAll] = useState(false);
+
+  // Marker positions come from the symbol data only; the code isn't parsed.
+  const symbolsByLine = useMemo(() => {
+    const byLine = new Map<number, SymbolSummary[]>();
+    for (const symbol of symbols) {
+      if (!symbol.line) continue;
+      byLine.set(symbol.line, [...(byLine.get(symbol.line) ?? []), symbol]);
+    }
+    return byLine;
+  }, [symbols]);
 
   // Bring the requested line into view once the code is on the page.
   useEffect(() => {
@@ -71,6 +94,28 @@ export function CodeViewer({
         }}
         showLineNumbers
         lineId={(n) => `L${n}`}
+        renderMarker={
+          symbolsByLine.size > 0 && onSelectSymbol
+            ? (n) =>
+                symbolsByLine.get(n)?.map((symbol) => (
+                  <button
+                    key={symbol.id}
+                    type="button"
+                    aria-label={`Show connections of ${KIND_LABEL[symbol.kind] ?? symbol.kind} ${symbol.name}`}
+                    aria-pressed={symbol.id === selectedSymbolId}
+                    title={`${symbol.kind} ${symbol.name}: show its connections`}
+                    onClick={() => onSelectSymbol(symbol)}
+                    className={`flex size-6 items-center justify-center rounded-sm text-[0.7rem] leading-none outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                      symbol.id === selectedSymbolId
+                        ? "bg-accent text-background"
+                        : "text-accent hover:bg-accent/15"
+                    }`}
+                  >
+                    ◆
+                  </button>
+                ))
+            : undefined
+        }
         renderLineNumber={(n) => (
           // Mouse shortcut to share a line; keyboard users can use ?line=.
           <a
