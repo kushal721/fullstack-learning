@@ -8,6 +8,7 @@ import { type FormEvent, useState } from "react";
 import { ApiRequestError, apiPaths, apiPost } from "../../services/api.ts";
 import { ButtonLink } from "../ui/ButtonLink.tsx";
 import { RichText } from "../ui/RichText.tsx";
+import { LearnMore } from "./LearnMore.tsx";
 import { modeInputs } from "./mode-inputs.ts";
 
 type Props = {
@@ -166,6 +167,8 @@ export function ExerciseRunner({ exercise, nextHref }: Props) {
           Show the answer
         </button>
       )}
+
+      {finished && <LearnMore exercise={exercise} />}
 
       {finished && (
         <div className="flex flex-wrap gap-3">

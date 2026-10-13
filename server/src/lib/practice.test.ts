@@ -186,6 +186,15 @@ describe("checkAnswer", () => {
     }
   });
 
+  it("has at least six predict exercises, each linked to concepts with a full explanation", () => {
+    const predicts = exercises.filter((e) => e.mode === "predict");
+    expect(predicts.length).toBeGreaterThanOrEqual(6);
+    for (const exercise of predicts) {
+      expect(exercise.conceptIds.length, exercise.id).toBeGreaterThan(0);
+      expect(exercise.explanation.length, exercise.id).toBeGreaterThan(100);
+    }
+  });
+
   it("has at least one exercise of every mode, each solvable by its own answer", () => {
     expect(new Set(exercises.map((e) => e.mode))).toEqual(
       new Set(["predict", "trace", "find", "fix", "build"]),

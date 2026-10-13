@@ -5,7 +5,7 @@ import type {
   PublicExercise,
 } from "@fsl/shared";
 import type { ComponentType } from "react";
-import { ChoiceInput } from "./ChoiceInput.tsx";
+import { ChoiceInput } from "./modes/ChoiceInput.tsx";
 
 /** What every mode's answer input receives from the runner. */
 export type ModeInputProps = {

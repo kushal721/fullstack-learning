@@ -3,7 +3,7 @@ import type {
   ExerciseListResponse,
   ExerciseResponse,
 } from "@fsl/shared";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -16,7 +16,12 @@ const predict: ExerciseResponse = {
     mode: "predict",
     title: "Clicking Save",
     prompt: "What happens when the user clicks `Save`?",
-    conceptIds: [],
+    conceptIds: ["js-event"],
+    code: {
+      language: "jsx",
+      code: "event.preventDefault();",
+      fileName: "frontend/src/components/NoteForm.jsx",
+    },
     hints: ["Look at `handleSave`.", "Follow the request."],
     choices: [
       { id: "reload", text: "The page reloads." },
@@ -58,6 +63,17 @@ function mockApi(check: (body: unknown) => [number, unknown]) {
         "/api/exercises/predict-save": predict,
         "/api/exercises/find-x": { exercise: list.exercises[1] },
         "/api/exercises": list,
+        "/api/concepts": {
+          concepts: [
+            {
+              id: "js-event",
+              slug: "js-event",
+              title: "Events",
+              topicId: "javascript",
+              summary: "x",
+            },
+          ],
+        },
       };
       return url in routes
         ? new Response(JSON.stringify(routes[url]), { status: 200 })
@@ -120,6 +136,18 @@ describe("ExercisePage", () => {
         body: '{"answer":{"choiceId":"saved"}}',
       }),
     );
+    const learnMore = screen.getByRole("region", { name: "Learn more" });
+    expect(
+      within(learnMore).getByRole("link", { name: "Events" }),
+    ).toHaveAttribute("href", "/concepts/js-event");
+    expect(
+      within(learnMore).getByRole("link", {
+        name: "See the code in NoteForm.jsx",
+      }),
+    ).toHaveAttribute(
+      "href",
+      "/explorer?file=frontend%2Fsrc%2Fcomponents%2FNoteForm.jsx",
+    );
     expect(screen.getByRole("link", { name: "Next exercise" })).toHaveAttribute(
       "href",
       "/practice/find-x",
@@ -142,6 +170,7 @@ describe("ExercisePage", () => {
     expect(await screen.findByText("Not quite.")).toBeVisible();
     expect(screen.queryByText(/stops the reload/)).toBeNull();
     expect(screen.queryByText("Right answer")).toBeNull();
+    expect(screen.queryByRole("region", { name: "Learn more" })).toBeNull();
     expect(screen.getByRole("button", { name: "Check answer" })).toBeDisabled();
 
     // Changing the answer allows checking again.
