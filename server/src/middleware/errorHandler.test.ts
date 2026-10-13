@@ -44,4 +44,29 @@ describe("errorHandler", () => {
     });
     expect(consoleError).not.toHaveBeenCalled();
   });
+
+  it("answers 400 for invalid JSON and 413 for a body that is too large", async () => {
+    const app = express();
+    app.use(express.json({ limit: "10b" }));
+    app.post("/echo", (req, res) => res.json(req.body));
+    app.use(errorHandler);
+
+    const bad = await request(app)
+      .post("/echo")
+      .set("Content-Type", "application/json")
+      .send("{not json");
+    expect(bad.status).toBe(400);
+    expect(bad.body).toEqual({
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "The request body isn't valid JSON.",
+      },
+    });
+
+    const big = await request(app)
+      .post("/echo")
+      .send({ text: "far more than ten bytes" });
+    expect(big.status).toBe(413);
+    expect(big.body.error.code).toBe("PAYLOAD_TOO_LARGE");
+  });
 });
