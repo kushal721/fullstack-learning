@@ -135,6 +135,7 @@ export const addSecurityStep: BuildStep = {
         "Details go to the server's log; the user gets a short, safe message.",
     },
   ],
+  flowIds: ["update-note-authorized"],
   relationshipIds: [],
   enables:
     "Trust that each user only ever sees and changes their own notes, that bad input is rejected and that errors reveal nothing internal.",

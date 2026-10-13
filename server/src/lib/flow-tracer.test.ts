@@ -177,6 +177,23 @@ describe("flow tracer", () => {
 });
 
 describe("security flows", () => {
+  it.each(["register", "login", "update-note-authorized"])(
+    "%s explains why its key steps protect you",
+    (id) => {
+      const protects = getFlow(id)!.steps.filter((s) => s.protects);
+      expect(protects.length).toBeGreaterThanOrEqual(5);
+    },
+  );
+
+  it("shows protections only in security flows", () => {
+    for (const flow of getFlows("request")) {
+      expect(
+        flow.steps.some((s) => s.protects),
+        flow.id,
+      ).toBe(false);
+    }
+  });
+
   it.each(["login", "register"])(
     "%s is a validated security round trip with its exchange",
     (id) => {

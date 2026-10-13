@@ -98,6 +98,11 @@ export const loginFlow: Flow = {
       symbolId: "http-request:POST /api/auth/login",
       layer: "network",
       title: "The password crosses the network",
+      protects: {
+        risk: "Anyone on the same Wi-Fi, or on any network between the browser and the server, could read a password sent as plain text.",
+        defence:
+          "HTTPS encrypts the whole request, body, headers and cookie, so anyone listening only sees scrambled bytes.",
+      },
       explanation:
         "The password is in the body of this request. In production the site is served over HTTPS, so everything in the request (body, headers and cookie) is encrypted between the browser and the server and nobody on the network can read it. In development it only travels inside your own computer, to `localhost`, over plain HTTP.",
       relationshipId:
@@ -171,6 +176,11 @@ export const loginFlow: Flow = {
       symbolId: "query:selectUserByEmail",
       layer: "backend",
       title: "The account is looked up by email",
+      protects: {
+        risk: "Input glued into SQL text runs as SQL: an email like `x' OR '1'='1` could change what the query does.",
+        defence:
+          "The values travel separately from the SQL (`$1`, `$2`), so whatever someone types is always treated as data, never as part of the query.",
+      },
       explanation:
         "A parameterized SELECT finds the account with that email, including its password hash, which only the server ever sees.",
       relationshipId:
@@ -186,6 +196,11 @@ export const loginFlow: Flow = {
       symbolId: "table:users",
       layer: "database",
       title: "PostgreSQL returns the user's row",
+      protects: {
+        risk: "Databases get copied: a leaked backup, a stolen laptop, a hacked server. Stored passwords would hand over every account, and people reuse passwords on other sites.",
+        defence:
+          "Only a salted, deliberately slow bcrypt hash is stored. It can't be turned back into the password, and guessing is slow.",
+      },
       explanation:
         "The `users` table stores no passwords at all, only a bcrypt hash of each. Even someone who copies the whole database can't read anyone's password from it.",
       relationshipId: "query:selectUserByEmail->queries->table:users",
@@ -200,8 +215,13 @@ export const loginFlow: Flow = {
       symbolId: "external:bcrypt",
       layer: "backend",
       title: "bcrypt checks the password",
+      protects: {
+        risk: "If an unknown email got a different answer than a wrong password, an attacker could try a list of emails and learn who has an account.",
+        defence:
+          "Both get the same `401 Invalid email or password`, so the login form gives nothing away.",
+      },
       explanation:
-        "Hashing can't be reversed, so the server hashes the typed password the same way (using the salt stored in the hash) and compares. A wrong password and an unknown email get the same `401` answer, so nobody can find out which emails have accounts.",
+        "Hashing can't be reversed, so the server hashes the typed password the same way (using the salt stored in the hash) and compares. A wrong password and an unknown email get the same `401` answer, so the login form doesn't reveal which emails have accounts.",
       relationshipId: "controller:authController.login->calls->external:bcrypt",
       dataShape: {
         language: "js",
@@ -214,6 +234,11 @@ export const loginFlow: Flow = {
       symbolId: "external:jsonwebtoken",
       layer: "backend",
       title: "A signed login token is created",
+      protects: {
+        risk: "If the server believed a user id sent by the browser, anyone could claim to be user 1 and read their notes.",
+        defence:
+          "The id is inside a token signed with `JWT_SECRET`, which only the server knows. Changing the id breaks the signature, so the token is rejected.",
+      },
       explanation:
         "`jwt.sign` writes the user's id into a token and signs it with `JWT_SECRET`. Anyone can read a JWT, but nobody can change it or make one without the secret, so the server can trust the id in it on every later request.",
       relationshipId:
@@ -229,6 +254,11 @@ export const loginFlow: Flow = {
       symbolId: "controller:authController.login",
       layer: "backend",
       title: "The token goes into an httpOnly cookie",
+      protects: {
+        risk: "A script injected into the page (cross-site scripting, XSS) could read a token kept in `localStorage` and send it to an attacker, who could then log in as you.",
+        defence:
+          "An `httpOnly` cookie is invisible to page JavaScript. `sameSite` stops other websites from making the browser send it, and `secure` keeps it off plain HTTP in production.",
+      },
       explanation:
         '`res.cookie` puts the token in a `Set-Cookie` header. `httpOnly` means JavaScript in the page can never read it, so even an XSS bug can\'t steal it; `sameSite: "lax"` stops other websites from making the browser send it; `secure` (in production) only sends it over HTTPS.',
       relationshipId:

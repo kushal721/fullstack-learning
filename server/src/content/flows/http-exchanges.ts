@@ -229,7 +229,7 @@ export const httpExchanges: Record<string, HttpExchange> = {
       },
       {
         status: 401,
-        when: "No account has this email, or the password is wrong: one answer for both, so nobody can find out which emails are registered.",
+        when: "No account has this email, or the password is wrong: one answer for both, so the answer doesn't reveal which emails are registered.",
         body: '{"error":"Invalid email or password"}',
       },
       {

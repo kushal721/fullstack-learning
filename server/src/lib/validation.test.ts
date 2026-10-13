@@ -393,6 +393,51 @@ describe("validateContent", () => {
         'Flow "Bad Id" step "one" follows unknown relationship "fn:a->calls->fn:ghost".',
       ]);
     });
+
+    it("keeps protections to security flows and checks build step links", () => {
+      const sym = {
+        id: "fn:a",
+        kind: "function" as const,
+        name: "a",
+        summary: "x",
+        dataHandled: "x",
+        conceptIds: [],
+      };
+      const flow = (id: string, group: "request" | "security") => ({
+        id,
+        title: "T",
+        summary: "S",
+        group,
+        direction: "request" as const,
+        steps: [
+          {
+            id: "s",
+            symbolId: "fn:a",
+            layer: "frontend" as const,
+            title: "T",
+            explanation: "x",
+            protects: {
+              risk: "A risk",
+              defence: group === "security" ? " " : "D",
+            },
+          },
+        ],
+      });
+      expect(
+        validateContent({
+          tree: topic("root", 0),
+          concepts: [],
+          symbols: [sym],
+          relationships: [],
+          flows: [flow("save", "request"), flow("login", "security")],
+          buildSteps: [{ ...realSteps[0]!, flowIds: ["login", "ghost"] }],
+        }).filter((e) => e.includes("flow") || e.startsWith("Flow")),
+      ).toEqual([
+        'Flow "save" step "s" explains a protection, but only security flows show them.',
+        'Flow "login" step "s" needs both a risk and a defence.',
+        `Build step "${realSteps[0]!.id}" links to unknown flow "ghost".`,
+      ]);
+    });
   });
 
   describe("HTTP exchanges", () => {

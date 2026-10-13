@@ -233,6 +233,74 @@ describe("FlowPage", () => {
     );
   });
 
+  it("shows a security step's protection as a callout, and only there", async () => {
+    const login: FlowResponse = {
+      flow: {
+        id: "login",
+        title: "Log in",
+        summary: "x",
+        group: "security",
+        direction: "round-trip",
+        steps: [
+          {
+            id: "submit",
+            symbolId: "component:Button",
+            layer: "user",
+            title: "The form is submitted",
+            explanation: "x",
+          },
+          {
+            id: "set-cookie",
+            symbolId: "fn:handleSave",
+            layer: "backend",
+            title: "The token goes into an httpOnly cookie",
+            explanation: "x",
+            protects: {
+              risk: "A script could read a token in `localStorage`.",
+              defence: "Page JavaScript can't read an `httpOnly` cookie.",
+            },
+          },
+        ],
+      },
+      symbols: createNote.symbols,
+    };
+    mockFetchRoutes({
+      "/api/flows": {
+        flows: [
+          ...list.flows,
+          { ...list.flows[0]!, ...login.flow, stepCount: 2 },
+        ],
+      },
+      "/api/flows/login": login,
+    });
+    render(
+      <MemoryRouter initialEntries={["/flow?flow=login&step=1"]}>
+        <FlowPage />
+      </MemoryRouter>,
+    );
+    await screen.findByTestId("canvas");
+    expect(
+      within(screen.getByRole("navigation", { name: "Flows" })).getByRole(
+        "heading",
+        { name: "Security" },
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("complementary", { name: "Why this protects you" }),
+    ).toBeNull();
+
+    await userEvent.click(screen.getByRole("button", { name: "Next →" }));
+    const callout = screen.getByRole("complementary", {
+      name: "Why this protects you",
+    });
+    expect(callout).toHaveTextContent(
+      "The riskA script could read a token in localStorage.",
+    );
+    expect(callout).toHaveTextContent(
+      "How this step stops itPage JavaScript can't read an httpOnly cookie.",
+    );
+  });
+
   it("falls back to step 1 for a step that doesn't exist", async () => {
     renderAt("/flow?flow=create-note&step=99");
     await screen.findByTestId("canvas");

@@ -12,6 +12,7 @@ import {
   toBuildStepSummary,
 } from "../lib/build-journey.js";
 import { getConcept, toConceptSummary } from "../lib/concepts.js";
+import { getFlow, toFlowSummary } from "../lib/flow-tracer.js";
 import { notFoundError, validationError } from "../lib/http-error.js";
 import { getSymbol, toSymbolSummary } from "../lib/project-graph.js";
 import { diffSnapshots } from "../lib/project-evolution.js";
@@ -66,6 +67,11 @@ buildStepsRouter.get("/:slug", (req, res) => {
         },
       ];
     }),
+    // Validation guarantees every linked flow exists.
+    flows: (step.flowIds ?? [])
+      .map((id) => getFlow(id))
+      .filter((flow) => flow !== undefined)
+      .map(toFlowSummary),
   };
   res.json(body);
 });

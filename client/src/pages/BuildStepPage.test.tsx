@@ -95,7 +95,7 @@ const tree = (children: FileTreeFolder["children"]): FileTreeFolder => ({
   children,
 });
 
-function renderStep(step: BuildStep) {
+function renderStep(step: BuildStep, flows: BuildStepResponse["flows"] = []) {
   const response: BuildStepResponse = {
     step,
     concepts: [
@@ -132,6 +132,7 @@ function renderStep(step: BuildStep) {
         },
       },
     ],
+    flows,
   };
   mockFetchRoutes({
     "/api/build-steps": steps,
@@ -294,5 +295,29 @@ describe("BuildStepPage connections", () => {
     );
     expect(await screen.findByText("1 new concept")).toBeInTheDocument();
     expect(screen.getByText("1 new connection")).toBeInTheDocument();
+  });
+
+  it("links to the flows that show the step at work, and only then", async () => {
+    renderStep(written, [
+      {
+        id: "login",
+        title: "Log in",
+        summary: "Follow a login to the `Set-Cookie`.",
+        group: "security",
+        direction: "round-trip",
+        stepCount: 21,
+      },
+    ]);
+    await screen.findByRole("heading", { level: 1, name: "Add state" });
+    const section = screen.getByRole("heading", {
+      level: 2,
+      name: "See it happen",
+    }).parentElement!;
+    expect(
+      within(section).getByRole("link", { name: "Log in" }),
+    ).toHaveAttribute("href", "/flow?flow=login&step=1");
+    expect(section).toHaveTextContent(
+      "(21 steps): Follow a login to the Set-Cookie.",
+    );
   });
 });
