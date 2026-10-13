@@ -38,13 +38,26 @@ describe("concepts", () => {
     expect(
       getConceptsByTopic("authentication").map((concept) => concept.id),
     ).toEqual([
+      "authentication-vs-authorization",
       "why-never-store-plain-passwords",
       "password-hashing",
       "salting",
       "bcrypt",
+      "jwt",
+      "secure-cookies",
     ]);
     expect(getConceptsByTopic("security").map((concept) => concept.id)).toEqual(
-      ["input-validation", "sql-injection", "xss"],
+      [
+        "https",
+        "input-validation",
+        "sql-injection",
+        "xss",
+        "csrf",
+        "cors",
+        "secrets-env-vars",
+        "least-privilege",
+        "safe-error-messages",
+      ],
     );
     expect(getConceptsByTopic("how-everything-connects")).toEqual([]);
   });

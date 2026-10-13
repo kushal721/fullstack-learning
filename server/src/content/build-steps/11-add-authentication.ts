@@ -230,6 +230,8 @@ export const addAuthenticationStep: BuildStep = {
     "password-hashing",
     "salting",
     "bcrypt",
+    "jwt",
+    "secure-cookies",
     "express-middleware",
     "http-headers",
     "http-post",
