@@ -40,7 +40,7 @@ const list: ExerciseListResponse = {
       conceptIds: [],
       hints: [],
       task: "Add x.",
-      checklist: [],
+      checklist: [{ id: "card", kind: "file", ref: "a.jsx", text: "The card" }],
     },
   ],
 };
@@ -210,11 +210,24 @@ describe("ExercisePage", () => {
     );
   });
 
-  it("explains a mode that can't be answered yet, and ends at the last exercise", async () => {
-    mockApi(() => [200, {}]);
+  it("offers the way back instead of a next exercise on the last one", async () => {
+    mockApi(() => [
+      200,
+      {
+        correct: true,
+        explanation: "Only the card changes.",
+        expected: { itemIds: ["card"], modelAnswer: ["Edit the card."] },
+      },
+    ]);
     renderAt("build-x");
-    expect(await screen.findByText(/isn't available yet/)).toBeVisible();
-    expect(screen.queryByRole("button", { name: "Check answer" })).toBeNull();
+    await userEvent.click(
+      await screen.findByRole("checkbox", { name: "The card" }),
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Check answer" }));
+    expect(
+      await screen.findByRole("link", { name: "Back to all exercises" }),
+    ).toHaveAttribute("href", "/practice");
+    expect(screen.queryByRole("link", { name: "Next exercise" })).toBeNull();
   });
 
   it("shows not found for an unknown exercise", async () => {
