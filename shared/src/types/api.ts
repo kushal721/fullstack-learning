@@ -1,9 +1,12 @@
 import type {
   BuildStep,
+  CheckResult,
   CodeSymbol,
   Concept,
+  ExerciseAnswer,
   FileTreeFolder,
   Flow,
+  PublicExercise,
   LayerOverview,
   ProjectFile,
   Relationship,
@@ -253,3 +256,15 @@ export type FlowResponse = {
   /** Every symbol the steps are at, with lines resolved, by id. */
   symbols: Record<string, CodeSymbol>;
 };
+
+/** GET /api/exercises?mode=predict|trace|find|fix|build (answers left out) */
+export type ExerciseListResponse = { exercises: PublicExercise[] };
+
+/** GET /api/exercises/:id (answers left out) */
+export type ExerciseResponse = { exercise: PublicExercise };
+
+/** POST /api/exercises/:id/check */
+export type CheckAnswerRequest = { answer: ExerciseAnswer };
+
+/** The result, with the right answer revealed. */
+export type CheckAnswerResponse = CheckResult;

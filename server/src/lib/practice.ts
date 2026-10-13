@@ -2,8 +2,35 @@ import type {
   CheckResult,
   Exercise,
   ExerciseAnswer,
+  ExerciseMode,
   PublicExercise,
 } from "@fsl/shared";
+import { exercises as allExercises } from "../content/exercises/index.js";
+
+export const EXERCISE_MODES: ExerciseMode[] = [
+  "predict",
+  "trace",
+  "find",
+  "fix",
+  "build",
+];
+
+export function getExercise(
+  id: string,
+  exercises: Exercise[] = allExercises,
+): Exercise | undefined {
+  return exercises.find((exercise) => exercise.id === id);
+}
+
+/** Every exercise, or only one mode's, in the registry's order. */
+export function getExercises(
+  mode?: ExerciseMode,
+  exercises: Exercise[] = allExercises,
+): Exercise[] {
+  return mode
+    ? exercises.filter((exercise) => exercise.mode === mode)
+    : exercises;
+}
 
 /**
  * Practice exercises keep their answers on the server: the browser gets
