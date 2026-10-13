@@ -226,6 +226,10 @@ export const addAuthenticationStep: BuildStep = {
   ],
   filesRemoved: [],
   conceptIds: [
+    "why-never-store-plain-passwords",
+    "password-hashing",
+    "salting",
+    "bcrypt",
     "express-middleware",
     "http-headers",
     "http-post",

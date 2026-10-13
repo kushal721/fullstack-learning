@@ -311,6 +311,8 @@ export const projectFiles: ProjectFile[] = [
       "sql-insert",
       "parameterized-query",
       "environment-variables",
+      "password-hashing",
+      "bcrypt",
     ],
   }),
   file("backend/src/controllers/notesController.js", {

@@ -642,7 +642,7 @@ export const symbols: CodeSymbol[] = [
     summary:
       "The library that hashes passwords slowly with a salt and checks a password against a hash.",
     dataHandled: "a password and, to check a login, the stored hash",
-    conceptIds: ["npm-packages"],
+    conceptIds: ["bcrypt", "password-hashing", "npm-packages"],
   },
   {
     id: "external:jsonwebtoken",

@@ -35,7 +35,15 @@ describe("concepts", () => {
         (concept) => concept.topicId === "react",
       ),
     ).toBe(true);
-    expect(getConceptsByTopic("authentication")).toEqual([]);
+    expect(
+      getConceptsByTopic("authentication").map((concept) => concept.id),
+    ).toEqual([
+      "why-never-store-plain-passwords",
+      "password-hashing",
+      "salting",
+      "bcrypt",
+    ]);
+    expect(getConceptsByTopic("security")).toEqual([]);
   });
 
   it("includes links written on either side, without duplicates", () => {
