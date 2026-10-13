@@ -35,6 +35,12 @@ function fileImport(
 
 export const relationships: Relationship[] = [
   rel(
+    "component:Button",
+    "sends",
+    "event:noteForm.submit",
+    'In the note form, Save is a `<Button type="submit">`. Clicking it, or pressing Enter in a field, makes the browser fire the form\'s `submit` event.',
+  ),
+  rel(
     "fn:handleSave",
     "handles",
     "event:noteForm.submit",

@@ -6,6 +6,7 @@ import type {
 } from "@fsl/shared";
 import type { ComponentType } from "react";
 import { ChoiceInput } from "./modes/ChoiceInput.tsx";
+import { TraceInput } from "./modes/TraceInput.tsx";
 
 /** What every mode's answer input receives from the runner. */
 export type ModeInputProps = {
@@ -25,4 +26,5 @@ export const modeInputs: Partial<
   Record<ExerciseMode, ComponentType<ModeInputProps>>
 > = {
   predict: ChoiceInput,
+  trace: TraceInput,
 };
