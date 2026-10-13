@@ -11,11 +11,12 @@ const list: ExerciseListResponse = {
   exercises: [
     {
       ...base,
-      id: "find-x",
-      mode: "find",
-      title: "Where is x?",
-      prompt: "Find `x`.",
-      target: "file",
+      id: "build-x",
+      mode: "build",
+      title: "Plan x",
+      prompt: "Plan `x`.",
+      task: "Add x.",
+      checklist: [],
     },
     {
       ...base,
@@ -41,15 +42,15 @@ describe("PracticePage", () => {
     await screen.findByRole("heading", { level: 2, name: "Predict" });
     expect(
       screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent),
-    ).toEqual(["Predict", "FindComing soon"]);
+    ).toEqual(["Predict", "BuildComing soon"]);
     expect(screen.getByRole("link", { name: /Clicking Save/ })).toHaveAttribute(
       "href",
       "/practice/predict-save",
     );
-    const find = screen.getByRole("heading", {
+    const build = screen.getByRole("heading", {
       level: 2,
-      name: /Find/,
+      name: /Build/,
     }).parentElement!;
-    expect(within(find).getByRole("link")).toHaveTextContent("Find x.");
+    expect(within(build).getByRole("link")).toHaveTextContent("Plan x.");
   });
 });
