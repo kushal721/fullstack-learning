@@ -113,6 +113,8 @@ export const addSecurityStep: BuildStep = {
   ],
   filesRemoved: [],
   conceptIds: [
+    "input-validation",
+    "sql-injection",
     "parameterized-query",
     "sql-update-delete",
     "js-error-handling",

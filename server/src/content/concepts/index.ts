@@ -21,6 +21,9 @@ import { whyNeverStorePlainPasswords } from "./authentication/why-never-store-pl
 import { passwordHashing } from "./authentication/password-hashing.js";
 import { salting } from "./authentication/salting.js";
 import { bcrypt } from "./authentication/bcrypt.js";
+import { inputValidation } from "./security/input-validation.js";
+import { sqlInjection } from "./security/sql-injection.js";
+import { xss } from "./security/xss.js";
 import { dbTransaction } from "./databases/db-transaction.js";
 import { dbConnectionPool } from "./databases/db-connection-pool.js";
 import { whyTest } from "./testing/why-test.js";
@@ -182,6 +185,9 @@ export const concepts: Concept[] = [
   passwordHashing,
   salting,
   bcrypt,
+  inputValidation,
+  sqlInjection,
+  xss,
   whyTest,
   unitTest,
   integrationTest,

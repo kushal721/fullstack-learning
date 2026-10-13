@@ -142,6 +142,7 @@ export const projectFiles: ProjectFile[] = [
       "react-event-handling",
       "react-component-communication",
       "react-controlled-form",
+      "xss",
     ],
   }),
   file("frontend/src/pages/Login.jsx", {
@@ -345,7 +346,7 @@ export const projectFiles: ProjectFile[] = [
       "`validateNote(body)`: returns an error message when a note is invalid (missing or too-long title, too-long content), or nothing.",
     whyItExists:
       "The browser checks input too, but anyone can send a request without the browser, so the server must check again. A small pure function is easy to reuse for create and update, and easy to unit test.",
-    conceptIds: ["request-body", "js-function"],
+    conceptIds: ["input-validation", "request-body", "js-function"],
   }),
   file("backend/src/validation/noteValidation.test.js", {
     language: "js",

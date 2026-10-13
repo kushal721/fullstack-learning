@@ -111,7 +111,7 @@ export const symbols: CodeSymbol[] = [
     summary:
       "Returns an error message for a missing or too long title or content, or nothing when the note is valid.",
     dataHandled: "the request body",
-    conceptIds: ["request-body"],
+    conceptIds: ["input-validation", "request-body"],
   },
   {
     id: "query:insertNote",
