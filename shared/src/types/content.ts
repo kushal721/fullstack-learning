@@ -324,3 +324,120 @@ export type LayerOverview = {
   buildStepIds: string[];
   fileIds: string[];
 };
+
+// --- Practice ---------------------------------------------------------------
+
+/** The five kinds of practice, each training a different skill. */
+export type ExerciseMode = "predict" | "trace" | "find" | "fix" | "build";
+
+/** One answer option of a predict or fix exercise. */
+export type ExerciseChoice = { id: string; text: string };
+
+/** One item a build exercise asks the learner to tick or leave. */
+export type BuildChecklistItem = {
+  id: string;
+  kind: "file" | "layer" | "relationship";
+  text: string;
+  /** The file id, layer or relationship id this item is about. */
+  ref: string;
+  /** Answer: true if the task needs this item. */
+  required: boolean;
+};
+
+type ExerciseBase = {
+  /** URL segment: /practice/<id>. */
+  id: string;
+  title: string;
+  /** The question or task, shown first. */
+  prompt: string;
+  conceptIds: string[];
+  /** The build step this exercise practises, if any. */
+  buildStepId?: string;
+  /** Shown one at a time when the learner asks. */
+  hints: string[];
+  /** Why the answer is right, shown after checking. */
+  explanation: string;
+};
+
+/** What happens when…? Pick one of several outcomes. */
+export type PredictExercise = ExerciseBase & {
+  mode: "predict";
+  /** Code the question is about, if any. */
+  code?: CodeExample;
+  choices: ExerciseChoice[];
+  correctChoiceId: string;
+};
+
+/** Follow the data: put the symbols on a path in order. */
+export type TraceExercise = ExerciseBase & {
+  mode: "trace";
+  /** The answer: symbol ids from start to end, each linked to the next. */
+  symbolIds: string[];
+  /** Symbols offered that are not on the path. */
+  distractorIds: string[];
+};
+
+/** Where is it? Pick the file or symbol. */
+export type FindExercise = ExerciseBase & {
+  mode: "find";
+  target: "file" | "symbol";
+  /** File or symbol ids that count as right (usually one). */
+  acceptedIds: string[];
+};
+
+/** What is wrong with this code? Pick the fix. */
+export type FixExercise = ExerciseBase & {
+  mode: "fix";
+  snippet: CodeExample;
+  choices: ExerciseChoice[];
+  correctChoiceId: string;
+};
+
+/** Plan a feature: tick what it needs, then compare with a model answer. */
+export type BuildExercise = ExerciseBase & {
+  mode: "build";
+  task: string;
+  checklist: BuildChecklistItem[];
+  /** One way to build it, step by step. */
+  modelAnswer: string[];
+};
+
+export type Exercise =
+  PredictExercise | TraceExercise | FindExercise | FixExercise | BuildExercise;
+
+/** An exercise as the browser sees it: everything except the answers. */
+export type PublicExercise =
+  | Omit<PredictExercise, "correctChoiceId" | "explanation">
+  | (Omit<TraceExercise, "symbolIds" | "distractorIds" | "explanation"> & {
+      startSymbolId: string;
+      endSymbolId: string;
+      /** How many symbols the path has, start and end included. */
+      length: number;
+      /** Every symbol offered, path and distractors, sorted by id. */
+      candidateIds: string[];
+    })
+  | Omit<FindExercise, "acceptedIds" | "explanation">
+  | Omit<FixExercise, "correctChoiceId" | "explanation">
+  | (Omit<BuildExercise, "checklist" | "modelAnswer" | "explanation"> & {
+      checklist: Omit<BuildChecklistItem, "required">[];
+    });
+
+/** What a learner submits, by mode. */
+export type ExerciseAnswer =
+  | { choiceId: string } // predict, fix
+  | { symbolIds: string[] } // trace
+  | { id: string } // find
+  | { itemIds: string[] }; // build
+
+/** The right answer, revealed after checking. */
+export type ExpectedAnswer =
+  | { choiceId: string }
+  | { symbolIds: string[] }
+  | { ids: string[] }
+  | { itemIds: string[]; modelAnswer: string[] };
+
+export type CheckResult = {
+  correct: boolean;
+  explanation: string;
+  expected?: ExpectedAnswer;
+};

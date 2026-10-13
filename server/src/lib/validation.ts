@@ -2,6 +2,7 @@ import type {
   BuildStep,
   CodeSymbol,
   Concept,
+  Exercise,
   Flow,
   HttpExchange,
   LayerOverview,
@@ -15,6 +16,7 @@ import path from "node:path";
 import { config } from "../config.js";
 import { buildSteps } from "../content/build-steps/index.js";
 import { concepts } from "../content/concepts/index.js";
+import { exercises } from "../content/exercises/index.js";
 import { projectFiles } from "../content/files.js";
 import { httpExchanges } from "../content/flows/http-exchanges.js";
 import { flows } from "../content/flows/index.js";
@@ -42,6 +44,7 @@ export type Content = {
   /** HTTP exchanges keyed by their http-request symbol id. */
   httpExchanges?: Record<string, HttpExchange>;
   layerOverviews?: LayerOverview[];
+  exercises?: Exercise[];
 };
 
 function allTopics(topic: Topic): Topic[] {
@@ -656,6 +659,141 @@ function validateLayerOverviews(
   return errors;
 }
 
+const LAYERS = ["user", "frontend", "network", "backend", "database"];
+
+function validateExercises(exercises: Exercise[], content: Content): string[] {
+  const conceptIds = new Set(content.concepts.map((concept) => concept.id));
+  const stepIds = new Set((content.buildSteps ?? []).map((step) => step.id));
+  const fileIds = new Set((content.files ?? []).map((file) => file.id));
+  const symbolIds = new Set((content.symbols ?? []).map((symbol) => symbol.id));
+  const relationships = content.relationships ?? [];
+  const relationshipIds = new Set(relationships.map((rel) => rel.id));
+  const linked = (a: string, b: string) =>
+    relationships.some(
+      (rel) =>
+        (rel.source === a && rel.target === b) ||
+        (rel.source === b && rel.target === a),
+    );
+
+  const errors = duplicates(
+    exercises.map((exercise) => exercise.id),
+    (id) => `Exercise id "${id}" is used more than once.`,
+  );
+  for (const exercise of exercises) {
+    const name = `Exercise "${exercise.id}"`;
+    if (!SLUG_PATTERN.test(exercise.id)) {
+      errors.push(
+        `${name} needs an id of lowercase letters, numbers and single hyphens.`,
+      );
+    }
+    if (
+      !exercise.title.trim() ||
+      !exercise.prompt.trim() ||
+      !exercise.explanation.trim()
+    ) {
+      errors.push(`${name} needs a title, a prompt and an explanation.`);
+    }
+    if (exercise.hints.length === 0) errors.push(`${name} needs a hint.`);
+    for (const id of exercise.conceptIds) {
+      if (!conceptIds.has(id)) {
+        errors.push(`${name} links to unknown concept "${id}".`);
+      }
+    }
+    if (exercise.buildStepId && !stepIds.has(exercise.buildStepId)) {
+      errors.push(
+        `${name} links to unknown build step "${exercise.buildStepId}".`,
+      );
+    }
+
+    switch (exercise.mode) {
+      case "predict":
+      case "fix": {
+        const ids = exercise.choices.map((choice) => choice.id);
+        if (ids.length < 2) errors.push(`${name} needs at least two choices.`);
+        errors.push(
+          ...duplicates(ids, (id) => `${name} has choice "${id}" twice.`),
+        );
+        if (!ids.includes(exercise.correctChoiceId)) {
+          errors.push(
+            `${name}'s correct choice "${exercise.correctChoiceId}" is not one of its choices.`,
+          );
+        }
+        break;
+      }
+      case "trace": {
+        if (exercise.symbolIds.length < 2) {
+          errors.push(`${name} needs a path of at least two symbols.`);
+        }
+        for (const id of [...exercise.symbolIds, ...exercise.distractorIds]) {
+          if (!symbolIds.has(id)) {
+            errors.push(`${name} uses unknown symbol "${id}".`);
+          }
+        }
+        exercise.symbolIds.slice(1).forEach((id, i) => {
+          const previous = exercise.symbolIds[i]!;
+          if (
+            symbolIds.has(previous) &&
+            symbolIds.has(id) &&
+            !linked(previous, id)
+          ) {
+            errors.push(
+              `${name}: no relationship links "${previous}" and "${id}".`,
+            );
+          }
+        });
+        errors.push(
+          ...duplicates(
+            [...exercise.symbolIds, ...exercise.distractorIds],
+            (id) => `${name} offers symbol "${id}" twice.`,
+          ),
+        );
+        break;
+      }
+      case "find": {
+        const known = exercise.target === "file" ? fileIds : symbolIds;
+        if (exercise.acceptedIds.length === 0) {
+          errors.push(`${name} accepts no answer.`);
+        }
+        for (const id of exercise.acceptedIds) {
+          if (!known.has(id)) {
+            errors.push(`${name} accepts unknown ${exercise.target} "${id}".`);
+          }
+        }
+        break;
+      }
+      case "build": {
+        errors.push(
+          ...duplicates(
+            exercise.checklist.map((item) => item.id),
+            (id) => `${name} has checklist item "${id}" twice.`,
+          ),
+        );
+        if (!exercise.checklist.some((item) => item.required)) {
+          errors.push(`${name} needs at least one required checklist item.`);
+        }
+        if (exercise.modelAnswer.length === 0) {
+          errors.push(`${name} needs a model answer.`);
+        }
+        for (const item of exercise.checklist) {
+          const known =
+            item.kind === "file"
+              ? fileIds.has(item.ref)
+              : item.kind === "layer"
+                ? LAYERS.includes(item.ref)
+                : relationshipIds.has(item.ref);
+          if (!known) {
+            errors.push(
+              `${name} checklist item "${item.id}" refers to unknown ${item.kind} "${item.ref}".`,
+            );
+          }
+        }
+        break;
+      }
+    }
+  }
+  return errors;
+}
+
 export function validateContent(
   content: Content = {
     tree: learningTree,
@@ -670,6 +808,7 @@ export function validateContent(
     flows,
     httpExchanges,
     layerOverviews,
+    exercises,
   },
 ): string[] {
   return [
@@ -723,5 +862,6 @@ export function validateContent(
           content.files ?? [],
         )
       : []),
+    ...(content.exercises ? validateExercises(content.exercises, content) : []),
   ];
 }
