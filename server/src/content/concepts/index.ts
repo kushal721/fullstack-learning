@@ -24,6 +24,15 @@ import { bcrypt } from "./authentication/bcrypt.js";
 import { inputValidation } from "./security/input-validation.js";
 import { sqlInjection } from "./security/sql-injection.js";
 import { xss } from "./security/xss.js";
+import { authenticationVsAuthorization } from "./authentication/authentication-vs-authorization.js";
+import { jwt } from "./authentication/jwt.js";
+import { secureCookies } from "./authentication/secure-cookies.js";
+import { https } from "./security/https.js";
+import { csrf } from "./security/csrf.js";
+import { cors } from "./security/cors.js";
+import { secretsEnvVars } from "./security/secrets-env-vars.js";
+import { leastPrivilege } from "./security/least-privilege.js";
+import { safeErrorMessages } from "./security/safe-error-messages.js";
 import { dbTransaction } from "./databases/db-transaction.js";
 import { dbConnectionPool } from "./databases/db-connection-pool.js";
 import { whyTest } from "./testing/why-test.js";
@@ -181,13 +190,22 @@ export const concepts: Concept[] = [
   parameterizedQuery,
   dbTransaction,
   dbConnectionPool,
+  authenticationVsAuthorization,
   whyNeverStorePlainPasswords,
   passwordHashing,
   salting,
   bcrypt,
+  jwt,
+  secureCookies,
+  https,
   inputValidation,
   sqlInjection,
   xss,
+  csrf,
+  cors,
+  secretsEnvVars,
+  leastPrivilege,
+  safeErrorMessages,
   whyTest,
   unitTest,
   integrationTest,

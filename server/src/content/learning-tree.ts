@@ -267,10 +267,13 @@ const topics: TopicInput[] = [
     id: "authentication",
     buildStepIds: ["add-authentication"],
     conceptIds: [
+      "authentication-vs-authorization",
       "why-never-store-plain-passwords",
       "password-hashing",
       "salting",
       "bcrypt",
+      "jwt",
+      "secure-cookies",
     ],
     title: "Authentication",
     summary:
@@ -286,7 +289,17 @@ const topics: TopicInput[] = [
   {
     id: "security",
     buildStepIds: ["add-authentication", "add-security"],
-    conceptIds: ["input-validation", "sql-injection", "xss"],
+    conceptIds: [
+      "https",
+      "input-validation",
+      "sql-injection",
+      "xss",
+      "csrf",
+      "cors",
+      "secrets-env-vars",
+      "least-privilege",
+      "safe-error-messages",
+    ],
     title: "Security",
     summary:
       "Keeping users and data safe: authorization, validating input and avoiding common attacks.",

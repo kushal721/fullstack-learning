@@ -49,7 +49,7 @@ export const projectFiles: ProjectFile[] = [
       "Configures Vite: the React plugin, the development proxy that forwards `/api` to the backend, and the test environment.",
     whyItExists:
       "In development the React app (port 5173) and the API (port 3000) are two programs. The proxy makes them look like one website to the browser, so requests to `/api` reach the backend and the login cookie is sent with them.",
-    conceptIds: ["vite", "http-request-response"],
+    conceptIds: ["vite", "http-request-response", "cors"],
   }),
   file("frontend/src/main.jsx", {
     language: "jsx",
@@ -242,7 +242,12 @@ export const projectFiles: ProjectFile[] = [
       "Every setting the backend needs (`PORT`, `DATABASE_URL`, `JWT_SECRET`, `NODE_ENV`) with a safe example value.",
     whyItExists:
       "The real `.env` holds secrets, so it is never committed. This example file is committed instead, so anyone can see which settings exist and copy it to `.env` to get started.",
-    conceptIds: ["environment-variables", "environment-config", "gitignore"],
+    conceptIds: [
+      "environment-variables",
+      "environment-config",
+      "gitignore",
+      "secrets-env-vars",
+    ],
   }),
   file("backend/Dockerfile", {
     language: "bash",
@@ -250,7 +255,7 @@ export const projectFiles: ProjectFile[] = [
       "Builds the production image of the API: Node 22, only production packages, running as a non-root user, with a health check.",
     whyItExists:
       "A Docker image packages the API with everything it needs, so it runs the same on any server. Copying `package*.json` before the code lets Docker reuse the installed packages when only the code changes.",
-    conceptIds: ["dockerfile", "docker-image-container"],
+    conceptIds: ["dockerfile", "docker-image-container", "least-privilege"],
   }),
   file("backend/.dockerignore", {
     language: "bash",
@@ -274,7 +279,12 @@ export const projectFiles: ProjectFile[] = [
       "Builds the Express app: JSON and cookie middleware, the health check, the auth and notes routers, and the error handler.",
     whyItExists:
       "Every request passes through this file's middleware in order before reaching a route. The error handler at the end catches anything that goes wrong, logs the details and sends the user a short message, so internals never leak.",
-    conceptIds: ["express", "express-middleware", "express-route"],
+    conceptIds: [
+      "express",
+      "express-middleware",
+      "express-route",
+      "safe-error-messages",
+    ],
   }),
   file("backend/src/db.js", {
     language: "js",
@@ -338,7 +348,12 @@ export const projectFiles: ProjectFile[] = [
       "`requireAuth`: reads and verifies the login cookie and sets `req.user`, or answers `401`.",
     whyItExists:
       "HTTP doesn't remember who you are between requests, so every protected request must prove it. Doing that check once in middleware means no notes route can forget it.",
-    conceptIds: ["express-middleware", "http-headers", "http-status-codes"],
+    conceptIds: [
+      "express-middleware",
+      "http-headers",
+      "http-status-codes",
+      "jwt",
+    ],
   }),
   file("backend/src/validation/noteValidation.js", {
     language: "js",
