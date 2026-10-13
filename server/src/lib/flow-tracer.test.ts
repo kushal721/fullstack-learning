@@ -199,4 +199,27 @@ describe("security flows", () => {
     expect(login.http!.response).toContain("Set-Cookie: token=");
     expect(login.http!.errorCases.map((e) => e.status)).toContain(401);
   });
+
+  it("authorizes a note update: who is asking, then owns this note, with 401 and 404 branches", () => {
+    const flow = getFlow("update-note-authorized")!;
+    expect(flow.group).toBe("security");
+    const order = flow.steps.map((s) => s.symbolId);
+    const at = (id: string) => order.indexOf(id);
+    expect(at("middleware:requireAuth")).toBeLessThan(
+      at("external:jsonwebtoken"),
+    );
+    expect(at("external:jsonwebtoken")).toBeLessThan(
+      at("controller:notesController.updateNote"),
+    );
+    expect(at("controller:notesController.updateNote")).toBeLessThan(
+      at("query:updateNote"),
+    );
+    const owner = flow.steps.find((s) => s.id === "owner-check")!;
+    expect(owner.explanation).toContain("`user_id = $4`");
+    expect(owner.dataShape!.code).toContain("WHERE id = $3 AND user_id = $4");
+    const statuses = flow.http!.errorCases.map((e) => e.status);
+    expect(statuses.slice(0, 4)).toEqual([401, 401, 404, 404]);
+    expect(flow.http!.errorCases[2]!.when).toContain("403");
+    expect(flow.http!.path).toBe("/api/notes/:id");
+  });
 });
