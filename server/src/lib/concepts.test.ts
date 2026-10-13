@@ -43,7 +43,10 @@ describe("concepts", () => {
       "salting",
       "bcrypt",
     ]);
-    expect(getConceptsByTopic("security")).toEqual([]);
+    expect(getConceptsByTopic("security").map((concept) => concept.id)).toEqual(
+      ["input-validation", "sql-injection", "xss"],
+    );
+    expect(getConceptsByTopic("how-everything-connects")).toEqual([]);
   });
 
   it("includes links written on either side, without duplicates", () => {

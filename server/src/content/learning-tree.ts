@@ -286,6 +286,7 @@ const topics: TopicInput[] = [
   {
     id: "security",
     buildStepIds: ["add-authentication", "add-security"],
+    conceptIds: ["input-validation", "sql-injection", "xss"],
     title: "Security",
     summary:
       "Keeping users and data safe: authorization, validating input and avoiding common attacks.",
