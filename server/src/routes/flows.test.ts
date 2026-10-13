@@ -15,6 +15,7 @@ describe("GET /api/flows", () => {
       "list-notes",
       "register",
       "login",
+      "update-note-authorized",
     ]);
     expect(body.flows[0]).toEqual({
       id: "create-note",
@@ -35,6 +36,7 @@ describe("GET /api/flows", () => {
     expect(security.body.flows.map((f: { id: string }) => f.id)).toEqual([
       "register",
       "login",
+      "update-note-authorized",
     ]);
   });
 

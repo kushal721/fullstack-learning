@@ -3,6 +3,7 @@ import { createNoteFlow } from "./create-note.js";
 import { listNotesFlow } from "./list-notes.js";
 import { loginFlow } from "./login.js";
 import { registerFlow } from "./register.js";
+import { updateNoteAuthorizedFlow } from "./update-note-authorized.js";
 
 // Every flow, one file each in this folder. `npm run validate` checks that
 // each step's symbol and relationship exist.
@@ -11,4 +12,5 @@ export const flows: Flow[] = [
   listNotesFlow,
   registerFlow,
   loginFlow,
+  updateNoteAuthorizedFlow,
 ];

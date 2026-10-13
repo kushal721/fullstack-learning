@@ -92,8 +92,23 @@ export const httpExchanges: Record<string, HttpExchange> = {
       'HTTP/1.1 200 OK\nContent-Type: application/json; charset=utf-8\n\n{"id":7,"title":"Shopping","content":"Milk, bread, eggs","created_at":"2026-10-12T09:30:00.000Z","updated_at":"2026-10-12T10:05:00.000Z"}',
     errorCases: [
       {
+        status: 401,
+        when: "There is no `token` cookie: the user never logged in or logged out (`requireAuth`).",
+        body: '{"error":"Please log in"}',
+      },
+      {
+        status: 401,
+        when: "The token's signature doesn't match `JWT_SECRET` (it was edited or forged) or it has expired (`jwt.verify`).",
+        body: '{"error":"Please log in"}',
+      },
+      {
         status: 404,
-        when: "The id isn't a positive whole number, the note doesn't exist, or it belongs to someone else (the same answer, so ids can't be probed).",
+        when: "The note belongs to another user: `WHERE id = $3 AND user_id = $4` matches no row. Many APIs answer `403 Forbidden` here; this one answers 404 so nobody can find out which note ids exist.",
+        body: '{"error":"Note not found"}',
+      },
+      {
+        status: 404,
+        when: "No note has this id, or the id isn't a positive whole number (`noteId`).",
         body: '{"error":"Note not found"}',
       },
       {
@@ -120,11 +135,6 @@ export const httpExchanges: Record<string, HttpExchange> = {
         status: 400,
         when: "The body isn't valid JSON (`express.json` fails; the error handler answers).",
         body: '{"error":"Invalid JSON"}',
-      },
-      {
-        status: 401,
-        when: "The `token` cookie is missing, forged or expired (`requireAuth`).",
-        body: '{"error":"Please log in"}',
       },
       {
         status: 500,
