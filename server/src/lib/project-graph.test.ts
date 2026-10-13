@@ -204,9 +204,11 @@ describe("project graph", () => {
         "component:NoteForm",
         "component:Register",
       ]);
-      // The same answer through the graph helper, with Button's file first.
+      // The same answer through the graph helper (plus the note form's
+      // submit event, which the Save button fires), with Button's file first.
       const around = neighborhood("component:Button", 1);
-      expect(ids(around.symbols)).toHaveLength(6);
+      expect(ids(around.symbols)).toHaveLength(7);
+      expect(ids(around.symbols)).toContain("event:noteForm.submit");
       expect(ids(connectedFiles("component:Button"))[0]).toBe(
         "frontend/src/components/Button.jsx",
       );

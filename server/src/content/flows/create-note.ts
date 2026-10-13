@@ -48,6 +48,7 @@ export const createNoteFlow: Flow = {
       title: "The browser fires a submit event",
       explanation:
         "The browser creates a `submit` event for the form. Left alone, it would reload the page and send the form the old-fashioned way; React hands the event to the function given as `onSubmit` so our code can decide what happens instead.",
+      relationshipId: "component:Button->sends->event:noteForm.submit",
       dataShape: {
         language: "jsx",
         code: '<form className="note-form" onSubmit={handleSave}>',

@@ -54,10 +54,13 @@ describe("GET /api/symbols/:id", () => {
       "calls controller:notesController.createNote",
     ]);
     expect(route.uses.map((u) => u.type)).not.toContain("receives");
-    // An event is fired by the browser; its handler comes next.
+    // An event is fired by the browser when the Save button is clicked;
+    // its handler comes next.
     const event = (await request(app).get(url("event:noteForm.submit")))
       .body as SymbolResponse;
-    expect(event.usedBy).toEqual([]);
+    expect(
+      event.usedBy.map((u) => `${u.direction} ${u.type} ${u.symbol.id}`),
+    ).toEqual(["in sends component:Button"]);
     expect(event.next.map((n) => n.symbol.id)).toEqual(["fn:handleSave"]);
     // A handler is triggered by its event and goes on to the service call.
     const handler = (await request(app).get(url("fn:handleSave")))

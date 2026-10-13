@@ -124,6 +124,7 @@ export const addStateStep: BuildStep = {
     },
   ],
   relationshipIds: [
+    "component:Button->sends->event:noteForm.submit",
     "fn:handleSave->handles->event:noteForm.submit",
     "fn:useNotes.removeNote->handles->event:noteCard.deleteClick",
     "component:Dashboard->renders->component:NoteForm",
