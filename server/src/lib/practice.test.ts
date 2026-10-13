@@ -186,6 +186,18 @@ describe("checkAnswer", () => {
     }
   });
 
+  it("has at least four fix exercises, each showing the broken code", () => {
+    const fixes = exercises.filter((e) => e.mode === "fix");
+    expect(fixes.length).toBeGreaterThanOrEqual(4);
+    for (const exercise of fixes) {
+      expect(exercise.snippet.fileName, exercise.id).toBeTruthy();
+      expect(
+        exercise.snippet.highlightLines?.length,
+        exercise.id,
+      ).toBeGreaterThan(0);
+    }
+  });
+
   it("has at least six predict exercises, each linked to concepts with a full explanation", () => {
     const predicts = exercises.filter((e) => e.mode === "predict");
     expect(predicts.length).toBeGreaterThanOrEqual(6);
