@@ -5,6 +5,7 @@ import type {
   PublicExercise,
 } from "@fsl/shared";
 import type { ComponentType } from "react";
+import { BuildInput } from "./modes/BuildInput.tsx";
 import { ChoiceInput } from "./modes/ChoiceInput.tsx";
 import { FindInput } from "./modes/FindInput.tsx";
 import { TraceInput } from "./modes/TraceInput.tsx";
@@ -21,7 +22,7 @@ export type ModeInputProps = {
 
 /**
  * The answer input for each mode. A mode without an entry can be read but
- * not answered yet; each mode's issue adds its input here.
+ * not answered (every mode has one now).
  */
 export const modeInputs: Partial<
   Record<ExerciseMode, ComponentType<ModeInputProps>>
@@ -30,4 +31,5 @@ export const modeInputs: Partial<
   trace: TraceInput,
   find: FindInput,
   fix: ChoiceInput,
+  build: BuildInput,
 };

@@ -42,7 +42,7 @@ describe("PracticePage", () => {
     await screen.findByRole("heading", { level: 2, name: "Predict" });
     expect(
       screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent),
-    ).toEqual(["Predict", "BuildComing soon"]);
+    ).toEqual(["Predict", "Build"]);
     expect(screen.getByRole("link", { name: /Clicking Save/ })).toHaveAttribute(
       "href",
       "/practice/predict-save",

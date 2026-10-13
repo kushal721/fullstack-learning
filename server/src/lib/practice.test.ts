@@ -186,6 +186,16 @@ describe("checkAnswer", () => {
     }
   });
 
+  it("has at least two build exercises, each with needed and unneeded items", () => {
+    const builds = exercises.filter((e) => e.mode === "build");
+    expect(builds.length).toBeGreaterThanOrEqual(2);
+    for (const exercise of builds) {
+      const required = exercise.checklist.map((item) => item.required);
+      expect(required, exercise.id).toContain(true);
+      expect(required, exercise.id).toContain(false);
+    }
+  });
+
   it("has at least four fix exercises, each showing the broken code", () => {
     const fixes = exercises.filter((e) => e.mode === "fix");
     expect(fixes.length).toBeGreaterThanOrEqual(4);
