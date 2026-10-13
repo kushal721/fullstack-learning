@@ -65,8 +65,7 @@ export function BuildStep({
       {flows.length > 0 && (
         <ConceptSection id="flows" title="See it happen">
           <p className="text-muted">
-            Step through this code at work in the flow tracer, with why each
-            protection is there.
+            Step through this code at work in the flow tracer.
           </p>
           <ul className="flex flex-col gap-2">
             {flows.map((flow) => (
