@@ -175,3 +175,28 @@ describe("flow tracer", () => {
     ]);
   });
 });
+
+describe("security flows", () => {
+  it.each(["login", "register"])(
+    "%s is a validated security round trip with its exchange",
+    (id) => {
+      const flow = getFlow(id)!;
+      expect(flow.group).toBe("security");
+      expect(flow.steps[0]!.layer).toBe("user");
+      expect(new Set(flow.steps.map((s) => s.layer))).toEqual(
+        new Set(["user", "frontend", "network", "backend", "database"]),
+      );
+      expect(flow.http?.path).toBe(`/api/auth/${id}`);
+    },
+  );
+
+  it("explains HTTPS, hashing and the httpOnly cookie on login, with Set-Cookie and a 401", () => {
+    const login = getFlow("login")!;
+    const text = login.steps.map((s) => s.explanation).join(" ");
+    expect(text).toContain("HTTPS");
+    expect(text).toMatch(/hash/);
+    expect(text).toContain("httpOnly");
+    expect(login.http!.response).toContain("Set-Cookie: token=");
+    expect(login.http!.errorCases.map((e) => e.status)).toContain(401);
+  });
+});
