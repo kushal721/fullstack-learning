@@ -1,7 +1,7 @@
 import type { ExerciseChoice } from "@fsl/shared";
-import { CodeExample } from "../concept-explorer/CodeExample.tsx";
-import { RichText } from "../ui/RichText.tsx";
-import type { ModeInputProps } from "./mode-inputs.ts";
+import { CodeExample } from "../../concept-explorer/CodeExample.tsx";
+import { RichText } from "../../ui/RichText.tsx";
+import type { ModeInputProps } from "../mode-inputs.ts";
 
 /**
  * Pick one of several options (predict, and later fix). After checking, the

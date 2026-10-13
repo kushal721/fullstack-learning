@@ -713,6 +713,13 @@ function validateExercises(exercises: Exercise[], content: Content): string[] {
         errors.push(
           ...duplicates(ids, (id) => `${name} has choice "${id}" twice.`),
         );
+        const code =
+          exercise.mode === "predict" ? exercise.code : exercise.snippet;
+        if (code?.fileName && !fileIds.has(code.fileName)) {
+          errors.push(
+            `${name}'s code comes from unknown file "${code.fileName}".`,
+          );
+        }
         if (!ids.includes(exercise.correctChoiceId)) {
           errors.push(
             `${name}'s correct choice "${exercise.correctChoiceId}" is not one of its choices.`,

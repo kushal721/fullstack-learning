@@ -561,6 +561,7 @@ describe("validateContent", () => {
             hints: [],
             choices: [{ id: "a", text: "A" }],
             correctChoiceId: "z",
+            code: { language: "js", code: "x", fileName: "nope.js" },
           },
           {
             ...base,
@@ -615,6 +616,7 @@ describe("validateContent", () => {
         'Exercise "Bad Id" links to unknown concept "ghost".',
         'Exercise "Bad Id" links to unknown build step "nowhere".',
         'Exercise "Bad Id" needs at least two choices.',
+        'Exercise "Bad Id"\'s code comes from unknown file "nope.js".',
         'Exercise "Bad Id"\'s correct choice "z" is not one of its choices.',
         'Exercise "t" uses unknown symbol "fn:ghost".',
         'Exercise "t": no relationship links "fn:a" and "fn:c".',
