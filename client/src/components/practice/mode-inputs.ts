@@ -6,6 +6,7 @@ import type {
 } from "@fsl/shared";
 import type { ComponentType } from "react";
 import { ChoiceInput } from "./modes/ChoiceInput.tsx";
+import { FindInput } from "./modes/FindInput.tsx";
 import { TraceInput } from "./modes/TraceInput.tsx";
 
 /** What every mode's answer input receives from the runner. */
@@ -27,4 +28,5 @@ export const modeInputs: Partial<
 > = {
   predict: ChoiceInput,
   trace: TraceInput,
+  find: FindInput,
 };

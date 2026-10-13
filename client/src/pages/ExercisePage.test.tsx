@@ -33,13 +33,14 @@ const list: ExerciseListResponse = {
   exercises: [
     predict.exercise,
     {
-      id: "find-x",
-      mode: "find",
-      title: "Where is x?",
-      prompt: "Find x.",
+      id: "build-x",
+      mode: "build",
+      title: "Plan x",
+      prompt: "Plan x.",
       conceptIds: [],
       hints: [],
-      target: "file",
+      task: "Add x.",
+      checklist: [],
     },
   ],
 };
@@ -61,7 +62,7 @@ function mockApi(check: (body: unknown) => [number, unknown]) {
       }
       const routes: Record<string, unknown> = {
         "/api/exercises/predict-save": predict,
-        "/api/exercises/find-x": { exercise: list.exercises[1] },
+        "/api/exercises/build-x": { exercise: list.exercises[1] },
         "/api/exercises": list,
         "/api/concepts": {
           concepts: [
@@ -150,7 +151,7 @@ describe("ExercisePage", () => {
     );
     expect(screen.getByRole("link", { name: "Next exercise" })).toHaveAttribute(
       "href",
-      "/practice/find-x",
+      "/practice/build-x",
     );
   });
 
@@ -211,7 +212,7 @@ describe("ExercisePage", () => {
 
   it("explains a mode that can't be answered yet, and ends at the last exercise", async () => {
     mockApi(() => [200, {}]);
-    renderAt("find-x");
+    renderAt("build-x");
     expect(await screen.findByText(/isn't available yet/)).toBeVisible();
     expect(screen.queryByRole("button", { name: "Check answer" })).toBeNull();
   });
