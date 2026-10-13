@@ -10,7 +10,12 @@ describe("GET /api/flows", () => {
     const res = await request(app).get("/api/flows");
     const body = res.body as FlowListResponse;
     expect(res.status).toBe(200);
-    expect(body.flows.map((f) => f.id)).toEqual(["create-note", "list-notes"]);
+    expect(body.flows.map((f) => f.id)).toEqual([
+      "create-note",
+      "list-notes",
+      "register",
+      "login",
+    ]);
     expect(body.flows[0]).toEqual({
       id: "create-note",
       title: "Create a note",
@@ -27,7 +32,10 @@ describe("GET /api/flows", () => {
     expect(request_.body.flows).toHaveLength(2);
     const security = await request(app).get("/api/flows?group=security");
     expect(security.status).toBe(200);
-    expect(security.body.flows).toEqual([]);
+    expect(security.body.flows.map((f: { id: string }) => f.id)).toEqual([
+      "register",
+      "login",
+    ]);
   });
 
   it.each(["cooking", "REQUEST", ""])(
