@@ -2,6 +2,7 @@ import type {
   BuildStep,
   CodeSymbol,
   Concept,
+  Exercise,
   Relationship,
   Topic,
 } from "@fsl/shared";
@@ -496,6 +497,135 @@ describe("validateContent", () => {
         'HTTP exchange "http-request:POST /c" says PUT /c, but the symbol is POST /c.',
         'HTTP exchange "http-request:GET /zzz" is not an http-request symbol.',
         'Flow "f" shows an HTTP exchange that none of its steps sends.',
+      ]);
+    });
+  });
+
+  describe("exercises", () => {
+    const fn = (id: string) => ({
+      id,
+      kind: "function" as const,
+      name: id,
+      summary: "x",
+      dataHandled: "x",
+      conceptIds: [],
+    });
+    const base = {
+      title: "T",
+      prompt: "P",
+      conceptIds: [],
+      hints: ["h"],
+      explanation: "x",
+    };
+    const check = (exercises: Exercise[]) =>
+      validateContent({
+        tree: topic("root", 0),
+        concepts: [],
+        symbols: [fn("fn:a"), fn("fn:b"), fn("fn:c")],
+        relationships: [
+          {
+            id: "fn:a->calls->fn:b",
+            source: "fn:a",
+            type: "calls",
+            target: "fn:b",
+            explanation: "x",
+          },
+        ],
+        files: [],
+        exercises,
+      }).filter((e) => e.startsWith("Exercise"));
+
+    it("accepts consistent exercises, including a path linked either way", () => {
+      expect(
+        check([
+          {
+            ...base,
+            id: "t",
+            mode: "trace",
+            symbolIds: ["fn:b", "fn:a"],
+            distractorIds: ["fn:c"],
+          },
+        ]),
+      ).toEqual([]);
+    });
+
+    it("reports unknown ids, impossible answers and broken paths", () => {
+      expect(
+        check([
+          {
+            ...base,
+            id: "Bad Id",
+            mode: "predict",
+            conceptIds: ["ghost"],
+            buildStepId: "nowhere",
+            hints: [],
+            choices: [{ id: "a", text: "A" }],
+            correctChoiceId: "z",
+          },
+          {
+            ...base,
+            id: "t",
+            mode: "trace",
+            symbolIds: ["fn:a", "fn:c", "fn:ghost"],
+            distractorIds: ["fn:a"],
+          },
+          {
+            ...base,
+            id: "f",
+            mode: "find",
+            target: "symbol",
+            acceptedIds: ["fn:nope"],
+          },
+          {
+            ...base,
+            id: "b",
+            mode: "build",
+            task: "x",
+            checklist: [
+              {
+                id: "i",
+                kind: "file",
+                ref: "x.js",
+                text: "x",
+                required: false,
+              },
+              {
+                id: "j",
+                kind: "layer",
+                ref: "cloud",
+                text: "x",
+                required: false,
+              },
+              {
+                id: "k",
+                kind: "relationship",
+                ref: "a->b",
+                text: "x",
+                required: false,
+              },
+            ],
+            modelAnswer: [],
+          },
+          { ...base, id: "f", mode: "find", target: "file", acceptedIds: [] },
+        ]),
+      ).toEqual([
+        'Exercise id "f" is used more than once.',
+        'Exercise "Bad Id" needs an id of lowercase letters, numbers and single hyphens.',
+        'Exercise "Bad Id" needs a hint.',
+        'Exercise "Bad Id" links to unknown concept "ghost".',
+        'Exercise "Bad Id" links to unknown build step "nowhere".',
+        'Exercise "Bad Id" needs at least two choices.',
+        'Exercise "Bad Id"\'s correct choice "z" is not one of its choices.',
+        'Exercise "t" uses unknown symbol "fn:ghost".',
+        'Exercise "t": no relationship links "fn:a" and "fn:c".',
+        'Exercise "t" offers symbol "fn:a" twice.',
+        'Exercise "f" accepts unknown symbol "fn:nope".',
+        'Exercise "b" needs at least one required checklist item.',
+        'Exercise "b" needs a model answer.',
+        'Exercise "b" checklist item "i" refers to unknown file "x.js".',
+        'Exercise "b" checklist item "j" refers to unknown layer "cloud".',
+        'Exercise "b" checklist item "k" refers to unknown relationship "a->b".',
+        'Exercise "f" accepts no answer.',
       ]);
     });
   });
