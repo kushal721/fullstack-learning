@@ -17,6 +17,10 @@ import { sqlSelect } from "./databases/sql-select.js";
 import { sqlInsert } from "./databases/sql-insert.js";
 import { sqlUpdateDelete } from "./databases/sql-update-delete.js";
 import { parameterizedQuery } from "./databases/parameterized-query.js";
+import { whyNeverStorePlainPasswords } from "./authentication/why-never-store-plain-passwords.js";
+import { passwordHashing } from "./authentication/password-hashing.js";
+import { salting } from "./authentication/salting.js";
+import { bcrypt } from "./authentication/bcrypt.js";
 import { dbTransaction } from "./databases/db-transaction.js";
 import { dbConnectionPool } from "./databases/db-connection-pool.js";
 import { whyTest } from "./testing/why-test.js";
@@ -174,6 +178,10 @@ export const concepts: Concept[] = [
   parameterizedQuery,
   dbTransaction,
   dbConnectionPool,
+  whyNeverStorePlainPasswords,
+  passwordHashing,
+  salting,
+  bcrypt,
   whyTest,
   unitTest,
   integrationTest,

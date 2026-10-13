@@ -266,6 +266,12 @@ const topics: TopicInput[] = [
   {
     id: "authentication",
     buildStepIds: ["add-authentication"],
+    conceptIds: [
+      "why-never-store-plain-passwords",
+      "password-hashing",
+      "salting",
+      "bcrypt",
+    ],
     title: "Authentication",
     summary:
       "Knowing who the user is: registering, logging in, protecting passwords and remembering a logged-in user.",
