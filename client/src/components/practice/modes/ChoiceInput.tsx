@@ -4,7 +4,7 @@ import { RichText } from "../../ui/RichText.tsx";
 import type { ModeInputProps } from "../mode-inputs.ts";
 
 /**
- * Pick one of several options (predict, and later fix). After checking, the
+ * Pick one of several options (predict and fix). After checking, the
  * right option and the learner's own choice are marked in words, not only
  * in colour.
  */
@@ -15,7 +15,13 @@ export function ChoiceInput({
   result,
 }: ModeInputProps) {
   if (!("choices" in exercise)) return null;
-  const code = "code" in exercise ? exercise.code : undefined;
+  // Predict may show the code it asks about; fix always shows the bug.
+  const code =
+    "snippet" in exercise
+      ? exercise.snippet
+      : "code" in exercise
+        ? exercise.code
+        : undefined;
   const chosen = answer && "choiceId" in answer ? answer.choiceId : null;
   const right =
     result?.expected && "choiceId" in result.expected

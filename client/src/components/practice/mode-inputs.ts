@@ -29,4 +29,5 @@ export const modeInputs: Partial<
   predict: ChoiceInput,
   trace: TraceInput,
   find: FindInput,
+  fix: ChoiceInput,
 };
