@@ -4,11 +4,13 @@ import BuildPage from "./pages/BuildPage.tsx";
 import BuildStepPage from "./pages/BuildStepPage.tsx";
 import ConceptPage from "./pages/ConceptPage.tsx";
 import ConceptsPage from "./pages/ConceptsPage.tsx";
+import ExercisePage from "./pages/ExercisePage.tsx";
 import ExplorerPage from "./pages/ExplorerPage.tsx";
 import FlowPage from "./pages/FlowPage.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import LearnPage from "./pages/LearnPage.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
+import PracticePage from "./pages/PracticePage.tsx";
 import ProjectPage from "./pages/ProjectPage.tsx";
 import TopicPage from "./pages/TopicPage.tsx";
 
@@ -27,6 +29,8 @@ export default function App() {
         <Route path="explorer" element={<ExplorerPage />} />
         <Route path="project" element={<ProjectPage />} />
         <Route path="flow" element={<FlowPage />} />
+        <Route path="practice" element={<PracticePage />} />
+        <Route path="practice/:exercise" element={<ExercisePage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

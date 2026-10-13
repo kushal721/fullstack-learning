@@ -27,17 +27,15 @@ function isApiError(body: unknown): body is ApiError {
   return typeof error?.code === "string" && typeof error.message === "string";
 }
 
-/** GET /api{path} and return the JSON body as T. */
-export async function apiGet<T>(
+/** Sends a request to /api{path} and returns the JSON body as T. */
+async function send<T>(
   path: string,
-  { signal }: { signal?: AbortSignal } = {},
+  init: RequestInit,
+  signal?: AbortSignal,
 ): Promise<T> {
   let res: Response;
   try {
-    res = await fetch(`/api${path}`, {
-      signal,
-      headers: { Accept: "application/json" },
-    });
+    res = await fetch(`/api${path}`, { ...init, signal });
   } catch (error) {
     if (signal?.aborted) throw error;
     throw new ApiRequestError(0, "NETWORK", "Could not reach the server.");
@@ -69,6 +67,37 @@ export async function apiGet<T>(
   return body as T;
 }
 
+/** GET /api{path} and return the JSON body as T. */
+export function apiGet<T>(
+  path: string,
+  { signal }: { signal?: AbortSignal } = {},
+): Promise<T> {
+  return send<T>(path, { headers: { Accept: "application/json" } }, signal);
+}
+
+/**
+ * POST `body` as JSON to /api{path} and return the JSON answer as T. Used
+ * for actions such as checking a practice answer, so it isn't cached.
+ */
+export function apiPost<T>(
+  path: string,
+  body: unknown,
+  { signal }: { signal?: AbortSignal } = {},
+): Promise<T> {
+  return send<T>(
+    path,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    },
+    signal,
+  );
+}
+
 /** Every API path the client uses, so URLs are written in one place. */
 export const apiPaths = {
   health: () => "/health",
@@ -93,4 +122,8 @@ export const apiPaths = {
   flow: (id: string) => `/flows/${encodeURIComponent(id)}`,
   fileSymbols: (path: string) =>
     `/files/${path.split("/").map(encodeURIComponent).join("/")}/symbols`,
+  exercises: (mode?: string) =>
+    mode ? `/exercises?mode=${encodeURIComponent(mode)}` : "/exercises",
+  exercise: (id: string) => `/exercises/${encodeURIComponent(id)}`,
+  checkExercise: (id: string) => `/exercises/${encodeURIComponent(id)}/check`,
 };
