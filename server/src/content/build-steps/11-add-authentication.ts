@@ -254,6 +254,7 @@ export const addAuthenticationStep: BuildStep = {
         "Every notes request passes through here first; a bad token never reaches the controller.",
     },
   ],
+  flowIds: ["register", "login"],
   relationshipIds: [
     "route:POST /api/notes->uses->middleware:requireAuth",
     "fn:login.handleSubmit->handles->event:login.submit",

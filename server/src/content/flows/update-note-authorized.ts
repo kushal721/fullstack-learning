@@ -143,6 +143,11 @@ export const updateNoteAuthorizedFlow: Flow = {
       symbolId: "middleware:requireAuth",
       layer: "backend",
       title: "Who is the user? requireAuth runs first",
+      protects: {
+        risk: "A new route added later could forget to check the login, leaving its notes open to anyone.",
+        defence:
+          "`notesRoutes.use(requireAuth)` puts the check in front of every notes route at once, including ones added later.",
+      },
       explanation:
         "`notesRoutes.use(requireAuth)` puts the login check in front of every notes route, so no notes controller can be reached without it, and nobody can forget to add it to a new route. Its job is authentication: finding out who is asking.",
       relationshipId: "route:PUT /api/notes/:id->uses->middleware:requireAuth",
@@ -157,6 +162,11 @@ export const updateNoteAuthorizedFlow: Flow = {
       symbolId: "external:jsonwebtoken",
       layer: "backend",
       title: "Authenticated? jwt.verify checks the token",
+      protects: {
+        risk: "Someone sends a token they edited to say `sub: 2`, or an old one they found, to act as another user.",
+        defence:
+          "`jwt.verify` rejects any token whose signature doesn't match or that has expired, and the request stops with 401.",
+      },
       explanation:
         "`jwt.verify` recomputes the token's signature with `JWT_SECRET`, which only the server knows, and checks the expiry date. A missing cookie, a token someone edited (say, to `sub: 2`) or an old one all throw, and `requireAuth` answers `401 Please log in`. The controller never runs.",
       relationshipId: "middleware:requireAuth->calls->external:jsonwebtoken",
@@ -171,6 +181,11 @@ export const updateNoteAuthorizedFlow: Flow = {
       symbolId: "middleware:requireAuth",
       layer: "backend",
       title: "req.user says who is asking",
+      protects: {
+        risk: "Taking the user id from the URL or the body would let anyone act as any user just by typing a different number.",
+        defence:
+          "The backend uses only `req.user`, which comes from the verified token.",
+      },
       explanation:
         "The token is genuine, so its `sub` (subject) is the user's id. `requireAuth` stores it in `req.user` and calls `next()`. From here on the backend trusts only `req.user` for the user's identity, never an id from the URL or the body.",
       relationshipId: "middleware:requireAuth->calls->external:jsonwebtoken",
@@ -230,6 +245,11 @@ export const updateNoteAuthorizedFlow: Flow = {
       symbolId: "query:updateNote",
       layer: "backend",
       title: "Owns this note? The WHERE clause decides",
+      protects: {
+        risk: "A logged-in user edits the URL to `PUT /api/notes/8` and changes someone else's note. This is called an insecure direct object reference (IDOR), one of the most common API bugs.",
+        defence:
+          "`AND user_id = $4` makes the database change the row only if it belongs to the user from the token. Every notes query in the app is tied to the logged-in user the same way: the INSERT stores `req.user.id`, and the SELECT, UPDATE and DELETE all filter by it.",
+      },
       explanation:
         "The UPDATE only changes a row where both conditions are true: `id = $3` (the note asked for) AND `user_id = $4` (the user from the token). The ownership check is part of the query that changes the note, not a separate step before it, so it can't be forgotten and nothing can change between checking and writing. The values travel separately from the SQL, so they can't change the query either.",
       relationshipId:
@@ -260,6 +280,11 @@ export const updateNoteAuthorizedFlow: Flow = {
       symbolId: "controller:notesController.updateNote",
       layer: "backend",
       title: "No row means 404, not 403",
+      protects: {
+        risk: "Answering 403 Forbidden for someone else's note confirms that the note exists, so an attacker could map out which ids are in use.",
+        defence:
+          'Both "not yours" and "doesn\'t exist" get the same 404, which reveals nothing.',
+      },
       explanation:
         "`rowCount === 0` means the note doesn't exist or belongs to someone else, and both get `404 Note not found`. Many APIs answer `403 Forbidden` for someone else's data, but that would tell an attacker the note exists. Answering 404 means nobody can find out which note ids exist. Here the row matched, so the answer is `200` with the updated note.",
       relationshipId:

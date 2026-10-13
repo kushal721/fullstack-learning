@@ -517,6 +517,7 @@ function validateFlows(
   flows: Flow[],
   symbols: CodeSymbol[],
   relationships: Relationship[],
+  buildSteps: BuildStep[],
 ): string[] {
   const symbolIds = new Set(symbols.map((symbol) => symbol.id));
   const relationshipIds = new Set(relationships.map((rel) => rel.id));
@@ -555,6 +556,24 @@ function validateFlows(
       }
       if (!step.title.trim() || !step.explanation.trim()) {
         errors.push(`${where} needs a title and an explanation.`);
+      }
+      if (step.protects) {
+        if (flow.group !== "security") {
+          errors.push(
+            `${where} explains a protection, but only security flows show them.`,
+          );
+        }
+        if (!step.protects.risk.trim() || !step.protects.defence.trim()) {
+          errors.push(`${where} needs both a risk and a defence.`);
+        }
+      }
+    }
+  }
+  const flowIds = new Set(flows.map((flow) => flow.id));
+  for (const step of buildSteps) {
+    for (const id of step.flowIds ?? []) {
+      if (!flowIds.has(id)) {
+        errors.push(`Build step "${step.id}" links to unknown flow "${id}".`);
       }
     }
   }
@@ -687,6 +706,7 @@ export function validateContent(
       content.flows ?? [],
       content.symbols ?? [],
       content.relationships ?? [],
+      content.buildSteps ?? [],
     ),
     ...(content.httpExchanges
       ? validateHttpExchanges(

@@ -2,6 +2,7 @@ import type { BuildStepResponse, FileTreeFolder } from "@fsl/shared";
 import { Link } from "react-router";
 import { ConceptSection } from "../concept-explorer/ConceptSection.tsx";
 import { PageHeader } from "../ui/PageHeader.tsx";
+import { RichText } from "../ui/RichText.tsx";
 import { NextStep } from "./NextStep.tsx";
 import { StepChanges } from "./StepChanges.tsx";
 import { StepConnections } from "./StepConnections.tsx";
@@ -24,6 +25,7 @@ export function BuildStep({
   concepts,
   diff,
   connections,
+  flows,
   previous,
   next,
   totalSteps,
@@ -60,6 +62,28 @@ export function BuildStep({
       <ConceptSection id="connections" title="Connections created">
         <StepConnections step={step} connections={connections} />
       </ConceptSection>
+      {flows.length > 0 && (
+        <ConceptSection id="flows" title="See it happen">
+          <p className="text-muted">
+            Step through this code at work in the flow tracer.
+          </p>
+          <ul className="flex flex-col gap-2">
+            {flows.map((flow) => (
+              <li key={flow.id}>
+                <Link
+                  to={`/flow?flow=${flow.id}&step=1`}
+                  className="font-medium text-accent hover:underline"
+                >
+                  {flow.title}
+                </Link>{" "}
+                <span className="text-sm text-muted">
+                  ({flow.stepCount} steps): <RichText text={flow.summary} />
+                </span>
+              </li>
+            ))}
+          </ul>
+        </ConceptSection>
+      )}
       <StepDetails step={step} concepts={concepts} />
       <NextStep
         step={step}

@@ -82,6 +82,22 @@ describe("GET /api/build-steps/:slug", () => {
     expect(first.body.connections).toEqual([]);
   });
 
+  it("links the authentication and security steps to their flows", async () => {
+    const ids = async (slug: string) =>
+      (
+        (await request(app).get(`/api/build-steps/${slug}`))
+          .body as BuildStepResponse
+      ).flows.map((f) => `${f.id} ${f.group}`);
+    expect(await ids("add-authentication")).toEqual([
+      "register security",
+      "login security",
+    ]);
+    expect(await ids("add-security")).toEqual([
+      "update-note-authorized security",
+    ]);
+    expect(await ids("understand-the-application")).toEqual([]);
+  });
+
   it("returns 404 for an unknown step", async () => {
     const res = await request(app).get("/api/build-steps/cooking");
     expect(res.status).toBe(404);

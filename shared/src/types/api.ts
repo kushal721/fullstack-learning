@@ -146,6 +146,8 @@ export type BuildStepResponse = {
   diff: SnapshotDiff;
   /** Connections between pieces of code this step creates. */
   connections: StepConnection[];
+  /** Flows in the flow tracer that show this step's code at work. */
+  flows: FlowSummary[];
 };
 
 /** A relationship a build step creates, with both ends resolved. */

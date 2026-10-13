@@ -189,6 +189,8 @@ export type BuildStep = {
   nextStepId?: string;
   /** Why the next step comes next. */
   nextWhy?: string;
+  /** Flows that show this step's code at work, e.g. the security flows. */
+  flowIds?: string[];
 };
 
 /** What kind of code a symbol is; the id starts with the same word. */
@@ -278,6 +280,11 @@ export type FlowStep = {
    * matches the route, yet the route is what uses it.
    */
   relationshipId?: string;
+  /**
+   * Security flows only: the attack this step defends against and how,
+   * shown as a "Why this protects you" callout.
+   */
+  protects?: { risk: string; defence: string };
 };
 
 /** One HTTP request and its answer, as it travels over the network. */

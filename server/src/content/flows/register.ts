@@ -98,6 +98,11 @@ export const registerFlow: Flow = {
       symbolId: "http-request:POST /api/auth/register",
       layer: "network",
       title: "The new password crosses the network",
+      protects: {
+        risk: "Anyone on the same Wi-Fi, or on any network between the browser and the server, could read a password sent as plain text.",
+        defence:
+          "HTTPS encrypts the whole request, body, headers and cookie, so anyone listening only sees scrambled bytes.",
+      },
       explanation:
         "The password is in the body of this request. In production the site is served over HTTPS, so everything in the request (body, headers and cookie) is encrypted between the browser and the server and nobody on the network can read it. In development it only travels inside your own computer, to `localhost`, over plain HTTP.",
       relationshipId:
@@ -154,6 +159,11 @@ export const registerFlow: Flow = {
       symbolId: "fn:readCredentials",
       layer: "backend",
       title: "The email and password are checked",
+      protects: {
+        risk: "Requests don't have to come from our form: a script can send any body, such as an empty password or no email at all.",
+        defence:
+          "The server checks every value itself. The browser's checks only make the form friendlier; the server's checks are the ones that count.",
+      },
       explanation:
         "The email is trimmed and lowercased, then checked for an `@`; the password must be at least 8 characters. Either problem gets a `400` with a message the form shows.",
       relationshipId:
@@ -169,6 +179,11 @@ export const registerFlow: Flow = {
       symbolId: "external:bcrypt",
       layer: "backend",
       title: "bcrypt hashes the password",
+      protects: {
+        risk: "Databases get copied: a leaked backup, a stolen laptop, a hacked server. Stored passwords would hand over every account, and people reuse passwords on other sites.",
+        defence:
+          "Only a salted, deliberately slow bcrypt hash is stored. It can't be turned back into the password, and guessing is slow.",
+      },
       explanation:
         "The password itself is never stored. `bcrypt.hash` mixes in a random salt (so equal passwords get different hashes) and is deliberately slow (cost 12), so guessing passwords from a stolen database would take years.",
       relationshipId:
@@ -184,6 +199,11 @@ export const registerFlow: Flow = {
       symbolId: "query:insertUser",
       layer: "backend",
       title: "The account is stored",
+      protects: {
+        risk: "Input glued into SQL text runs as SQL: an email like `x' OR '1'='1` could change what the query does.",
+        defence:
+          "The values travel separately from the SQL (`$1`, `$2`), so whatever someone types is always treated as data, never as part of the query.",
+      },
       explanation:
         "A parameterized INSERT stores the email and the hash, never the password, and returns the new id and email.",
       relationshipId:
@@ -199,6 +219,11 @@ export const registerFlow: Flow = {
       symbolId: "table:users",
       layer: "database",
       title: "PostgreSQL adds the row",
+      protects: {
+        risk: 'Two sign-ups with the same email at the same moment could both pass a "does this email exist yet?" check and create two accounts.',
+        defence:
+          "The `UNIQUE` rule is enforced by the database itself, so only one of them can ever be stored. (The 409 answer does reveal that an email is registered, a trade-off most sites accept so people know to log in instead.)",
+      },
       explanation:
         "The `email` column is `UNIQUE`, so the database itself refuses a second account with the same email. The controller turns that into `409 Email already registered`, and two sign-ups at the same moment can't both succeed.",
       relationshipId: "query:insertUser->queries->table:users",
