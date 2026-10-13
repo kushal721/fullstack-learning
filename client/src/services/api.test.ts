@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { mockFetchJson } from "../test/mock-fetch.ts";
-import { ApiRequestError, apiGet } from "./api.ts";
+import { ApiRequestError, apiGet, apiPost } from "./api.ts";
 
 describe("apiGet", () => {
   it("requests /api + path and returns the JSON body", async () => {
@@ -43,6 +43,39 @@ describe("apiGet", () => {
     await expect(apiGet("/health")).rejects.toMatchObject({
       status: 0,
       code: "NETWORK",
+    });
+  });
+});
+
+describe("apiPost", () => {
+  it("sends the body as JSON and returns the JSON answer", async () => {
+    const fetchMock = mockFetchJson({ correct: true });
+
+    await expect(
+      apiPost("/exercises/x/check", { answer: { choiceId: "a" } }),
+    ).resolves.toEqual({ correct: true });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "/api/exercises/x/check",
+      expect.objectContaining({
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: '{"answer":{"choiceId":"a"}}',
+      }),
+    );
+  });
+
+  it("turns a 400 into ApiRequestError with the server's message", async () => {
+    mockFetchJson(
+      { error: { code: "VALIDATION_ERROR", message: "Pick an answer." } },
+      400,
+    );
+    await expect(apiPost("/exercises/x/check", {})).rejects.toMatchObject({
+      status: 400,
+      code: "VALIDATION_ERROR",
+      message: "Pick an answer.",
     });
   });
 });

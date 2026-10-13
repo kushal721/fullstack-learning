@@ -33,4 +33,9 @@ export const navItems: NavItem[] = [
     label: "Flow",
     description: "Follow data from a click to the database and back.",
   },
+  {
+    to: "/practice",
+    label: "Practice",
+    description: "Test yourself: predict, trace, find, fix and plan.",
+  },
 ];
