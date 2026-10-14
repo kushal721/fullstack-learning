@@ -51,16 +51,19 @@ export default function FlowPage() {
 
   // Stepping replaces the history entry, so Back leaves the flow instead of
   // walking back through every step.
+  // Which way the learner last moved, for the step transition: 1 forward.
+  const [direction, setDirection] = useState(1);
   const goTo = useCallback(
     (index: number) => {
       if (!flowId || steps.length === 0) return;
       const clamped = Math.min(Math.max(index, 0), steps.length - 1);
+      setDirection(clamped >= current ? 1 : -1);
       setSearchParams(
         { flow: flowId, step: String(clamped + 1) },
         { replace: true },
       );
     },
-    [flowId, steps.length, setSearchParams],
+    [flowId, steps.length, setSearchParams, current],
   );
 
   const [playing, setPlaying] = useState(false);
@@ -104,6 +107,7 @@ export default function FlowPage() {
 
   // An unknown ?flow= is a missing page, not a failure worth retrying.
   const unknownFlow = detail.error?.isNotFound ? flowId : null;
+
   const failed = list.error ?? (unknownFlow ? null : detail.error);
   const flow = detail.data?.flow;
   const currentStep = flow?.steps[current];
@@ -236,12 +240,21 @@ export default function FlowPage() {
             current={current}
             onSelect={step}
           />
-          <FlowDetails
-            step={currentStep}
-            index={current}
-            total={steps.length}
-            symbol={detail.data!.symbols[currentStep.symbolId]}
-          />
+          {/* Teaching purpose: the next step slides in from the right and
+              the previous one from the left, so stepping feels like moving
+              along the path the data takes. */}
+          <div
+            // A new key on every step restarts the animation.
+            key={currentStep.id}
+            className={direction > 0 ? "anim-step-forward" : "anim-step-back"}
+          >
+            <FlowDetails
+              step={currentStep}
+              index={current}
+              total={steps.length}
+              symbol={detail.data!.symbols[currentStep.symbolId]}
+            />
+          </div>
           {currentStep.protects && (
             <SecurityCallout protects={currentStep.protects} />
           )}

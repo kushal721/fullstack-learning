@@ -5,6 +5,12 @@ import type { FileMarker } from "./FileTree.tsx";
 import { FileIcon, FolderIcon } from "./icons.tsx";
 import { LayerBadge } from "./LayerBadge.tsx";
 
+const FLASH: Record<FileMarker, string> = {
+  added: "bg-green-500/30",
+  modified: "bg-amber-400/35",
+  removed: "bg-red-500/25",
+};
+
 type Props = {
   node: Node;
   level: number;
@@ -62,12 +68,22 @@ export function FileTreeNode({
         onClick={() => (isFolder ? onToggle(node.path) : onSelect(node.path))}
         // Indent by depth so the nesting is visible.
         style={{ paddingLeft: `${(level - 1) * 1}rem` }}
-        className={`flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-sm ${
+        className={`relative flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-sm ${
           isSelected
             ? "bg-accent/10 font-medium text-accent"
             : "hover:bg-foreground/5"
         }`}
       >
+        {marker && !isFolder && (
+          // Teaching purpose: a brief flash in the change's colour draws the
+          // eye to exactly the files this step added, changed or removed.
+          // (Skipped when the system asks for less motion; the +/~/− marker
+          // still says what changed.)
+          <span
+            aria-hidden="true"
+            className={`anim-change-flash pointer-events-none absolute inset-0 rounded motion-reduce:hidden ${FLASH[marker]}`}
+          />
+        )}
         <span className="text-muted">
           {isFolder ? <FolderIcon open={isExpanded} /> : <FileIcon />}
         </span>
@@ -94,7 +110,9 @@ export function FileTreeNode({
         )}
       </div>
       {isExpanded && (
-        <ul role="group">
+        // Teaching purpose: the children unfold out of their folder, so it
+        // is clear they live inside it.
+        <ul role="group" className="anim-unfold">
           {node.children.map((child, index) => (
             <FileTreeNode
               key={child.path}
