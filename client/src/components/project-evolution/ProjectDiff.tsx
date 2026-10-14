@@ -103,7 +103,7 @@ export function ProjectDiff({
                     <span className="w-16 shrink-0 text-muted">{marker}</span>
                     <Link
                       to={explorerLink(path)}
-                      className="min-w-0 font-mono [overflow-wrap:anywhere] text-accent hover:underline"
+                      className="inline-flex min-h-6 items-center min-w-0 font-mono [overflow-wrap:anywhere] text-accent hover:underline"
                     >
                       {path}
                     </Link>

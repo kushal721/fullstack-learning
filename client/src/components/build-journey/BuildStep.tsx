@@ -72,7 +72,7 @@ export function BuildStep({
               <li key={flow.id}>
                 <Link
                   to={`/flow?flow=${flow.id}&step=1`}
-                  className="font-medium text-accent hover:underline"
+                  className="inline-flex min-h-6 items-center font-medium text-accent hover:underline"
                 >
                   {flow.title}
                 </Link>{" "}

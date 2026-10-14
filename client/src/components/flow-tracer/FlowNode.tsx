@@ -6,17 +6,25 @@ import { STEP_HEIGHT, STEP_WIDTH } from "./layout.ts";
 /** One step: its number, title and the symbol it happens at. */
 export function FlowNode({ data }: NodeProps<Node<FlowNodeData, "step">>) {
   const { step, index, symbol, state, onSelect } = data;
+  // A read-only overview has nothing to pick, so its steps aren't buttons.
+  const Tag = onSelect ? "button" : "div";
   return (
     <>
       <Handle type="target" position={Position.Left} />
-      <button
-        type="button"
-        tabIndex={-1}
+      <Tag
+        {...(onSelect
+          ? {
+              type: "button" as const,
+              tabIndex: -1,
+              onClick: () => onSelect(index),
+            }
+          : {})}
         aria-current={state === "current" ? "step" : undefined}
         aria-label={`Step ${index + 1}: ${step.title}`}
-        onClick={() => onSelect?.(index)}
         style={{ width: STEP_WIDTH, height: STEP_HEIGHT }}
-        className={`nodrag flex cursor-pointer flex-col justify-center gap-0.5 rounded-lg border px-3 text-left ${
+        className={`nodrag flex flex-col justify-center gap-0.5 rounded-lg border px-3 text-left ${
+          onSelect ? "cursor-pointer" : ""
+        } ${
           state === "current"
             ? "border-accent bg-background ring-2 ring-accent/40"
             : state === "past"
@@ -30,7 +38,7 @@ export function FlowNode({ data }: NodeProps<Node<FlowNodeData, "step">>) {
         <span className="line-clamp-2 text-xs font-semibold leading-snug">
           {step.title}
         </span>
-      </button>
+      </Tag>
       <Handle type="source" position={Position.Right} />
     </>
   );

@@ -10,6 +10,7 @@ import {
 } from "react";
 import { Link, useSearchParams } from "react-router";
 import { FlowDetails } from "../components/flow-tracer/FlowDetails.tsx";
+import { FlowStepList } from "../components/flow-tracer/FlowStepList.tsx";
 import { HttpDetails } from "../components/flow-tracer/HttpDetails.tsx";
 import { SecurityCallout } from "../components/security-flow/SecurityCallout.tsx";
 import { ErrorState } from "../components/ui/ErrorState.tsx";
@@ -228,6 +229,13 @@ export default function FlowPage() {
               </p>
             </div>
           </div>
+          <FlowStepList
+            flowId={flow.id}
+            steps={flow.steps}
+            symbols={detail.data!.symbols}
+            current={current}
+            onSelect={step}
+          />
           <FlowDetails
             step={currentStep}
             index={current}

@@ -31,7 +31,7 @@ export function StepConnections({
   const end = (symbol: StepConnection["source"]) => (
     <Link
       to={explorerSymbolHref(symbol)}
-      className="font-mono text-accent [overflow-wrap:anywhere] hover:underline"
+      className="inline-flex min-h-6 items-center font-mono text-accent [overflow-wrap:anywhere] hover:underline"
     >
       <span className="font-sans text-xs text-muted">
         {kindLabel(symbol.kind)}

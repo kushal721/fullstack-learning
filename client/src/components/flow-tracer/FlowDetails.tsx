@@ -43,7 +43,7 @@ export function FlowDetails({ step, index, total, symbol }: Props) {
         <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
           <Link
             to={explorerSymbolHref(symbol)}
-            className="text-accent hover:underline"
+            className="inline-flex min-h-6 items-center text-accent hover:underline"
           >
             Connections of <code className="font-mono">{symbol.name}</code>
           </Link>
@@ -56,7 +56,7 @@ export function FlowDetails({ step, index, total, symbol }: Props) {
                 purpose: "",
                 line: symbol.line,
               })}
-              className="text-accent hover:underline"
+              className="inline-flex min-h-6 items-center text-accent hover:underline"
             >
               Open {symbol.fileId.split("/").at(-1)}
               {symbol.line ? ` at line ${symbol.line}` : ""}

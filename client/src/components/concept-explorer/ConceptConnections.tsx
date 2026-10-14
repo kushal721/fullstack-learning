@@ -37,7 +37,7 @@ export function ConceptConnections({ usedIn, introducedIn }: Props) {
               >
                 <Link
                   to={explorerLink(use)}
-                  className="font-mono text-sm [overflow-wrap:anywhere] text-accent hover:underline"
+                  className="inline-flex min-h-6 items-center font-mono text-sm [overflow-wrap:anywhere] text-accent hover:underline"
                 >
                   {use.fileId}
                   {use.line && `:${use.line}`}
