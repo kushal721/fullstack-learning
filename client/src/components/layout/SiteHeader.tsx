@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { SearchLauncher } from "../search/SearchLauncher.tsx";
 import { MobileNav } from "./MobileNav.tsx";
 import { navItems } from "./nav-items.ts";
 import { NavItemLink } from "./NavItemLink.tsx";
@@ -19,7 +20,10 @@ export function SiteHeader() {
             ))}
           </ul>
         </nav>
-        <MobileNav />
+        <div className="flex items-center gap-2">
+          <SearchLauncher />
+          <MobileNav />
+        </div>
       </div>
     </header>
   );
