@@ -80,7 +80,7 @@ export default function ProjectPage() {
               {current.goal}{" "}
               <Link
                 to={`/build/${current.slug}`}
-                className="text-accent hover:underline"
+                className="inline-flex min-h-6 items-center text-accent hover:underline"
               >
                 Open this step
               </Link>

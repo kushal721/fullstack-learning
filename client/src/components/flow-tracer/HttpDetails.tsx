@@ -32,7 +32,7 @@ function Part({
         {concept && (
           <Link
             to={`/concepts/${concept.slug}`}
-            className="text-xs text-accent hover:underline"
+            className="inline-flex min-h-6 items-center text-xs text-accent hover:underline"
           >
             What is {concept.title}?
           </Link>

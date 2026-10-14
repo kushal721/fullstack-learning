@@ -11,6 +11,7 @@ import { LearningTree } from "../components/learning-tree/LearningTree.tsx";
 import { TopicNav } from "../components/learning-tree/TopicNav.tsx";
 import { explorerFileHref } from "../components/connection-graph/links.ts";
 import { Card } from "../components/ui/Card.tsx";
+import { FlowStepList } from "../components/flow-tracer/FlowStepList.tsx";
 import { ErrorState } from "../components/ui/ErrorState.tsx";
 import { Loading } from "../components/ui/Loading.tsx";
 import { NotFoundState } from "../components/ui/NotFoundState.tsx";
@@ -180,7 +181,7 @@ const FlowCanvas = lazy(
 );
 
 const chip =
-  "rounded-full border border-border px-2.5 py-0.5 text-sm hover:border-accent hover:text-accent";
+  "inline-flex min-h-7 items-center rounded-full border border-border px-2.5 py-0.5 text-sm [overflow-wrap:anywhere] hover:border-accent hover:text-accent";
 
 /**
  * "How everything connects": the whole create-note round trip at a glance,
@@ -231,6 +232,13 @@ function HowEverythingConnects({ layers }: { layers: LayerView[] }) {
           </div>
         </Suspense>
       )}
+      {flow.data && (
+        <FlowStepList
+          flowId="create-note"
+          steps={flow.data.flow.steps}
+          symbols={flow.data.symbols}
+        />
+      )}
       <ol className="flex flex-col gap-6">
         {layers.map((layer) => (
           <li key={layer.layer} className="rounded-lg border border-border p-5">
@@ -242,7 +250,7 @@ function HowEverythingConnects({ layers }: { layers: LayerView[] }) {
                 </p>
               ))}
             </div>
-            <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-[8rem_minmax(0,1fr)]">
+            <dl className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-3 text-sm sm:grid-cols-[8rem_minmax(0,1fr)]">
               <dt className="font-medium">Concepts</dt>
               <dd className="flex flex-wrap gap-2">
                 {layer.concepts.map((c) => (

@@ -60,7 +60,7 @@ export function NextStep({ step, concepts, previous, next }: Props) {
                 <li key={path}>
                   <Link
                     to={`/explorer?file=${encodeURIComponent(path)}`}
-                    className={`font-mono text-sm [overflow-wrap:anywhere] ${linkClass}`}
+                    className={`inline-flex min-h-6 items-center font-mono text-sm [overflow-wrap:anywhere] ${linkClass}`}
                   >
                     {path}
                   </Link>

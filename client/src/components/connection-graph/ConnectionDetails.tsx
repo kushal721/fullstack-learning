@@ -18,7 +18,7 @@ type Props = {
 };
 
 const linkClass =
-  "font-mono text-accent [overflow-wrap:anywhere] hover:underline";
+  "inline-flex min-h-6 items-center font-mono text-accent [overflow-wrap:anywhere] hover:underline";
 
 /**
  * The six tracer questions for one symbol (spec §13): where it is defined,

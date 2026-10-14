@@ -59,7 +59,7 @@ export function ConnectionsPanel({
         </h2>
         <Link
           to={explorerLink(file)}
-          className="text-sm text-accent hover:underline"
+          className="inline-flex min-h-6 items-center text-sm text-accent hover:underline"
         >
           Close
         </Link>

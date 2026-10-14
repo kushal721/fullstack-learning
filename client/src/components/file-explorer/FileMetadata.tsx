@@ -47,7 +47,7 @@ export function FileMetadata({ file, concepts }: FileResponse) {
               <li key={concept.id}>
                 <Link
                   to={`/concepts/${concept.slug}`}
-                  className="text-accent underline"
+                  className="inline-flex min-h-6 items-center text-accent underline"
                 >
                   {concept.title}
                 </Link>
