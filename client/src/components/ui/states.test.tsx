@@ -12,17 +12,38 @@ describe("state components", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Loading…");
   });
 
-  it("ErrorState shows the message and retries", async () => {
+  it("ErrorState explains the problem, retries and links back to the tree", async () => {
     const onRetry = vi.fn();
     render(
-      <ErrorState message="Could not reach the server." onRetry={onRetry} />,
+      <MemoryRouter>
+        <ErrorState message="Could not reach the server." onRetry={onRetry} />
+      </MemoryRouter>,
     );
 
     expect(screen.getByRole("alert")).toHaveTextContent(
-      "Could not reach the server.",
+      "We couldn't load thisCould not reach the server. Check your internet connection, then try again.",
     );
     await userEvent.click(screen.getByRole("button", { name: "Try again" }));
     expect(onRetry).toHaveBeenCalledOnce();
+    expect(
+      screen.getByRole("link", { name: "Go to the learning tree" }),
+    ).toHaveAttribute("href", "/learn");
+  });
+
+  it("ErrorState turns the API's generic message into a helpful one", () => {
+    render(
+      <MemoryRouter>
+        <ErrorState message="Something went wrong" homeLink={false} />
+      </MemoryRouter>,
+    );
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "The server had a problem. It isn't something you did",
+    );
+    expect(screen.getByRole("alert")).not.toHaveTextContent(
+      "Something went wrong",
+    );
+    expect(screen.queryByRole("link")).toBeNull();
+    expect(screen.queryByRole("button")).toBeNull();
   });
 
   it("NotFoundState links back to the learning tree", () => {

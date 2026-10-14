@@ -26,7 +26,13 @@ export function StepChanges({
 }: Props) {
   const navigate = useNavigate();
   if (error)
-    return <ErrorState message={error.message} onRetry={error.retry} />;
+    return (
+      <ErrorState
+        message={error.message}
+        onRetry={error.retry}
+        homeLink={false}
+      />
+    );
   if (!before || !after) return <Loading label="Loading the project files…" />;
   return (
     <ProjectDiff

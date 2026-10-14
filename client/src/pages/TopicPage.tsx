@@ -210,7 +210,11 @@ function HowEverythingConnects({ layers }: { layers: LayerView[] }) {
       </p>
       {flow.isLoading && <Loading label="Loading the flow…" />}
       {flow.error && (
-        <ErrorState message={flow.error.message} onRetry={flow.reload} />
+        <ErrorState
+          message={flow.error.message}
+          onRetry={flow.reload}
+          homeLink={false}
+        />
       )}
       {flow.data && (
         <Suspense fallback={<Loading label="Loading the flow canvas…" />}>

@@ -101,7 +101,9 @@ export default function FlowPage() {
     }
   }
 
-  const failed = list.error ?? detail.error;
+  // An unknown ?flow= is a missing page, not a failure worth retrying.
+  const unknownFlow = detail.error?.isNotFound ? flowId : null;
+  const failed = list.error ?? (unknownFlow ? null : detail.error);
   const flow = detail.data?.flow;
   const currentStep = flow?.steps[current];
   const buttonClass =
@@ -124,6 +126,12 @@ export default function FlowPage() {
         />
       )}
       {list.isLoading && <Loading label="Loading the flows…" />}
+      {unknownFlow && (
+        <p role="alert" className="mb-6">
+          There is no flow called &ldquo;{unknownFlow}&rdquo;. Pick one of the
+          flows below.
+        </p>
+      )}
 
       {list.data && (
         <nav aria-label="Flows" className="mb-6 flex flex-col gap-3">
