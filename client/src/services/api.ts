@@ -126,4 +126,5 @@ export const apiPaths = {
     mode ? `/exercises?mode=${encodeURIComponent(mode)}` : "/exercises",
   exercise: (id: string) => `/exercises/${encodeURIComponent(id)}`,
   checkExercise: (id: string) => `/exercises/${encodeURIComponent(id)}/check`,
+  search: (query: string) => `/search?q=${encodeURIComponent(query)}`,
 };
