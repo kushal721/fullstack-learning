@@ -2,6 +2,14 @@ import express from "express";
 import { config } from "./config.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFound } from "./middleware/notFound.js";
+import { requestLogger } from "./middleware/requestLogger.js";
+import {
+  corsPolicy,
+  DEFAULT_RATE_LIMITS,
+  rateLimiters,
+  type RateLimits,
+  securityHeaders,
+} from "./middleware/security.js";
 import { serveClient } from "./middleware/serveClient.js";
 import { buildStepsRouter } from "./routes/build-steps.js";
 import { conceptsRouter } from "./routes/concepts.js";
@@ -17,12 +25,26 @@ import { topicsRouter } from "./routes/topics.js";
 type AppOptions = {
   /** Folder with the built client; when set, the app also serves the website. */
   clientDist?: string;
+  /** Lower limits let tests reach them quickly. */
+  rateLimits?: RateLimits;
 };
 
 // Builds the Express app without starting it, so tests can import it.
-export function createApp({ clientDist = config.clientDist }: AppOptions = {}) {
+export function createApp({
+  clientDist = config.clientDist,
+  rateLimits = DEFAULT_RATE_LIMITS,
+}: AppOptions = {}) {
   const app = express();
   app.disable("x-powered-by");
+  app.set("trust proxy", config.trustProxy);
+
+  // Order matters: log every request, then add security headers, then
+  // refuse what isn't allowed before any work is done.
+  app.use(requestLogger(config.logLevel));
+  app.use(securityHeaders());
+  const limiters = rateLimiters(rateLimits);
+  app.use("/api", corsPolicy(config.corsOrigins), limiters.api);
+  app.post("/api/exercises/:id/check", limiters.checks);
   app.use(express.json());
 
   app.use("/api/health", healthRouter);
