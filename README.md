@@ -85,6 +85,7 @@ main ─► CI again ─► Release: build that exact commit and publish
 
 - Workflows: [`.github/workflows/ci.yml`](.github/workflows/ci.yml) and [`release.yml`](.github/workflows/release.yml). Both can also be started by hand from the Actions tab.
 - The deploy step runs once the repository variable `RENDER_SERVICE_URL` and the secret `RENDER_DEPLOY_HOOK_URL` are set.
+- On Render, set the service's environment variable `TRUST_PROXY=1`: the API sits behind Render's proxy, and the rate limit needs each visitor's real IP. All server settings are listed in [`server/.env.example`](server/.env.example).
 
 ## Scripts
 
