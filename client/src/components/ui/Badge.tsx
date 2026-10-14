@@ -5,7 +5,7 @@ type Tone = "neutral" | "info" | "success" | "warning";
 const toneClasses: Record<Tone, string> = {
   neutral: "bg-foreground/5 text-muted",
   info: "bg-accent/10 text-accent",
-  success: "bg-green-600/10 text-green-700 dark:text-green-400",
+  success: "bg-green-600/10 text-green-800 dark:text-green-400",
   warning: "bg-amber-500/15 text-amber-800 dark:text-amber-300",
 };
 

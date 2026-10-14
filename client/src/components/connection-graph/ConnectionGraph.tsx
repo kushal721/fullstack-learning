@@ -57,7 +57,8 @@ export default function ConnectionGraph({
     <div
       ref={containerRef}
       className="h-[28rem] rounded-lg border border-border"
-      role="img"
+      // A group, not an image: the nodes inside are buttons.
+      role="group"
       aria-label={`Connections of ${centerId}: ${edges
         .map((edge) => `${edge.source} ${edge.type} ${edge.target}`)
         .join("; ")}`}

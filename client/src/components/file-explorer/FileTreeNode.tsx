@@ -119,7 +119,7 @@ export function FileTreeNode({
 // The symbol, word and colour are for sighted readers; the word is also in
 // the treeitem's aria-label ("App.jsx, added"), so nothing depends on colour.
 const MARKER = {
-  added: { symbol: "+", className: "text-green-700 dark:text-green-400" },
+  added: { symbol: "+", className: "text-green-800 dark:text-green-400" },
   modified: { symbol: "~", className: "text-amber-700 dark:text-amber-300" },
   removed: { symbol: "−", className: "text-red-700 dark:text-red-400" },
 } as const;

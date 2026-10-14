@@ -78,7 +78,7 @@ export function CodeBlock({
                   // blank lines, like the one between HTTP headers and body, vanish).
                   className={`${lineProps.className} flex min-h-6 border-l-4 pr-4 ${
                     isHighlighted
-                      ? "border-accent bg-accent/15"
+                      ? "border-accent bg-accent/[0.06]"
                       : "border-transparent"
                   }`}
                 >
@@ -90,7 +90,7 @@ export function CodeBlock({
                   {showLineNumbers && (
                     <span
                       aria-hidden="true"
-                      className="w-10 shrink-0 select-none pr-3 text-right opacity-50"
+                      className="w-10 shrink-0 select-none pr-3 text-right text-[var(--code-comment)]"
                     >
                       {renderLineNumber?.(lineNumber) ?? lineNumber}
                     </span>
