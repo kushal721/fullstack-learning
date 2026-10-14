@@ -256,9 +256,12 @@ describe("ExplorerPage", () => {
       expect(screen.queryByTestId("graph")).toBeNull();
     });
 
-    it("shows an error for an unknown symbol", async () => {
+    it("says an unknown symbol doesn't exist, without a pointless retry", async () => {
       renderAt("/explorer?symbol=fn:nope");
-      expect(await screen.findByRole("alert")).toBeInTheDocument();
+      expect(await screen.findByRole("alert")).toHaveTextContent(
+        "There is no symbol “fn:nope” in the Notes App’s code graph.",
+      );
+      expect(screen.queryByRole("button", { name: "Try again" })).toBeNull();
     });
   });
 

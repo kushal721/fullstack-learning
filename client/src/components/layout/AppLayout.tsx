@@ -1,8 +1,10 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
+import { RouteErrorBoundary } from "./RouteErrorBoundary.tsx";
 import { SiteHeader } from "./SiteHeader.tsx";
 
 // The frame around every page: skip link, header, and the current page.
 export function AppLayout() {
+  const { pathname } = useLocation();
   return (
     <div className="flex min-h-screen flex-col">
       <a
@@ -17,7 +19,9 @@ export function AppLayout() {
         tabIndex={-1}
         className="mx-auto w-full max-w-7xl flex-1 px-4 py-10 focus:outline-none"
       >
-        <Outlet />
+        <RouteErrorBoundary key={pathname}>
+          <Outlet />
+        </RouteErrorBoundary>
       </main>
     </div>
   );

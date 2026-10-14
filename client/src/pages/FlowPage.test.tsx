@@ -301,6 +301,20 @@ describe("FlowPage", () => {
     );
   });
 
+  it("says an unknown flow doesn't exist and still lists the flows", async () => {
+    renderAt("/flow?flow=no-such-flow");
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "There is no flow called “no-such-flow”. Pick one of the flows below.",
+    );
+    expect(screen.queryByRole("button", { name: "Try again" })).toBeNull();
+    expect(
+      within(screen.getByRole("navigation", { name: "Flows" })).getByRole(
+        "link",
+        { name: /Create a note/ },
+      ),
+    ).toBeVisible();
+  });
+
   it("falls back to step 1 for a step that doesn't exist", async () => {
     renderAt("/flow?flow=create-note&step=99");
     await screen.findByTestId("canvas");

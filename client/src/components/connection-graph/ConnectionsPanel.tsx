@@ -65,7 +65,20 @@ export function ConnectionsPanel({
         </Link>
       </div>
       {isLoading && <Loading label="Loading connections…" />}
-      {error && <ErrorState message={error.message} onRetry={reload} />}
+      {error?.isNotFound ? (
+        <p role="alert">
+          There is no symbol &ldquo;{symbolId}&rdquo; in the Notes App&rsquo;s
+          code graph. Pick a file instead, or close this panel.
+        </p>
+      ) : (
+        error && (
+          <ErrorState
+            message={error.message}
+            onRetry={reload}
+            homeLink={false}
+          />
+        )
+      )}
       {data && (
         <Suspense fallback={<Loading label="Loading the graph…" />}>
           <ConnectionGraph

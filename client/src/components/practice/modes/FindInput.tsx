@@ -61,7 +61,11 @@ export function FindInput({
       <div className="grid gap-4 md:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
         <div className="max-h-[28rem] overflow-auto rounded-lg border border-border p-2">
           {tree.error ? (
-            <ErrorState message={tree.error.message} onRetry={tree.reload} />
+            <ErrorState
+              message={tree.error.message}
+              onRetry={tree.reload}
+              homeLink={false}
+            />
           ) : tree.data ? (
             <FileTree
               tree={tree.data.tree}

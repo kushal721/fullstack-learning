@@ -137,7 +137,11 @@ export default function ExplorerPage() {
               <Loading label="Loading the file…" />
             )}
             {selected && file.error && (
-              <ErrorState message={file.error.message} onRetry={file.reload} />
+              <ErrorState
+                message={file.error.message}
+                onRetry={file.reload}
+                homeLink={false}
+              />
             )}
             {selected && file.data && (
               // Metadata comes first in the page (read "why" before the code);
