@@ -71,7 +71,7 @@ export function ChoiceInput({
                   <span
                     className={`text-sm font-semibold ${
                       label === "Right answer"
-                        ? "text-green-700 dark:text-green-400"
+                        ? "text-green-800 dark:text-green-400"
                         : "text-muted"
                     }`}
                   >

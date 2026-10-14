@@ -203,7 +203,7 @@ function HowEverythingConnects({ layers }: { layers: LayerView[] }) {
         up.{" "}
         <Link
           to="/flow?flow=create-note&step=1"
-          className="text-accent hover:underline"
+          className="text-accent underline"
         >
           Step through it on the Flow page
         </Link>
@@ -220,7 +220,7 @@ function HowEverythingConnects({ layers }: { layers: LayerView[] }) {
       {flow.data && (
         <Suspense fallback={<Loading label="Loading the flow canvas…" />}>
           <div
-            role="img"
+            role="group"
             aria-label={`The ${flow.data.flow.steps.length} steps of creating a note, from the user through the frontend, network, backend and database and back.`}
           >
             <FlowCanvas

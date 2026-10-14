@@ -20,7 +20,7 @@ const MARKER: Record<
   before: {
     symbol: "✓",
     label: "earlier step",
-    className: "bg-green-600/10 text-green-700 dark:text-green-400",
+    className: "bg-green-600/10 text-green-800 dark:text-green-400",
   },
   current: {
     symbol: "→",

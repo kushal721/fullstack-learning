@@ -19,7 +19,7 @@ export function SecurityCallout({
     >
       <h3
         id={titleId}
-        className="flex items-center gap-2 font-semibold text-green-700 dark:text-green-400"
+        className="flex items-center gap-2 font-semibold text-green-800 dark:text-green-400"
       >
         <svg
           aria-hidden="true"

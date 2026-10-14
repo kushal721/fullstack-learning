@@ -17,7 +17,7 @@
   --code-keyword: #cf222e;
   --code-string: #0a3069;
   --code-number: #0550ae;
-  --code-function: #8250df;
+  --code-function: #6639ba;
   --code-tag: #116329;
   --code-operator: #953800;
   --code-deleted: #82071e;
@@ -64,4 +64,18 @@ body {
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* People who ask their system for less motion get none: a safety net for
+   transitions and animations (the flow canvas also checks this itself and
+   jumps instead of gliding). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

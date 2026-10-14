@@ -83,9 +83,9 @@ export function TraceInput({ exercise, onChange, result }: ModeInputProps) {
         aria-labelledby={`path-${exercise.id}`}
         className="flex flex-col gap-2"
       >
-        <h3 id={`path-${exercise.id}`} className="font-semibold">
+        <h2 id={`path-${exercise.id}`} className="font-semibold">
           Your path ({path.length} of {length})
-        </h3>
+        </h2>
         <ol className="flex flex-col gap-1">
           {path.map((id, i) => {
             const wrong = expected && expected[i] !== id;
@@ -143,9 +143,9 @@ export function TraceInput({ exercise, onChange, result }: ModeInputProps) {
           aria-labelledby={`pieces-${exercise.id}`}
           className="flex flex-col gap-2"
         >
-          <h3 id={`pieces-${exercise.id}`} className="font-semibold">
+          <h2 id={`pieces-${exercise.id}`} className="font-semibold">
             Add the next step
-          </h3>
+          </h2>
           <ul className="flex flex-wrap gap-2">
             {exercise.candidateIds
               .filter((id) => id !== exercise.startSymbolId)
@@ -170,11 +170,11 @@ export function TraceInput({ exercise, onChange, result }: ModeInputProps) {
           aria-labelledby={`look-${exercise.id}`}
           className="flex flex-col gap-2"
         >
-          <h3 id={`look-${exercise.id}`} className="font-semibold">
+          <h2 id={`look-${exercise.id}`} className="font-semibold">
             What does{" "}
             <code className="font-mono">{symbolLabel(last).name}</code> connect
             to?
-          </h3>
+          </h2>
           <p className="text-sm text-muted">
             Click a node to add it, if it's one of the offered steps.
           </p>

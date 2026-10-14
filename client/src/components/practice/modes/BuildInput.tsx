@@ -85,7 +85,7 @@ export function BuildInput({ exercise, onChange, result }: ModeInputProps) {
                       <span
                         className={`text-sm font-semibold ${
                           v.ok
-                            ? "text-green-700 dark:text-green-400"
+                            ? "text-green-800 dark:text-green-400"
                             : "text-amber-800 dark:text-amber-300"
                         }`}
                       >
@@ -105,9 +105,9 @@ export function BuildInput({ exercise, onChange, result }: ModeInputProps) {
           aria-labelledby={`model-${exercise.id}`}
           className="flex flex-col gap-2"
         >
-          <h3 id={`model-${exercise.id}`} className="font-semibold">
+          <h2 id={`model-${exercise.id}`} className="font-semibold">
             One way to build it
-          </h3>
+          </h2>
           <ol className="flex list-decimal flex-col gap-2 pl-6 leading-7">
             {expected.modelAnswer.map((step) => (
               <li key={step}>
