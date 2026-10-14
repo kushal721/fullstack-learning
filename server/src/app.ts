@@ -10,6 +10,7 @@ import { filesRouter } from "./routes/files.js";
 import { flowsRouter } from "./routes/flows.js";
 import { healthRouter } from "./routes/health.js";
 import { projectRouter } from "./routes/project.js";
+import { searchRouter } from "./routes/search.js";
 import { symbolsRouter } from "./routes/symbols.js";
 import { topicsRouter } from "./routes/topics.js";
 
@@ -33,6 +34,7 @@ export function createApp({ clientDist = config.clientDist }: AppOptions = {}) {
   app.use("/api/symbols", symbolsRouter);
   app.use("/api/flows", flowsRouter);
   app.use("/api/exercises", exercisesRouter);
+  app.use("/api/search", searchRouter);
   app.use("/api", notFound);
 
   if (clientDist) app.use(serveClient(clientDist));

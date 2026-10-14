@@ -268,3 +268,35 @@ export type CheckAnswerRequest = { answer: ExerciseAnswer };
 
 /** The result, with the right answer revealed. */
 export type CheckAnswerResponse = CheckResult;
+
+/** What a search result is, in the order results are grouped (spec §20). */
+export type SearchResultType =
+  | "concept"
+  | "file"
+  | "function"
+  | "component"
+  | "build-step"
+  | "connection"
+  | "flow";
+
+export type SearchResult = {
+  type: SearchResultType;
+  id: string;
+  title: string;
+  /** A short piece of text explaining the result. */
+  text: string;
+  /** Where the result opens in the platform. */
+  href: string;
+};
+
+/** GET /api/search?q= — results grouped by type, best first. */
+export type SearchResponse = {
+  query: string;
+  groups: {
+    type: SearchResultType;
+    label: string;
+    /** At most 10; `total` says how many matched. */
+    results: SearchResult[];
+    total: number;
+  }[];
+};

@@ -104,7 +104,8 @@ export function findLine(id: string, text: string): number | undefined {
   return index === -1 ? undefined : index + 1;
 }
 
-function readSourceSync(id: string): string | undefined {
+/** Like readFileSource, but synchronous (for indexes built at startup). */
+export function readSourceSync(id: string): string | undefined {
   const file = byId.get(id);
   if (!file) return undefined;
   let source = sourceCache.get(id);
