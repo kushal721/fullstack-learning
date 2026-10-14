@@ -79,3 +79,47 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Explanatory animations. Each one teaches something (see the comment where
+   it is used); the reduced-motion rule above turns them all off. */
+@keyframes unfold {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+.anim-unfold {
+  animation: unfold 160ms ease-out;
+}
+
+@keyframes change-flash {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.anim-change-flash {
+  opacity: 0;
+  animation: change-flash 1.4s ease-out 0.3s backwards;
+}
+
+@keyframes step-in-forward {
+  from {
+    opacity: 0;
+    transform: translateX(1.5rem);
+  }
+}
+@keyframes step-in-back {
+  from {
+    opacity: 0;
+    transform: translateX(-1.5rem);
+  }
+}
+.anim-step-forward {
+  animation: step-in-forward 200ms ease-out;
+}
+.anim-step-back {
+  animation: step-in-back 200ms ease-out;
+}
