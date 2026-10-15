@@ -13,6 +13,12 @@ updates:
       prefix: chore(deps)
       prefix-development: chore(deps-dev)
     labels: [area:ops]
+    ignore:
+      # @types/node must describe the Node version we run (.nvmrc), so it
+      # only gets minor and patch updates. Its major version moves on
+      # purpose, together with .nvmrc, the Dockerfile and CI.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       # Minor and patch updates of tools (lint, test, build) as one PR.
       dev-dependencies:
