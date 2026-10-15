@@ -1,9 +1,16 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createApp } from "../app.js";
+import { renderIndexHtml } from "./serveClient.js";
 
 describe("serving the built client", () => {
   let clientDist: string;
@@ -46,5 +53,80 @@ describe("serving the built client", () => {
   it("does not serve the client when no build folder is configured", async () => {
     const res = await request(createApp({ clientDist: undefined })).get("/");
     expect(res.status).toBe(404);
+  });
+
+  it("answers addresses that match no page with 404, still with the app", async () => {
+    const res = await request(createApp({ clientDist })).get("/no-such-page");
+    expect(res.status).toBe(404);
+    expect(res.text).toContain("<h1>app</h1>");
+  });
+});
+
+describe("renderIndexHtml", () => {
+  const template = `<head>
+    <!-- page-meta: default -->
+    <title data-server-meta>Full-Stack Learning</title>
+    <!-- /page-meta -->
+  </head><body></body>`;
+
+  it("puts the page's own title, description and preview tags in", () => {
+    const { html, status } = renderIndexHtml(
+      template,
+      "/concepts/react-usestate",
+      "",
+      "https://learn.example.com",
+    );
+    expect(status).toBe(200);
+    expect(html).toContain(
+      "<title data-server-meta>useState · Full-Stack Learning</title>",
+    );
+    expect(html).toMatch(
+      /<meta data-server-meta name="description" content="[^"]+" \/>/,
+    );
+    expect(html).toContain(
+      'property="og:url" content="https://learn.example.com/concepts/react-usestate"',
+    );
+    expect(html).toContain(
+      'property="og:image" content="https://learn.example.com/og-image.png"',
+    );
+    expect(html).toContain(
+      '<link data-server-meta rel="canonical" href="https://learn.example.com/concepts/react-usestate" />',
+    );
+    expect(html).not.toContain("page-meta");
+    expect(html.match(/<title/g)).toHaveLength(1);
+  });
+
+  it("works on the real client index.html, so editing it can't break this", () => {
+    const real = readFileSync(
+      new URL("../../../client/index.html", import.meta.url),
+      "utf8",
+    );
+    const { html } = renderIndexHtml(
+      real,
+      "/build/add-state",
+      "",
+      "https://x.test",
+    );
+    expect(html).toContain(
+      "<title data-server-meta>6. Add state · Full-Stack Learning</title>",
+    );
+    expect(html.match(/<title/g)).toHaveLength(1);
+    expect(html.match(/name="description"/g)).toHaveLength(1);
+  });
+
+  it("escapes the address and marks unknown pages noindex", () => {
+    const { html, status } = renderIndexHtml(
+      template,
+      '/"><script>alert(1)</script>',
+      "",
+      "https://learn.example.com",
+    );
+    expect(status).toBe(404);
+    expect(html).not.toContain("<script>");
+    expect(html).toContain("&lt;script&gt;");
+    expect(html).toContain(
+      '<meta data-server-meta name="robots" content="noindex" />',
+    );
+    expect(html).not.toContain("canonical");
   });
 });

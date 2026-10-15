@@ -1,10 +1,15 @@
 import { ButtonLink } from "../components/ui/ButtonLink.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 export default function NotFoundPage() {
   return (
     <>
-      <title>Page not found · Full-Stack Learning</title>
+      <PageMeta
+        title="Page not found"
+        description="There is nothing at this address."
+        noIndex
+      />
       <PageHeader
         title="Page not found"
         description="There is nothing at this address."

@@ -13,6 +13,7 @@ import { Loading } from "../components/ui/Loading.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { apiPaths } from "../services/api.ts";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 /** ?step= as a step number, or null when missing or out of range. */
 function parseStep(value: string | null, last: number): number | null {
@@ -56,7 +57,10 @@ export default function ProjectPage() {
 
   return (
     <>
-      <title>Project · Full-Stack Learning</title>
+      <PageMeta
+        title="Project"
+        description="Watch the Notes App grow: the files each build step adds, changes and removes."
+      />
       <PageHeader
         title="Project"
         description="Watch the Notes App grow: pick a step to see which files it adds, changes and removes."

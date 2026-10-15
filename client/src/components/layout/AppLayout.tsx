@@ -23,7 +23,15 @@ export function AppLayout() {
       >
         <RouteErrorBoundary key={pathname}>
           {/* Pages are downloaded on first visit (see App.tsx). */}
-          <Suspense fallback={<Loading label="Loading the page…" />}>
+          <Suspense
+            fallback={
+              <>
+                {/* Keeps the tab named while the page downloads. */}
+                <title>Full-Stack Learning</title>
+                <Loading label="Loading the page…" />
+              </>
+            }
+          >
             <Outlet />
           </Suspense>
         </RouteErrorBoundary>

@@ -18,6 +18,7 @@ import { Loading } from "../components/ui/Loading.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { apiPaths } from "../services/api.ts";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 // React Flow is large; it is only downloaded when a flow is shown.
 const FlowCanvas = lazy(
@@ -116,7 +117,13 @@ export default function FlowPage() {
 
   return (
     <>
-      <title>{`${flow ? `${flow.title} · ` : ""}Flow · Full-Stack Learning`}</title>
+      <PageMeta
+        title={flow ? `${flow.title} · Flow` : "Flow"}
+        description={
+          flow?.summary ??
+          "Follow data step by step, from a click in the browser to the database and back to the screen."
+        }
+      />
       <PageHeader
         title="Flow"
         description="Follow data step by step: from a click in the browser to the database and back to the screen."

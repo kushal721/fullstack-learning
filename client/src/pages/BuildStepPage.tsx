@@ -13,6 +13,7 @@ import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { useScrollToTop } from "../hooks/useScrollToTop.ts";
 import { apiPaths } from "../services/api.ts";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 export default function BuildStepPage() {
   const { step: slug = "" } = useParams();
@@ -36,7 +37,11 @@ export default function BuildStepPage() {
   if (error?.status === 404 || error?.status === 400) {
     return (
       <>
-        <title>Build step not found · Full-Stack Learning</title>
+        <PageMeta
+          title="Build step not found"
+          description="This build step doesn't exist."
+          noIndex
+        />
         <NotFoundState
           title="Build step not found"
           message={`There is no build step called "${slug}".`}
@@ -62,7 +67,10 @@ export default function BuildStepPage() {
 
   return (
     <div className="grid gap-10 lg:grid-cols-[16rem_minmax(0,1fr)]">
-      <title>{`${data.step.order}. ${data.step.title} · Full-Stack Learning`}</title>
+      <PageMeta
+        title={`${data.step.order}. ${data.step.title}`}
+        description={data.step.goal}
+      />
       <div className="min-w-0 lg:order-2">
         <BuildStep
           {...data}

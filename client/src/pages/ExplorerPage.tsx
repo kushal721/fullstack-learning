@@ -20,6 +20,7 @@ import { Loading } from "../components/ui/Loading.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { apiPaths } from "../services/api.ts";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 function findFile(nodes: FileTreeNode[], path: string): FileTreeFile | null {
   for (const node of nodes) {
@@ -91,7 +92,10 @@ export default function ExplorerPage() {
 
   return (
     <>
-      <title>Explorer · Full-Stack Learning</title>
+      <PageMeta
+        title="Explorer"
+        description="Read the Notes App's code file by file and trace how every piece connects."
+      />
       <PageHeader
         title="Explorer"
         description="Browse the Notes App: every file, why it exists and how it connects."

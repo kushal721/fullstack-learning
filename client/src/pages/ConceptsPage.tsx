@@ -5,6 +5,7 @@ import { Loading } from "../components/ui/Loading.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { apiPaths } from "../services/api.ts";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 export default function ConceptsPage() {
   const concepts = useApi<ConceptListResponse>(apiPaths.concepts());
@@ -31,7 +32,10 @@ export default function ConceptsPage() {
 
   return (
     <>
-      <title>Concepts · Full-Stack Learning</title>
+      <PageMeta
+        title="Concepts"
+        description="Every concept explained the same way, from the basics, and connected to the Notes App's real code."
+      />
       <PageHeader
         title="Concepts"
         description="Every concept explained the same way: what it is, why we need it, how it works and how to create it yourself — connected to the Notes App."
