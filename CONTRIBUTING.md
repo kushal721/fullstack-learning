@@ -139,6 +139,28 @@ critical vulnerabilities. If a vulnerable package has no fixed version yet,
 pin a safe version with an npm `overrides` entry and explain it in the PR —
 never lower the audit level for everything.
 
+### Browser check
+
+`npm run check:browser` builds the app, starts the production server on a
+free port and opens **every page** in a real browser (Playwright, Chromium):
+the static pages, every topic, concept, build step and exercise from the API,
+and the not-found pages. It does this in three views (375px light, 375px
+dark, 1280px light), and also checks the skip link and the trees' arrow keys.
+A page fails when:
+
+- it is wider than the screen; the message names the page and the widest
+  element that sticks out (code blocks that scroll on purpose don't count);
+- it doesn't have exactly one `<h1>`;
+- it logs a JavaScript error (the API's expected 404 on not-found pages is
+  ignored).
+
+It takes about two minutes. CI runs it on every pull request (the **Browser
+check** job) and uploads screenshots of failing pages as an artifact.
+The first time, install the browser with `npx playwright install chromium`.
+Useful options: `npm run check:browser -- --no-build` (reuse the last build)
+and `-- --project=phone-light` or `-g "every concept"` to run part of it.
+Tests live in `e2e/`; add a page there when you add a route.
+
 `npm run validate` checks the learning content: ids are unique and every
 reference (topic → concept, step → file, …) points at something that exists.
 It runs `validateContent()` in `server/src/lib/validation.ts`. **Every issue

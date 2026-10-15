@@ -40,6 +40,51 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  browser:
+    name: Browser check
+    needs: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # The browser is ~150 MB: keep it between runs, keyed by the
+      # Playwright version in the lockfile.
+      - name: Cache Playwright browser
+        id: playwright-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+      - name: Install Chromium's system libraries
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      # Every page at 375px light, 375px dark and 1280px light (see
+      # CONTRIBUTING): overflow, exactly one <h1>, no JavaScript errors.
+      - run: npm run check:browser
+
+      - name: Upload screenshots of failures
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: browser-check-failures
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 14
+
   docker:
     name: Docker image builds
     needs: checks
