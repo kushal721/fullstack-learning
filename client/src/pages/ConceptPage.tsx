@@ -9,6 +9,7 @@ import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { useScrollToTop } from "../hooks/useScrollToTop.ts";
 import { apiPaths } from "../services/api.ts";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 export default function ConceptPage() {
   const { concept: slug = "" } = useParams();
@@ -24,7 +25,11 @@ export default function ConceptPage() {
   if (error?.status === 404 || error?.status === 400) {
     return (
       <>
-        <title>Concept not found · Full-Stack Learning</title>
+        <PageMeta
+          title="Concept not found"
+          description="This concept doesn't exist."
+          noIndex
+        />
         <NotFoundState
           title="Concept not found"
           message={`There is no concept called "${slug}".`}
@@ -47,7 +52,7 @@ export default function ConceptPage() {
 
   return (
     <article className="max-w-3xl">
-      <title>{`${data.concept.title} · Full-Stack Learning`}</title>
+      <PageMeta title={data.concept.title} description={data.concept.summary} />
       <ConceptHeader concept={data.concept} topic={data.topic} />
       <ConceptExplanation
         concept={data.concept}

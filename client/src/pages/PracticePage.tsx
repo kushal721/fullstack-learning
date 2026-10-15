@@ -9,6 +9,7 @@ import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { RichText } from "../components/ui/RichText.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { apiPaths } from "../services/api.ts";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 export default function PracticePage() {
   const { data, error, isLoading, reload } = useApi<ExerciseListResponse>(
@@ -21,7 +22,10 @@ export default function PracticePage() {
 
   return (
     <>
-      <title>Practice · Full-Stack Learning</title>
+      <PageMeta
+        title="Practice"
+        description="Test yourself on the Notes App's real code: predict, trace, find, fix and plan features."
+      />
       <PageHeader
         title="Practice"
         description="Test what you've learned on the Notes App's real code. Each kind of exercise trains a different skill for understanding a codebase."

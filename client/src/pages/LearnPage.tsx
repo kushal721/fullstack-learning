@@ -5,6 +5,7 @@ import { Loading } from "../components/ui/Loading.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { apiPaths } from "../services/api.ts";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 export default function LearnPage() {
   const { data, error, isLoading, reload } = useApi<TopicTreeResponse>(
@@ -13,7 +14,10 @@ export default function LearnPage() {
 
   return (
     <>
-      <title>Learn · Full-Stack Learning</title>
+      <PageMeta
+        title="Learn"
+        description="The learning tree: every topic of full-stack development in order, from how the web works to deployment."
+      />
       <PageHeader
         title="Learn"
         description={

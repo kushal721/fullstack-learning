@@ -20,6 +20,7 @@ import { RichText } from "../components/ui/RichText.tsx";
 import { type ApiState, useApi } from "../hooks/useApi.ts";
 import { useScrollToTop } from "../hooks/useScrollToTop.ts";
 import { apiPaths } from "../services/api.ts";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 export default function TopicPage() {
   const { topic: slug = "" } = useParams();
@@ -67,7 +68,11 @@ function TopicContent({
   if (error?.status === 404 || error?.status === 400) {
     return (
       <>
-        <title>Topic not found · Full-Stack Learning</title>
+        <PageMeta
+          title="Topic not found"
+          description="This topic doesn't exist."
+          noIndex
+        />
         <NotFoundState
           title="Topic not found"
           message={`There is no topic called "${slug}".`}
@@ -91,7 +96,7 @@ function TopicContent({
 
   return (
     <>
-      <title>{`${topic.title} · Full-Stack Learning`}</title>
+      <PageMeta title={topic.title} description={topic.summary} />
       <PageHeader
         eyebrow={`Topic ${topic.order}`}
         title={topic.title}

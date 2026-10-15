@@ -23,6 +23,9 @@ export const config = {
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean),
+  // The site's public address, e.g. https://learn.example.com, for links
+  // in the sitemap and link previews. Unset: taken from each request.
+  publicUrl: process.env.PUBLIC_URL?.replace(/\/+$/, ""),
   // pino log level; tests are silent unless LOG_LEVEL says otherwise.
   logLevel:
     process.env.LOG_LEVEL ??

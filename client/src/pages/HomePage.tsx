@@ -8,6 +8,7 @@ import { Loading } from "../components/ui/Loading.tsx";
 import { RichText } from "../components/ui/RichText.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { apiPaths } from "../services/api.ts";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 export default function HomePage() {
   const { data, error, isLoading, reload } = useApi<TopicTreeResponse>(
@@ -18,7 +19,7 @@ export default function HomePage() {
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-12 py-12">
-      <title>Full-Stack Learning</title>
+      <PageMeta description="Learn how a real web application works by building one, from an empty project to a deployed app." />
 
       <section className="flex flex-col gap-6">
         <h1 className="text-4xl font-semibold tracking-tight">

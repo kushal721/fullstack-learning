@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { ButtonLink } from "../ui/ButtonLink.tsx";
 import { PageHeader } from "../ui/PageHeader.tsx";
+import { PageMeta } from "../ui/PageMeta.tsx";
 
 type Props = { children: ReactNode };
 type State = { error: Error | null };
@@ -27,7 +28,11 @@ export class RouteErrorBoundary extends Component<Props, State> {
     if (!this.state.error) return this.props.children;
     return (
       <div role="alert" className="flex flex-col gap-4">
-        <title>Something broke · Full-Stack Learning</title>
+        <PageMeta
+          title="Something broke"
+          description="Something unexpected went wrong while showing this page."
+          noIndex
+        />
         <PageHeader
           title="This page broke"
           description="Something unexpected went wrong while showing this page. It isn't something you did. Try again, or carry on from the learning tree."

@@ -9,6 +9,7 @@ import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { useScrollToTop } from "../hooks/useScrollToTop.ts";
 import { apiPaths } from "../services/api.ts";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 export default function ExercisePage() {
   const { exercise: id = "" } = useParams();
@@ -24,7 +25,11 @@ export default function ExercisePage() {
   if (error?.status === 404 || error?.status === 400) {
     return (
       <>
-        <title>Exercise not found · Full-Stack Learning</title>
+        <PageMeta
+          title="Exercise not found"
+          description="This exercise doesn't exist."
+          noIndex
+        />
         <NotFoundState
           title="Exercise not found"
           message={`There is no exercise called "${id}".`}
@@ -51,7 +56,10 @@ export default function ExercisePage() {
 
   return (
     <>
-      <title>{`${exercise.title} · Practice · Full-Stack Learning`}</title>
+      <PageMeta
+        title={`${exercise.title} · Practice`}
+        description={exercise.prompt}
+      />
       <PageHeader
         eyebrow={
           <>

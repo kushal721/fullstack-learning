@@ -5,6 +5,7 @@ import { Loading } from "../components/ui/Loading.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
 import { useApi } from "../hooks/useApi.ts";
 import { apiPaths } from "../services/api.ts";
+import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 export default function BuildPage() {
   const { data, error, isLoading, reload } = useApi<BuildStepListResponse>(
@@ -13,7 +14,10 @@ export default function BuildPage() {
 
   return (
     <>
-      <title>Build · Full-Stack Learning</title>
+      <PageMeta
+        title="Build"
+        description="Build the Notes App step by step, from an empty folder to a deployed full-stack app."
+      />
       <PageHeader
         title="Build"
         description="Build the Notes App step by step, from an empty folder to a deployed application. Each step explains what we do, why, and exactly what changes."

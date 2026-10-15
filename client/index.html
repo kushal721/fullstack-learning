@@ -4,11 +4,19 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- page-meta: the server replaces this block with the page's own
+         title, description and Open Graph tags; the app removes them on
+         start (data-server-meta) and renders its own. -->
+    <title data-server-meta>Full-Stack Learning</title>
     <meta
+      data-server-meta
       name="description"
       content="Learn how a real web application works by building one, from an empty project to a deployed app."
     />
-    <title>Full-Stack Learning</title>
+    <!-- /page-meta -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Full-Stack Learning" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>
