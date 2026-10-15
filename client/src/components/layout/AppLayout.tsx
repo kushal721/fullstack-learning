@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router";
+import { Loading } from "../ui/Loading.tsx";
 import { RouteErrorBoundary } from "./RouteErrorBoundary.tsx";
 import { SiteHeader } from "./SiteHeader.tsx";
 
@@ -20,7 +22,10 @@ export function AppLayout() {
         className="mx-auto w-full max-w-7xl flex-1 px-4 py-10 focus:outline-none"
       >
         <RouteErrorBoundary key={pathname}>
-          <Outlet />
+          {/* Pages are downloaded on first visit (see App.tsx). */}
+          <Suspense fallback={<Loading label="Loading the page…" />}>
+            <Outlet />
+          </Suspense>
         </RouteErrorBoundary>
       </main>
     </div>

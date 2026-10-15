@@ -1,18 +1,23 @@
+import { lazy } from "react";
 import { Route, Routes } from "react-router";
 import { AppLayout } from "./components/layout/AppLayout.tsx";
-import BuildPage from "./pages/BuildPage.tsx";
-import BuildStepPage from "./pages/BuildStepPage.tsx";
-import ConceptPage from "./pages/ConceptPage.tsx";
-import ConceptsPage from "./pages/ConceptsPage.tsx";
-import ExercisePage from "./pages/ExercisePage.tsx";
-import ExplorerPage from "./pages/ExplorerPage.tsx";
-import FlowPage from "./pages/FlowPage.tsx";
 import HomePage from "./pages/HomePage.tsx";
-import LearnPage from "./pages/LearnPage.tsx";
-import NotFoundPage from "./pages/NotFoundPage.tsx";
-import PracticePage from "./pages/PracticePage.tsx";
-import ProjectPage from "./pages/ProjectPage.tsx";
-import TopicPage from "./pages/TopicPage.tsx";
+
+// Every page except the home page is its own file, downloaded the first
+// time it is visited: the home page doesn't pay for the code viewer, the
+// graphs or the practice runner. AppLayout shows a loading state meanwhile.
+const LearnPage = lazy(() => import("./pages/LearnPage.tsx"));
+const TopicPage = lazy(() => import("./pages/TopicPage.tsx"));
+const ConceptsPage = lazy(() => import("./pages/ConceptsPage.tsx"));
+const ConceptPage = lazy(() => import("./pages/ConceptPage.tsx"));
+const BuildPage = lazy(() => import("./pages/BuildPage.tsx"));
+const BuildStepPage = lazy(() => import("./pages/BuildStepPage.tsx"));
+const ExplorerPage = lazy(() => import("./pages/ExplorerPage.tsx"));
+const ProjectPage = lazy(() => import("./pages/ProjectPage.tsx"));
+const FlowPage = lazy(() => import("./pages/FlowPage.tsx"));
+const PracticePage = lazy(() => import("./pages/PracticePage.tsx"));
+const ExercisePage = lazy(() => import("./pages/ExercisePage.tsx"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage.tsx"));
 
 // Every URL of the platform. All pages render inside AppLayout.
 export default function App() {

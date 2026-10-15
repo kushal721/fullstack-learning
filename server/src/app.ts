@@ -1,5 +1,7 @@
+import compression from "compression";
 import express from "express";
 import { config } from "./config.js";
+import { apiCaching } from "./middleware/caching.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFound } from "./middleware/notFound.js";
 import { requestLogger } from "./middleware/requestLogger.js";
@@ -42,8 +44,11 @@ export function createApp({
   // refuse what isn't allowed before any work is done.
   app.use(requestLogger(config.logLevel));
   app.use(securityHeaders());
+  // gzip or brotli for JSON, HTML, JS and CSS: several times smaller over
+  // the network. Small answers (under 1 KB) are sent as they are.
+  app.use(compression());
   const limiters = rateLimiters(rateLimits);
-  app.use("/api", corsPolicy(config.corsOrigins), limiters.api);
+  app.use("/api", corsPolicy(config.corsOrigins), limiters.api, apiCaching());
   app.post("/api/exercises/:id/check", limiters.checks);
   app.use(express.json());
 
