@@ -69,8 +69,6 @@ export type RateLimits = {
   checks: number;
 };
 
-export const DEFAULT_RATE_LIMITS: RateLimits = { api: 300, checks: 30 };
-
 /** One limiter for the whole API, a stricter one for answer checks. */
 export function rateLimiters(limits: RateLimits) {
   return {

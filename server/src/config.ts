@@ -26,6 +26,12 @@ export const config = {
   // The site's public address, e.g. https://learn.example.com, for links
   // in the sitemap and link previews. Unset: taken from each request.
   publicUrl: process.env.PUBLIC_URL?.replace(/\/+$/, ""),
+  // Requests per IP: to /api per 15 minutes, and answer checks per minute.
+  // Raised by the browser check, which loads every page from one machine.
+  rateLimits: {
+    api: Number(process.env.RATE_LIMIT_API ?? 300),
+    checks: Number(process.env.RATE_LIMIT_CHECKS ?? 30),
+  },
   // pino log level; tests are silent unless LOG_LEVEL says otherwise.
   logLevel:
     process.env.LOG_LEVEL ??

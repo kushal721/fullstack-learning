@@ -7,7 +7,6 @@ import { notFound } from "./middleware/notFound.js";
 import { requestLogger } from "./middleware/requestLogger.js";
 import {
   corsPolicy,
-  DEFAULT_RATE_LIMITS,
   rateLimiters,
   type RateLimits,
   securityHeaders,
@@ -35,7 +34,7 @@ type AppOptions = {
 // Builds the Express app without starting it, so tests can import it.
 export function createApp({
   clientDist = config.clientDist,
-  rateLimits = DEFAULT_RATE_LIMITS,
+  rateLimits = config.rateLimits,
 }: AppOptions = {}) {
   const app = express();
   app.disable("x-powered-by");
