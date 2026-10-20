@@ -298,7 +298,7 @@ function validateLevels(
           tested.step.kind !== "lesson"
         ) {
           errors.push(
-            `${at} question "${question.exerciseId}" must test a ${level} lesson step, not "${question.stepId}".`,
+            `${at} question "${question.exerciseId}" must test a lesson step in ${level}, not "${question.stepId}".`,
           );
         }
       }
@@ -336,7 +336,7 @@ function validateGlossary(entries: GlossaryEntry[], refs: PathRefs): string[] {
       const length = plainText(text ?? "", terms).length;
       if (!text?.trim() || length > max) {
         errors.push(
-          `${name} needs a ${field} of 1–${max} characters (has ${length}).`,
+          `${name} "${field}" needs 1–${max} characters (has ${length}).`,
         );
       }
     }

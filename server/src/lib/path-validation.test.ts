@@ -242,7 +242,7 @@ describe("validatePaths", () => {
       expect(validatePaths([path], glossary(), refs)).toEqual([
         'Path "web" step "web-a-check" needs 4–8 questions (has 3).',
         'Path "web" step "web-a-check" asks unknown exercise "nope".',
-        'Path "web" step "web-a-check" question "q3" must test a advanced lesson step, not "web-b-1".',
+        'Path "web" step "web-a-check" question "q3" must test a lesson step in advanced, not "web-b-1".',
       ]);
     });
   });
@@ -436,9 +436,9 @@ describe("validatePaths", () => {
         'Glossary entry "Bad Id" needs an id of lowercase letters, numbers and single hyphens.',
         'Glossary entry "Bad Id" belongs to unknown topic "mars".',
         'Glossary entry "Bad Id" needs a term.',
-        'Glossary entry "Bad Id" needs a short of 1–160 characters (has 161).',
-        'Glossary entry "Bad Id" needs a body of 1–600 characters (has 0).',
-        'Glossary entry "Bad Id" needs a analogy of 1–200 characters (has 201).',
+        'Glossary entry "Bad Id" "short" needs 1–160 characters (has 161).',
+        'Glossary entry "Bad Id" "body" needs 1–600 characters (has 0).',
+        'Glossary entry "Bad Id" "analogy" needs 1–200 characters (has 201).',
         'Glossary entry "Bad Id" points at unknown concept page "nope".',
       ]);
     });
