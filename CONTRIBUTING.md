@@ -208,6 +208,14 @@ Docker base image and GitHub Actions. To review one:
 - Beginner-friendly, starts from the basics, technically accurate, explains
   cause and effect, always answers _why_, and connects to the real Notes App
   code (spec §41–44).
+- Guided paths (`server/src/content/paths/<topic>/`) have three levels of
+  one-screen steps. Never write step numbers: they are counted from the order
+  (Basic first, Intermediate continues the count), so link steps by id.
+- Link glossary words in step text with `[[id]]` or `[[id|shown text]]`. Each
+  entry lives in the glossary file of the topic that teaches it
+  (`server/src/content/glossary/<topic>.ts`), and `npm run validate` checks
+  that it is taught before any step leans on it. The size limits for every
+  block are in `server/src/lib/path-validation.ts`.
 
 ## Code principles
 

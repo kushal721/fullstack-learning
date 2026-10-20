@@ -4,12 +4,14 @@ import type {
   Concept,
   Exercise,
   Flow,
+  GlossaryEntry,
   HttpExchange,
   LayerOverview,
   ProjectFile,
   Relationship,
   SymbolKind,
   Topic,
+  TopicPath,
 } from "@fsl/shared";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -20,10 +22,13 @@ import { exercises } from "../content/exercises/index.js";
 import { projectFiles } from "../content/files.js";
 import { httpExchanges } from "../content/flows/http-exchanges.js";
 import { flows } from "../content/flows/index.js";
+import { glossary } from "../content/glossary/index.js";
 import { layerOverviews } from "../content/how-everything-connects.js";
 import { learningTree } from "../content/learning-tree.js";
+import { topicPaths } from "../content/paths/index.js";
 import { relationships } from "../content/relationships.js";
 import { symbols } from "../content/symbols.js";
+import { validatePaths } from "./path-validation.js";
 import { listExampleProjectFiles } from "./project-files.js";
 import { SLUG_PATTERN } from "./slug.js";
 
@@ -45,6 +50,9 @@ export type Content = {
   httpExchanges?: Record<string, HttpExchange>;
   layerOverviews?: LayerOverview[];
   exercises?: Exercise[];
+  /** Guided paths in reading order, and the glossary their steps link. */
+  paths?: TopicPath[];
+  glossary?: GlossaryEntry[];
 };
 
 function allTopics(topic: Topic): Topic[] {
@@ -816,6 +824,8 @@ export function validateContent(
     httpExchanges,
     layerOverviews,
     exercises,
+    paths: topicPaths,
+    glossary,
   },
 ): string[] {
   return [
@@ -870,5 +880,17 @@ export function validateContent(
         )
       : []),
     ...(content.exercises ? validateExercises(content.exercises, content) : []),
+    ...(content.paths || content.glossary
+      ? validatePaths(content.paths ?? [], content.glossary ?? [], {
+          topicIds: [...content.tree.children]
+            .sort((a, b) => a.order - b.order)
+            .map((topic) => topic.id),
+          conceptIds: new Set(content.concepts.map((c) => c.id)),
+          exerciseIds: new Set((content.exercises ?? []).map((e) => e.id)),
+          fileIds: new Set((content.files ?? []).map((f) => f.id)),
+          symbolIds: new Set((content.symbols ?? []).map((s) => s.id)),
+          flowIds: new Set((content.flows ?? []).map((f) => f.id)),
+        })
+      : []),
   ];
 }

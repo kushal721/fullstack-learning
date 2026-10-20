@@ -441,3 +441,138 @@ export type CheckResult = {
   explanation: string;
   expected?: ExpectedAnswer;
 };
+
+// --- Guided learning --------------------------------------------------------
+// A topic's guided path: three levels of short, numbered steps. Text in steps
+// and glossary entries may link a glossary entry with `[[id]]` or
+// `[[id|shown text]]`; the learner clicks it to see the explanation.
+
+export type Level = "basic" | "intermediate" | "advanced";
+
+/** The three questions every topic answers first, one or two sentences each. */
+export type PathSummary = { what: string; does: string; how: string };
+
+export type SceneActor = { id: string; label: string; sub?: string };
+
+/** One move of a scene: a message from one actor to another. */
+export type SceneStep = {
+  from: string;
+  to: string;
+  /** What travels, e.g. "GET /". */
+  message: string;
+  /** One sentence shown under the picture. */
+  caption: string;
+  detail?: string;
+};
+
+/** A small animated flowchart, the beginner-sized version of a flow. */
+export type Scene = {
+  id: string;
+  title: string;
+  actors: SceneActor[];
+  steps: SceneStep[];
+};
+
+/** The interactive widgets a `tryIt` block can show. */
+export type TryItWidget = "url-anatomy" | "status-codes";
+
+/** The pieces a step is built from; each has one job and a size limit. */
+export type Block =
+  | { type: "explain"; text: string }
+  | { type: "analogy"; text: string }
+  | { type: "keyPoints"; items: string[] }
+  | {
+      type: "diagram";
+      nodes: { label: string; sub?: string }[];
+      /** Arrows both ways (client ⇄ server) instead of left to right. */
+      twoWay?: boolean;
+    }
+  | { type: "scene"; sceneId: string }
+  | {
+      type: "code";
+      example: CodeExample;
+      /** Notes shown next to 1-based lines. */
+      notes?: { line: number; text: string }[];
+    }
+  | { type: "tryIt"; widget: TryItWidget }
+  | {
+      type: "check";
+      question: string;
+      choices: ExerciseChoice[];
+      correctChoiceId: string;
+      explanation: string;
+    }
+  | {
+      type: "inTheNotesApp";
+      text: string;
+      fileId?: string;
+      symbolId?: string;
+      flowId?: string;
+    };
+
+/** A question of a level check: a practice exercise and the step it tests. */
+export type LevelCheckQuestion = { exerciseId: string; stepId: string };
+
+/**
+ * One screen of a guided path. Its number ("Step 19") is not stored: it
+ * comes from the order of the levels and steps, so adding a step shifts the
+ * numbers and nothing breaks. Progress and links use the id.
+ */
+export type Step =
+  | {
+      kind: "lesson";
+      /** Unique within the topic; URL segment /learn/<topic>/<id>. */
+      id: string;
+      title: string;
+      minutes: number;
+      blocks: Block[];
+    }
+  | {
+      /** The level check, always the last step of a level. */
+      kind: "check";
+      id: string;
+      title: string;
+      minutes: number;
+      /** Optional short introduction. */
+      blocks: Block[];
+      questions: LevelCheckQuestion[];
+    };
+
+export type LevelPlan = {
+  /** "You can …": what the learner can do after the level. */
+  outcome: string;
+  /** In reading order; the last one is the level check. */
+  steps: Step[];
+};
+
+/** A topic's guided path (one folder in server/src/content/paths). */
+export type TopicPath = {
+  topicId: string;
+  summary: PathSummary;
+  overviewSceneId: string;
+  scenes: Scene[];
+  levels: Record<Level, LevelPlan>;
+};
+
+/**
+ * A word (term) or a bigger idea (concept) the glossary panel explains.
+ * Where it is introduced and used is computed from the steps that link it.
+ */
+export type GlossaryEntry = {
+  /** Used in links: `[[dns]]`. */
+  id: string;
+  /** The topic whose steps introduce it. */
+  topicId: string;
+  term: string;
+  /** Other names, found by search and "Look up". */
+  aliases?: string[];
+  kind: "term" | "concept";
+  /** The one-line answer. */
+  short: string;
+  /** A few sentences; may link other entries. */
+  body: string;
+  /** "In plain words": an everyday comparison. */
+  analogy?: string;
+  /** The long concept page, if there is one. */
+  conceptPageId?: string;
+};
