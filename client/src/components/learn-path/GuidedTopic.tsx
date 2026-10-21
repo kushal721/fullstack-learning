@@ -1,17 +1,16 @@
 import type { PathResponse, TopicTreeNode } from "@fsl/shared";
 import { useEffect } from "react";
-import { Link } from "react-router";
 import { LearningTree } from "../learning-tree/LearningTree.tsx";
 import { TopicNav } from "../learning-tree/TopicNav.tsx";
 import { NotFoundState } from "../ui/NotFoundState.tsx";
 import { PageHeader } from "../ui/PageHeader.tsx";
 import { PageMeta } from "../ui/PageMeta.tsx";
 import { LevelSwitcher } from "./LevelSwitcher.tsx";
-import { stepHref } from "./levels.ts";
 import { PathOverview } from "./PathOverview.tsx";
 import { PathSidebar } from "./PathSidebar.tsx";
 import { resetProgress, usePathProgress } from "./progress.ts";
 import { StepDots } from "./StepDots.tsx";
+import { StepPlayer } from "./StepPlayer.tsx";
 import { ContinuesNote, StepHeader } from "./StepHeader.tsx";
 
 type Props = {
@@ -59,8 +58,6 @@ export function GuidedTopic({ path, stepId, tree }: Props) {
     below &&
     !progress.dismissed.includes(level.level) &&
     below.steps.some((s) => !progress.done.includes(s.id));
-  const before = step ? allSteps[allSteps.indexOf(step) - 1] : undefined;
-  const after = step ? allSteps[allSteps.indexOf(step) + 1] : undefined;
 
   return (
     <div className="grid gap-10 lg:grid-cols-[17rem_minmax(0,1fr)]">
@@ -128,36 +125,13 @@ export function GuidedTopic({ path, stepId, tree }: Props) {
                 />
               )}
               <StepHeader step={step} level={level} />
-              {/* The step's blocks and its footer come with the step
-                  player (#378). */}
-              <nav
-                aria-label="Steps"
-                className="mt-8 flex flex-wrap justify-between gap-3 border-t border-border pt-6 text-sm"
-              >
-                {before ? (
-                  <Link
-                    to={stepHref(topic.slug, before.id)}
-                    className="text-accent hover:underline"
-                  >
-                    ← Step {before.number}: {before.title}
-                  </Link>
-                ) : (
-                  <Link
-                    to={stepHref(topic.slug)}
-                    className="text-accent hover:underline"
-                  >
-                    ← Overview
-                  </Link>
-                )}
-                {after && (
-                  <Link
-                    to={stepHref(topic.slug, after.id)}
-                    className="text-accent hover:underline"
-                  >
-                    Step {after.number}: {after.title} →
-                  </Link>
-                )}
-              </nav>
+              <StepPlayer
+                key={step.id}
+                topicSlug={topic.slug}
+                step={step}
+                level={level}
+                onDone={progress.markDone}
+              />
             </>
           ) : (
             <PathOverview

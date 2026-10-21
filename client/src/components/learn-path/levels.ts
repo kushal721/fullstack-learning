@@ -32,3 +32,10 @@ export function resumeStep(
 
 export const stepHref = (topicSlug: string, stepId?: string) =>
   stepId ? `/learn/${topicSlug}/${stepId}` : `/learn/${topicSlug}`;
+
+/** Opens the glossary panel on an entry, keeping the page where it is. */
+export function termHref(search: string, id: string) {
+  const params = new URLSearchParams(search);
+  params.set("term", id);
+  return `?${params}`;
+}

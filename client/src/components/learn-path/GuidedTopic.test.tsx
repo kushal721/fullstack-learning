@@ -99,9 +99,6 @@ describe("GuidedTopic", () => {
     expect(
       within(sidebar).getByRole("link", { name: "Step 2: Links" }),
     ).toHaveAttribute("aria-current", "step");
-    expect(
-      screen.getByRole("link", { name: /Step 3: Basic check →/ }),
-    ).toBeInTheDocument();
   });
 
   it("continues the numbering in Intermediate and says it continues from Basic", async () => {
