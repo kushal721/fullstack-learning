@@ -885,7 +885,7 @@ export function validateContent(
           topicIds: [...content.tree.children]
             .sort((a, b) => a.order - b.order)
             .map((topic) => topic.id),
-          conceptIds: new Set(content.concepts.map((c) => c.id)),
+          concepts: new Map(content.concepts.map((c) => [c.id, c.topicId])),
           exerciseIds: new Set((content.exercises ?? []).map((e) => e.id)),
           fileIds: new Set((content.files ?? []).map((f) => f.id)),
           symbolIds: new Set((content.symbols ?? []).map((s) => s.id)),

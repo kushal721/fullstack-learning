@@ -49,7 +49,8 @@ const STEPS_WITHOUT_CHECK = 2;
 export type PathRefs = {
   /** Topic ids in reading order (the learning tree's children). */
   topicIds: string[];
-  conceptIds: Set<string>;
+  /** Every concept page's id and the topic it belongs to. */
+  concepts: Map<string, string>;
   exerciseIds: Set<string>;
   fileIds: Set<string>;
   symbolIds: Set<string>;
@@ -345,13 +346,32 @@ function validateGlossary(entries: GlossaryEntry[], refs: PathRefs): string[] {
         errors.push(`${name} links unknown glossary entry "${link.id}".`);
       }
     }
-    if (
-      entry.conceptPageId !== undefined &&
-      !refs.conceptIds.has(entry.conceptPageId)
-    ) {
-      errors.push(
-        `${name} points at unknown concept page "${entry.conceptPageId}".`,
-      );
+    if (entry.conceptPageId !== undefined) {
+      const conceptTopic = refs.concepts.get(entry.conceptPageId);
+      if (conceptTopic === undefined) {
+        errors.push(
+          `${name} points at unknown concept page "${entry.conceptPageId}".`,
+        );
+      } else if (conceptTopic !== entry.topicId) {
+        errors.push(
+          `${name} belongs to "${entry.topicId}", but its concept page "${entry.conceptPageId}" is in "${conceptTopic}".`,
+        );
+      }
+    }
+  }
+
+  // Every concept page has exactly one short form in the glossary panel.
+  if (entries.length > 0) {
+    const pages = entries.map((entry) => entry.conceptPageId);
+    for (const conceptId of refs.concepts.keys()) {
+      const count = pages.filter((page) => page === conceptId).length;
+      if (count !== 1) {
+        errors.push(
+          count === 0
+            ? `Concept "${conceptId}" has no glossary entry; add one with conceptPageId "${conceptId}".`
+            : `Concept "${conceptId}" has ${count} glossary entries; keep one.`,
+        );
+      }
     }
   }
   return errors;
