@@ -1,6 +1,9 @@
 import type {
   ConceptResponse,
   FileTreeFolder,
+  Level,
+  PathResponse,
+  StepSummary,
   TopicResponse,
   TopicTreeNode,
 } from "@fsl/shared";
@@ -12,6 +15,7 @@ export const topicTreeFixture: TopicTreeNode = {
   order: 0,
   title: "Full-Stack Development",
   summary: "Everything needed to build a web application.",
+  hasPath: false,
   children: [
     {
       id: "html",
@@ -19,6 +23,7 @@ export const topicTreeFixture: TopicTreeNode = {
       order: 1,
       title: "HTML",
       summary: "The structure of a web page.",
+      hasPath: false,
       children: [],
     },
     {
@@ -27,6 +32,7 @@ export const topicTreeFixture: TopicTreeNode = {
       order: 2,
       title: "React",
       summary: "Components that update when data changes.",
+      hasPath: false,
       children: [
         {
           id: "hooks",
@@ -34,6 +40,7 @@ export const topicTreeFixture: TopicTreeNode = {
           order: 1,
           title: "Hooks",
           summary: "Remembering values between renders.",
+          hasPath: false,
           children: [],
         },
       ],
@@ -201,6 +208,71 @@ export const fileTreeFixture: FileTreeFolder = {
           purpose: "The single HTML page.",
         },
       ],
+    },
+  ],
+};
+
+const steps = (level: Level, first: number, titles: string[]): StepSummary[] =>
+  titles.map((title, i) => ({
+    id: `${level}-${i + 1}`,
+    number: first + i,
+    level,
+    kind: i === titles.length - 1 ? "check" : "lesson",
+    title,
+    minutes: 3,
+  }));
+
+/** GET /api/paths/html: a tiny guided path (3 + 2 + 2 steps) for tests. */
+export const htmlPathFixture: PathResponse = {
+  topic: {
+    id: "html",
+    slug: "html",
+    order: 1,
+    title: "HTML",
+    summary: "The structure of a web page.",
+  },
+  summary: {
+    what: "The language pages are written in.",
+    does: "Gives a page its structure.",
+    how: "Tags wrap content in elements.",
+  },
+  overviewScene: {
+    id: "page",
+    title: "From file to page",
+    actors: [
+      { id: "browser", label: "Browser" },
+      { id: "server", label: "Server" },
+    ],
+    steps: [
+      { from: "browser", to: "server", message: "GET /", caption: "Ask." },
+      { from: "server", to: "browser", message: "HTML", caption: "Answer." },
+      { from: "browser", to: "browser", message: "page", caption: "Draw." },
+    ],
+  },
+  levels: [
+    {
+      level: "basic",
+      outcome: "Write a simple page.",
+      firstNumber: 1,
+      lastNumber: 3,
+      minutes: 9,
+      steps: steps("basic", 1, ["Tags", "Links", "Basic check"]),
+    },
+    {
+      level: "intermediate",
+      outcome: "Build a form.",
+      firstNumber: 4,
+      lastNumber: 5,
+      minutes: 6,
+      steps: steps("intermediate", 4, ["Forms", "Intermediate check"]),
+    },
+    {
+      level: "advanced",
+      outcome: "Make it accessible.",
+      firstNumber: 6,
+      lastNumber: 7,
+      minutes: 6,
+      steps: steps("advanced", 6, ["ARIA", "Advanced check"]),
     },
   ],
 };

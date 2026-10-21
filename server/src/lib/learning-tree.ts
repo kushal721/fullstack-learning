@@ -1,5 +1,6 @@
 import type { Topic, TopicSummary, TopicTreeNode } from "@fsl/shared";
 import { learningTree } from "../content/learning-tree.js";
+import { topicPaths } from "../content/paths/index.js";
 
 /** Every topic in reading order (depth-first), without the root. */
 function flatten(topic: Topic): Topic[] {
@@ -44,8 +45,14 @@ export function toTopicSummary({
   return { id, slug, order, title, summary };
 }
 
+const withPath = new Set(topicPaths.map((path) => path.topicId));
+
 function toTreeNode(topic: Topic): TopicTreeNode {
-  return { ...toTopicSummary(topic), children: topic.children.map(toTreeNode) };
+  return {
+    ...toTopicSummary(topic),
+    children: topic.children.map(toTreeNode),
+    hasPath: withPath.has(topic.id),
+  };
 }
 
 /** The tree without long texts, small enough to send on every page. */

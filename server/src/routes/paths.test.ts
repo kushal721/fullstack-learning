@@ -255,6 +255,12 @@ describe("GET /api/glossary/:id", () => {
   });
 });
 
+it("marks topics with a path in the learning tree", async () => {
+  const res = await request(app).get("/api/topics");
+  const [web, html] = res.body.tree.children;
+  expect([web.hasPath, html.hasPath]).toEqual([true, false]);
+});
+
 describe("GET /api/course-map", () => {
   it("lists every topic in reading order, with levels for topics that have a path", async () => {
     const res = await request(app).get("/api/course-map");

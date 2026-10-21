@@ -48,7 +48,11 @@ export type TopicSummary = {
 };
 
 /** A node of the learning tree as sent to the client (no overview text). */
-export type TopicTreeNode = TopicSummary & { children: TopicTreeNode[] };
+export type TopicTreeNode = TopicSummary & {
+  children: TopicTreeNode[];
+  /** True when the topic has a guided path (GET /api/paths/:topic). */
+  hasPath: boolean;
+};
 
 /** GET /api/topics */
 export type TopicTreeResponse = {
