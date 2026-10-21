@@ -207,3 +207,18 @@ test("keyboard: levels, step dots, a word, the panel and back", async ({
   await expect(panel).toHaveCount(0);
   await expect(word).toBeFocused();
 });
+
+test("a JavaScript playground runs the code and shows what it logs", async ({
+  page,
+}) => {
+  await page.goto("/learn/javascript/what-javascript-does");
+  const output = page.frameLocator('iframe[title^="Output:"]').locator("#out");
+  await expect(output).toContainText("Hello!");
+  await expect(output).toContainText("2 + 3 is 5");
+
+  // An edit runs after typing stops; an endless loop is stopped.
+  await page.getByLabel("Your code (edit it)").fill("while (true) {}");
+  await expect(output).toContainText("Stopped", { timeout: 10_000 });
+  await page.getByRole("button", { name: "Reset" }).click();
+  await expect(output).toContainText("Hello!");
+});

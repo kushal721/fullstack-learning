@@ -516,10 +516,15 @@ export type Block =
       rows: { name: string; text: string; example?: string }[];
     }
   | {
-      /** Editable HTML (and CSS) with a live preview beside it. */
+      /**
+       * Editable code with its result beside it: HTML (and CSS) shown as a
+       * page, or JavaScript run with its console output shown.
+       */
       type: "playground";
       caption: string;
       code: string;
+      /** "html" when left out. */
+      language?: "html" | "js";
     };
 
 /** A question of a level check: a practice exercise and the step it tests. */

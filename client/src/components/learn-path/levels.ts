@@ -74,6 +74,6 @@ export function termInText(
   return keepsCapital ? term : term.charAt(0).toLowerCase() + term.slice(1);
 }
 
-/** Where a playground's preview comes from: the server's locked-down page. */
-export const playgroundSrc = (code: string) =>
-  `/playground?code=${encodeURIComponent(code)}`;
+/** Where a playground's result comes from: the server's locked-down pages. */
+export const playgroundSrc = (code: string, language: "html" | "js" = "html") =>
+  `/playground${language === "js" ? "/js" : ""}?code=${encodeURIComponent(code)}`;

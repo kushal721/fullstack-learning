@@ -1,7 +1,11 @@
 import request from "supertest";
 import { describe, expect, it } from "vitest";
 import { createApp } from "../app.js";
-import { MAX_PLAYGROUND_CODE, PLAYGROUND_POLICY } from "./playground.js";
+import {
+  JS_RUNNER_POLICY,
+  MAX_PLAYGROUND_CODE,
+  PLAYGROUND_POLICY,
+} from "./playground.js";
 
 const app = createApp();
 
@@ -45,5 +49,37 @@ describe("GET /playground", () => {
     expect(res.headers["content-security-policy"]).toContain(
       "style-src 'self'",
     );
+  });
+});
+
+describe("GET /playground/js", () => {
+  it("runs code in a worker inside a script-only sandbox", async () => {
+    const res = await request(app).get(
+      `/playground/js?code=${encodeURIComponent("console.log(1 + 1)")}`,
+    );
+    expect(res.status).toBe(200);
+    const policy = res.headers["content-security-policy"];
+    expect(policy).toBe(JS_RUNNER_POLICY);
+    expect(policy).toContain("sandbox allow-scripts");
+    expect(policy).not.toContain("allow-same-origin");
+    expect(policy).toContain("default-src 'none'");
+    expect(policy).not.toContain("connect-src");
+    expect(res.text).toContain("new Worker(");
+    expect(res.text).toContain("console.log(1 + 1)");
+  });
+
+  it("keeps the learner's code inside the script, whatever it contains", async () => {
+    const res = await request(app).get(
+      `/playground/js?code=${encodeURIComponent("</script><img src=x onerror=alert(1)>")}`,
+    );
+    expect(res.text).not.toContain("</script><img");
+    expect(res.text).toContain("\\u003c/script>");
+  });
+
+  it("refuses code that is too long", async () => {
+    const res = await request(app).get(
+      `/playground/js?code=${"a".repeat(MAX_PLAYGROUND_CODE + 1)}`,
+    );
+    expect(res.status).toBe(400);
   });
 });

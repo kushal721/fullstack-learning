@@ -89,19 +89,22 @@ export function ReferenceTable({
 }
 
 /**
- * Editable HTML (or HTML with a `<style>`) and its live preview. The
- * preview is a sandboxed frame from the server's playground page, which
- * allows styles but never scripts, so anything typed here is harmless.
+ * Editable code and its result. HTML (with any `<style>`) is shown as a page
+ * in a sandboxed frame that allows styles but no scripts. JavaScript runs in
+ * a frame that allows only scripts, as a unique origin with no network or
+ * storage, inside a worker stopped after 2 seconds; its console is shown.
  */
 export function PlaygroundBlock({ block }: { block: Playground }) {
   const id = useId();
+  const isJs = block.language === "js";
   const [code, setCode] = useState(block.code);
-  // Update the preview shortly after typing stops, not on every key.
+  // Update the result shortly after typing stops, not on every key.
   const [shown, setShown] = useState(block.code);
+  const [runs, setRuns] = useState(0);
   useEffect(() => {
-    const timer = setTimeout(() => setShown(code), 400);
+    const timer = setTimeout(() => setShown(code), isJs ? 700 : 400);
     return () => clearTimeout(timer);
-  }, [code]);
+  }, [code, isJs]);
 
   return (
     <section
@@ -111,17 +114,31 @@ export function PlaygroundBlock({ block }: { block: Playground }) {
       <div className="flex flex-wrap items-center gap-2 border-b border-border bg-foreground/5 px-4 py-2 text-sm">
         <Badge tone="warning">Try it</Badge>
         <span className="font-medium">{block.caption}</span>
-        <button
-          type="button"
-          onClick={() => {
-            setCode(block.code);
-            setShown(block.code);
-          }}
-          disabled={code === block.code}
-          className="ml-auto rounded-md border border-border px-2.5 py-1 text-xs font-medium hover:bg-foreground/5 disabled:opacity-50"
-        >
-          Reset
-        </button>
+        <span className="ml-auto flex gap-2">
+          {isJs && (
+            <button
+              type="button"
+              onClick={() => {
+                setShown(code);
+                setRuns((n) => n + 1);
+              }}
+              className="rounded-md bg-accent px-2.5 py-1 text-xs font-medium text-white hover:opacity-90 dark:text-black"
+            >
+              ▶ Run
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              setCode(block.code);
+              setShown(block.code);
+            }}
+            disabled={code === block.code}
+            className="rounded-md border border-border px-2.5 py-1 text-xs font-medium hover:bg-foreground/5 disabled:opacity-50"
+          >
+            Reset
+          </button>
+        </span>
       </div>
       <div className="grid md:grid-cols-2">
         <div className="flex flex-col">
@@ -145,12 +162,14 @@ export function PlaygroundBlock({ block }: { block: Playground }) {
             className="px-4 pt-2 text-xs font-medium text-muted"
             aria-hidden="true"
           >
-            What the browser shows
+            {isJs ? "Console output" : "What the browser shows"}
           </span>
           <iframe
-            title={`Preview: ${block.caption}`}
-            sandbox=""
-            src={playgroundSrc(shown)}
+            // A new key re-runs the same code when Run is pressed.
+            key={runs}
+            title={`${isJs ? "Output" : "Preview"}: ${block.caption}`}
+            sandbox={isJs ? "allow-scripts" : ""}
+            src={playgroundSrc(shown, isJs ? "js" : "html")}
             className="min-h-56 w-full flex-1 bg-white"
           />
         </div>

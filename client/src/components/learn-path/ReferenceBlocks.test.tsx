@@ -70,4 +70,30 @@ describe("PlaygroundBlock", () => {
     expect(editor).toHaveValue("<ul><li>Milk</li></ul>");
     expect(screen.getByRole("button", { name: "Reset" })).toBeDisabled();
   });
+
+  it("runs JavaScript in a script-only sandbox, and Run runs it again", async () => {
+    const user = userEvent.setup();
+    render(
+      <PlaygroundBlock
+        block={{
+          type: "playground",
+          caption: "Logging",
+          code: 'console.log("hi");',
+          language: "js",
+        }}
+      />,
+    );
+
+    const frame = screen.getByTitle("Output: Logging");
+    expect(frame).toHaveAttribute("sandbox", "allow-scripts");
+    expect(frame).toHaveAttribute(
+      "src",
+      `/playground/js?code=${encodeURIComponent('console.log("hi");')}`,
+    );
+
+    await user.click(screen.getByRole("button", { name: "▶ Run" }));
+    const rerun = screen.getByTitle("Output: Logging");
+    expect(rerun).not.toBe(frame);
+    expect(rerun).toHaveAttribute("src", frame.getAttribute("src"));
+  });
 });

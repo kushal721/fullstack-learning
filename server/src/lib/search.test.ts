@@ -57,6 +57,7 @@ describe("search", () => {
     const result = search("useState");
     expect(result.groups.map((g) => g.label)).toEqual([
       "Concepts",
+      "Terms",
       "Files",
       "Functions",
       "Build steps",

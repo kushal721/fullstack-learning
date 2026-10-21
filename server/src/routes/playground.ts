@@ -51,3 +51,77 @@ playgroundRouter.get("/", (req, res) => {
     .type("html")
     .send(playgroundPage(code));
 });
+
+/**
+ * The JavaScript runner's policy: its own inline script may run, and it
+ * runs the learner's code in a worker made from a blob, so an endless loop
+ * can be stopped. It can't reach the network, storage or this site
+ * (`sandbox allow-scripts` without same-origin makes it a unique origin).
+ */
+export const JS_RUNNER_POLICY = [
+  "default-src 'none'",
+  "script-src 'unsafe-inline'",
+  "worker-src blob:",
+  "style-src 'unsafe-inline'",
+  "form-action 'none'",
+  "base-uri 'none'",
+  "frame-ancestors 'self'",
+  "sandbox allow-scripts",
+].join("; ");
+
+/** How long code may run before it's stopped (an endless loop, say). */
+export const JS_TIME_LIMIT_MS = 2000;
+
+// Runs inside the worker before the learner's code: console output and
+// errors become messages for the page to show.
+const WORKER_PRELUDE = `
+const show = (v) => typeof v === "string" ? v
+  : v instanceof Error ? v.name + ": " + v.message
+  : typeof v === "function" ? "function " + (v.name || "(anonymous)")
+  : v === undefined ? "undefined"
+  : (() => { try { return JSON.stringify(v); } catch { return String(v); } })();
+const send = (kind) => (...args) => postMessage({ kind, text: args.map(show).join(" ") });
+self.console = { log: send("log"), info: send("log"), warn: send("warn"), error: send("error") };
+self.addEventListener("unhandledrejection", (e) => postMessage({ kind: "error", text: "Uncaught (in promise) " + show(e.reason) }));
+`;
+
+/** A page that runs `code` in a worker and prints what it logs. */
+export function jsRunnerPage(code: string): string {
+  const source = JSON.stringify(
+    WORKER_PRELUDE + code + "\n;postMessage({ kind: 'done' });",
+  )
+    // Keep the code inside the <script> element whatever it contains.
+    .replace(/</g, "\\u003c");
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><style>
+body{margin:0;font:13px/1.6 ui-monospace,monospace;color:#1f2328;background:#fff}
+#out{margin:0;padding:8px 12px;white-space:pre-wrap;word-break:break-word}
+.warn{color:#9a6700}.error{color:#b42318}.note{color:#59636e;font-style:italic}
+</style></head><body><pre id="out"></pre><script>
+const out = document.getElementById("out");
+const line = (text, kind) => { const span = document.createElement("span"); span.className = kind; span.textContent = text + "\\n"; out.append(span); };
+let done = false;
+const worker = new Worker(URL.createObjectURL(new Blob([${source}], { type: "text/javascript" })));
+worker.onmessage = (e) => { if (e.data.kind === "done") { done = true; if (!out.childNodes.length) line("(nothing was logged)", "note"); } else line(e.data.text, e.data.kind); };
+worker.onerror = (e) => { e.preventDefault(); done = true; line(e.message, "error"); };
+setTimeout(() => { worker.terminate(); if (!done) line("Stopped: still running after ${JS_TIME_LIMIT_MS / 1000} seconds. An endless loop?", "error"); }, ${JS_TIME_LIMIT_MS});
+</script></body></html>`;
+}
+
+// GET /playground/js?code=… — runs a step's JavaScript example and shows
+// its console output, in a sandboxed iframe on the step.
+playgroundRouter.get("/js", (req, res) => {
+  const { code = "" } = req.query;
+  if (typeof code !== "string" || code.length > MAX_PLAYGROUND_CODE) {
+    res
+      .status(400)
+      .type("text/plain")
+      .send(`code must be text of at most ${MAX_PLAYGROUND_CODE} characters.`);
+    return;
+  }
+  res
+    .set("Content-Security-Policy", JS_RUNNER_POLICY)
+    .set("X-Frame-Options", "SAMEORIGIN")
+    .set("Cache-Control", "no-store")
+    .type("html")
+    .send(jsRunnerPage(code));
+});
