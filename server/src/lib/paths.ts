@@ -96,6 +96,7 @@ const toEntrySummary = ({
   aliases,
   kind,
   short,
+  properNoun,
 }: GlossaryEntry): GlossaryEntrySummary => ({
   id,
   topicId,
@@ -103,6 +104,7 @@ const toEntrySummary = ({
   ...(aliases ? { aliases } : {}),
   kind,
   short,
+  ...(properNoun ? { properNoun } : {}),
 });
 
 /** GET /api/paths/:topic/steps/:step */

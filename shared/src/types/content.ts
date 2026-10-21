@@ -575,4 +575,10 @@ export type GlossaryEntry = {
   analogy?: string;
   /** The long concept page, if there is one. */
   conceptPageId?: string;
+  /**
+   * A name that keeps its capital in mid-sentence, like React or Express.
+   * Acronyms (HTML) and names with inner capitals (JavaScript, Node.js)
+   * are recognised without it.
+   */
+  properNoun?: boolean;
 };

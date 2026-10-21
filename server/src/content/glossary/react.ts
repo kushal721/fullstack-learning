@@ -8,6 +8,7 @@ export const reactGlossary: GlossaryEntry[] = [
     term: "React",
     aliases: ["why react", "react library", "declarative"],
     kind: "concept",
+    properNoun: true,
     short:
       "A library where you describe what the page should look like for the current data, and React updates it.",
     body: "You write [[react-component|components]]: functions that take data and return what should be on screen. When the data ([[react-state|state]]) changes, React works out the page changes for you, instead of you finding and editing each element by hand.",
@@ -164,6 +165,7 @@ export const reactGlossary: GlossaryEntry[] = [
     term: "Vite",
     aliases: ["dev server", "bundler", "build tool"],
     kind: "concept",
+    properNoun: true,
     short:
       "The build tool that runs a React project while you work and turns it into small, fast files for production.",
     body: "During development, `npm run dev` serves your files and updates the page the moment you save. For release, `npm run build` makes a [[production-build|production build]]: a few optimized files in `dist/`. It also turns [[jsx|JSX]] into JavaScript.",

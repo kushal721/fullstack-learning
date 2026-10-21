@@ -232,4 +232,206 @@ export const levelCheckExercises: PredictExercise[] = [
     explanation:
       "The copies don't share memory, so the next request can land on a copy that never saw the login, and the user seems logged out. Keep sessions in shared storage.",
   }),
+
+  // HTML: Basic
+  question({
+    id: "html-basic-closing-tag",
+    title: "A missing closing tag",
+    prompt: "Which tag closes `<p>`?",
+    choices: ["`<p/>`", "`</p>`", "`<\\p>`"],
+    correct: 1,
+    conceptIds: ["html-element"],
+    hint: "Closing tags start with a slash right after the `<`.",
+    explanation:
+      "A closing tag repeats the element's name after a slash: `</p>`. Together the opening tag, content and closing tag make one element.",
+  }),
+  question({
+    id: "html-basic-nesting",
+    title: "Closing in the right order",
+    prompt: "Which line is nested correctly?",
+    choices: [
+      "`<p><em>Hi</p></em>`",
+      "`<p><em>Hi</em></p>`",
+      "`<em><p>Hi</em></p>`",
+    ],
+    correct: 1,
+    conceptIds: ["html-element"],
+    hint: "The last tag you open is the first one you close.",
+    explanation:
+      "`<em>` opened inside `<p>`, so it must close before `</p>`. Elements fit inside each other like boxes, never overlapping.",
+  }),
+  question({
+    id: "html-basic-head",
+    title: "Head or body",
+    prompt: "Where does the page's `<title>` go?",
+    choices: ["In `<head>`", "In `<body>`", "After `</html>`"],
+    correct: 0,
+    conceptIds: ["html-document"],
+    hint: "The title appears on the browser tab, not on the page.",
+    explanation:
+      "`<head>` holds information about the page that isn't shown in it, such as the title on the tab, the character set and the viewport setting.",
+  }),
+  question({
+    id: "html-basic-ordered-list",
+    title: "Steps in order",
+    prompt:
+      "You list the steps of a recipe, which must be followed in order. Which element?",
+    choices: ["`<ul>`", "`<ol>`", "`<table>`"],
+    correct: 1,
+    conceptIds: ["html-element", "html-semantic-structure"],
+    hint: "One list is “ordered”.",
+    explanation:
+      "`<ol>` is an ordered list: its numbers tell the reader the order matters. `<ul>` is for items whose order doesn't matter.",
+  }),
+  question({
+    id: "html-basic-alt",
+    title: "Describing an image",
+    prompt: "What is an image's `alt` text for?",
+    choices: [
+      "A tooltip with the file name",
+      "Words that replace the image when it can't be seen",
+      "Making the image load faster",
+    ],
+    correct: 1,
+    conceptIds: ["html-element"],
+    hint: "Think of someone using a screen reader.",
+    explanation:
+      "Screen readers read the alt text aloud, and browsers show it when the picture fails to load, so it should say what the image shows.",
+  }),
+  question({
+    id: "html-basic-label",
+    title: "Connecting a label",
+    prompt: 'How does `<label for="email">` know which field it names?',
+    choices: [
+      "It names the field right after it, whatever it is",
+      "Its `for` matches the field's `id`",
+      "Its `for` matches the field's `type`",
+    ],
+    correct: 1,
+    conceptIds: ["html-input", "html-form"],
+    hint: "Look for the same word on both elements.",
+    explanation:
+      '`for="email"` points at the element with `id="email"`. Then clicking the label focuses the field and screen readers announce the label with it.',
+  }),
+
+  // HTML: Intermediate
+  question({
+    id: "html-intermediate-main",
+    title: "The main content",
+    prompt:
+      "Which element marks the page's main content, so people can jump straight to it?",
+    choices: ['`<div id="main">`', "`<main>`", "`<section>`"],
+    correct: 1,
+    conceptIds: ["html-semantic-structure"],
+    hint: "Landmarks have names that say what they are.",
+    explanation:
+      "`<main>` is a landmark: screen readers can jump to it, and there is only one per page. A `<div>` means nothing on its own.",
+  }),
+  question({
+    id: "html-intermediate-required",
+    title: "required and the server",
+    prompt:
+      "A field has `required`. Can an empty value still reach the server?",
+    choices: [
+      "No, the browser always blocks it",
+      "Yes, a request can be sent without using the form",
+      "Only in old browsers",
+    ],
+    correct: 1,
+    conceptIds: ["html-form", "input-validation"],
+    hint: "Who controls the request: the page, or whoever sends it?",
+    explanation:
+      "`required` only helps people using the form. Anyone can send a request with other tools, so the server must check every value again.",
+  }),
+  question({
+    id: "html-intermediate-radio",
+    title: "Radio groups",
+    prompt:
+      "What makes several radio buttons one group where only one can be chosen?",
+    choices: [
+      "Putting them on the same line",
+      "Giving them the same `name`",
+      "Giving them the same `id`",
+    ],
+    correct: 1,
+    conceptIds: ["html-input"],
+    hint: "Ids must be unique; something else must be shared.",
+    explanation:
+      "Radio buttons with the same `name` form a group, and choosing one unchooses the others. Ids must stay unique so each label can point at its own button.",
+  }),
+  question({
+    id: "html-intermediate-icon-button",
+    title: "A button with only an icon",
+    prompt:
+      "A close button shows only “✕”. What will a screen reader announce without anything else?",
+    choices: [
+      "“Close, button”",
+      "Something like “multiplication sign, button”",
+      "Nothing at all",
+    ],
+    correct: 1,
+    conceptIds: ["html-button"],
+    hint: "Screen readers read the text that's there.",
+    explanation:
+      'The button\'s accessible name is its text, “✕”. Adding `aria-label="Close"` or visually hidden text gives it a name that says what it does.',
+  }),
+
+  // HTML: Advanced
+  question({
+    id: "html-advanced-aria",
+    title: "What ARIA does",
+    prompt: 'You add `aria-expanded="true"` to a menu button. What happens?',
+    choices: [
+      "The menu opens",
+      "Screen readers announce the menu as open",
+      "The button gets an arrow icon",
+    ],
+    correct: 1,
+    conceptIds: ["html-button"],
+    hint: "ARIA describes; it doesn't do.",
+    explanation:
+      "ARIA attributes only change what assistive technology hears. Your code still has to open the menu and update the attribute when it closes.",
+  }),
+  question({
+    id: "html-advanced-div-button",
+    title: "A div that acts as a button",
+    prompt:
+      'A `<div role="button">` has an onclick. What\'s still missing compared with `<button>`?',
+    choices: [
+      "Nothing",
+      "Focus by Tab and activation by Enter and Space",
+      "Only its colour",
+    ],
+    correct: 1,
+    conceptIds: ["html-button", "html-semantic-structure"],
+    hint: "Try using it without a mouse.",
+    explanation:
+      "A real button can be focused and pressed with Enter or Space for free. A div needs tabindex and key handling added by hand, so use `<button>`.",
+  }),
+  question({
+    id: "html-advanced-defer",
+    title: "defer",
+    prompt: "What does `defer` on a `<script>` do?",
+    choices: [
+      "Never runs the script",
+      "Runs it after the HTML has been read, without blocking it",
+      "Runs it before anything else",
+    ],
+    correct: 1,
+    conceptIds: ["html-document"],
+    hint: "A plain script stops the browser reading the page.",
+    explanation:
+      "With `defer` the browser keeps reading the HTML while the script downloads, then runs it once the page is read, in order. Module scripts behave like this by default.",
+  }),
+  question({
+    id: "html-advanced-htmlfor",
+    title: "for in React",
+    prompt: "In React's JSX, how do you write a label's `for` attribute?",
+    choices: ["`for`", "`htmlFor`", "`labelFor`"],
+    correct: 1,
+    conceptIds: ["jsx", "html-input"],
+    hint: "`for` is already a word in JavaScript.",
+    explanation:
+      "`for` is a JavaScript keyword, so JSX uses `htmlFor` (and `className` for `class`). React writes the normal `for` attribute into the real page.",
+  }),
 ];

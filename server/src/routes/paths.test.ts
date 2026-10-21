@@ -9,9 +9,12 @@ import type {
 import request from "supertest";
 import { describe, expect, it, vi } from "vitest";
 import { createApp } from "../app.js";
-import { validateContent } from "../lib/validation.js";
+import { exercises } from "../content/exercises/index.js";
+import { fixturePath, fixtureTerm } from "../lib/guided-path.fixture.js";
+import { validatePaths } from "../lib/path-validation.js";
 
-// No topic has a real path yet (#387), so these tests use a small, valid one.
+// The API, tested against a small path with exact numbers (5 + … steps)
+// instead of the real content, which keeps growing.
 vi.mock("../content/paths/index.js", async () => ({
   topicPaths: [(await import("../lib/guided-path.fixture.js")).fixturePath],
 }));
@@ -35,8 +38,27 @@ vi.mock("../content/glossary/index.js", async (importOriginal) => {
 
 const app = createApp();
 
-it("uses a fixture that passes npm run validate", () => {
-  expect(validateContent()).toEqual([]);
+it("uses a fixture that passes the path rules", () => {
+  // Checked on its own: its path and the two entries it links.
+  const webConcept = {
+    id: "how-the-web-works",
+    topicId: "how-the-web-works",
+    term: "How the web works",
+    kind: "concept" as const,
+    short: "Requests and responses.",
+    body: "A client asks, a server answers.",
+    conceptPageId: "how-the-web-works",
+  };
+  expect(
+    validatePaths([fixturePath], [webConcept, fixtureTerm], {
+      topicIds: ["how-the-web-works"],
+      concepts: new Map([["how-the-web-works", "how-the-web-works"]]),
+      exerciseIds: new Set(exercises.map((e) => e.id)),
+      fileIds: new Set(),
+      symbolIds: new Set(),
+      flowIds: new Set(),
+    }),
+  ).toEqual([]);
 });
 
 describe("GET /api/paths/:topic", () => {

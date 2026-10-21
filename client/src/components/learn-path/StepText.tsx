@@ -1,7 +1,7 @@
 import type { GlossaryEntrySummary } from "@fsl/shared";
 import { Fragment, type ReactNode } from "react";
 import { Link, useLocation } from "react-router";
-import { termHref } from "./levels.ts";
+import { termHref, termInText } from "./levels.ts";
 
 type Props = {
   text: string;
@@ -25,10 +25,13 @@ export function StepText({ text, glossary = [] }: Props) {
   const open = new URLSearchParams(search).get("term");
   return (
     <>
-      {text.split(TOKEN).map((part, i): ReactNode => {
+      {text.split(TOKEN).map((part, i, parts): ReactNode => {
         if (part.startsWith("[[") && part.endsWith("]]")) {
           const [id, label] = part.slice(2, -2).split("|") as [string, string?];
           const entry = glossary.find((g) => g.id === id);
+          // At the start of the text or after a full stop, keep the capital.
+          const before = parts.slice(0, i).join("").trimEnd();
+          const startsSentence = before === "" || /[.!?]$/.test(before);
           return (
             <Link
               key={i}
@@ -36,7 +39,7 @@ export function StepText({ text, glossary = [] }: Props) {
               title={entry?.short}
               className={`${termClass} ${id === open ? "bg-accent/15" : ""}`}
             >
-              {label ?? entry?.term ?? id}
+              {label ?? (entry ? termInText(entry, startsSentence) : id)}
             </Link>
           );
         }
