@@ -22,6 +22,7 @@ import { flowsRouter } from "./routes/flows.js";
 import { glossaryRouter } from "./routes/glossary.js";
 import { healthRouter } from "./routes/health.js";
 import { pathsRouter } from "./routes/paths.js";
+import { playgroundRouter } from "./routes/playground.js";
 import { projectRouter } from "./routes/project.js";
 import { searchRouter } from "./routes/search.js";
 import { seoRouter } from "./routes/seo.js";
@@ -70,6 +71,7 @@ export function createApp({
   app.use("/api/course-map", courseMapRouter);
   app.use("/api/search", searchRouter);
   app.use("/api", notFound);
+  app.use("/playground", playgroundRouter);
   app.use(legacyRedirects());
   app.use(seoRouter);
 

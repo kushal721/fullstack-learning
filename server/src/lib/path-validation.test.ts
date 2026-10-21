@@ -380,6 +380,43 @@ describe("validatePaths", () => {
       ]);
     });
 
+    it("reports reference tables with too few rows, long text, long examples or no caption", () => {
+      const blocks: Block[] = [
+        {
+          type: "reference",
+          caption: " ",
+          rows: [
+            { name: "<p>", text: "x".repeat(141), example: "a\nb\nc\nd\ne" },
+          ],
+        },
+        quickCheck(),
+      ];
+
+      expect(validatePaths([withStep2(blocks)], glossary(), refs)).toEqual([
+        `${step2} reference needs a caption.`,
+        `${step2} reference needs 2–12 rows (has 1).`,
+        `${step2} reference row 1 text needs 1–140 characters (has 141).`,
+        `${step2} reference row 1 example needs at most 160 characters on 4 lines.`,
+      ]);
+    });
+
+    it("reports playgrounds that are empty or too long", () => {
+      const blocks: Block[] = [
+        { type: "playground", caption: "Try it", code: " " },
+        {
+          type: "playground",
+          caption: "Try it",
+          code: Array.from({ length: 21 }, () => "<p>x</p>").join("\n"),
+        },
+        quickCheck(),
+      ];
+
+      expect(validatePaths([withStep2(blocks)], glossary(), refs)).toEqual([
+        `${step2} playground needs 1–20 lines of code (has 1).`,
+        `${step2} playground needs 1–20 lines of code (has 21).`,
+      ]);
+    });
+
     it("reports a level check with more than one introduction block", () => {
       const path = makePath();
       path.levels.basic.steps.at(-1)!.blocks = [

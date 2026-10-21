@@ -508,6 +508,18 @@ export type Block =
       fileId?: string;
       symbolId?: string;
       flowId?: string;
+    }
+  | {
+      /** A small reference table: each row a name, what it's for, an example. */
+      type: "reference";
+      caption: string;
+      rows: { name: string; text: string; example?: string }[];
+    }
+  | {
+      /** Editable HTML (and CSS) with a live preview beside it. */
+      type: "playground";
+      caption: string;
+      code: string;
     };
 
 /** A question of a level check: a practice exercise and the step it tests. */
@@ -575,4 +587,10 @@ export type GlossaryEntry = {
   analogy?: string;
   /** The long concept page, if there is one. */
   conceptPageId?: string;
+  /**
+   * A name that keeps its capital in mid-sentence, like React or Express.
+   * Acronyms (HTML) and names with inner capitals (JavaScript, Node.js)
+   * are recognised without it.
+   */
+  properNoun?: boolean;
 };

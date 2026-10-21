@@ -8,6 +8,7 @@ export const gitGlossary: GlossaryEntry[] = [
     term: "Git repository",
     aliases: ["repository", "repo", "git init", ".git"],
     kind: "concept",
+    properNoun: true,
     short: "A project folder whose full history of changes is recorded by Git.",
     body: "`git init` turns a folder into a repository: Git keeps the history in a hidden `.git` folder and can tell you what changed. You save snapshots called [[git-commit|commits]], and can copy the repository to GitHub with [[github-remote-push|push]].",
     conceptPageId: "git-repository",

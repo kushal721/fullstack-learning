@@ -353,7 +353,7 @@ export type PublicBlock =
 /** A glossary entry in a list or search index: its one-line answer. */
 export type GlossaryEntrySummary = Pick<
   GlossaryEntry,
-  "id" | "topicId" | "term" | "aliases" | "kind" | "short"
+  "id" | "topicId" | "term" | "aliases" | "kind" | "short" | "properNoun"
 >;
 
 /** A level-check question: the exercise (no answer) and the step it tests. */

@@ -36,6 +36,7 @@ export const deploymentGlossary: GlossaryEntry[] = [
     term: "Docker image and container",
     aliases: ["docker", "image", "container", "containers"],
     kind: "concept",
+    properNoun: true,
     short:
       "An image packages an app with everything it needs; a container is that image running, isolated, on any computer.",
     body: "The image holds a small Linux, Node.js, your packages and code, plus the start command. Build it once from a [[dockerfile|Dockerfile]], copy it anywhere. Each container started from it is a separate running copy.",
@@ -49,6 +50,7 @@ export const deploymentGlossary: GlossaryEntry[] = [
     term: "Dockerfile",
     aliases: ["docker build", "from", "cmd"],
     kind: "concept",
+    properNoun: true,
     short:
       "A text file of step-by-step instructions Docker follows to build an image of your app.",
     body: "`FROM` picks a starting image, `WORKDIR` a folder, `COPY` adds your files, `RUN` runs commands like `npm ci`, and `CMD` says how to start. `docker build -t notes-api .` turns it into an [[docker-image-container|image]].",

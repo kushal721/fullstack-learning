@@ -84,3 +84,22 @@ export const levelCheck = (
     stepId,
   })),
 });
+
+/** A reference table: [name, what it's for, example?] rows. */
+export const reference = (
+  caption: string,
+  rows: [name: string, text: string, example?: string][],
+): Block => ({
+  type: "reference",
+  caption,
+  rows: rows.map(([name, text, example]) =>
+    example === undefined ? { name, text } : { name, text, example },
+  ),
+});
+
+/** Editable HTML (and CSS) with a live preview. */
+export const playground = (caption: string, lines: string[]): Block => ({
+  type: "playground",
+  caption,
+  code: lines.join("\n"),
+});

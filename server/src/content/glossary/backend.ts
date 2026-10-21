@@ -30,6 +30,7 @@ export const backendGlossary: GlossaryEntry[] = [
     term: "Express",
     aliases: ["express.js", "expressjs", "web framework", "app.listen"],
     kind: "concept",
+    properNoun: true,
     short:
       "A small Node.js library for building servers that receive HTTP requests and send responses.",
     body: "`express()` creates an app, [[express-route|routes]] connect a method and path to a handler, and `app.listen(3000)` starts it. Each handler gets `req` (the request) and `res` (the response you build), and answers with helpers like `res.status(201).json(note)`.",

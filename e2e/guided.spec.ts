@@ -18,7 +18,10 @@ type CourseMap = {
     levels: { level: string; steps: { id: string; kind: string }[] }[];
   }[];
 };
-type StepResponse = { glossary: { id: string }[] };
+type StepResponse = {
+  glossary: { id: string }[];
+  blocks: { type: string }[];
+};
 
 async function get<T>(request: APIRequestContext, path: string): Promise<T> {
   const response = await request.get(path);
@@ -82,7 +85,11 @@ test("the glossary panel, on a step of each level", async ({
 
 /** Serious and critical WCAG A/AA findings on the page as it is now. */
 async function axe(page: Page) {
+  // The playground's preview shows the learner's own code, not the app, and
+  // its sandbox lets no script (axe included) run inside it.
   const { violations } = await new AxeBuilder({ page })
+    .exclude("iframe[sandbox]")
+    .options({ iframes: false })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();
   return violations
@@ -100,6 +107,7 @@ test("no serious accessibility problems on guided screens", async ({
   page,
   request,
 }) => {
+  test.setTimeout(180_000);
   const [{ topic, levels }] = await readyTopics(request);
   const lesson = levels[0]!.steps.find((s) => s.kind === "lesson")!;
   const check = levels[0]!.steps.at(-1)!;
@@ -115,8 +123,25 @@ test("no serious accessibility problems on guided screens", async ({
     `/learn/${topic.slug}/${lesson.id}?find=`,
     "/course-map",
   ];
+  // And, per topic, the first step showing each kind of interactive block.
+  for (const { topic: t, levels: ls } of await readyTopics(request)) {
+    const wanted = new Set(["reference", "playground", "tryIt", "scene"]);
+    for (const step of ls.flatMap((l) => l.steps)) {
+      if (wanted.size === 0) break;
+      const { blocks } = await get<StepResponse>(
+        request,
+        `/api/paths/${t.slug}/steps/${step.id}`,
+      );
+      const found = blocks
+        .map((b) => b.type)
+        .filter((type) => wanted.has(type));
+      if (found.length === 0) continue;
+      found.forEach((type) => wanted.delete(type));
+      screens.push(`/learn/${t.slug}/${step.id}`);
+    }
+  }
   const problems: string[] = [];
-  for (const path of screens) {
+  for (const path of [...new Set(screens)]) {
     await page.goto(path);
     await page.waitForLoadState("networkidle");
     await expect(

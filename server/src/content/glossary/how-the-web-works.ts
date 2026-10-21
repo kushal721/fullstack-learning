@@ -1,4 +1,5 @@
 import type { GlossaryEntry } from "@fsl/shared";
+import { termsOf } from "./term.js";
 
 // Glossary entries introduced by the "How the Web Works" topic. Concept
 // entries are the short, beginner-sized form of a concept page; terms are
@@ -6,21 +7,7 @@ import type { GlossaryEntry } from "@fsl/shared";
 // (HTTPS, JSON, CORS, hosting) get their own beginner entry here, linking
 // to that concept.
 
-const term = (
-  id: string,
-  name: string,
-  short: string,
-  body: string,
-  extra: Partial<Pick<GlossaryEntry, "aliases" | "analogy" | "kind">> = {},
-): GlossaryEntry => ({
-  id,
-  topicId: "how-the-web-works",
-  term: name,
-  kind: "term",
-  short,
-  body,
-  ...extra,
-});
+const term = termsOf("how-the-web-works");
 
 export const howTheWebWorksGlossary: GlossaryEntry[] = [
   {

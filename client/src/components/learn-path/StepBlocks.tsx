@@ -9,6 +9,7 @@ import { Link } from "react-router";
 import { ApiRequestError, apiPaths, apiPost } from "../../services/api.ts";
 import { CodeBlock } from "../code-viewer/CodeBlock.tsx";
 import { Badge } from "../ui/Badge.tsx";
+import { PlaygroundBlock, ReferenceTable } from "./ReferenceBlocks.tsx";
 import { ScenePlayer } from "./ScenePlayer.tsx";
 import { StepText } from "./StepText.tsx";
 import { TryIt } from "./TryItWidgets.tsx";
@@ -246,5 +247,9 @@ export function StepBlock({
     }
     case "tryIt":
       return <TryIt widget={block.widget} glossary={context.glossary} />;
+    case "reference":
+      return <ReferenceTable block={block} glossary={context.glossary} />;
+    case "playground":
+      return <PlaygroundBlock block={block} />;
   }
 }

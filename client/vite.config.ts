@@ -20,9 +20,11 @@ export default defineConfig({
   server: {
     port: 5173,
     // In development the client and API run on different ports. The proxy
-    // forwards /api requests to the API so the browser sees one origin.
+    // forwards /api (and the playground preview) to the API so the browser
+    // sees one origin.
     proxy: {
       "/api": process.env.API_URL ?? "http://localhost:3000",
+      "/playground": process.env.API_URL ?? "http://localhost:3000",
     },
   },
 });

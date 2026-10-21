@@ -53,3 +53,27 @@ export function glossaryHref(
 /** Opens the glossary panel on an entry, keeping the page where it is. */
 export const termHref = (search: string, id: string) =>
   glossaryHref(search, { term: id });
+
+/**
+ * How a glossary link without its own label reads in running text: its
+ * name, starting lowercase mid-sentence ("asks the client"). Acronyms
+ * (HTML), names with inner capitals (JavaScript), dotted names (Node.js)
+ * and proper nouns (React) keep their capitals.
+ */
+export function termInText(
+  entry: { term: string; properNoun?: boolean },
+  startsSentence: boolean,
+): string {
+  const { term } = entry;
+  const keepsCapital =
+    startsSentence ||
+    entry.properNoun ||
+    /^[A-Z]{2}/.test(term) ||
+    /.[A-Z]/.test(term) ||
+    term.includes(".");
+  return keepsCapital ? term : term.charAt(0).toLowerCase() + term.slice(1);
+}
+
+/** Where a playground's preview comes from: the server's locked-down page. */
+export const playgroundSrc = (code: string) =>
+  `/playground?code=${encodeURIComponent(code)}`;
