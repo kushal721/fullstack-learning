@@ -54,7 +54,7 @@ function QuickCheck({
   }
 
   return (
-    <fieldset className="rounded-lg border border-border p-4">
+    <fieldset className="min-w-0 rounded-lg border border-border p-4">
       <legend className="sr-only">Quick check</legend>
       <div className="mb-2">
         <Badge tone="info">Quick check</Badge>
