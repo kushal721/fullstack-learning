@@ -169,16 +169,12 @@ describe("StepPlayer", () => {
     );
   });
 
-  it("finishes a level and carries on into the next one", async () => {
-    const user = userEvent.setup();
+  it("leaves completing a level check to the check itself", async () => {
     mockFetchRoutes(routes);
     renderAt("/learn/html/basic-3");
 
-    await user.click(
-      await screen.findByRole("button", { name: "Finish Basic ✓" }),
-    );
-    expect(screen.getByTestId("where")).toHaveTextContent(
-      "/learn/html/intermediate-1",
-    );
+    expect(await screen.findByText("What wraps content?")).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Done|Finish/ })).toBeNull();
+    expect(screen.getByRole("link", { name: "← Step 2" })).toBeInTheDocument();
   });
 });

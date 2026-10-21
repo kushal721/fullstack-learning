@@ -361,6 +361,22 @@ export const htmlStep2Fixture: StepResponse = {
   next: htmlStep(0, 2),
 };
 
+const question = (id: string, prompt: string, stepIndex: number) => ({
+  exercise: {
+    mode: "predict" as const,
+    id,
+    title: prompt,
+    prompt,
+    conceptIds: [],
+    hints: [],
+    choices: [
+      { id: "right", text: `Right answer to ${id}` },
+      { id: "wrong", text: `Wrong answer to ${id}` },
+    ],
+  },
+  step: htmlStep(0, stepIndex),
+});
+
 /** GET /api/paths/html/steps/basic-3: Basic's level check, the last step. */
 export const htmlStep3Fixture: StepResponse = {
   topic: htmlPathFixture.topic,
@@ -368,6 +384,11 @@ export const htmlStep3Fixture: StepResponse = {
   blocks: [],
   scenes: {},
   glossary: [],
+  questions: [
+    question("q-tags", "What wraps content?", 0),
+    question("q-links", "What makes a link?", 1),
+    question("q-nest", "Can elements nest?", 0),
+  ],
   previous: htmlStep(0, 1),
   next: htmlStep(1, 0),
 };

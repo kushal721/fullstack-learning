@@ -152,6 +152,8 @@ export function GuidedTopic({ path, stepId, tree }: Props) {
                 topicSlug={topic.slug}
                 step={step}
                 level={level}
+                nextLevel={levels[levelIndex + 1]}
+                nextTopic={adjacent(tree, topic.id).next}
                 onDone={progress.markDone}
               />
             </>
