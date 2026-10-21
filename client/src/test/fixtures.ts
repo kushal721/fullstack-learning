@@ -1,5 +1,6 @@
 import type {
   ConceptResponse,
+  CourseMapResponse,
   FileTreeFolder,
   GlossaryEntryResponse,
   GlossaryIndexResponse,
@@ -464,4 +465,32 @@ export const htmlDocumentEntryFixture: GlossaryEntryResponse = {
   },
   usedIn: [],
   related: [glossaryIndexFixture.entries[1]!],
+};
+
+/** GET /api/course-map: HTML has a path, React is still planned. */
+export const courseMapFixture: CourseMapResponse = {
+  topics: [
+    {
+      topic: htmlPathFixture.topic,
+      status: "ready",
+      levels: htmlPathFixture.levels.map((level) => ({
+        ...level,
+        stepCount: level.steps.length,
+        covers: level.steps
+          .filter((step) => step.kind === "lesson")
+          .map((step) => step.title),
+      })),
+    },
+    {
+      topic: {
+        id: "react",
+        slug: "react",
+        order: 2,
+        title: "React",
+        summary: "Components that update when data changes.",
+      },
+      status: "planned",
+      levels: [],
+    },
+  ],
 };

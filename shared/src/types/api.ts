@@ -405,7 +405,7 @@ export type GlossaryEntryResponse = {
 };
 
 /** One level of a topic on the course map. */
-export type CourseMapLevel = Omit<LevelSummary, "steps"> & {
+export type CourseMapLevel = LevelSummary & {
   stepCount: number;
   /** What the level covers: its lesson titles. */
   covers: string[];

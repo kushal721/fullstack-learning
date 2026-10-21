@@ -27,6 +27,11 @@ const SECTIONS: Record<string, { title?: string; description: string }> = {
     description:
       "The learning tree: every topic of full-stack development in order, from how the web works to deployment.",
   },
+  "/course-map": {
+    title: "Course map",
+    description:
+      "Every topic in three levels, Basic, Intermediate and Advanced, with numbered steps that run straight through each topic.",
+  },
   "/concepts": {
     title: "Concepts",
     description:

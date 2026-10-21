@@ -6,6 +6,7 @@ import { checkPage } from "./check-page.ts";
 const STATIC = [
   "/",
   "/learn",
+  "/course-map",
   "/concepts",
   "/build",
   "/explorer",
