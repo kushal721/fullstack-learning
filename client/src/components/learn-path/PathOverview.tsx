@@ -2,6 +2,7 @@ import type { PathResponse } from "@fsl/shared";
 import { ButtonLink } from "../ui/ButtonLink.tsx";
 import { Badge } from "../ui/Badge.tsx";
 import { LEVEL_STYLE, doneIn, resumeStep, stepHref } from "./levels.ts";
+import { SceneText } from "./StepBlocks.tsx";
 import type { PathProgress } from "./progress.ts";
 
 type Props = {
@@ -39,28 +40,7 @@ export function PathOverview({ topicSlug, path, progress, onReset }: Props) {
       </ul>
 
       <h2 className="mb-3 mt-10 text-xl font-semibold">See it happen</h2>
-      {/* The animated player replaces this list in #380; it keeps the
-          same steps as its text version. */}
-      <figure className="rounded-lg border border-border">
-        <figcaption className="border-b border-border bg-foreground/5 px-4 py-2 text-sm font-medium">
-          {overviewScene.title}
-        </figcaption>
-        <ol className="flex flex-col gap-1 p-3 text-sm">
-          {overviewScene.steps.map((step, index) => (
-            <li key={index} className="flex gap-3">
-              <span className="w-5 shrink-0 text-right text-muted">
-                {index + 1}.
-              </span>
-              <span>
-                <span className="font-medium">{step.caption}</span>
-                {step.detail && (
-                  <span className="text-muted"> {step.detail}</span>
-                )}
-              </span>
-            </li>
-          ))}
-        </ol>
-      </figure>
+      <SceneText scene={overviewScene} />
 
       <h2 className="mb-2 mt-10 text-xl font-semibold">
         Three levels, one numbered path

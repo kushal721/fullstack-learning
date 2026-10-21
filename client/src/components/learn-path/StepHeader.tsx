@@ -1,5 +1,6 @@
 import type { LevelSummary, StepSummary } from "@fsl/shared";
-import { Link } from "react-router";
+import { useEffect, useRef } from "react";
+import { Link, useLocation } from "react-router";
 import { Badge } from "../ui/Badge.tsx";
 import { LEVEL_STYLE, doneIn, stepHref } from "./levels.ts";
 
@@ -13,6 +14,16 @@ export function StepHeader({
 }) {
   const style = LEVEL_STYLE[level.level];
   const position = level.steps.findIndex((s) => s.id === step.id) + 1;
+  const title = useRef<HTMLHeadingElement>(null);
+  const { key, state } = useLocation();
+  const focusTitle = (state as { focusTitle?: boolean } | null)?.focusTitle;
+
+  // After "Next step", keyboard and screen-reader focus starts at the new
+  // step's title. (The step dots keep their own focus for ← →.)
+  useEffect(() => {
+    if (focusTitle) title.current?.focus({ preventScroll: true });
+  }, [key, focusTitle]);
+
   return (
     <div className="flex flex-col gap-1">
       <p className="flex flex-wrap items-center gap-2 text-sm text-muted">
@@ -20,7 +31,11 @@ export function StepHeader({
         Step {step.number} · {position} of {level.steps.length} in {style.name}{" "}
         · about {step.minutes} min
       </p>
-      <h2 tabIndex={-1} className="text-2xl font-semibold tracking-tight">
+      <h2
+        ref={title}
+        tabIndex={-1}
+        className="text-2xl font-semibold tracking-tight focus:outline-none"
+      >
         {step.title}
       </h2>
     </div>

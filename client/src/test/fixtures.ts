@@ -3,6 +3,7 @@ import type {
   FileTreeFolder,
   Level,
   PathResponse,
+  StepResponse,
   StepSummary,
   TopicResponse,
   TopicTreeNode,
@@ -275,4 +276,96 @@ export const htmlPathFixture: PathResponse = {
       steps: steps("advanced", 6, ["ARIA", "Advanced check"]),
     },
   ],
+};
+
+const htmlLevels = htmlPathFixture.levels;
+const htmlStep = (level: number, index: number) =>
+  htmlLevels[level]!.steps[index]!;
+
+/** GET /api/paths/html/steps/basic-1: one block of (almost) every type. */
+export const htmlStep1Fixture: StepResponse = {
+  topic: htmlPathFixture.topic,
+  step: htmlStep(0, 0),
+  blocks: [
+    {
+      type: "explain",
+      text: "An [[html-element|element]] is **one tag** with `<p>` in it.",
+    },
+    { type: "analogy", text: "Like the walls of a house." },
+    {
+      type: "keyPoints",
+      items: [
+        "Tags open and close.",
+        "Elements nest.",
+        "[[html-document]]s hold them.",
+      ],
+    },
+    {
+      type: "diagram",
+      nodes: [{ label: "Tag", sub: "<p>" }, { label: "Element" }],
+    },
+    {
+      type: "code",
+      example: {
+        language: "html",
+        code: "<p>Hi</p>\n<p>Bye</p>",
+        caption: "two paragraphs",
+      },
+      notes: [{ line: 2, text: "a second element" }],
+    },
+    {
+      type: "check",
+      question: "Which one is an element?",
+      choices: [
+        { id: "tag", text: "`<p>` alone" },
+        { id: "element", text: "`<p>Hi</p>`" },
+      ],
+    },
+    {
+      type: "inTheNotesApp",
+      text: "The Notes App's page starts here.",
+      fileId: "frontend/index.html",
+    },
+    { type: "scene", sceneId: "page" },
+  ],
+  scenes: { page: htmlPathFixture.overviewScene },
+  glossary: [
+    {
+      id: "html-element",
+      topicId: "html",
+      term: "HTML element",
+      kind: "concept",
+      short: "One building block of a page.",
+    },
+    {
+      id: "html-document",
+      topicId: "html",
+      term: "HTML document",
+      kind: "term",
+      short: "The whole file.",
+    },
+  ],
+  next: htmlStep(0, 1),
+};
+
+/** GET /api/paths/html/steps/basic-2: the last lesson before the check. */
+export const htmlStep2Fixture: StepResponse = {
+  topic: htmlPathFixture.topic,
+  step: htmlStep(0, 1),
+  blocks: [{ type: "explain", text: "Links go places." }],
+  scenes: {},
+  glossary: [],
+  previous: htmlStep(0, 0),
+  next: htmlStep(0, 2),
+};
+
+/** GET /api/paths/html/steps/basic-3: Basic's level check, the last step. */
+export const htmlStep3Fixture: StepResponse = {
+  topic: htmlPathFixture.topic,
+  step: htmlStep(0, 2),
+  blocks: [],
+  scenes: {},
+  glossary: [],
+  previous: htmlStep(0, 1),
+  next: htmlStep(1, 0),
 };
