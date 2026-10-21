@@ -1,0 +1,385 @@
+import type { LevelPlan } from "@fsl/shared";
+import {
+  analogy,
+  code,
+  explain,
+  inTheNotesApp,
+  jsPlayground,
+  keyPoints,
+  lesson,
+  levelCheck,
+  quickCheck,
+  reference,
+} from "../blocks.js";
+
+// Intermediate: steps 21–32. Data as JSON, waiting with promises and
+// async/await, fetching from an API, handling errors, modules, and the
+// modern syntax the Notes App's code uses.
+export const intermediate: LevelPlan = {
+  outcome:
+    "Load data from an API, handle what goes wrong, and read modern JavaScript like the Notes App's.",
+  steps: [
+    lesson(
+      "json",
+      "JSON: data as text",
+      3,
+      explain(
+        "[[json|JSON]] writes objects and arrays as text, so they can travel between the browser and a server. It looks like JavaScript, but keys need double quotes.",
+      ),
+      reference("Converting to and from JSON", [
+        [
+          "JSON.stringify()",
+          "A value to JSON text.",
+          "JSON.stringify({ a: 1 }) // '{\"a\":1}'",
+        ],
+        [
+          "JSON.parse()",
+          "JSON text back to a value.",
+          "JSON.parse('{\"a\":1}').a // 1",
+        ],
+        [
+          "response.json()",
+          "Read a fetch response as JSON.",
+          "const data = await response.json();",
+        ],
+      ]),
+      jsPlayground("Round trip", [
+        'const note = { title: "Milk", done: false, tags: ["shop"] };',
+        "const text = JSON.stringify(note);",
+        "console.log(text, typeof text);",
+        "const back = JSON.parse(text);",
+        "console.log(back.title, typeof back);",
+      ]),
+    ),
+    lesson(
+      "asynchronous",
+      "Waiting without stopping: promises",
+      4,
+      explain(
+        "Loading data takes time. Instead of freezing the page, JavaScript gives you a [[js-promise|promise]]: a value that isn't ready yet. `.then()` says what to do once it is.",
+      ),
+      analogy(
+        "A buzzer at a café: you order, get the buzzer straight away, and carry on until it buzzes.",
+      ),
+      jsPlayground("A promise that settles later", [
+        "const later = new Promise((resolve) => {",
+        '  setTimeout(() => resolve("Your coffee"), 500);',
+        "});",
+        'console.log("Ordered");',
+        'later.then((value) => console.log(value, "is ready"));',
+        'console.log("Waiting, but not stuck");',
+      ]),
+      quickCheck(
+        "A promise is…",
+        [
+          "A value that will be ready later, or fail",
+          "A way to make code faster",
+          "A kind of loop",
+        ],
+        0,
+        "It's pending, then either fulfilled with a value or rejected with an error.",
+      ),
+    ),
+    lesson(
+      "async-await",
+      "async and await",
+      3,
+      explain(
+        "[[js-async-await|`await`]] pauses a function until a promise settles, so asynchronous code reads top to bottom. You can only use it inside an `async` function.",
+      ),
+      jsPlayground("The same wait, with await", [
+        "const wait = (ms) => new Promise((r) => setTimeout(r, ms));",
+        "",
+        "async function makeCoffee() {",
+        '  console.log("Brewing…");',
+        "  await wait(500);",
+        '  return "Coffee";',
+        "}",
+        "",
+        'makeCoffee().then((drink) => console.log(drink, "done"));',
+        'console.log("Meanwhile, other code runs");',
+      ]),
+      quickCheck(
+        "What does an `async` function always return?",
+        ["A promise", "A string", "Nothing"],
+        0,
+        'Even `return "Coffee"` comes back wrapped in a promise; `await` or `.then()` unwraps it.',
+      ),
+    ),
+    lesson(
+      "fetch",
+      "Loading data with fetch",
+      4,
+      explain(
+        "[[js-fetch|`fetch()`]] sends an HTTP request and returns a promise of the response. Read the body with `response.json()`, which is another promise.",
+      ),
+      code(
+        "js",
+        "load notes from the API",
+        [
+          "async function loadNotes() {",
+          '  const response = await fetch("/api/notes");',
+          "  if (!response.ok) {",
+          '    throw new Error("Could not load notes");',
+          "  }",
+          "  return response.json();",
+          "}",
+        ],
+        {
+          2: "wait for the response",
+          3: "a 404 or 500 doesn't throw: check it",
+          6: "read the JSON body",
+        },
+      ),
+      inTheNotesApp(
+        "Every Notes App request goes through one `request()` function: it calls `fetch`, checks `response.ok`, and throws the server's error message.",
+        { fileId: "frontend/src/services/request.js" },
+      ),
+      quickCheck(
+        "The server answers 500. Does `fetch` throw?",
+        [
+          "Yes, always",
+          "No: it only fails when the network does, so check `response.ok`",
+          "Only for 404",
+        ],
+        1,
+        "Any answer from the server counts as success to `fetch`; the status is yours to check.",
+      ),
+    ),
+    lesson(
+      "errors",
+      "Handling errors: try and catch",
+      3,
+      explain(
+        "Code that might fail goes in `try`; if it throws, `catch` gets the error instead of the program stopping. `finally` runs either way. See [[js-error-handling|error handling]].",
+      ),
+      jsPlayground("Catch the error", [
+        "function parse(text) {",
+        "  try {",
+        "    return JSON.parse(text);",
+        "  } catch (error) {",
+        '    console.log("Not JSON:", error.message);',
+        "    return null;",
+        "  } finally {",
+        '    console.log("Tried:", text);',
+        "  }",
+        "}",
+        "console.log(parse('{\"a\":1}'));",
+        'console.log(parse("oops"));',
+      ]),
+      inTheNotesApp(
+        "`handleSave` wraps the save in try/catch/finally: show the error if it fails, and always turn off the saving state.",
+        { symbolId: "fn:handleSave" },
+      ),
+    ),
+    lesson(
+      "modules",
+      "Modules: import and export",
+      3,
+      explain(
+        "Each file is a [[js-module-import-export|module]]. It `export`s what others may use and `import`s what it needs, so code is split into small files with clear jobs.",
+      ),
+      code(
+        "js",
+        "two files",
+        [
+          "// notesApi.js",
+          "export function getNotes() {",
+          '  return request("/api/notes");',
+          "}",
+          "",
+          "// NotesPage.jsx",
+          'import { getNotes } from "./notesApi.js";',
+        ],
+        { 2: "shared with other files", 7: "use it here" },
+      ),
+      inTheNotesApp(
+        "`notesApi.js` exports one small function per API call, each built on `request()`.",
+        { fileId: "frontend/src/services/notesApi.js" },
+      ),
+      quickCheck(
+        "A function isn't exported. Can another file import it?",
+        [
+          "Yes",
+          "No, it stays private to its file",
+          "Only with a default import",
+        ],
+        1,
+        "Only what a module exports is visible from outside.",
+      ),
+    ),
+    lesson(
+      "destructuring",
+      "Destructuring: unpacking values",
+      3,
+      explain(
+        "[[destructuring|Destructuring]] pulls values out of an object or array into variables in one line. You'll see it everywhere in React code.",
+      ),
+      jsPlayground("Unpack an object and an array", [
+        'const note = { id: 7, title: "Milk", content: "2 litres" };',
+        "const { title, content } = note;",
+        "console.log(title, content);",
+        "",
+        'const [first, second] = ["a", "b", "c"];',
+        "console.log(first, second);",
+        "",
+        "function show({ title }) {",
+        '  console.log("Title:", title);',
+        "}",
+        "show(note);",
+      ]),
+      quickCheck(
+        "What does `const { id } = note;` do?",
+        [
+          "Makes a variable `id` holding `note.id`",
+          "Deletes `note.id`",
+          "Makes a new object",
+        ],
+        0,
+        "It's a short way of writing `const id = note.id;`.",
+      ),
+    ),
+    lesson(
+      "spread",
+      "Spread and rest: ...",
+      3,
+      explain(
+        "The three dots of [[spread]] copy everything out of an array or object, often to make a changed copy without touching the original.",
+      ),
+      jsPlayground("Copy with a change", [
+        'const note = { title: "Milk", done: false };',
+        "const doneNote = { ...note, done: true };",
+        "console.log(note.done, doneNote.done);",
+        "",
+        'const notes = ["Milk", "Bread"];',
+        'const more = [...notes, "Eggs"];',
+        "console.log(notes.length, more);",
+        "",
+        "const sum = (...nums) => nums.reduce((a, b) => a + b, 0);",
+        "console.log(sum(1, 2, 3));",
+      ]),
+      keyPoints(
+        "`{ ...obj, key: value }`: a copy with one change.",
+        "`[...arr, item]`: a copy with an item added.",
+        "`(...args)` in a function: the rest of the arguments, as an array.",
+      ),
+    ),
+    lesson(
+      "more-array-methods",
+      "More array methods",
+      4,
+      reference("Sorting, summing and more", [
+        [
+          "reduce()",
+          "Boil a list down to one value.",
+          "prices.reduce((sum, p) => sum + p, 0)",
+        ],
+        ["sort()", "Order the list (changes it!).", "names.sort()"],
+        ["toSorted()", "A sorted copy.", "nums.toSorted((a, b) => a - b)"],
+        ["every()", "Do all items match?", "notes.every((n) => n.done)"],
+        [
+          "findIndex()",
+          "Where is the first match?",
+          "notes.findIndex((n) => n.id === 7)",
+        ],
+        [
+          "Object.entries()",
+          "An object's [key, value] pairs.",
+          "Object.entries({ a: 1 })",
+        ],
+      ]),
+      jsPlayground("Totals and order", [
+        "const items = [",
+        '  { name: "Milk", price: 1.2 },',
+        '  { name: "Bread", price: 2.5 },',
+        '  { name: "Eggs", price: 3 },',
+        "];",
+        "const total = items.reduce((sum, i) => sum + i.price, 0);",
+        "console.log(total.toFixed(2));",
+        "const cheapest = items.toSorted((a, b) => a.price - b.price);",
+        "console.log(cheapest.map((i) => i.name));",
+      ]),
+      quickCheck(
+        "You need the total of all prices. Which method?",
+        ["`filter`", "`reduce`", "`find`"],
+        1,
+        "[[array-methods|`reduce`]] carries a running total through the list.",
+      ),
+    ),
+    lesson(
+      "optional-chaining",
+      "Missing values: ?. and ??",
+      3,
+      explain(
+        "Reading a property of `undefined` throws. [[optional-chaining|Optional chaining]] `?.` stops and gives `undefined` instead; `??` supplies a fallback for `null` or `undefined`.",
+      ),
+      jsPlayground("Safe reading", [
+        'const user = { name: "Sam" };',
+        "console.log(user.address?.city);",
+        'console.log(user.address?.city ?? "No city yet");',
+        "",
+        "const count = 0;",
+        'console.log(count || "none", count ?? "none");',
+      ]),
+      inTheNotesApp(
+        '`request()` uses both: `data?.error ?? "Something went wrong"` copes with a reply that has no body.',
+        { fileId: "frontend/src/services/request.js" },
+      ),
+      quickCheck(
+        "`0 ?? 5` gives…",
+        ["`5`", "`0`", "An error"],
+        1,
+        '`??` only replaces `null` and `undefined`; `||` would also replace `0` and `""`.',
+      ),
+    ),
+    lesson(
+      "reading-the-notes-api",
+      "Reading the Notes App's API code",
+      4,
+      explain(
+        "You can now read every line of the Notes App's request code. Step through it with what you know: [[js-async-await|async/await]], [[js-fetch|fetch]], [[json]] and [[optional-chaining]].",
+      ),
+      code(
+        "js",
+        "request.js, shortened",
+        [
+          'export async function request(path, { method = "GET", body } = {}) {',
+          "  const response = await fetch(path, {",
+          "    method,",
+          '    credentials: "include",',
+          "    body: body ? JSON.stringify(body) : undefined,",
+          "  });",
+          "  if (response.status === 204) return null;",
+          "  const data = await response.json().catch(() => null);",
+          '  if (!response.ok) throw new Error(data?.error ?? "Something went wrong");',
+          "  return data;",
+          "}",
+        ],
+        {
+          1: "export, async, destructuring with defaults",
+          4: "send the login cookie",
+          5: "the body as JSON text",
+          8: "no JSON? use null",
+          9: "turn a failed status into an error",
+        },
+      ),
+      quickCheck(
+        "Why does `request()` throw when `response.ok` is false?",
+        [
+          "So callers can use try/catch for every failure",
+          "Because fetch requires it",
+          "To retry the request",
+        ],
+        0,
+        "Network failures already throw; throwing on bad statuses too means one `catch` handles both.",
+      ),
+    ),
+    levelCheck("intermediate-check", "Intermediate check", [
+      ["js-intermediate-json", "json"],
+      ["js-intermediate-async", "async-await"],
+      ["js-intermediate-fetch-ok", "fetch"],
+      ["js-intermediate-spread", "spread"],
+      ["js-intermediate-nullish", "optional-chaining"],
+    ]),
+  ],
+};

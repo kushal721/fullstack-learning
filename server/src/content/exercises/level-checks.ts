@@ -658,4 +658,210 @@ export const levelCheckExercises: PredictExercise[] = [
     explanation:
       "`@media (prefers-color-scheme: dark)` applies when the system is in dark mode, usually by swapping the values of colour custom properties.",
   }),
+
+  // JavaScript
+  question({
+    id: "js-basic-const",
+    title: "const or let",
+    prompt:
+      "A note's title never changes after it is set. How should you declare it?",
+    choices: [
+      '`const title = "Milk";`',
+      '`let title = "Milk";`',
+      '`title = "Milk";`',
+    ],
+    correct: 0,
+    conceptIds: ["js-variable"],
+    hint: "Which one refuses a new value?",
+    explanation:
+      "Use `const` for a value that never gets reassigned and `let` only when it must change. Leaving the keyword out creates an accidental global, which is a bug.",
+  }),
+  question({
+    id: "js-basic-plus",
+    title: "Text plus a number",
+    prompt: 'What does `"5" + 1` give in JavaScript?',
+    choices: ["`6`", '`"51"`', "An error"],
+    correct: 1,
+    conceptIds: ["js-variable"],
+    hint: "With a string on either side, `+` joins text.",
+    explanation:
+      'When one side of `+` is a string, JavaScript joins the two as text, so the result is `"51"`. Convert first with `Number("5") + 1` to get `6`.',
+  }),
+  question({
+    id: "js-basic-equals",
+    title: "Strict equality",
+    prompt: 'What does `3 === "3"` give?',
+    choices: ["`true`", "`false`", "An error"],
+    correct: 1,
+    conceptIds: ["js-variable"],
+    hint: "`===` compares the type as well as the value.",
+    explanation:
+      "`===` is strict: a number and a string are different types, so the answer is `false`. The loose `==` would convert and say `true`, which is why code uses `===`.",
+  }),
+  question({
+    id: "js-basic-return",
+    title: "Returning a value",
+    prompt: "`function double(n) { n * 2; }` — what does `double(4)` give?",
+    choices: ["`8`", "`undefined`", "`4`"],
+    correct: 1,
+    conceptIds: ["js-function"],
+    hint: "Does the function hand anything back?",
+    explanation:
+      "A function with curly braces only gives back what `return` hands it. Without `return`, the result is `undefined`; write `return n * 2;` to get `8`.",
+  }),
+  question({
+    id: "js-basic-filter",
+    title: "Choosing an array method",
+    prompt:
+      "You want only the notes that are done, as a new array. Which method?",
+    choices: ["`notes.map(...)`", "`notes.filter(...)`", "`notes.find(...)`"],
+    correct: 1,
+    conceptIds: ["js-object-array"],
+    hint: "One keeps some items, one changes every item, one returns a single item.",
+    explanation:
+      "`filter` returns a new array with the items its function returns true for. `map` changes every item, and `find` returns only the first match, not an array.",
+  }),
+  question({
+    id: "js-basic-listener",
+    title: "Event listeners",
+    prompt: 'What is wrong with `button.addEventListener("click", save());`?',
+    choices: [
+      "Nothing",
+      "It calls `save` straight away and passes its result, not the function",
+      "`click` should be `onclick`",
+    ],
+    correct: 1,
+    conceptIds: ["js-event-listener"],
+    hint: "Look at the brackets after `save`.",
+    explanation:
+      "`save()` runs the function immediately and hands its result to `addEventListener`. Pass the function itself, `save`, so the browser can call it on every click.",
+  }),
+  question({
+    id: "js-intermediate-json",
+    title: "Reading JSON",
+    prompt:
+      'A server sends the text `{"id":7}`. How do you get an object you can read `.id` from?',
+    choices: ["`JSON.parse(text)`", "`JSON.stringify(text)`", "`text.id`"],
+    correct: 0,
+    conceptIds: ["json"],
+    hint: "Which one turns text into a value?",
+    explanation:
+      "`JSON.parse` turns JSON text into objects and arrays; `JSON.stringify` goes the other way. With fetch, `response.json()` does the parsing for you.",
+  }),
+  question({
+    id: "js-intermediate-async",
+    title: "await",
+    prompt: "Where can you use `await`?",
+    choices: [
+      "Anywhere",
+      "Inside an `async` function (or at the top of a module)",
+      "Only inside loops",
+    ],
+    correct: 1,
+    conceptIds: ["js-async-await"],
+    hint: "It needs a keyword on the function around it.",
+    explanation:
+      "`await` pauses an `async` function until a promise settles. Modules also allow it at the top level, but inside an ordinary function it is a syntax error.",
+  }),
+  question({
+    id: "js-intermediate-fetch-ok",
+    title: "fetch and errors",
+    prompt: "`fetch` gets a 404 reply. What happens?",
+    choices: [
+      "The promise rejects",
+      "It resolves; `response.ok` is false",
+      "The page reloads",
+    ],
+    correct: 1,
+    conceptIds: ["js-fetch"],
+    hint: "The server did answer.",
+    explanation:
+      "`fetch` only rejects when the request can't be made at all, such as no network. Any HTTP reply resolves the promise, so check `response.ok` or the status yourself.",
+  }),
+  question({
+    id: "js-intermediate-spread",
+    title: "Copying with spread",
+    prompt: "What is `{ ...note, done: true }`?",
+    choices: [
+      "`note` itself, changed",
+      "A new object: a copy of `note` with `done` set to true",
+      "An array",
+    ],
+    correct: 1,
+    conceptIds: ["js-object-array"],
+    hint: "The curly braces make something new.",
+    explanation:
+      "Spread copies every property of `note` into a new object, then `done: true` overrides one. The original `note` is untouched, which is what React state updates need.",
+  }),
+  question({
+    id: "js-intermediate-nullish",
+    title: "Missing values",
+    prompt: "`user` has no `address`. What does `user.address?.city` give?",
+    choices: ["An error", "`undefined`", '`""`'],
+    correct: 1,
+    conceptIds: ["js-object-array"],
+    hint: "`?.` stops early instead of failing.",
+    explanation:
+      'Optional chaining stops at the missing `address` and gives `undefined` instead of throwing. Add `?? "Unknown"` to supply a fallback for display.',
+  }),
+  question({
+    id: "js-advanced-closure",
+    title: "Closures",
+    prompt:
+      "`makeCounter()` returns a function that adds to a `let count` inside it. You make two counters. Do they share `count`?",
+    choices: [
+      "Yes",
+      "No, each call makes its own `count`",
+      "Only after the first call",
+    ],
+    correct: 1,
+    conceptIds: ["js-function"],
+    hint: "Every call to `makeCounter` runs `let count = 0` again.",
+    explanation:
+      "Each call to `makeCounter` creates a fresh `count`, and the function it returns closes over that one. The two counters remember separate values.",
+  }),
+  question({
+    id: "js-advanced-event-loop",
+    title: "The event loop",
+    prompt:
+      'In what order do these print? `setTimeout(() => log("A"), 0); Promise.resolve().then(() => log("B")); log("C");`',
+    choices: ["A, B, C", "C, B, A", "C, A, B"],
+    correct: 1,
+    conceptIds: ["js-promise"],
+    hint: "Running code first; then promise callbacks; then timers.",
+    explanation:
+      "Synchronous code finishes first (C). Then the event loop empties the promise queue (B) before taking the next task from the timer queue (A), even with a 0 ms delay.",
+  }),
+  question({
+    id: "js-advanced-reference",
+    title: "References",
+    prompt:
+      "`const b = a;` where `a` is an array, then `b.push(1)`. What happens to `a`?",
+    choices: [
+      "Nothing",
+      "It gets the 1 too: both names point at one array",
+      "It's emptied",
+    ],
+    correct: 1,
+    conceptIds: ["js-object-array"],
+    hint: "Was the array copied?",
+    explanation:
+      "Assigning an object or array copies the reference, not the contents. `a` and `b` are the same array, so the push shows through both; copy with `[...a]` to keep them apart.",
+  }),
+  question({
+    id: "js-advanced-optional-type",
+    title: "Optional properties",
+    prompt:
+      "In `type Note = { title: string; content?: string }`, which object fits?",
+    choices: [
+      '`{ title: "Milk" }`',
+      '`{ content: "2 litres" }`',
+      "`{ title: 3 }`",
+    ],
+    correct: 0,
+    conceptIds: ["typescript-types"],
+    hint: "Which property may be left out?",
+    explanation:
+      "`content?` is optional, so an object with only a string `title` fits. Leaving out `title` or giving it a number breaks the type, and TypeScript reports it before running.",
+  }),
 ];

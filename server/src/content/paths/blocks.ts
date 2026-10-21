@@ -103,3 +103,11 @@ export const playground = (caption: string, lines: string[]): Block => ({
   caption,
   code: lines.join("\n"),
 });
+
+/** Editable JavaScript, run with its console output shown. */
+export const jsPlayground = (caption: string, lines: string[]): Block => ({
+  type: "playground",
+  caption,
+  code: lines.join("\n"),
+  language: "js",
+});

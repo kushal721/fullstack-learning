@@ -1,4 +1,7 @@
 import type { GlossaryEntry } from "@fsl/shared";
+import { termsOf } from "./term.js";
+
+const term = termsOf("javascript");
 
 // Glossary entries introduced by the "JavaScript" topic.
 export const javascriptGlossary: GlossaryEntry[] = [
@@ -157,4 +160,185 @@ export const javascriptGlossary: GlossaryEntry[] = [
     body: "Write a type after a colon: `let count: number`, `function add(a: number, b: number): number`. `type Note = { id: number; title: string }` names a shape once so you can reuse it. [[typescript-why|TypeScript]] then warns whenever a value doesn't fit.",
     conceptPageId: "typescript-types",
   },
+
+  // --- Terms the JavaScript steps use -------------------------------------
+  term(
+    "console-log",
+    "console.log()",
+    "Prints values to the browser's console, the developer's notepad.",
+    '`console.log("total", 3 + 4)` prints `total 7`. Open the console in the browser\'s developer tools to see it, or use the Console output in these playgrounds.',
+    { aliases: ["console", "console.log", "log"] },
+  ),
+  term(
+    "js-value",
+    "Values and types",
+    "Every piece of data has a type: string, number, boolean, null, undefined, object or array.",
+    '`typeof` tells you the type: `typeof 3` is `"number"`. The type decides what you can do with a value: add numbers, join [[js-string|strings]].',
+    { aliases: ["type", "types", "typeof", "data type"], kind: "concept" },
+  ),
+  term(
+    "js-string",
+    "String",
+    "Text, written in quotes: `\"hello\"`, `'hello'` or `` `hello` ``.",
+    "Strings have a `.length` and many methods: `toUpperCase()`, `includes()`, `trim()`, `slice()`. Backticks make a [[template-literal]].",
+    { aliases: ["strings", "text"] },
+  ),
+  term(
+    "template-literal",
+    "Template literal",
+    "A string in backticks that can hold values: `` `Hi ${name}` ``.",
+    "Whatever is inside `${}` is worked out and put into the text, so you don't need `+` to glue strings together. It can also span several lines.",
+    { aliases: ["template string", "backticks", "${}"] },
+  ),
+  term(
+    "js-number",
+    "Number",
+    "Whole numbers and decimals, like `42` and `3.14`, used for maths.",
+    '`0.1 + 0.2` is `0.30000000000000004` because computers store decimals in binary; round for display. `Number("42")` turns text into a number; `NaN` means not a number.',
+    { aliases: ["numbers", "nan", "integer", "decimal"] },
+  ),
+  term(
+    "js-operator",
+    "Operators",
+    "Symbols that work on values: `+ - * /`, comparisons like `===`, and logic like `&&`.",
+    'Use `===` to compare: it checks value *and* type, so `1 === "1"` is false. `&&` is and, `||` is or, `!` is not.',
+    { aliases: ["operator", "===", "==", "&&", "||", "!"] },
+  ),
+  term(
+    "truthy-falsy",
+    "Truthy and falsy",
+    'Values that count as false in a condition: `false`, `0`, `""`, `null`, `undefined` and `NaN`. Everything else counts as true.',
+    "That's why `if (title)` skips an empty title. An empty array `[]` and an empty object `{}` are truthy.",
+    { aliases: ["truthy", "falsy"], kind: "concept" },
+  ),
+  term(
+    "js-condition",
+    "if and else",
+    "Run code only when something is true, with `if`, `else if` and `else`.",
+    "`if (age >= 18) { … } else { … }`. The condition is any expression; [[truthy-falsy|truthy and falsy]] values count too.",
+    { aliases: ["if", "else", "condition", "conditional", "ternary"] },
+  ),
+  term(
+    "js-loop",
+    "Loops",
+    "Repeat code: `for`, `while`, and `for…of` over the items of an array.",
+    "`for (const note of notes) { … }` runs once per note. An endless loop never stops, so make sure the condition becomes false. Array methods like `map` often replace loops: see [[array-methods]].",
+    { aliases: ["loop", "for", "while", "for of"] },
+  ),
+  term(
+    "js-return",
+    "return",
+    "Hands a result back from a function and stops it.",
+    "`function double(n) { return n * 2; }` gives back `n * 2`. A function without `return` gives `undefined`.",
+    { aliases: ["return value"] },
+  ),
+  term(
+    "js-scope",
+    "Scope",
+    "Where a variable can be used: inside the block `{ }` or function it was declared in.",
+    "A `let` or `const` inside an `if` block doesn't exist outside it. Inner functions can see outer variables, which is what makes a [[closure]].",
+    { aliases: ["block scope", "global"], kind: "concept" },
+  ),
+  term(
+    "array-methods",
+    "Array methods",
+    "Built-in functions on every array: `map`, `filter`, `find`, `includes`, `push`, `sort`…",
+    "`notes.filter((n) => n.done)` keeps the done notes; `notes.map((n) => n.title)` makes a list of titles. They take a [[callback]] and don't need a loop.",
+    { aliases: ["map", "filter", "find", "reduce", "push", "foreach"] },
+  ),
+  term(
+    "dom-query",
+    "Finding elements",
+    "Getting an element from the page in JavaScript, with `document.querySelector`.",
+    '`document.querySelector(".note")` returns the first match of a CSS selector; `querySelectorAll` returns all of them. Then you can [[dom-manipulation|change them]].',
+    { aliases: ["querySelector", "getElementById", "document"] },
+  ),
+  term(
+    "dom-manipulation",
+    "Changing the page",
+    "Updating elements from JavaScript: their text, classes, attributes, or adding new ones.",
+    '`el.textContent = "Saved"`, `el.classList.add("done")`, `document.createElement("li")` then `list.append(li)`. React does this for you.',
+    {
+      aliases: [
+        "textContent",
+        "classList",
+        "createElement",
+        "innerHTML",
+        "append",
+      ],
+    },
+  ),
+  term(
+    "callback",
+    "Callback",
+    "A function you pass to other code, to be called later.",
+    'In `button.addEventListener("click", save)`, `save` is a callback. [[array-methods|Array methods]], timers and events all take callbacks.',
+    { aliases: ["callbacks", "callback function"], kind: "concept" },
+  ),
+  term(
+    "destructuring",
+    "Destructuring",
+    "Unpacking values from an object or array into variables: `const { title } = note`.",
+    "`const [first, second] = list` takes array items by position; `const { id, title } = note` takes properties by name. React's `useState` uses it.",
+    { aliases: ["destructure", "unpack"] },
+  ),
+  term(
+    "spread",
+    "Spread and rest",
+    "`...` spreads an array or object out, or gathers the rest into one.",
+    "`[...notes, newNote]` makes a new array with one more note; `{ ...note, done: true }` copies a note with one change. In a function's parameters, `...args` gathers the rest.",
+    { aliases: ["...", "spread operator", "rest parameters"] },
+  ),
+  term(
+    "optional-chaining",
+    "Optional chaining and ??",
+    "`?.` stops safely at `null` or `undefined`; `??` gives a default for them.",
+    "`user?.address?.city` is `undefined` instead of an error when there is no address. `count ?? 0` uses 0 only when count is null or undefined.",
+    { aliases: ["?.", "??", "nullish coalescing"] },
+  ),
+  term(
+    "closure",
+    "Closure",
+    "A function that remembers the variables around it, even after that outer code has finished.",
+    "A counter made inside a function keeps its own `count`. Closures are how event handlers and React hooks remember things. See [[js-scope|scope]].",
+    { aliases: ["closures"], kind: "concept" },
+  ),
+  term(
+    "event-loop",
+    "Event loop",
+    "How JavaScript does one thing at a time yet waits for many: finish the current code, then run what's ready.",
+    "Promises' callbacks run before timers. That's why `setTimeout(f, 0)` still runs after the rest of your code. See [[js-promise|promises]].",
+    { aliases: ["call stack", "task queue", "microtask"], kind: "concept" },
+  ),
+  term(
+    "this-keyword",
+    "this",
+    "Inside a method, the object it was called on.",
+    "In `note.describe()`, `this` is `note`. Arrow functions don't have their own `this`; they use the surrounding one, which is why they're handy in callbacks.",
+    { aliases: ["this"] },
+  ),
+  term(
+    "js-class",
+    "Class",
+    "A template for creating objects with the same properties and methods.",
+    '`class Note { constructor(title) { this.title = title; } }` then `new Note("Milk")`. Classes are a neater way to write what [[this-keyword|this]] and prototypes already do.',
+    { aliases: ["classes", "constructor", "new"] },
+  ),
+  term(
+    "reference-vs-value",
+    "Copying: values and references",
+    "Numbers and strings are copied; objects and arrays are shared until you copy them.",
+    "`const b = a` for an array makes two names for the same array, so changing `b` changes `a`. `[...a]` or `{ ...obj }` makes a copy. React relies on new copies to notice changes.",
+    {
+      aliases: ["reference", "mutation", "copy", "immutable"],
+      kind: "concept",
+    },
+  ),
+  term(
+    "debugging",
+    "Debugging",
+    "Finding out why code doesn't do what you expected.",
+    "Read the error message, log values with [[console-log|console.log]], or pause the code with a breakpoint in the browser's developer tools and look at every variable.",
+    { aliases: ["debugger", "breakpoint", "bug"] },
+  ),
 ];
