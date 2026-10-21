@@ -2,6 +2,7 @@ import type { Exercise } from "@fsl/shared";
 import { buildExercises } from "./build.js";
 import { findExercises } from "./find.js";
 import { fixExercises } from "./fix.js";
+import { levelCheckExercises } from "./level-checks.js";
 import { predictExercises } from "./predict.js";
 import { traceExercises } from "./trace.js";
 
@@ -13,4 +14,5 @@ export const exercises: Exercise[] = [
   ...findExercises,
   ...fixExercises,
   ...buildExercises,
+  ...levelCheckExercises,
 ];

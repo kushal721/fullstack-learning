@@ -9,7 +9,18 @@ vi.mock("../content/glossary/index.js", async (importOriginal) => {
   const real =
     await importOriginal<typeof import("../content/glossary/index.js")>();
   const { fixtureTerm } = await import("./guided-path.fixture.js");
-  return { glossary: [...real.glossary, fixtureTerm] };
+  // The fixture path teaches only its own words, so the real topic's
+  // terms are left out (its concept entry stays: the fixture links it).
+  return {
+    glossary: [
+      ...real.glossary.filter(
+        (g) =>
+          g.topicId !== "how-the-web-works" ||
+          (g.kind === "concept" && g.conceptPageId),
+      ),
+      fixtureTerm,
+    ],
+  };
 });
 
 describe("pageMeta for guided steps", () => {
