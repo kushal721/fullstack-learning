@@ -1,17 +1,470 @@
 import type { GlossaryEntry } from "@fsl/shared";
 
 // Glossary entries introduced by the "How the Web Works" topic. Concept
-// entries are the short, beginner-sized form of a concept page.
+// entries are the short, beginner-sized form of a concept page; terms are
+// the words the topic's steps use. Words a later topic explains in full
+// (HTTPS, JSON, CORS, hosting) get their own beginner entry here, linking
+// to that concept.
+
+const term = (
+  id: string,
+  name: string,
+  short: string,
+  body: string,
+  extra: Partial<Pick<GlossaryEntry, "aliases" | "analogy" | "kind">> = {},
+): GlossaryEntry => ({
+  id,
+  topicId: "how-the-web-works",
+  term: name,
+  kind: "term",
+  short,
+  body,
+  ...extra,
+});
+
 export const howTheWebWorksGlossary: GlossaryEntry[] = [
   {
     id: "how-the-web-works",
     topicId: "how-the-web-works",
     term: "How the web works",
-    aliases: ["the web", "web"],
+    aliases: ["how the internet works"],
     kind: "concept",
     short:
       "A page reaches your screen through requests and responses between your browser and a server.",
     body: "Your browser (the client) sends a request for a page, and a server sends back a response. The rules for these messages are [[http-request-response|HTTP]], and [[https]] is the encrypted version. A URL says which server to ask and what to ask it for, and [[domain-dns|DNS]] turns the name into the server's address.",
     conceptPageId: "how-the-web-works",
   },
+
+  // --- Basic ----------------------------------------------------------------
+  term(
+    "client",
+    "Client",
+    "The program that asks for things, like your browser or a phone app.",
+    "The client starts every conversation: it sends a [[request]] and waits for a [[response]]. Your [[browser]] is the client you use most. In the Notes App, the React app is the client.",
+    { analogy: "The customer in a restaurant: you order, you don't cook." },
+  ),
+  term(
+    "server",
+    "Server",
+    "A computer (or program) that is always on, holds data and answers requests.",
+    "A server waits for [[request|requests]] from [[client|clients]] and sends back [[response|responses]]. One server can answer thousands of clients at the same time. The Notes App's Express API is a server.",
+    {
+      analogy:
+        "The kitchen in a restaurant: it gets orders and sends food out.",
+    },
+  ),
+  term(
+    "client-server",
+    "Client–server model",
+    "The web is split into askers (clients) and answerers (servers).",
+    "Almost everything on the web follows this pattern: a [[client]] sends a [[request]], a [[server]] does the work and sends a [[response]]. The client never reaches into the server's data directly; it can only ask.",
+    { kind: "concept", aliases: ["client server"] },
+  ),
+  term(
+    "internet",
+    "Internet",
+    "The worldwide network of connected computers.",
+    "The internet is the roads: cables, Wi-Fi and routers that carry [[packet|packets]] between computers. The [[web]] is one of many things that travel on it; email and video calls are others.",
+  ),
+  term(
+    "web",
+    "Web",
+    "The pages and apps you open in a browser, linked together by URLs.",
+    "The World Wide Web runs on top of the [[internet]]. It uses [[url|URLs]] to name things, [[http]] to ask for them and [[html]] to describe pages.",
+    { aliases: ["world wide web", "www"] },
+  ),
+  term(
+    "network",
+    "Network",
+    "Computers connected so they can send each other messages.",
+    "Your home Wi-Fi is a small network. The [[internet]] is a network of networks. Every device on a network has an [[ip-address]].",
+  ),
+  term(
+    "url",
+    "URL",
+    "A web address: which server to ask, and what to ask it for.",
+    "A URL has parts: the [[protocol]], the [[domain]], the [[path]] and sometimes a [[query]]. Example: `https://notes.app/notes/7?sort=new`.",
+    { aliases: ["web address", "address", "link"] },
+  ),
+  term(
+    "protocol",
+    "Protocol",
+    "The agreed rules for how two computers talk.",
+    "In a [[url]] the protocol comes first: `http` or [[https-basics|https]]. It tells the browser which language to speak with the [[server]].",
+    { aliases: ["scheme"] },
+  ),
+  term(
+    "domain",
+    "Domain",
+    "The name of a website, like notes.app.",
+    "Domains are for people. Computers use [[ip-address|IP addresses]], so [[dns]] turns the domain into one. You rent a domain from a registrar, usually by the year; see [[domain-dns|domains and DNS]].",
+    { aliases: ["domain name", "hostname"] },
+  ),
+  term(
+    "path",
+    "Path",
+    "The part of a URL after the domain that says which page or data you want.",
+    "In `https://notes.app/notes/7` the path is `/notes/7`. The [[server]] decides what each path means: in the Notes App, its routes say what `/notes/7` returns.",
+  ),
+  term(
+    "query",
+    "Query string",
+    "Extra options at the end of a URL, after a ?.",
+    "`?sort=new&page=2` is a query with two parameters, joined by `&`. Servers use them for searching, sorting and filtering. It is part of the [[url]].",
+    { aliases: ["query", "parameters", "query parameters"] },
+  ),
+  term(
+    "ip-address",
+    "IP address",
+    "A computer's number on the internet, like 76.76.21.21.",
+    "Every device on a [[network]] has one. To connect, your browser needs the [[server]]'s IP address, which it gets from [[dns]]. Newer (IPv6) addresses look like `2606:4700::6810:84e5`.",
+    { aliases: ["ip"] },
+  ),
+  term(
+    "dns",
+    "DNS",
+    "The internet's phone book: it turns domain names into IP addresses.",
+    "When you type a [[domain]], the browser asks a [[resolver]] for its [[ip-address]]. The answer is [[cache|cached]] for a while, so the next lookup is instant. Behind the scenes it reads [[dns-record|DNS records]].",
+    {
+      aliases: ["domain name system"],
+      analogy:
+        "Your phone's contacts: you tap a name, the phone dials the number.",
+    },
+  ),
+  term(
+    "resolver",
+    "DNS resolver",
+    "The DNS server that looks up addresses for you.",
+    "Usually run by your internet provider, or a public one like `1.1.1.1`. It asks other name servers on your behalf and [[cache|caches]] their answers for the [[ttl]].",
+    { aliases: ["resolver"] },
+  ),
+  term(
+    "cache",
+    "Caching",
+    "Keeping a copy of an answer so you don't have to ask again.",
+    "[[dns]] resolvers, browsers and [[cdn|CDNs]] all cache. It makes the web fast, but a copy can be out of date, so every copy has an expiry: a [[ttl]] for DNS, [[cache-control]] for HTTP.",
+    {
+      kind: "concept",
+      aliases: ["cache", "cached"],
+      analogy:
+        "Writing a phone number on a sticky note instead of looking it up every time.",
+    },
+  ),
+  term(
+    "request",
+    "Request",
+    "A message from a client asking a server for something.",
+    "A request says what you want (a [[method]] and a [[path]]) plus extra information in [[header|headers]]. Every page, image and note you load starts as a request.",
+    { aliases: ["http request"] },
+  ),
+  term(
+    "response",
+    "Response",
+    "The server's answer to a request.",
+    "A response has a [[status-code]] saying how it went, [[header|headers]], and usually a body with the content, such as [[html]] or [[json-data|JSON]].",
+    { aliases: ["http response"] },
+  ),
+  term(
+    "request-response",
+    "Request–response cycle",
+    "One request goes out, one response comes back: the heartbeat of the web.",
+    "Opening one page runs this cycle many times: once for the [[html]], then once per [[resource]]. Each cycle is independent, because [[http]] is [[stateless]]. The full detail is in [[http-request-response|HTTP request and response]].",
+    { kind: "concept", aliases: ["request response"] },
+  ),
+  term(
+    "http",
+    "HTTP",
+    "The language browsers and servers use for requests and responses.",
+    "HTTP defines what a [[request]] and a [[response]] look like: [[method|methods]], [[status-code|status codes]] and [[header|headers]]. It is [[stateless]]: each request stands on its own. [[https-basics|HTTPS]] is the encrypted version.",
+    { aliases: ["hypertext transfer protocol"] },
+  ),
+  term(
+    "method",
+    "HTTP method",
+    "The verb of a request: what you want to do.",
+    "[[get]] reads, [[post]] creates, PUT and PATCH change, DELETE removes. The Notes App uses all of them for its notes. More in [[http-methods|HTTP methods]].",
+    { aliases: ["method", "verb"] },
+  ),
+  term(
+    "get",
+    "GET",
+    "The method for reading something without changing it.",
+    "Opening a page or loading your notes is a GET. GETs are safe to repeat and can be [[cache|cached]]. Compare [[post]].",
+  ),
+  term(
+    "post",
+    "POST",
+    "The method for sending new data to the server.",
+    "Submitting a form or creating a note is a POST. The data travels in the request body, often as [[json-data|JSON]]. Compare [[get]].",
+  ),
+  term(
+    "header",
+    "Header",
+    "An extra line of information on a request or response.",
+    "Headers are `Name: value` pairs, like `Content-Type: application/json`. They describe the message without being the content. Common ones: [[content-type]], [[cache-control]] and `Cookie` ([[cookie]]).",
+    { aliases: ["headers", "http header"] },
+  ),
+  term(
+    "status-code",
+    "Status code",
+    "A three-digit number in a response that says how the request went.",
+    "2xx worked. 3xx look elsewhere ([[redirect]]). 4xx your request had a problem: 404 not found, 401 not logged in. 5xx the [[server]] failed.",
+    { aliases: ["status", "200", "404", "500"] },
+  ),
+  term(
+    "https-basics",
+    "HTTPS",
+    "HTTP with encryption, shown by the padlock in the address bar.",
+    "HTTPS wraps [[http]] in [[tls]], so nobody between you and the [[server]] can read or change the messages. Every real site uses it; browsers warn about plain HTTP. The full story: [[https|HTTPS]].",
+    { aliases: ["padlock", "secure connection"] },
+  ),
+  term(
+    "encryption",
+    "Encryption",
+    "Scrambling a message so only the intended reader can unscramble it.",
+    "[[https-basics|HTTPS]] encrypts everything you send and receive, using keys agreed during the [[tls]] handshake. Someone on the same café Wi-Fi sees only noise.",
+    {
+      kind: "concept",
+      aliases: ["encrypted"],
+      analogy:
+        "A letter in a locked box that only the receiver has the key to.",
+    },
+  ),
+  term(
+    "browser",
+    "Browser",
+    "The program that fetches pages and turns them into what you see.",
+    "Chrome, Safari, Firefox and Edge are browsers. A browser is a [[client]]: it sends [[request|requests]], reads the [[html]], applies the [[css]] and runs the [[javascript]].",
+    { aliases: ["web browser", "chrome", "safari", "firefox"] },
+  ),
+  term(
+    "html",
+    "HTML",
+    "The language that gives a page its structure: headings, text, links, buttons.",
+    "HTML is the first file the browser gets. It names the other [[resource|resources]] to load ([[css]], [[javascript]], images). The browser turns it into the [[dom]]. See [[html-document|HTML document]].",
+  ),
+  term(
+    "css",
+    "CSS",
+    "The language that controls how a page looks: colours, sizes, layout.",
+    "CSS rules pick elements from the [[html]] and style them. Change the CSS and the same page looks completely different. See [[css-selector|CSS selectors]].",
+  ),
+  term(
+    "javascript",
+    "JavaScript",
+    "The language that makes pages do things: react to clicks, load data, update the screen.",
+    "JavaScript runs in the [[browser]]. It changes the page through the [[dom]] and asks [[api|APIs]] for data. React, which the Notes App uses, is written in JavaScript.",
+    { aliases: ["js"] },
+  ),
+  term(
+    "resource",
+    "Resource",
+    "Any file a page needs: HTML, CSS, JavaScript, images, fonts.",
+    "Each resource is its own [[request]] and [[response]]. A typical page loads dozens; [[cache|caching]] and [[cdn|CDNs]] keep that fast.",
+    { aliases: ["asset", "file"] },
+  ),
+
+  // --- Intermediate ---------------------------------------------------------
+  term(
+    "port",
+    "Port",
+    "A number that picks which program on a computer gets the message.",
+    "One server runs many programs. [[https-basics|HTTPS]] uses port 443 and plain [[http]] port 80, so you rarely see them. In development the Notes App API listens on port 3000: `http://localhost:3000`. Part of an [[origin]].",
+    {
+      aliases: ["443", "80", "3000"],
+      analogy:
+        "The flat number in a building: the street address gets you to the building, the flat number to the right door.",
+    },
+  ),
+  term(
+    "tcp",
+    "TCP",
+    "The rules that make sure data arrives complete and in order.",
+    "Before [[http]] talks, the browser and server open a TCP connection. TCP cuts data into [[packet|packets]], numbers them and resends any that get lost. Each new connection costs a round trip of [[latency]].",
+    { aliases: ["transmission control protocol", "connection"] },
+  ),
+  term(
+    "packet",
+    "Packet",
+    "A small chunk of data travelling across the internet.",
+    "Big messages are cut into packets that may take different routes across the [[internet]]; [[tcp]] puts them back in order.",
+  ),
+  term(
+    "content-type",
+    "Content-Type",
+    "The header that says what kind of data the body is.",
+    "`text/html` for pages, `application/json` for [[api]] data, `image/png` for images. The [[browser]] uses this [[header]] to decide what to do with the [[response]].",
+    { aliases: ["mime type", "media type"] },
+  ),
+  term(
+    "stateless",
+    "Stateless",
+    "Each HTTP request stands alone; the server doesn't remember the last one.",
+    "[[http]] has no memory between [[request|requests]]. That is why logging in needs a [[cookie]] or a token: something must travel with every request to say who you are.",
+    { kind: "concept", aliases: ["statelessness"] },
+  ),
+  term(
+    "cookie",
+    "Cookie",
+    "A small piece of data the server asks the browser to keep and send back.",
+    "The server sets it with a `Set-Cookie` [[header]]; the browser attaches it to every later [[request]] to that site. It is how you stay logged in even though HTTP is [[stateless]]. Often holds a [[session]] id. See [[secure-cookies|secure cookies]].",
+    { aliases: ["cookies", "set-cookie"] },
+  ),
+  term(
+    "session",
+    "Session",
+    "The server's memory of one logged-in visitor, found through a cookie.",
+    "After you log in, the server stores who you are under a random id and sends that id in a [[cookie]]. Each request brings the id back, and the server looks you up.",
+  ),
+  term(
+    "cache-control",
+    "Cache-Control",
+    "The header that says if and how long a response may be cached.",
+    "`max-age=3600` means keep it for an hour. `no-cache` means keep it but check first. `no-store` means never keep it, used for private data like your notes. See [[cache]].",
+    { aliases: ["max-age", "no-store", "no-cache"] },
+  ),
+  term(
+    "redirect",
+    "Redirect",
+    "A response that says “what you want is at this other URL”.",
+    "A 3xx [[status-code]] plus a `Location` [[header]]. 301 is permanent; 302 and 307 are temporary. The browser follows it on its own; you just see the new [[url]].",
+    { aliases: ["301", "302", "location"] },
+  ),
+  term(
+    "json-data",
+    "JSON",
+    "A text format for data, made of { } objects and [ ] lists.",
+    '[[api|APIs]] send JSON because every language can read it. `{"id": 7, "title": "Shopping"}` is one note. Its [[content-type]] is `application/json`. The full concept: [[json]].',
+    { aliases: ["javascript object notation", "application/json"] },
+  ),
+  term(
+    "api",
+    "API",
+    "URLs a program can call to get or change data, instead of pages for people.",
+    "The Notes App's React [[client]] calls the API at `/api/notes` and gets [[json-data|JSON]] back, then draws the list itself. Each URL plus [[method]] is an endpoint; see [[rest-endpoint|REST endpoints]].",
+    { kind: "concept", aliases: ["endpoint", "web api"] },
+  ),
+  term(
+    "web-hosting",
+    "Hosting",
+    "Renting a computer that is always on and connected, to run your server.",
+    "Your [[domain]]'s DNS points at the host's [[ip-address]]. Most apps today use [[cloud]] hosting. The Deployment topic does it for real: see [[hosting]].",
+    { aliases: ["host", "web host"] },
+  ),
+  term(
+    "cloud",
+    "Cloud",
+    "Servers you rent by the hour from a big provider instead of owning them.",
+    "AWS, Google Cloud, Azure and smaller hosts like Render. You pay for what you use and can add more [[server|servers]] in minutes. See [[web-hosting|hosting]].",
+    { aliases: ["aws", "cloud hosting"] },
+  ),
+  term(
+    "cdn",
+    "CDN",
+    "Copies of your files on servers around the world, close to visitors.",
+    "A visitor in Tokyo gets [[resource|files]] from a nearby CDN server instead of yours in Europe, which cuts [[latency]]. A CDN is a big, shared [[cache]].",
+    { aliases: ["content delivery network"] },
+  ),
+  term(
+    "dom",
+    "DOM",
+    "The browser's live tree of everything on the page, built from the HTML.",
+    "[[javascript]] changes the page by changing the DOM; React does it for you. See [[rendering]].",
+    { aliases: ["document object model"] },
+  ),
+  term(
+    "rendering",
+    "Rendering",
+    "Turning HTML, CSS and JavaScript into pixels on the screen.",
+    "Read the [[html]] → build the [[dom]] → apply the [[css]] → work out sizes and positions (layout) → paint pixels. When the DOM changes, the browser redoes the later steps.",
+    { kind: "concept", aliases: ["render", "paint", "layout"] },
+  ),
+  term(
+    "devtools",
+    "DevTools",
+    "The browser's built-in tools for looking inside a page.",
+    "Press F12 (⌥⌘I on a Mac). The Network tab lists every [[request]] with its [[status-code]], [[header|headers]] and timing; Elements shows the [[dom]].",
+    { aliases: ["developer tools", "network tab", "inspector"] },
+  ),
+
+  // --- Advanced -------------------------------------------------------------
+  term(
+    "tls",
+    "TLS",
+    "The encryption layer under HTTPS.",
+    "Before any HTTP is sent, browser and server run a TLS handshake: the server proves who it is with a [[certificate]], and both agree on keys for [[encryption]]. That is the S in [[https-basics|HTTPS]].",
+    { kind: "concept", aliases: ["ssl", "handshake", "tls handshake"] },
+  ),
+  term(
+    "certificate",
+    "Certificate",
+    "A signed file that proves a server really owns its domain.",
+    "Issued by a certificate authority (Let's Encrypt is free). The browser checks it during the [[tls]] handshake; an expired or wrong one shows a full-page warning.",
+    {
+      aliases: ["ssl certificate", "tls certificate", "certificate authority"],
+    },
+  ),
+  term(
+    "dns-record",
+    "DNS record",
+    "One entry in a domain's DNS settings.",
+    "An **A** record maps a name to an IPv4 [[ip-address]], **AAAA** to IPv6, **CNAME** points one name at another, **MX** says where email goes. Each has a [[ttl]]. See [[dns]].",
+    { aliases: ["a record", "cname", "mx record", "records"] },
+  ),
+  term(
+    "ttl",
+    "TTL",
+    "Time to live: how long a cached answer may be kept.",
+    "A [[dns-record]] with TTL 300 may be [[cache|cached]] for 5 minutes. Lower it before moving servers so the change spreads quickly.",
+    { aliases: ["time to live"] },
+  ),
+  term(
+    "http2",
+    "HTTP/2 and HTTP/3",
+    "Newer versions of HTTP that send many requests over one connection.",
+    "HTTP/1.1 sends one [[request]] at a time per connection. HTTP/2 sends many at once over one [[tcp]] connection; HTTP/3 uses QUIC so one lost [[packet]] doesn't hold up the rest. Both cut [[latency]].",
+    { aliases: ["http2", "http3", "quic", "multiplexing"] },
+  ),
+  term(
+    "origin",
+    "Origin",
+    "Protocol + domain + port, like https://notes.app:443.",
+    "Browsers keep origins apart (the same-origin policy), so one site's [[javascript]] can't read another site's data. A server can relax this with [[cors-basics|CORS]]. Built from the [[protocol]], [[domain]] and [[port]].",
+    { kind: "concept", aliases: ["same-origin policy", "same origin"] },
+  ),
+  term(
+    "cors-basics",
+    "CORS",
+    "Rules that let a server allow other origins to call its API.",
+    "If a page on one [[origin]] calls an [[api]] on another, the browser asks first; the server answers with `Access-Control-Allow-…` [[header|headers]]. CORS is enforced by the [[browser]], not by the server. The full concept: [[cors]].",
+    { aliases: ["cross-origin", "access-control-allow-origin"] },
+  ),
+  term(
+    "load-balancer",
+    "Load balancer",
+    "A server that spreads incoming requests over several copies of your app.",
+    "It sends each [[request]] to a healthy copy and skips copies that fail. The copies must not keep users in memory; use the database or a [[cookie]]-based [[session]] store.",
+    { aliases: ["load balancing", "scaling out"] },
+  ),
+  term(
+    "proxy",
+    "Proxy",
+    "A server that sits between client and server and passes messages on.",
+    "A reverse proxy sits in front of your app: it handles [[https-basics|HTTPS]], [[cache|caching]] and compression, and often [[load-balancer|load balancing]], so your app only has to do the logic.",
+    { aliases: ["reverse proxy", "nginx"] },
+  ),
+  term(
+    "latency",
+    "Latency",
+    "The waiting before data starts arriving: distance and round trips.",
+    "Each round trip adds latency: [[dns]], [[tcp]], [[tls]], then the [[request]] itself. [[cdn|CDNs]], [[cache|caching]] and [[http2]] each remove some of them.",
+    { kind: "concept", aliases: ["delay", "round trip", "rtt"] },
+  ),
+  term(
+    "websocket",
+    "WebSocket",
+    "A connection that stays open so the server can send messages at any time.",
+    "Normal [[http]] is ask-then-answer: the [[server]] can't speak first. A WebSocket starts as an HTTP [[request]], then stays open so both sides can send whenever they like. Used for chat and live updates.",
+    { aliases: ["websockets", "live updates", "push"] },
+  ),
 ];

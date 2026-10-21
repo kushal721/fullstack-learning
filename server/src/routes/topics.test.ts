@@ -20,7 +20,7 @@ describe("GET /api/topics", () => {
       title: "How the Web Works",
       summary: expect.any(String),
       children: [],
-      hasPath: false,
+      hasPath: true,
     });
     expect(JSON.stringify(body)).not.toContain('"overview"');
     expect(body.whereToStart).toMatch(/How the Web Works/);
