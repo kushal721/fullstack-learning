@@ -14,10 +14,13 @@ import {
 import { serveClient } from "./middleware/serveClient.js";
 import { buildStepsRouter } from "./routes/build-steps.js";
 import { conceptsRouter } from "./routes/concepts.js";
+import { courseMapRouter } from "./routes/course-map.js";
 import { exercisesRouter } from "./routes/exercises.js";
 import { filesRouter } from "./routes/files.js";
 import { flowsRouter } from "./routes/flows.js";
+import { glossaryRouter } from "./routes/glossary.js";
 import { healthRouter } from "./routes/health.js";
+import { pathsRouter } from "./routes/paths.js";
 import { projectRouter } from "./routes/project.js";
 import { searchRouter } from "./routes/search.js";
 import { seoRouter } from "./routes/seo.js";
@@ -61,6 +64,9 @@ export function createApp({
   app.use("/api/symbols", symbolsRouter);
   app.use("/api/flows", flowsRouter);
   app.use("/api/exercises", exercisesRouter);
+  app.use("/api/paths", pathsRouter);
+  app.use("/api/glossary", glossaryRouter);
+  app.use("/api/course-map", courseMapRouter);
   app.use("/api/search", searchRouter);
   app.use("/api", notFound);
   app.use(seoRouter);

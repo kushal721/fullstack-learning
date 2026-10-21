@@ -127,4 +127,12 @@ export const apiPaths = {
   exercise: (id: string) => `/exercises/${encodeURIComponent(id)}`,
   checkExercise: (id: string) => `/exercises/${encodeURIComponent(id)}/check`,
   search: (query: string) => `/search?q=${encodeURIComponent(query)}`,
+  path: (topic: string) => `/paths/${encodeURIComponent(topic)}`,
+  step: (topic: string, step: string) =>
+    `/paths/${encodeURIComponent(topic)}/steps/${encodeURIComponent(step)}`,
+  checkStep: (topic: string, step: string) =>
+    `/paths/${encodeURIComponent(topic)}/steps/${encodeURIComponent(step)}/check`,
+  glossary: () => "/glossary",
+  glossaryEntry: (id: string) => `/glossary/${encodeURIComponent(id)}`,
+  courseMap: () => "/course-map",
 };

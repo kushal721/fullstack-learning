@@ -116,8 +116,12 @@ describe("search", () => {
 
   it("indexes every registry but not lock files", () => {
     const index = buildSearchIndex();
+    // Terms arrive with the first guided path (#387); routes/paths.test.ts
+    // covers them with a fixture until then.
     expect(new Set(index.map((e) => e.type))).toEqual(
-      new Set(SEARCH_GROUPS.map((g) => g.type)),
+      new Set(
+        SEARCH_GROUPS.map((g) => g.type).filter((type) => type !== "term"),
+      ),
     );
     const lock = index.find((e) => e.id === "frontend/package-lock.json");
     expect(lock?.textWords).not.toContain("integrity");

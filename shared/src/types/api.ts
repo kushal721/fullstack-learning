@@ -1,4 +1,5 @@
 import type {
+  Block,
   BuildStep,
   CheckResult,
   CodeSymbol,
@@ -6,10 +7,15 @@ import type {
   ExerciseAnswer,
   FileTreeFolder,
   Flow,
+  GlossaryEntry,
+  Level,
+  PathSummary,
   PublicExercise,
   LayerOverview,
   ProjectFile,
   Relationship,
+  Scene,
+  Step,
   SymbolKind,
   Topic,
 } from "./content.ts";
@@ -272,6 +278,7 @@ export type CheckAnswerResponse = CheckResult;
 /** What a search result is, in the order results are grouped (spec §20). */
 export type SearchResultType =
   | "concept"
+  | "term"
   | "file"
   | "function"
   | "component"
@@ -300,3 +307,113 @@ export type SearchResponse = {
     total: number;
   }[];
 };
+
+// --- Guided learning --------------------------------------------------------
+
+/** A step in a list: enough for the step nav and links. */
+export type StepSummary = {
+  id: string;
+  /** The number the learner sees; Intermediate continues Basic's count. */
+  number: number;
+  level: Level;
+  kind: Step["kind"];
+  title: string;
+  minutes: number;
+};
+
+/** One level of a topic's path, with its numbered steps. */
+export type LevelSummary = {
+  level: Level;
+  outcome: string;
+  /** Step numbers of the level's first and last step, e.g. 19 and 30. */
+  firstNumber: number;
+  lastNumber: number;
+  minutes: number;
+  steps: StepSummary[];
+};
+
+/** GET /api/paths/:topic */
+export type PathResponse = {
+  topic: TopicSummary;
+  summary: PathSummary;
+  overviewScene: Scene;
+  /** Basic, Intermediate, Advanced. */
+  levels: LevelSummary[];
+};
+
+/** A block as sent to the browser: quick checks without their answer. */
+export type PublicBlock =
+  | Exclude<Block, { type: "check" }>
+  | Omit<Extract<Block, { type: "check" }>, "correctChoiceId" | "explanation">;
+
+/** A glossary entry in a list or search index: its one-line answer. */
+export type GlossaryEntrySummary = Pick<
+  GlossaryEntry,
+  "id" | "topicId" | "term" | "aliases" | "kind" | "short"
+>;
+
+/** A level-check question: the exercise (no answer) and the step it tests. */
+export type LevelCheckQuestionView = {
+  exercise: PublicExercise;
+  step: StepSummary;
+};
+
+/** GET /api/paths/:topic/steps/:step */
+export type StepResponse = {
+  topic: TopicSummary;
+  step: StepSummary;
+  blocks: PublicBlock[];
+  /** The scenes the step's scene blocks show, by id. */
+  scenes: Record<string, Scene>;
+  /** Every glossary entry the step links, in reading order. */
+  glossary: GlossaryEntrySummary[];
+  /** Level checks only. */
+  questions?: LevelCheckQuestionView[];
+  /** The steps before and after, across levels. */
+  previous?: StepSummary;
+  next?: StepSummary;
+};
+
+/** POST /api/paths/:topic/steps/:step/check — a quick check's answer. */
+export type QuickCheckRequest = {
+  /** Position of the check among the step's blocks, from 0. */
+  block: number;
+  choiceId: string;
+};
+
+/** GET /api/glossary — everything the glossary panel searches. */
+export type GlossaryIndexResponse = { entries: GlossaryEntrySummary[] };
+
+/** A step somewhere in the course, for "introduced in" and "used in". */
+export type StepLink = StepSummary & { topic: TopicSummary };
+
+/** GET /api/glossary/:id */
+export type GlossaryEntryResponse = {
+  entry: GlossaryEntry;
+  /** The first step of its own topic that links it, once one does. */
+  introducedIn?: StepLink;
+  /** Every step that links it, in reading order. */
+  usedIn: StepLink[];
+  /** Entries its body links. */
+  related: GlossaryEntrySummary[];
+  /** The long concept page, when it has one. */
+  conceptPage?: ConceptSummary;
+};
+
+/** One level of a topic on the course map. */
+export type CourseMapLevel = Omit<LevelSummary, "steps"> & {
+  stepCount: number;
+  /** What the level covers: its lesson titles. */
+  covers: string[];
+};
+
+/** A topic on the course map; "planned" topics have no path yet. */
+export type CourseMapTopic = {
+  topic: TopicSummary;
+  status: "ready" | "planned";
+  /** Empty while the topic is planned. */
+  levels: CourseMapLevel[];
+};
+
+/** GET /api/course-map — every topic in reading order. */
+export type CourseMapResponse = { topics: CourseMapTopic[] };
