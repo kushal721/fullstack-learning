@@ -8,6 +8,7 @@ import HomePage from "./pages/HomePage.tsx";
 // graphs or the practice runner. AppLayout shows a loading state meanwhile.
 const LearnPage = lazy(() => import("./pages/LearnPage.tsx"));
 const TopicPage = lazy(() => import("./pages/TopicPage.tsx"));
+const CourseMapPage = lazy(() => import("./pages/CourseMapPage.tsx"));
 const ConceptsPage = lazy(() => import("./pages/ConceptsPage.tsx"));
 const ConceptPage = lazy(() => import("./pages/ConceptPage.tsx"));
 const BuildPage = lazy(() => import("./pages/BuildPage.tsx"));
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="learn" element={<LearnPage />} />
         <Route path="learn/:topic" element={<TopicPage />} />
         <Route path="learn/:topic/:step" element={<TopicPage />} />
+        <Route path="course-map" element={<CourseMapPage />} />
         <Route path="concepts" element={<ConceptsPage />} />
         <Route path="concepts/:concept" element={<ConceptPage />} />
         <Route path="build" element={<BuildPage />} />

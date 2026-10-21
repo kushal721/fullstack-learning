@@ -280,6 +280,10 @@ describe("GET /api/course-map", () => {
       stepCount: 8,
       minutes: 7 * 3 + 5,
     });
+    expect(topics[0]!.levels[1]!.steps[0]).toMatchObject({
+      id: "intermediate-1",
+      number: 13,
+    });
     // Covers lists the lessons, not the level check.
     expect(topics[0]!.levels[2]!.covers).toHaveLength(5);
     expect(topics[1]).toMatchObject({ status: "planned", levels: [] });

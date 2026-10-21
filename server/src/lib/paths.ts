@@ -221,10 +221,10 @@ export function getCourseMap(): CourseMapResponse {
         topic: toTopicSummary(topic),
         status: path ? "ready" : "planned",
         levels: path
-          ? levelsOf(path).map(({ steps, ...level }) => ({
+          ? levelsOf(path).map((level) => ({
               ...level,
-              stepCount: steps.length,
-              covers: steps
+              stepCount: level.steps.length,
+              covers: level.steps
                 .filter((s) => s.kind === "lesson")
                 .map((s) => s.title),
             }))
