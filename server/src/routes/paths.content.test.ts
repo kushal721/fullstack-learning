@@ -15,6 +15,7 @@ const PLANNED: [
 ][] = [
   ["how-the-web-works", 18, 30, 40],
   ["html", 20, 34, 43],
+  ["css", 18, 30, 40],
 ];
 
 describe.each(PLANNED)(
