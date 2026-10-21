@@ -5,7 +5,12 @@ import { TopicNav } from "../learning-tree/TopicNav.tsx";
 import { NotFoundState } from "../ui/NotFoundState.tsx";
 import { PageHeader } from "../ui/PageHeader.tsx";
 import { PageMeta } from "../ui/PageMeta.tsx";
+import { Link, useLocation } from "react-router";
+import { GlossaryPanel } from "./GlossaryPanel.tsx";
+import { useGlossaryView } from "./glossary-view.ts";
+import { glossaryHref } from "./levels.ts";
 import { LevelSwitcher } from "./LevelSwitcher.tsx";
+import { LookUp } from "./LookUp.tsx";
 import { PathOverview } from "./PathOverview.tsx";
 import { PathSidebar } from "./PathSidebar.tsx";
 import { resetProgress, usePathProgress } from "./progress.ts";
@@ -37,6 +42,8 @@ function adjacent(tree: TopicTreeNode | undefined, id: string) {
 export function GuidedTopic({ path, stepId, tree }: Props) {
   const { topic, levels } = path;
   const progress = usePathProgress(topic.id);
+  const { search } = useLocation();
+  const glossaryOpen = useGlossaryView() !== null;
   const { visit } = progress;
 
   const allSteps = levels.flatMap((level) => level.steps);
@@ -60,7 +67,12 @@ export function GuidedTopic({ path, stepId, tree }: Props) {
     below.steps.some((s) => !progress.done.includes(s.id));
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[17rem_minmax(0,1fr)]">
+    <div
+      // Wide screens: the page makes room for the glossary panel.
+      className={`grid gap-10 lg:grid-cols-[17rem_minmax(0,1fr)] ${
+        glossaryOpen ? "xl:pr-[26rem]" : ""
+      }`}
+    >
       <aside
         aria-label="All topics"
         className="hidden lg:sticky lg:top-6 lg:block lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto"
@@ -94,12 +106,22 @@ export function GuidedTopic({ path, stepId, tree }: Props) {
           description={topic.summary}
         />
 
-        <LevelSwitcher
-          topicSlug={topic.slug}
-          levels={levels}
-          current={level.level}
-          progress={progress}
-        />
+        <div className="flex flex-wrap items-stretch gap-2">
+          <div className="min-w-0 basis-full sm:basis-0 sm:flex-1">
+            <LevelSwitcher
+              topicSlug={topic.slug}
+              levels={levels}
+              current={level.level}
+              progress={progress}
+            />
+          </div>
+          <Link
+            to={glossaryHref(search, { find: "" })}
+            className="flex min-h-10 items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium hover:bg-foreground/5"
+          >
+            Glossary
+          </Link>
+        </div>
         <StepDots
           topicSlug={topic.slug}
           level={level}
@@ -107,7 +129,7 @@ export function GuidedTopic({ path, stepId, tree }: Props) {
           done={progress.done}
         />
 
-        <div className="mt-8">
+        <div className="mt-8" data-lookup-area>
           {stepId && !step ? (
             <NotFoundState
               title="Step not found"
@@ -145,6 +167,8 @@ export function GuidedTopic({ path, stepId, tree }: Props) {
 
         <TopicNav {...adjacent(tree, topic.id)} />
       </article>
+      <GlossaryPanel topicSlug={topic.slug} stepId={step?.id} />
+      <LookUp />
     </div>
   );
 }

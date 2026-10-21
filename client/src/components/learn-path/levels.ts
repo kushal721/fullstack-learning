@@ -33,9 +33,23 @@ export function resumeStep(
 export const stepHref = (topicSlug: string, stepId?: string) =>
   stepId ? `/learn/${topicSlug}/${stepId}` : `/learn/${topicSlug}`;
 
-/** Opens the glossary panel on an entry, keeping the page where it is. */
-export function termHref(search: string, id: string) {
+/**
+ * The glossary panel lives in the URL: `?term=<id>` shows an entry,
+ * `?find=<text>` searches (empty: the A–Z list). Neither: closed.
+ */
+export function glossaryHref(
+  search: string,
+  view: { term: string } | { find: string } | null,
+) {
   const params = new URLSearchParams(search);
-  params.set("term", id);
-  return `?${params}`;
+  params.delete("term");
+  params.delete("find");
+  if (view && "term" in view) params.set("term", view.term);
+  if (view && "find" in view) params.set("find", view.find);
+  const query = params.toString();
+  return query ? `?${query}` : "?";
 }
+
+/** Opens the glossary panel on an entry, keeping the page where it is. */
+export const termHref = (search: string, id: string) =>
+  glossaryHref(search, { term: id });

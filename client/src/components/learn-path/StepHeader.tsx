@@ -34,7 +34,7 @@ export function StepHeader({
       <h2
         ref={title}
         tabIndex={-1}
-        className="text-2xl font-semibold tracking-tight focus:outline-none"
+        className="text-2xl font-semibold tracking-tight"
       >
         {step.title}
       </h2>

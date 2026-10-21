@@ -21,6 +21,8 @@ const termClass =
  */
 export function StepText({ text, glossary = [] }: Props) {
   const { search } = useLocation();
+  // The word whose explanation is open in the panel is highlighted.
+  const open = new URLSearchParams(search).get("term");
   return (
     <>
       {text.split(TOKEN).map((part, i): ReactNode => {
@@ -32,7 +34,7 @@ export function StepText({ text, glossary = [] }: Props) {
               key={i}
               to={termHref(search, id)}
               title={entry?.short}
-              className={termClass}
+              className={`${termClass} ${id === open ? "bg-accent/15" : ""}`}
             >
               {label ?? entry?.term ?? id}
             </Link>
