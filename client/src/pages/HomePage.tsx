@@ -1,4 +1,4 @@
-import type { TopicTreeResponse } from "@fsl/shared";
+import type { PathResponse, TopicTreeResponse } from "@fsl/shared";
 import { Link } from "react-router";
 import { navItems } from "../components/layout/nav-items.ts";
 import { ButtonLink } from "../components/ui/ButtonLink.tsx";
@@ -7,6 +7,7 @@ import { ErrorState } from "../components/ui/ErrorState.tsx";
 import { Loading } from "../components/ui/Loading.tsx";
 import { RichText } from "../components/ui/RichText.tsx";
 import { useApi } from "../hooks/useApi.ts";
+import { useLatestProgress } from "../hooks/usePathProgress.ts";
 import { apiPaths } from "../services/api.ts";
 import { PageMeta } from "../components/ui/PageMeta.tsx";
 
@@ -16,6 +17,7 @@ export default function HomePage() {
   );
   const topics = data?.tree.children ?? [];
   const firstTopic = topics[0];
+  const resume = useResume(topics);
 
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-12 py-12">
@@ -52,8 +54,14 @@ export default function HomePage() {
               </p>
             )}
             <div className="mt-4 flex flex-wrap gap-3">
+              {resume && (
+                <ButtonLink to={resume.href}>{resume.label}</ButtonLink>
+              )}
               {firstTopic && (
-                <ButtonLink to={`/learn/${firstTopic.slug}`}>
+                <ButtonLink
+                  to={`/learn/${firstTopic.slug}`}
+                  variant={resume ? "secondary" : "primary"}
+                >
                   Start with {firstTopic.title}
                 </ButtonLink>
               )}
@@ -107,4 +115,22 @@ export default function HomePage() {
       )}
     </div>
   );
+}
+
+/**
+ * "Continue: How the Web Works, step 7": the step the learner was last on,
+ * in the topic they worked on most recently. None if that step is gone.
+ */
+function useResume(topics: TopicTreeResponse["tree"]["children"]) {
+  const latest = useLatestProgress();
+  const topic = topics.find((t) => t.id === latest?.topicId && t.hasPath);
+  const path = useApi<PathResponse>(topic ? apiPaths.path(topic.slug) : null);
+  const step = path.data?.levels
+    .flatMap((level) => level.steps)
+    .find((s) => s.id === latest?.stepId);
+  if (!topic || !step) return undefined;
+  return {
+    href: `/learn/${topic.slug}/${step.id}`,
+    label: `Continue: ${topic.title}, step ${step.number} →`,
+  };
 }

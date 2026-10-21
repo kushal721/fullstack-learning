@@ -13,7 +13,7 @@ import { LevelSwitcher } from "./LevelSwitcher.tsx";
 import { LookUp } from "./LookUp.tsx";
 import { PathOverview } from "./PathOverview.tsx";
 import { PathSidebar } from "./PathSidebar.tsx";
-import { resetProgress, usePathProgress } from "./progress.ts";
+import { resetProgress, usePathProgress } from "../../hooks/usePathProgress.ts";
 import { StepDots } from "./StepDots.tsx";
 import { StepPlayer } from "./StepPlayer.tsx";
 import { ContinuesNote, StepHeader } from "./StepHeader.tsx";

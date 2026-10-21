@@ -1,9 +1,16 @@
-import { render, screen, within } from "@testing-library/react";
+import {
+  act,
+  render,
+  renderHook,
+  screen,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
-import { topicTreeFixture } from "../test/fixtures.ts";
-import { mockFetchJson } from "../test/mock-fetch.ts";
+import { resetProgress, usePathProgress } from "../hooks/usePathProgress.ts";
+import { htmlPathFixture, topicTreeFixture } from "../test/fixtures.ts";
+import { mockFetchJson, mockFetchRoutes } from "../test/mock-fetch.ts";
 import HomePage from "./HomePage.tsx";
 
 function renderPage() {
@@ -17,6 +24,32 @@ function renderPage() {
 const whereToStart = "Begin with `HTML`, then follow the topics in order.";
 
 describe("HomePage", () => {
+  it("offers to continue the step the learner was last on", async () => {
+    resetProgress();
+    const tree = {
+      ...topicTreeFixture,
+      children: topicTreeFixture.children.map((topic) =>
+        topic.id === "html" ? { ...topic, hasPath: true } : topic,
+      ),
+    };
+    mockFetchRoutes({
+      "/api/topics": { tree },
+      "/api/paths/html": htmlPathFixture,
+    });
+    const { result } = renderHook(() => usePathProgress("html"));
+    act(() => result.current.visit("intermediate", "intermediate-1"));
+
+    renderPage();
+
+    expect(
+      await screen.findByRole("link", { name: "Continue: HTML, step 4 →" }),
+    ).toHaveAttribute("href", "/learn/html/intermediate-1");
+    expect(
+      screen.getByRole("link", { name: "Start with HTML" }),
+    ).toBeInTheDocument();
+    act(() => resetProgress());
+  });
+
   it("shows the philosophy and where to start, from the API", async () => {
     const fetchMock = mockFetchJson({ tree: topicTreeFixture, whereToStart });
     renderPage();

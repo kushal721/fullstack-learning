@@ -1,5 +1,5 @@
 import type { Level, LevelSummary, StepSummary } from "@fsl/shared";
-import type { PathProgress } from "./progress.ts";
+import type { PathProgress } from "../../hooks/usePathProgress.ts";
 
 /** How each level is named and coloured, everywhere it appears. */
 export const LEVEL_STYLE: Record<

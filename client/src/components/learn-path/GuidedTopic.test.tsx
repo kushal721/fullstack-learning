@@ -9,7 +9,7 @@ import {
   topicTreeFixture,
 } from "../../test/fixtures.ts";
 import { mockFetchRoutes } from "../../test/mock-fetch.ts";
-import { resetProgress } from "./progress.ts";
+import { resetProgress } from "../../hooks/usePathProgress.ts";
 
 // The fixture tree, with HTML marked as having a guided path.
 const tree = {

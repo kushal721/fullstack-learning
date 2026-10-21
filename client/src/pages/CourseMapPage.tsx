@@ -6,7 +6,7 @@ import {
   doneIn,
   stepHref,
 } from "../components/learn-path/levels.ts";
-import { usePathProgress } from "../components/learn-path/progress.ts";
+import { usePathProgress } from "../hooks/usePathProgress.ts";
 import { Badge } from "../components/ui/Badge.tsx";
 import { ErrorState } from "../components/ui/ErrorState.tsx";
 import { Loading } from "../components/ui/Loading.tsx";
