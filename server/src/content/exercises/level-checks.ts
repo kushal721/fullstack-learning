@@ -434,4 +434,44 @@ export const levelCheckExercises: PredictExercise[] = [
     explanation:
       "`for` is a JavaScript keyword, so JSX uses `htmlFor` (and `className` for `class`). React writes the normal `for` attribute into the real page.",
   }),
+  question({
+    id: "html-basic-block-inline",
+    title: "Block or inline",
+    prompt:
+      "You put `<span>One</span><span>Two</span>` in a page. How do they appear?",
+    choices: [
+      "On two lines",
+      "Side by side on one line",
+      "Not at all, a span needs a class",
+    ],
+    correct: 1,
+    conceptIds: ["html-element"],
+    hint: "Is `<span>` a block or an inline element?",
+    explanation:
+      "`<span>` is inline, so both sit in the same line of text (“OneTwo”). Two `<div>`s, which are block elements, would each start on a new line.",
+  }),
+  question({
+    id: "html-intermediate-entity",
+    title: "Showing a tag as text",
+    prompt:
+      "A page should show the text `<p>` to the reader. What goes in the HTML?",
+    choices: ["`<p>`", "`&lt;p&gt;`", "`<code><p></code>`"],
+    correct: 1,
+    conceptIds: ["html-element"],
+    hint: "The browser reads `<` as the start of a tag.",
+    explanation:
+      "`&lt;` and `&gt;` are character entities for < and >, so the browser shows them as text instead of starting a new paragraph element.",
+  }),
+  question({
+    id: "html-advanced-details",
+    title: "An FAQ without JavaScript",
+    prompt:
+      "Which element opens and closes a section on click, with no JavaScript?",
+    choices: ["`<section>`", "`<details>`", "`<aside>`"],
+    correct: 1,
+    conceptIds: ["html-semantic-structure"],
+    hint: "Its first child is a `<summary>`.",
+    explanation:
+      "`<details>` with a `<summary>` opens and closes by itself, and works with the keyboard and screen readers. `<section>` and `<aside>` only describe content.",
+  }),
 ];

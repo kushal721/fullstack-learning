@@ -73,3 +73,7 @@ export function termInText(
     term.includes(".");
   return keepsCapital ? term : term.charAt(0).toLowerCase() + term.slice(1);
 }
+
+/** Where a playground's preview comes from: the server's locked-down page. */
+export const playgroundSrc = (code: string) =>
+  `/playground?code=${encodeURIComponent(code)}`;

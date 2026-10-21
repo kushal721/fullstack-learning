@@ -14,7 +14,7 @@ const PLANNED: [
   advanced: number,
 ][] = [
   ["how-the-web-works", 18, 30, 40],
-  ["html", 16, 26, 34],
+  ["html", 20, 34, 43],
 ];
 
 describe.each(PLANNED)(

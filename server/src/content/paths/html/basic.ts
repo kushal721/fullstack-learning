@@ -8,11 +8,14 @@ import {
   keyPoints,
   lesson,
   levelCheck,
+  playground,
   quickCheck,
+  reference,
 } from "../blocks.js";
 
-// Basic: steps 1–16. Tags, elements and attributes, the page skeleton,
-// text, lists, links, images and simple forms.
+// Basic: steps 1–20. Tags, elements and attributes (with references of the
+// everyday ones and live examples), the page skeleton, text, lists, links,
+// images and simple forms.
 export const basic: LevelPlan = {
   outcome:
     "Write a simple page by hand: headings, text, lists, links, images and a form.",
@@ -49,6 +52,58 @@ export const basic: LevelPlan = {
       ),
     ),
     lesson(
+      "tags-for-text",
+      "Tags for text",
+      4,
+      reference("The tags you'll write most for text", [
+        [
+          "<h1>…<h6>",
+          "Headings, from the page title (`h1`) down to small sub-sections.",
+          "<h2>Shopping</h2>",
+        ],
+        ["<p>", "A paragraph of text.", "<p>Buy milk and eggs.</p>"],
+        [
+          "<strong>",
+          "Important text; browsers show it bold.",
+          "<strong>Don't forget!</strong>",
+        ],
+        [
+          "<em>",
+          "Stressed text; browsers show it in italics.",
+          "I <em>really</em> mean it.",
+        ],
+        ["<a>", "A link to another page or place.", '<a href="/help">Help</a>'],
+        [
+          "<br>",
+          "A line break inside text, like in an address.",
+          "Line one<br>Line two",
+        ],
+        [
+          "<code>",
+          "A piece of code inside a sentence.",
+          "Type <code>npm start</code>.",
+        ],
+        [
+          "<blockquote>",
+          "A quotation from somewhere else.",
+          "<blockquote>Less is more.</blockquote>",
+        ],
+        ["<hr>", "A break between topics, drawn as a line.", "<hr>"],
+      ]),
+      playground("Change the text, add a tag, watch the page", [
+        "<h1>My notes</h1>",
+        "<p>This is <strong>important</strong> and this is <em>stressed</em>.</p>",
+        "<p>First line<br>Second line</p>",
+        '<p>Read the <a href="#">guide</a>.</p>',
+      ]),
+      quickCheck(
+        "Which tag marks text as *important*?",
+        ["`<em>`", "`<strong>`", "`<p>`"],
+        1,
+        "`<strong>` means important (shown bold); `<em>` means stressed (shown in italics).",
+      ),
+    ),
+    lesson(
       "attributes",
       "Attributes: extra settings",
       3,
@@ -69,6 +124,57 @@ export const basic: LevelPlan = {
       ),
       explain(
         "`<img>` has no closing tag: it has no content, only attributes. That makes it a [[void-element|void element]].",
+      ),
+    ),
+    lesson(
+      "common-attributes",
+      "Attributes you'll use everywhere",
+      3,
+      reference("Everyday attributes", [
+        ["id", "A unique name for one element on the page.", '<h2 id="intro">'],
+        [
+          "class",
+          "A group name for styling or scripts; many elements can share it.",
+          '<p class="note">',
+        ],
+        ["href", "Where a link goes.", '<a href="/notes">'],
+        [
+          "src",
+          "Which file to show, for images, video and scripts.",
+          '<img src="cat.jpg">',
+        ],
+        [
+          "alt",
+          "What an image shows, for when it can't be seen.",
+          '<img alt="A cat">',
+        ],
+        ["type", "Which kind of input or button.", '<input type="email">'],
+        [
+          "name",
+          "The key a form field's value is sent under.",
+          '<input name="title">',
+        ],
+        [
+          "value",
+          "A field's starting value, or what a choice sends.",
+          '<input value="Milk">',
+        ],
+        [
+          "title",
+          "Extra text shown on hover; don't rely on it alone.",
+          '<abbr title="HyperText…">HTML</abbr>',
+        ],
+        [
+          "lang",
+          "The language of the page or a part of it.",
+          '<html lang="en">',
+        ],
+      ]),
+      quickCheck(
+        "Several notes on a page should share the same look. Which attribute groups them?",
+        ["`id`", "`class`", "`name`"],
+        1,
+        "An `id` must be unique; a `class` can be shared by many elements.",
       ),
     ),
     lesson(
@@ -96,6 +202,28 @@ export const basic: LevelPlan = {
       ),
     ),
     lesson(
+      "block-and-inline",
+      "Boxes and words: block and inline",
+      3,
+      explain(
+        "Most elements are either [[block-inline|block or inline]]. A block element, like `<p>` or `<h1>`, starts on a new line and takes the whole width. An inline element, like `<strong>` or `<a>`, sits inside a line of text.",
+      ),
+      explain(
+        "[[div-span|`<div>` and `<span>`]] are the plain versions: a `<div>` is a block box and a `<span>` an inline piece, with no meaning of their own. Use them only when no element with a meaning fits.",
+      ),
+      playground("Blocks stack, inline pieces flow", [
+        "<div>A div is a block</div>",
+        "<div>so this one starts on a new line.</div>",
+        "<p>A <span>span</span> and a <strong>strong</strong> stay in the line.</p>",
+      ]),
+      quickCheck(
+        "Which one starts on a new line by itself?",
+        ["`<span>`", "`<a>`", "`<p>`"],
+        2,
+        "`<p>` is a block element; `<span>` and `<a>` are inline.",
+      ),
+    ),
+    lesson(
       "page-skeleton",
       "The page skeleton",
       4,
@@ -120,11 +248,18 @@ export const basic: LevelPlan = {
           6: "everything you see",
         },
       ),
-      keyPoints(
-        "`<head>`: information about the page, like its title.",
-        "`<body>`: the content people see.",
-        "`lang` tells screen readers which language to speak.",
-      ),
+      playground("Your first page: edit the body", [
+        "<!doctype html>",
+        '<html lang="en">',
+        "  <head>",
+        "    <title>My notes</title>",
+        "  </head>",
+        "  <body>",
+        "    <h1>My notes</h1>",
+        "    <p>Write anything here.</p>",
+        "  </body>",
+        "</html>",
+      ]),
       quickCheck(
         "Where does the text you see on the page go?",
         ["In `<head>`", "In `<body>`", "Before `<!doctype html>`"],
@@ -211,6 +346,18 @@ export const basic: LevelPlan = {
         ],
         { 1: "order doesn't matter", 5: "order matters" },
       ),
+      playground("Make your own lists", [
+        "<h2>Shopping</h2>",
+        "<ul>",
+        "  <li>Milk</li>",
+        "  <li>Bread</li>",
+        "</ul>",
+        "<h2>Pancakes</h2>",
+        "<ol>",
+        "  <li>Mix</li>",
+        "  <li>Fry</li>",
+        "</ol>",
+      ]),
       quickCheck(
         "Recipe steps must be done in order. Which list?",
         ["`<ul>`", "`<ol>`", "Separate `<p>` paragraphs"],
@@ -341,6 +488,83 @@ export const basic: LevelPlan = {
       ),
     ),
     lesson(
+      "tag-cheat-sheet",
+      "Your everyday tag cheat sheet",
+      3,
+      reference("Everyday tags beyond text", [
+        [
+          "<div> <span>",
+          "Plain block and inline boxes, when nothing more meaningful fits.",
+          "<div>…</div>  <span>…</span>",
+        ],
+        [
+          "<ul> <ol> <li>",
+          "Bulleted and numbered lists, and their items.",
+          "<ul><li>Milk</li></ul>",
+        ],
+        [
+          "<img>",
+          "An image; needs `src` and `alt`.",
+          '<img src="a.png" alt="…">',
+        ],
+        [
+          "<video> <audio>",
+          "Video and sound with controls.",
+          '<video src="a.mp4" controls></video>',
+        ],
+        [
+          "<form>",
+          "Groups fields to send together.",
+          '<form action="/notes" method="post">',
+        ],
+        [
+          "<label> <input>",
+          "A field and its visible name.",
+          '<label for="t">Title</label>\n<input id="t">',
+        ],
+        [
+          "<textarea>",
+          "A box for several lines of text.",
+          '<textarea rows="4"></textarea>',
+        ],
+        [
+          "<select> <option>",
+          "A drop-down list of choices.",
+          "<select><option>Newest</option></select>",
+        ],
+        [
+          "<button>",
+          "Something to click that does an action.",
+          '<button type="submit">Save</button>',
+        ],
+        [
+          "<table> <tr> <td>",
+          "Data in rows and columns.",
+          "<table><tr><td>A</td></tr></table>",
+        ],
+        [
+          "<header> <main> <footer>",
+          "The big regions of a page (more in Intermediate).",
+          "<main>…</main>",
+        ],
+      ]),
+      playground("Build a small form", [
+        "<form>",
+        '  <label for="title">Title</label>',
+        '  <input id="title" name="title">',
+        '  <label for="text">Note</label>',
+        '  <textarea id="text" rows="3"></textarea>',
+        '  <button type="submit">Save</button>',
+        "</form>",
+      ]),
+      quickCheck(
+        "You need a box for a long, multi-line note. Which tag?",
+        ["`<input>`", "`<textarea>`", "`<p>`"],
+        1,
+        "`<input>` holds one line; `<textarea>` holds several.",
+      ),
+    ),
+    lesson(
       "the-notes-app-page",
       "The Notes App's page",
       3,
@@ -371,6 +595,7 @@ export const basic: LevelPlan = {
       ["html-basic-ordered-list", "lists"],
       ["html-basic-alt", "images"],
       ["html-basic-label", "inputs-and-labels"],
+      ["html-basic-block-inline", "block-and-inline"],
     ]),
   ],
 };

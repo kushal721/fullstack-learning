@@ -36,6 +36,12 @@ export const LIMITS = {
   blocksPerStep: [1, 4],
   levelCheckQuestions: [4, 8],
   sceneActors: [2, 5],
+  referenceRows: [2, 12],
+  referenceName: 40,
+  referenceText: 140,
+  referenceExample: 160,
+  referenceExampleLines: 4,
+  playgroundLines: 20,
   sceneSteps: [3, 12],
   caption: 120,
   short: 160,
@@ -198,6 +204,45 @@ function validateBlock(
         if (id !== undefined && !known.has(id)) {
           errors.push(`${where} inTheNotesApp links unknown ${kind} "${id}".`);
         }
+      }
+      break;
+    }
+    case "reference": {
+      if (!block.caption.trim())
+        errors.push(`${where} reference needs a caption.`);
+      if (outside(block.rows.length, LIMITS.referenceRows)) {
+        errors.push(
+          `${where} reference needs 2–12 rows (has ${block.rows.length}).`,
+        );
+      }
+      block.rows.forEach((row, i) => {
+        const at = `reference row ${i + 1}`;
+        if (!row.name.trim() || row.name.length > LIMITS.referenceName) {
+          errors.push(
+            `${where} ${at} needs a name of 1–${LIMITS.referenceName} characters.`,
+          );
+        }
+        tooLong(row.text, LIMITS.referenceText, `${at} text`);
+        if (
+          row.example !== undefined &&
+          (row.example.length > LIMITS.referenceExample ||
+            row.example.split("\n").length > LIMITS.referenceExampleLines)
+        ) {
+          errors.push(
+            `${where} ${at} example needs at most ${LIMITS.referenceExample} characters on ${LIMITS.referenceExampleLines} lines.`,
+          );
+        }
+      });
+      break;
+    }
+    case "playground": {
+      if (!block.caption.trim())
+        errors.push(`${where} playground needs a caption.`);
+      const lines = block.code.split("\n").length;
+      if (!block.code.trim() || lines > LIMITS.playgroundLines) {
+        errors.push(
+          `${where} playground needs 1–${LIMITS.playgroundLines} lines of code (has ${lines}).`,
+        );
       }
       break;
     }

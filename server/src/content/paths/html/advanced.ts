@@ -6,10 +6,11 @@ import {
   keyPoints,
   lesson,
   levelCheck,
+  playground,
   quickCheck,
 } from "../blocks.js";
 
-// Advanced: steps 27–34. ARIA, search engines, loading, images, web
+// Advanced: steps 35–43. ARIA, search engines, loading, images, web
 // components and how HTML looks inside React.
 export const advanced: LevelPlan = {
   outcome:
@@ -177,6 +178,34 @@ export const advanced: LevelPlan = {
       ),
     ),
     lesson(
+      "details-and-dialog",
+      "Built-in interactive elements",
+      3,
+      explain(
+        "Some elements are interactive with no JavaScript at all. [[details-dialog|`<details>` and `<dialog>`]]: `<details>` opens and closes a section when its `<summary>` is clicked; `<dialog>` is a pop-up box with focus handled for you.",
+      ),
+      playground("Click the summary to open it", [
+        "<details>",
+        "  <summary>What is HTML?</summary>",
+        "  <p>The language web pages are written in.</p>",
+        "</details>",
+        "<details open>",
+        "  <summary>This one starts open</summary>",
+        "  <p>Add or remove the open attribute.</p>",
+        "</details>",
+      ]),
+      quickCheck(
+        "Why use `<details>` for a FAQ instead of a `<div>` and a script?",
+        [
+          "It looks nicer",
+          "It opens and closes by itself, with keyboard and screen reader support",
+          "It loads faster",
+        ],
+        1,
+        "Built-in elements bring the behaviour and the accessibility for free.",
+      ),
+    ),
+    lesson(
       "html-in-react",
       "HTML inside React",
       3,
@@ -211,6 +240,7 @@ export const advanced: LevelPlan = {
       ["html-advanced-div-button", "first-rule-of-aria"],
       ["html-advanced-defer", "script-loading"],
       ["html-advanced-htmlfor", "html-in-react"],
+      ["html-advanced-details", "details-and-dialog"],
     ]),
   ],
 };

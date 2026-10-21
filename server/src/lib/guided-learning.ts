@@ -50,6 +50,8 @@ export function blockTexts(block: Block): string[] {
       return [block.text];
     case "keyPoints":
       return block.items;
+    case "reference":
+      return block.rows.map((row) => row.text);
     case "check":
       return [
         block.question,
