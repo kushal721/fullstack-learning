@@ -474,4 +474,188 @@ export const levelCheckExercises: PredictExercise[] = [
     explanation:
       "`<details>` with a `<summary>` opens and closes by itself, and works with the keyboard and screen readers. `<section>` and `<aside>` only describe content.",
   }),
+
+  // CSS
+  question({
+    id: "css-basic-property",
+    title: "Property or value",
+    prompt: "In `p { font-size: 18px; }`, what is `18px`?",
+    choices: ["The selector", "The property", "The value"],
+    correct: 2,
+    conceptIds: ["css-selector"],
+    hint: "The part after the colon.",
+    explanation:
+      "`p` is the selector, `font-size` the property and `18px` the value it is set to. Together `font-size: 18px;` is one declaration.",
+  }),
+  question({
+    id: "css-basic-class",
+    title: "Sharing a look",
+    prompt:
+      "Several elements should share the same style. What do you give them?",
+    choices: ["The same id", "The same class", "The same tag name only"],
+    correct: 1,
+    conceptIds: ["css-selector"],
+    hint: "Ids must be unique on a page.",
+    explanation:
+      "A class can be used by many elements, and one element can have several classes. Ids are unique, and id selectors are hard to override.",
+  }),
+  question({
+    id: "css-basic-rem",
+    title: "Text that grows",
+    prompt: "Which unit follows the size people set for text in their browser?",
+    choices: ["px", "rem", "vw"],
+    correct: 1,
+    conceptIds: ["css-responsive"],
+    hint: "It is relative to the root font size.",
+    explanation:
+      "`rem` multiplies the root font size, which grows when someone enlarges text in their browser settings. `px` stays fixed and `vw` follows the window width.",
+  }),
+  question({
+    id: "css-basic-padding",
+    title: "Space inside the border",
+    prompt:
+      "You want more space between a box's border and its text. Which property?",
+    choices: ["margin", "padding", "gap"],
+    correct: 1,
+    conceptIds: ["css-box-model"],
+    hint: "Inside or outside the border?",
+    explanation:
+      "Padding is the space inside the border, around the content. Margin is outside the border and pushes other boxes away; gap spaces flex and grid items.",
+  }),
+  question({
+    id: "css-basic-display-none",
+    title: "Hiding an element",
+    prompt: "Which hides an element so it takes no space at all?",
+    choices: ["`visibility: hidden`", "`display: none`", "`opacity: 0`"],
+    correct: 1,
+    conceptIds: ["css-box-model"],
+    hint: "Two of these leave an empty space behind.",
+    explanation:
+      "`display: none` removes the box from the layout. `visibility: hidden` and `opacity: 0` make it invisible but it still takes its space.",
+  }),
+  question({
+    id: "css-basic-align",
+    title: "Centring in a row",
+    prompt: "Flex items are in a row. Which property centres them vertically?",
+    choices: ["`justify-content`", "`align-items`", "`text-align`"],
+    correct: 1,
+    conceptIds: ["css-flexbox"],
+    hint: "In a row, vertical is the cross axis.",
+    explanation:
+      "In a row the main axis is horizontal, so `justify-content` spaces items left to right and `align-items` lines them up top to bottom.",
+  }),
+  question({
+    id: "css-intermediate-fr",
+    title: "What fr means",
+    prompt: "What does `grid-template-columns: 1fr 1fr 1fr` make?",
+    choices: ["Three equal columns", "One column", "Three rows"],
+    correct: 0,
+    conceptIds: ["css-flexbox"],
+    hint: "fr is a share of the free space.",
+    explanation:
+      "Each `1fr` is one equal share of the space left over, so three of them make three equal columns that grow and shrink with the container.",
+  }),
+  question({
+    id: "css-intermediate-mobile-first",
+    title: "Mobile first",
+    prompt: "In mobile-first CSS, what do media queries usually add?",
+    choices: [
+      "Styles for smaller screens",
+      "Layout for wider screens",
+      "Print styles only",
+    ],
+    correct: 1,
+    conceptIds: ["css-responsive"],
+    hint: "The default styles are for phones.",
+    explanation:
+      "Mobile-first writes the simple phone layout as the default and uses `@media (min-width: …)` to add columns and space as the screen gets wider.",
+  }),
+  question({
+    id: "css-intermediate-absolute",
+    title: "An absolute badge",
+    prompt:
+      "A badge with `position: absolute` sits in the page corner instead of its card's. What fixes it?",
+    choices: [
+      "`position: relative` on the card",
+      "A larger z-index",
+      "`display: block` on the badge",
+    ],
+    correct: 0,
+    conceptIds: ["css-box-model"],
+    hint: "Absolute positions inside the nearest positioned ancestor.",
+    explanation:
+      "An absolutely positioned element is placed relative to its nearest positioned ancestor. Without one, that's the page; `position: relative` on the card makes the card the anchor.",
+  }),
+  question({
+    id: "css-intermediate-specificity",
+    title: "Which rule wins",
+    prompt:
+      "`#main h1 { color: blue }` comes first and `.title { color: red }` second. An h1 matches both. Its colour?",
+    choices: [
+      "Red, because it comes later",
+      "Blue, because the id is more specific",
+      "Black, because they cancel out",
+    ],
+    correct: 1,
+    conceptIds: ["css-selector"],
+    hint: "Specificity is checked before order.",
+    explanation:
+      "Order only decides between equally specific selectors. `#main h1` contains an id, which beats any number of classes, so blue wins.",
+  }),
+  question({
+    id: "css-advanced-var",
+    title: "Using a variable",
+    prompt: "How do you use the custom property `--brand` as a colour?",
+    choices: [
+      "`color: --brand;`",
+      "`color: var(--brand);`",
+      "`color: $brand;`",
+    ],
+    correct: 1,
+    conceptIds: ["css-selector"],
+    hint: "Custom properties are read with a function.",
+    explanation:
+      "Custom properties are defined with two dashes and read with `var()`, as in `color: var(--brand);`. Changing `--brand` in one place updates every use.",
+  }),
+  question({
+    id: "css-advanced-has",
+    title: "Selecting a parent",
+    prompt: "Which selector styles only the cards that contain an image?",
+    choices: ["`.card img`", "`.card:has(img)`", "`img + .card`"],
+    correct: 1,
+    conceptIds: ["css-selector"],
+    hint: "One of these selects the image, not the card.",
+    explanation:
+      "`.card:has(img)` matches the card itself when it contains an image. `.card img` would style the image inside the card instead.",
+  }),
+  question({
+    id: "css-advanced-container",
+    title: "Container queries",
+    prompt: "What does a container query check?",
+    choices: [
+      "The size of the browser window",
+      "The size of a parent element",
+      "The user's device type",
+    ],
+    correct: 1,
+    conceptIds: ["css-responsive"],
+    hint: "It's the local version of a media query.",
+    explanation:
+      "A container query responds to the size of an element marked with `container-type`, so the same component can adapt wherever it is placed.",
+  }),
+  question({
+    id: "css-advanced-dark",
+    title: "Dark mode",
+    prompt: "Which media feature follows the system's light or dark setting?",
+    choices: [
+      "`prefers-color-scheme`",
+      "`prefers-reduced-motion`",
+      "`min-width`",
+    ],
+    correct: 0,
+    conceptIds: ["css-responsive"],
+    hint: "Its values are light and dark.",
+    explanation:
+      "`@media (prefers-color-scheme: dark)` applies when the system is in dark mode, usually by swapping the values of colour custom properties.",
+  }),
 ];
