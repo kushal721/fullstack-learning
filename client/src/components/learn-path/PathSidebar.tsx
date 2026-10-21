@@ -1,7 +1,7 @@
 import type { Level, LevelSummary } from "@fsl/shared";
 import { Link } from "react-router";
 import { LEVEL_STYLE, doneIn, resumeStep, stepHref } from "./levels.ts";
-import type { PathProgress } from "./progress.ts";
+import type { PathProgress } from "../../hooks/usePathProgress.ts";
 
 type Props = {
   topicSlug: string;

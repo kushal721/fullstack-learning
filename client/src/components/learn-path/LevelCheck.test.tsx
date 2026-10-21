@@ -8,7 +8,7 @@ import {
   htmlStep3Fixture,
   topicTreeFixture,
 } from "../../test/fixtures.ts";
-import { resetProgress } from "./progress.ts";
+import { resetProgress } from "../../hooks/usePathProgress.ts";
 
 const tree = {
   ...topicTreeFixture,

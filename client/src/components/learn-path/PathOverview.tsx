@@ -3,7 +3,7 @@ import { ButtonLink } from "../ui/ButtonLink.tsx";
 import { Badge } from "../ui/Badge.tsx";
 import { LEVEL_STYLE, doneIn, resumeStep, stepHref } from "./levels.ts";
 import { ScenePlayer } from "./ScenePlayer.tsx";
-import type { PathProgress } from "./progress.ts";
+import type { PathProgress } from "../../hooks/usePathProgress.ts";
 
 type Props = {
   topicSlug: string;
