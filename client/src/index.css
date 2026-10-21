@@ -66,6 +66,12 @@ body {
   outline-offset: 2px;
 }
 
+/* Elements only scripts focus (main, a new step's title) aren't controls;
+   focusing them just tells screen readers where to start reading. */
+[tabindex="-1"]:focus-visible {
+  outline: none;
+}
+
 /* People who ask their system for less motion get none: a safety net for
    transitions and animations (the flow canvas also checks this itself and
    jumps instead of gliding). */

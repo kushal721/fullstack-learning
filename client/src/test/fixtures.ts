@@ -1,6 +1,8 @@
 import type {
   ConceptResponse,
   FileTreeFolder,
+  GlossaryEntryResponse,
+  GlossaryIndexResponse,
   Level,
   PathResponse,
   StepResponse,
@@ -368,4 +370,77 @@ export const htmlStep3Fixture: StepResponse = {
   glossary: [],
   previous: htmlStep(0, 1),
   next: htmlStep(1, 0),
+};
+
+/** GET /api/glossary: the panel's index (A to Z). */
+export const glossaryIndexFixture: GlossaryIndexResponse = {
+  entries: [
+    {
+      id: "html-document",
+      topicId: "html",
+      term: "HTML document",
+      aliases: ["doctype"],
+      kind: "term",
+      short: "The whole file.",
+    },
+    {
+      id: "html-element",
+      topicId: "html",
+      term: "HTML element",
+      aliases: ["tag"],
+      kind: "concept",
+      short: "One building block of a page.",
+    },
+    {
+      id: "json",
+      topicId: "javascript",
+      term: "JSON",
+      kind: "concept",
+      short: "A text format for data.",
+    },
+  ],
+};
+
+const htmlLink = (index: number) => ({
+  ...htmlPathFixture.levels[0]!.steps[index]!,
+  topic: htmlPathFixture.topic,
+});
+
+/** GET /api/glossary/html-element */
+export const htmlElementEntryFixture: GlossaryEntryResponse = {
+  entry: {
+    id: "html-element",
+    topicId: "html",
+    term: "HTML element",
+    aliases: ["tag"],
+    kind: "concept",
+    short: "One building block of a page.",
+    body: "Elements live in an [[html-document]] and nest inside each other.",
+    analogy: "A brick in a wall.",
+    conceptPageId: "html-element",
+  },
+  introducedIn: htmlLink(0),
+  usedIn: [htmlLink(0), htmlLink(1)],
+  related: [glossaryIndexFixture.entries[0]!],
+  conceptPage: {
+    id: "html-element",
+    slug: "html-element",
+    title: "HTML element",
+    topicId: "html",
+    summary: "One building block.",
+  },
+};
+
+/** GET /api/glossary/html-document */
+export const htmlDocumentEntryFixture: GlossaryEntryResponse = {
+  entry: {
+    id: "html-document",
+    topicId: "html",
+    term: "HTML document",
+    kind: "term",
+    short: "The whole file.",
+    body: "A document holds every [[html-element|element]] of a page.",
+  },
+  usedIn: [],
+  related: [glossaryIndexFixture.entries[1]!],
 };
