@@ -32,11 +32,18 @@ export function StepDots({ topicSlug, level, currentStepId, done }: Props) {
   const listRef = useRef<HTMLOListElement>(null);
   const doneCount = doneIn(level, done);
   const order = [undefined, ...level.steps.map((step) => step.id)];
+  // Set by ← →: once the new step is shown, focus its dot.
+  const focusCurrent = useRef(false);
 
   useEffect(() => {
-    listRef.current
-      ?.querySelector('[aria-current="step"]')
-      ?.scrollIntoView?.({ block: "nearest", inline: "center" });
+    const current = listRef.current?.querySelector<HTMLElement>(
+      '[aria-current="step"]',
+    );
+    current?.scrollIntoView?.({ block: "nearest", inline: "center" });
+    if (focusCurrent.current) {
+      focusCurrent.current = false;
+      current?.focus();
+    }
   }, [currentStepId]);
 
   function onKeyDown(event: KeyboardEvent) {
@@ -45,13 +52,9 @@ export function StepDots({ topicSlug, level, currentStepId, done }: Props) {
       order.indexOf(currentStepId) + (event.key === "ArrowRight" ? 1 : -1);
     if (index < 0 || index >= order.length) return;
     event.preventDefault();
+    // Keep keyboard focus on the dot that becomes current (see the effect).
+    focusCurrent.current = true;
     navigate(stepHref(topicSlug, order[index]));
-    // Keep keyboard focus on the dot that is now current.
-    requestAnimationFrame(() =>
-      listRef.current
-        ?.querySelector<HTMLElement>('[aria-current="step"]')
-        ?.focus(),
-    );
   }
 
   return (

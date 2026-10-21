@@ -23,8 +23,9 @@ export default function App() {
       <Route element={<AppLayout />}>
         <Route index element={<HomePage />} />
         <Route path="learn" element={<LearnPage />} />
-        <Route path="learn/:topic" element={<TopicPage />} />
-        <Route path="learn/:topic/:step" element={<TopicPage />} />
+        {/* One route for a topic and its guided steps, so moving between
+            them keeps the page (and keyboard focus) instead of rebuilding. */}
+        <Route path="learn/:topic/:step?" element={<TopicPage />} />
         <Route path="course-map" element={<CourseMapPage />} />
         {/* Sections that moved (#384): concepts live in the glossary panel,
             practice in the checks, the project view in the Explorer. */}

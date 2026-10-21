@@ -3,20 +3,30 @@ import { ButtonLink } from "../ui/ButtonLink.tsx";
 import { PageHeader } from "../ui/PageHeader.tsx";
 import { PageMeta } from "../ui/PageMeta.tsx";
 
-type Props = { children: ReactNode };
+type Props = {
+  children: ReactNode;
+  /** A crash is cleared when this changes (the learner moved on). */
+  resetKey?: string;
+};
 type State = { error: Error | null };
 
 /**
  * Catches a crash while showing a page (a bug, or a part of the app that
  * failed to download), so the header and navigation keep working and the
- * learner gets a way forward instead of a blank screen. AppLayout gives it
- * a new key on every navigation, so the next page starts fresh.
+ * learner gets a way forward instead of a blank screen. A new `resetKey`
+ * (every navigation) clears the error, so the next page starts fresh.
  */
 export class RouteErrorBoundary extends Component<Props, State> {
   state: State = { error: null };
 
   static getDerivedStateFromError(error: Error): State {
     return { error };
+  }
+
+  componentDidUpdate(previous: Props) {
+    if (this.state.error && previous.resetKey !== this.props.resetKey) {
+      this.setState({ error: null });
+    }
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
