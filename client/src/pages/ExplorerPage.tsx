@@ -15,6 +15,7 @@ import {
 import { explorerSymbolHref } from "../components/connection-graph/links.ts";
 import { FileMetadata } from "../components/file-explorer/FileMetadata.tsx";
 import { FileTree } from "../components/file-explorer/FileTree.tsx";
+import { ProjectEvolution } from "../components/project-evolution/ProjectEvolution.tsx";
 import { ErrorState } from "../components/ui/ErrorState.tsx";
 import { Loading } from "../components/ui/Loading.tsx";
 import { PageHeader } from "../components/ui/PageHeader.tsx";
@@ -126,11 +127,8 @@ export default function ExplorerPage() {
                 file={selected ? selected.path : null}
               />
             )}
-            {!selectedPath && !symbolId && (
-              <p className="text-muted">
-                Choose a file to see what it does and why it exists.
-              </p>
-            )}
+            {/* The start screen: the project as it grows, step by step. */}
+            {!selectedPath && !symbolId && <ProjectEvolution />}
             {selected && !symbolId && <FileSymbolList path={selected.path} />}
             {selectedPath && !selected && (
               <p role="alert">

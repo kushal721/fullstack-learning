@@ -8,9 +8,9 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { beforeEach, describe, expect, it } from "vitest";
-import { clearApiCache } from "../hooks/useApi.ts";
-import { mockFetchRoutes } from "../test/mock-fetch.ts";
-import ProjectPage from "./ProjectPage.tsx";
+import { clearApiCache } from "../../hooks/useApi.ts";
+import { mockFetchRoutes } from "../../test/mock-fetch.ts";
+import { ProjectEvolution } from "./ProjectEvolution.tsx";
 
 const steps: BuildStepListResponse = {
   buildSteps: [
@@ -78,7 +78,7 @@ function renderAt(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
-        <Route path="/project" element={<ProjectPage />} />
+        <Route path="/project" element={<ProjectEvolution />} />
         <Route path="*" element={null} />
       </Routes>
       <Location />
@@ -86,7 +86,7 @@ function renderAt(path: string) {
   );
 }
 
-describe("ProjectPage", () => {
+describe("ProjectEvolution", () => {
   beforeEach(() => clearApiCache());
 
   it("shows the last step by default, with before, after and the changes", async () => {

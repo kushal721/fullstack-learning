@@ -3,7 +3,6 @@ import { getConceptBySlug, getConceptsInReadingOrder } from "./concepts.js";
 import { getFlow, getFlows } from "./flow-tracer.js";
 import { getAllTopics, getTopicBySlug } from "./learning-tree.js";
 import { getPathView } from "./paths.js";
-import { getExercise, getExercises } from "./practice.js";
 
 export const SITE_NAME = "Full-Stack Learning";
 const MAX_DESCRIPTION = 160;
@@ -32,11 +31,6 @@ const SECTIONS: Record<string, { title?: string; description: string }> = {
     description:
       "Every topic in three levels, Basic, Intermediate and Advanced, with numbered steps that run straight through each topic.",
   },
-  "/concepts": {
-    title: "Concepts",
-    description:
-      "Every concept explained the same way, from the basics, and connected to the Notes App's real code.",
-  },
   "/build": {
     title: "Build",
     description:
@@ -47,20 +41,10 @@ const SECTIONS: Record<string, { title?: string; description: string }> = {
     description:
       "Read the Notes App's code file by file and trace how every piece connects.",
   },
-  "/project": {
-    title: "Project",
-    description:
-      "Watch the Notes App grow: the files each build step adds, changes and removes.",
-  },
   "/flow": {
     title: "Flow",
     description:
       "Follow data step by step, from a click in the browser to the database and back to the screen.",
-  },
-  "/practice": {
-    title: "Practice",
-    description:
-      "Test yourself on the Notes App's real code: predict, trace, find, fix and plan features.",
   },
 };
 
@@ -128,12 +112,6 @@ export function pageMeta(pathname: string, search = ""): PageMeta {
       const step = getStepBySlug(decoded);
       return step ? page(`${step.order}. ${step.title}`, step.goal) : NOT_FOUND;
     }
-    case "practice": {
-      const exercise = getExercise(decoded);
-      return exercise
-        ? page(`${exercise.title} · Practice`, exercise.prompt)
-        : NOT_FOUND;
-    }
     default:
       return NOT_FOUND;
   }
@@ -152,6 +130,5 @@ export function sitemapPaths(): string[] {
     ...getConceptsInReadingOrder().map((c) => `/concepts/${c.slug}`),
     ...getOrderedSteps().map((step) => `/build/${step.slug}`),
     ...getFlows().map((flow) => `/flow?flow=${flow.id}`),
-    ...getExercises().map((exercise) => `/practice/${exercise.id}`),
   ];
 }

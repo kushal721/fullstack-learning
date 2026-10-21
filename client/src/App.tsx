@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { Route, Routes } from "react-router";
+import { Navigate, Route, Routes, useLocation } from "react-router";
 import { AppLayout } from "./components/layout/AppLayout.tsx";
 import HomePage from "./pages/HomePage.tsx";
 
@@ -9,15 +9,11 @@ import HomePage from "./pages/HomePage.tsx";
 const LearnPage = lazy(() => import("./pages/LearnPage.tsx"));
 const TopicPage = lazy(() => import("./pages/TopicPage.tsx"));
 const CourseMapPage = lazy(() => import("./pages/CourseMapPage.tsx"));
-const ConceptsPage = lazy(() => import("./pages/ConceptsPage.tsx"));
 const ConceptPage = lazy(() => import("./pages/ConceptPage.tsx"));
 const BuildPage = lazy(() => import("./pages/BuildPage.tsx"));
 const BuildStepPage = lazy(() => import("./pages/BuildStepPage.tsx"));
 const ExplorerPage = lazy(() => import("./pages/ExplorerPage.tsx"));
-const ProjectPage = lazy(() => import("./pages/ProjectPage.tsx"));
 const FlowPage = lazy(() => import("./pages/FlowPage.tsx"));
-const PracticePage = lazy(() => import("./pages/PracticePage.tsx"));
-const ExercisePage = lazy(() => import("./pages/ExercisePage.tsx"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage.tsx"));
 
 // Every URL of the platform. All pages render inside AppLayout.
@@ -30,17 +26,25 @@ export default function App() {
         <Route path="learn/:topic" element={<TopicPage />} />
         <Route path="learn/:topic/:step" element={<TopicPage />} />
         <Route path="course-map" element={<CourseMapPage />} />
-        <Route path="concepts" element={<ConceptsPage />} />
+        {/* Sections that moved (#384): concepts live in the glossary panel,
+            practice in the checks, the project view in the Explorer. */}
+        <Route path="concepts" element={<Moved to="/course-map" />} />
         <Route path="concepts/:concept" element={<ConceptPage />} />
         <Route path="build" element={<BuildPage />} />
         <Route path="build/:step" element={<BuildStepPage />} />
         <Route path="explorer" element={<ExplorerPage />} />
-        <Route path="project" element={<ProjectPage />} />
+        <Route path="project" element={<Moved to="/explorer" />} />
         <Route path="flow" element={<FlowPage />} />
-        <Route path="practice" element={<PracticePage />} />
-        <Route path="practice/:exercise" element={<ExercisePage />} />
+        <Route path="practice" element={<Moved to="/course-map" />} />
+        <Route path="practice/:exercise" element={<Moved to="/course-map" />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );
+}
+
+/** An old address: go to the new one, keeping ?query (e.g. /project?step=4). */
+function Moved({ to }: { to: string }) {
+  const { search } = useLocation();
+  return <Navigate to={`${to}${search}`} replace />;
 }
