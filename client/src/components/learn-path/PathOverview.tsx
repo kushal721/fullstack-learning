@@ -2,7 +2,7 @@ import type { PathResponse } from "@fsl/shared";
 import { ButtonLink } from "../ui/ButtonLink.tsx";
 import { Badge } from "../ui/Badge.tsx";
 import { LEVEL_STYLE, doneIn, resumeStep, stepHref } from "./levels.ts";
-import { SceneText } from "./StepBlocks.tsx";
+import { ScenePlayer } from "./ScenePlayer.tsx";
 import type { PathProgress } from "./progress.ts";
 
 type Props = {
@@ -40,7 +40,7 @@ export function PathOverview({ topicSlug, path, progress, onReset }: Props) {
       </ul>
 
       <h2 className="mb-3 mt-10 text-xl font-semibold">See it happen</h2>
-      <SceneText scene={overviewScene} />
+      <ScenePlayer scene={overviewScene} />
 
       <h2 className="mb-2 mt-10 text-xl font-semibold">
         Three levels, one numbered path

@@ -9,7 +9,9 @@ import { Link } from "react-router";
 import { ApiRequestError, apiPaths, apiPost } from "../../services/api.ts";
 import { CodeBlock } from "../code-viewer/CodeBlock.tsx";
 import { Badge } from "../ui/Badge.tsx";
+import { ScenePlayer } from "./ScenePlayer.tsx";
 import { StepText } from "./StepText.tsx";
+import { TryIt } from "./TryItWidgets.tsx";
 
 type Context = {
   topicSlug: string;
@@ -17,33 +19,6 @@ type Context = {
   glossary: GlossaryEntrySummary[];
   scenes: Record<string, Scene>;
 };
-
-/**
- * A scene as text: every move, captioned. The animated player (#380) shows
- * this list under the picture.
- */
-export function SceneText({ scene }: { scene: Scene }) {
-  return (
-    <figure className="rounded-lg border border-border">
-      <figcaption className="border-b border-border bg-foreground/5 px-4 py-2 text-sm font-medium">
-        {scene.title}
-      </figcaption>
-      <ol className="flex flex-col gap-1 p-3 text-sm">
-        {scene.steps.map((step, i) => (
-          <li key={i} className="flex gap-3">
-            <span className="w-5 shrink-0 text-right text-muted">{i + 1}.</span>
-            <span>
-              <span className="font-medium">{step.caption}</span>
-              {step.detail && (
-                <span className="text-muted"> {step.detail}</span>
-              )}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </figure>
-  );
-}
 
 type QuickCheckBlock = Extract<PublicBlock, { type: "check" }>;
 
@@ -267,10 +242,9 @@ export function StepBlock({
       );
     case "scene": {
       const scene = context.scenes[block.sceneId];
-      return scene ? <SceneText scene={scene} /> : null;
+      return scene ? <ScenePlayer scene={scene} compact /> : null;
     }
     case "tryIt":
-      // The interactive widgets come with #380.
-      return null;
+      return <TryIt widget={block.widget} glossary={context.glossary} />;
   }
 }
