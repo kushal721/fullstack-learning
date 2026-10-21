@@ -6,8 +6,12 @@ import type {
 import { buildSteps } from "../content/build-steps/index.js";
 import { concepts } from "../content/concepts/index.js";
 import { flows } from "../content/flows/index.js";
+import { glossary } from "../content/glossary/index.js";
+import { topicPaths } from "../content/paths/index.js";
 import { relationships } from "../content/relationships.js";
 import { symbols } from "../content/symbols.js";
+import { glossaryUsage } from "./guided-learning.js";
+import { getAllTopics } from "./learning-tree.js";
 import { getAllFiles, readSourceSync } from "./project-files.js";
 import { getSymbol, withLine } from "./project-graph.js";
 
@@ -25,6 +29,7 @@ export type SearchEntry = SearchResult & {
 /** Group order and labels, as in spec §20. */
 export const SEARCH_GROUPS: { type: SearchResultType; label: string }[] = [
   { type: "concept", label: "Concepts" },
+  { type: "term", label: "Terms" },
   { type: "file", label: "Files" },
   { type: "function", label: "Functions" },
   { type: "component", label: "Components" },
@@ -91,7 +96,12 @@ export function buildSearchIndex(): SearchEntry[] {
   const conceptTitle = new Map(concepts.map((c) => [c.id, c.title]));
   const entries: SearchEntry[] = [];
 
+  const shortForm = new Map(
+    glossary.flatMap((g) => (g.conceptPageId ? [[g.conceptPageId, g]] : [])),
+  );
   for (const concept of concepts) {
+    // The glossary's other names find the concept too ("usestate setter").
+    const glossaryEntry = shortForm.get(concept.id);
     entries.push(
       entry(
         {
@@ -101,7 +111,32 @@ export function buildSearchIndex(): SearchEntry[] {
           text: concept.summary,
           href: `/concepts/${concept.slug}`,
         },
-        [concept.id, ...concept.what, ...concept.basics].join(" "),
+        [
+          concept.id,
+          ...(glossaryEntry?.aliases ?? []),
+          glossaryEntry?.short ?? "",
+          ...concept.what,
+          ...concept.basics,
+        ].join(" "),
+      ),
+    );
+  }
+
+  // Terms (single words) open where they are taught, with the panel open.
+  const usage = glossaryUsage(topicPaths, glossary);
+  const topicSlug = new Map(getAllTopics().map((t) => [t.id, t.slug]));
+  for (const term of glossary.filter((g) => g.kind === "term")) {
+    const step = usage.get(term.id)?.introducedIn?.stepId;
+    entries.push(
+      entry(
+        {
+          type: "term",
+          id: term.id,
+          title: term.term,
+          text: term.short,
+          href: `/learn/${topicSlug.get(term.topicId)}${step ? `/${step}` : ""}?${new URLSearchParams({ term: term.id })}`,
+        },
+        [term.id, ...(term.aliases ?? []), term.body].join(" "),
       ),
     );
   }
