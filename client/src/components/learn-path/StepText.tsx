@@ -53,12 +53,16 @@ export function StepText({ text, glossary = [] }: Props) {
         if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
           return (
             <strong key={i} className="font-semibold">
-              {part.slice(2, -2)}
+              <StepText text={part.slice(2, -2)} glossary={glossary} />
             </strong>
           );
         }
         if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
-          return <em key={i}>{part.slice(1, -1)}</em>;
+          return (
+            <em key={i}>
+              <StepText text={part.slice(1, -1)} glossary={glossary} />
+            </em>
+          );
         }
         return <Fragment key={i}>{part}</Fragment>;
       })}
