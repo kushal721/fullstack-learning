@@ -220,7 +220,7 @@ function Entry({
                   ) : (
                     <Link
                       to={glossaryHref(search, { term: other })}
-                      className="hover:text-accent hover:underline"
+                      className="underline hover:text-accent"
                     >
                       {termOf(other)}
                     </Link>
@@ -323,10 +323,7 @@ function Entry({
               {others.map((step, i) => (
                 <span key={`${step.topic.id}-${step.id}`}>
                   {i > 0 && ", "}
-                  <Link
-                    to={stepLink(step)}
-                    className="text-accent hover:underline"
-                  >
+                  <Link to={stepLink(step)} className="text-accent underline">
                     step {step.number}
                     {step.topic.id !== introducedIn.topic.id &&
                       ` of ${step.topic.title}`}
