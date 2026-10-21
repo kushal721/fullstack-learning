@@ -12,7 +12,7 @@ import { type PathRefs, validatePaths } from "./path-validation.js";
 
 const refs: PathRefs = {
   topicIds: ["web", "html", "css"],
-  conceptIds: new Set(["dns-concept"]),
+  concepts: new Map([["dns-concept", "web"]]),
   exerciseIds: new Set(["q1", "q2", "q3", "q4"]),
   fileIds: new Set(["frontend/src/App.jsx"]),
   symbolIds: new Set(["fn:handleSave"]),
@@ -441,6 +441,31 @@ describe("validatePaths", () => {
         'Glossary entry "Bad Id" "analogy" needs 1–200 characters (has 201).',
         'Glossary entry "Bad Id" points at unknown concept page "nope".',
       ]);
+    });
+
+    it("requires exactly one entry per concept page, in the concept's topic", () => {
+      const twoConcepts = {
+        ...refs,
+        concepts: new Map([
+          ["dns-concept", "web"],
+          ["tags-concept", "html"],
+        ]),
+      };
+      expect(validatePaths([makePath()], glossary(), twoConcepts)).toEqual([
+        'Concept "tags-concept" has no glossary entry; add one with conceptPageId "tags-concept".',
+      ]);
+
+      const entries = glossary();
+      entries[0]!.conceptPageId = "dns-concept";
+      entries[1]!.topicId = "html";
+      expect(validatePaths([], entries, refs)).toEqual([
+        'Glossary entry "server" belongs to "html", but its concept page "dns-concept" is in "web".',
+        'Concept "dns-concept" has 2 glossary entries; keep one.',
+      ]);
+    });
+
+    it("doesn't require concept entries while the glossary is empty", () => {
+      expect(validatePaths([], [], refs)).toEqual([]);
     });
 
     it("requires every entry of a topic with a path to be introduced by one of its steps", () => {
