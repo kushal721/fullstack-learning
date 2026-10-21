@@ -1,12 +1,15 @@
 import type {
   FlowResponse,
   LayerView,
+  PathResponse,
   TopicResponse,
+  TopicTreeNode,
   TopicTreeResponse,
 } from "@fsl/shared";
 import { lazy, type ReactNode, Suspense } from "react";
 import { Link } from "react-router";
 import { useParams } from "react-router";
+import { GuidedTopic } from "../components/learn-path/GuidedTopic.tsx";
 import { LearningTree } from "../components/learning-tree/LearningTree.tsx";
 import { TopicNav } from "../components/learning-tree/TopicNav.tsx";
 import { explorerFileHref } from "../components/connection-graph/links.ts";
@@ -23,13 +26,57 @@ import { apiPaths } from "../services/api.ts";
 import { PageMeta } from "../components/ui/PageMeta.tsx";
 
 export default function TopicPage() {
-  const { topic: slug = "" } = useParams();
-  const page = useApi<TopicResponse>(apiPaths.topic(slug));
-  // Already cached if the learner came from /learn.
+  const { topic: slug = "", step } = useParams();
+  // Already cached if the learner came from /learn. It says which topics
+  // have a guided path, so no request is made for a path that isn't there.
   const tree = useApi<TopicTreeResponse>(apiPaths.topicTree());
+  const hasPath = tree.data ? findTopic(tree.data.tree, slug)?.hasPath : false;
+  const path = useApi<PathResponse>(hasPath ? apiPaths.path(slug) : null);
 
-  // Moving to the next topic should start at the top of the page.
-  useScrollToTop(slug);
+  // Moving to another topic or step should start at the top of the page.
+  useScrollToTop(`${slug}/${step ?? ""}`);
+
+  if (tree.isLoading || (hasPath && path.isLoading)) {
+    return <Loading label="Loading topic…" />;
+  }
+  if (path.data) {
+    return (
+      <GuidedTopic path={path.data} stepId={step} tree={tree.data?.tree} />
+    );
+  }
+  // No guided path, or it failed to load: the classic topic page.
+  if (step) {
+    return (
+      <NotFoundState
+        title="Step not found"
+        message={`This topic has no step called "${step}".`}
+      />
+    );
+  }
+  return <ClassicTopic slug={slug} tree={tree.data} />;
+}
+
+function findTopic(
+  node: TopicTreeNode,
+  slug: string,
+): TopicTreeNode | undefined {
+  if (node.slug === slug) return node;
+  for (const child of node.children) {
+    const found = findTopic(child, slug);
+    if (found) return found;
+  }
+  return undefined;
+}
+
+/** A topic without a guided path: overview, concepts and build steps. */
+function ClassicTopic({
+  slug,
+  tree,
+}: {
+  slug: string;
+  tree?: TopicTreeResponse;
+}) {
+  const page = useApi<TopicResponse>(apiPaths.topic(slug));
 
   return (
     <div className="grid gap-10 lg:grid-cols-[17rem_minmax(0,1fr)]">
@@ -37,11 +84,12 @@ export default function TopicPage() {
         aria-label="All topics"
         className="hidden lg:block lg:self-start lg:sticky lg:top-6"
       >
-        {tree.data && (
+        {/* Wait for the topic, so the tree opens with it highlighted. */}
+        {tree && page.data && (
           <LearningTree
             // Remount when the topic changes so its ancestors expand.
             key={page.data?.topic.id}
-            root={tree.data.tree}
+            root={tree.tree}
             currentId={page.data?.topic.id}
             compact
           />

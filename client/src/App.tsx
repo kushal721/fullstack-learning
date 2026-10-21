@@ -27,6 +27,7 @@ export default function App() {
         <Route index element={<HomePage />} />
         <Route path="learn" element={<LearnPage />} />
         <Route path="learn/:topic" element={<TopicPage />} />
+        <Route path="learn/:topic/:step" element={<TopicPage />} />
         <Route path="concepts" element={<ConceptsPage />} />
         <Route path="concepts/:concept" element={<ConceptPage />} />
         <Route path="build" element={<BuildPage />} />

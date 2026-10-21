@@ -2,6 +2,7 @@ import { getOrderedSteps, getStepBySlug } from "./build-journey.js";
 import { getConceptBySlug, getConceptsInReadingOrder } from "./concepts.js";
 import { getFlow, getFlows } from "./flow-tracer.js";
 import { getAllTopics, getTopicBySlug } from "./learning-tree.js";
+import { getPathView } from "./paths.js";
 import { getExercise, getExercises } from "./practice.js";
 
 export const SITE_NAME = "Full-Stack Learning";
@@ -96,13 +97,23 @@ export function pageMeta(pathname: string, search = ""): PageMeta {
     return page(section.title, section.description);
   }
 
-  const [, area, slug, extra] = path.split("/");
-  if (!slug || extra !== undefined) return NOT_FOUND;
+  const [, area, slug, extra, more] = path.split("/");
+  if (!slug || more !== undefined) return NOT_FOUND;
+  // Only a guided step has a third part: /learn/<topic>/<step>.
+  if (extra !== undefined && area !== "learn") return NOT_FOUND;
   const decoded = decodeURIComponent(slug);
   switch (area) {
     case "learn": {
       const topic = getTopicBySlug(decoded);
-      return topic ? page(topic.title, topic.summary) : NOT_FOUND;
+      if (!topic) return NOT_FOUND;
+      if (extra === undefined) return page(topic.title, topic.summary);
+      const stepId = decodeURIComponent(extra);
+      const step = getPathView(topic.id)
+        ?.levels.flatMap((level) => level.steps)
+        .find((s) => s.id === stepId);
+      return step
+        ? page(`${step.title} · ${topic.title}`, topic.summary)
+        : NOT_FOUND;
     }
     case "concepts": {
       const concept = getConceptBySlug(decoded);
@@ -127,7 +138,12 @@ export function pageMeta(pathname: string, search = ""): PageMeta {
 export function sitemapPaths(): string[] {
   return [
     ...Object.keys(SECTIONS),
-    ...getAllTopics().map((topic) => `/learn/${topic.slug}`),
+    ...getAllTopics().flatMap((topic) => [
+      `/learn/${topic.slug}`,
+      ...(getPathView(topic.id)?.levels ?? []).flatMap((level) =>
+        level.steps.map((step) => `/learn/${topic.slug}/${step.id}`),
+      ),
+    ]),
     ...getConceptsInReadingOrder().map((c) => `/concepts/${c.slug}`),
     ...getOrderedSteps().map((step) => `/build/${step.slug}`),
     ...getFlows().map((flow) => `/flow?flow=${flow.id}`),
