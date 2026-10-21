@@ -5,15 +5,13 @@ import type {
   SnapshotResponse,
 } from "@fsl/shared";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { ProjectDiff } from "../components/project-evolution/ProjectDiff.tsx";
-import { ProjectSnapshot } from "../components/project-evolution/ProjectSnapshot.tsx";
-import { StepSelector } from "../components/project-evolution/StepSelector.tsx";
-import { ErrorState } from "../components/ui/ErrorState.tsx";
-import { Loading } from "../components/ui/Loading.tsx";
-import { PageHeader } from "../components/ui/PageHeader.tsx";
-import { useApi } from "../hooks/useApi.ts";
-import { apiPaths } from "../services/api.ts";
-import { PageMeta } from "../components/ui/PageMeta.tsx";
+import { useApi } from "../../hooks/useApi.ts";
+import { apiPaths } from "../../services/api.ts";
+import { ErrorState } from "../ui/ErrorState.tsx";
+import { Loading } from "../ui/Loading.tsx";
+import { ProjectDiff } from "./ProjectDiff.tsx";
+import { ProjectSnapshot } from "./ProjectSnapshot.tsx";
+import { StepSelector } from "./StepSelector.tsx";
 
 /** ?step= as a step number, or null when missing or out of range. */
 function parseStep(value: string | null, last: number): number | null {
@@ -22,7 +20,11 @@ function parseStep(value: string | null, last: number): number | null {
   return step <= last ? step : null;
 }
 
-export default function ProjectPage() {
+/**
+ * How the Notes App grows: pick a build step to see the files it adds,
+ * changes and removes. The Explorer's start screen.
+ */
+export function ProjectEvolution() {
   // The chosen step lives in the URL (?step=…), so it can be linked to and
   // survives a reload.
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,15 +58,19 @@ export default function ProjectPage() {
   const failed = [steps, after, before, diff].find((state) => state.error);
 
   return (
-    <>
-      <PageMeta
-        title="Project"
-        description="Watch the Notes App grow: the files each build step adds, changes and removes."
-      />
-      <PageHeader
-        title="Project"
-        description="Watch the Notes App grow: pick a step to see which files it adds, changes and removes."
-      />
+    <section
+      aria-labelledby="project-evolution"
+      className="flex flex-col gap-4"
+    >
+      <div>
+        <h2 id="project-evolution" className="text-xl font-semibold">
+          How the Notes App grows
+        </h2>
+        <p className="mt-1 text-muted">
+          Choose a file on the left, or pick a build step to see which files it
+          adds, changes and removes.
+        </p>
+      </div>
       {failed?.error && (
         <ErrorState message={failed.error.message} onRetry={failed.reload} />
       )}
@@ -125,6 +131,6 @@ export default function ProjectPage() {
             )}
         </div>
       )}
-    </>
+    </section>
   );
 }

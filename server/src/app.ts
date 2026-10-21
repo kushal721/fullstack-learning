@@ -4,6 +4,7 @@ import { config } from "./config.js";
 import { apiCaching } from "./middleware/caching.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { notFound } from "./middleware/notFound.js";
+import { legacyRedirects } from "./middleware/redirects.js";
 import { requestLogger } from "./middleware/requestLogger.js";
 import {
   corsPolicy,
@@ -69,6 +70,7 @@ export function createApp({
   app.use("/api/course-map", courseMapRouter);
   app.use("/api/search", searchRouter);
   app.use("/api", notFound);
+  app.use(legacyRedirects());
   app.use(seoRouter);
 
   if (clientDist) app.use(serveClient(clientDist));

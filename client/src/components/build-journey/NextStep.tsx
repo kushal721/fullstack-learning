@@ -99,12 +99,8 @@ export function NextStep({ step, concepts, previous, next }: Props) {
         ) : (
           <Part title="Next">
             <p>
-              You have built the whole Notes App. Look back at how it grew on
-              the{" "}
-              <Link to="/project" className={linkClass}>
-                Project
-              </Link>{" "}
-              page, or explore any file in the{" "}
+              You have built the whole Notes App. Look back at how it grew, or
+              explore any file, in the{" "}
               <Link to="/explorer" className={linkClass}>
                 Explorer
               </Link>

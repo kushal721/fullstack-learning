@@ -7,22 +7,18 @@ const STATIC = [
   "/",
   "/learn",
   "/course-map",
-  "/concepts",
   "/build",
   "/explorer",
   "/explorer?file=backend%2Fsrc%2Fcontrollers%2FnotesController.js&line=45",
   "/explorer?symbol=fn%3AhandleSave",
-  "/project",
   "/flow",
   "/flow?flow=login&step=16",
-  "/practice",
 ];
 const NOT_FOUND = [
   "/no-such-page",
   "/learn/no-such-topic",
   "/concepts/no-such-concept",
   "/build/no-such-step",
-  "/practice/no-such-exercise",
 ];
 
 async function get<T>(request: APIRequestContext, path: string): Promise<T> {
@@ -92,18 +88,6 @@ test("every build step", async ({ page, request }, testInfo) => {
   await checkAll(
     page,
     buildSteps.map((s) => `/build/${s.slug}`),
-    testInfo,
-  );
-});
-
-test("every exercise", async ({ page, request }, testInfo) => {
-  const { exercises } = await get<{ exercises: { id: string }[] }>(
-    request,
-    "/api/exercises",
-  );
-  await checkAll(
-    page,
-    exercises.map((e) => `/practice/${e.id}`),
     testInfo,
   );
 });

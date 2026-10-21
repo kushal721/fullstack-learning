@@ -6,27 +6,13 @@ export const navItems: NavItem[] = [
   {
     to: "/learn",
     label: "Learn",
-    description: "The learning tree: a map of everything full-stack.",
+    description:
+      "Every topic in short, numbered steps, from Basic to Advanced, with every word explained.",
   },
   {
-    to: "/concepts",
-    label: "Concepts",
-    description: "Each idea explained from the basics, with real code.",
-  },
-  {
-    to: "/build",
-    label: "Build",
-    description: "Build the Notes App step by step, from an empty folder.",
-  },
-  {
-    to: "/explorer",
-    label: "Explorer",
-    description: "Read the Notes App code and trace how it connects.",
-  },
-  {
-    to: "/project",
-    label: "Project",
-    description: "Watch the project grow file by file.",
+    to: "/course-map",
+    label: "Course map",
+    description: "The whole course: every topic, its three levels and steps.",
   },
   {
     to: "/flow",
@@ -34,8 +20,14 @@ export const navItems: NavItem[] = [
     description: "Follow data from a click to the database and back.",
   },
   {
-    to: "/practice",
-    label: "Practice",
-    description: "Test yourself: predict, trace, find, fix and plan.",
+    to: "/explorer",
+    label: "Explorer",
+    description:
+      "Read the Notes App code, trace how it connects and watch it grow.",
+  },
+  {
+    to: "/build",
+    label: "Build",
+    description: "Build the Notes App step by step, from an empty folder.",
   },
 ];

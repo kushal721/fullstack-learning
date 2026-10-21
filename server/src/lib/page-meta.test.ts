@@ -11,10 +11,12 @@ describe("pageMeta", () => {
       status: 200,
     });
     expect(pageMeta("/learn/").title).toBe("Learn · Full-Stack Learning");
-    expect(pageMeta("/practice").description).toMatch(/^Test yourself/);
+    expect(pageMeta("/course-map").title).toBe(
+      "Course map · Full-Stack Learning",
+    );
   });
 
-  it("uses the content for topics, concepts, steps, exercises and flows", () => {
+  it("uses the content for topics, concepts, steps and flows", () => {
     expect(pageMeta("/concepts/react-usestate")).toEqual({
       title: "useState · Full-Stack Learning",
       description: expect.stringMatching(/^\S/),
@@ -24,9 +26,6 @@ describe("pageMeta", () => {
       "6. Add state · Full-Stack Learning",
     );
     expect(pageMeta("/learn/react").title).toBe("React · Full-Stack Learning");
-    expect(pageMeta("/practice/predict-click-save").title).toBe(
-      "Clicking Save · Practice · Full-Stack Learning",
-    );
     expect(pageMeta("/flow", "?flow=login").title).toBe(
       "Log in · Flow · Full-Stack Learning",
     );
@@ -68,7 +67,13 @@ describe("sitemapPaths", () => {
     for (const step of getOrderedSteps())
       expect(paths).toContain(`/build/${step.slug}`);
     expect(paths).toContain("/flow?flow=create-note");
-    expect(paths).toContain("/practice/predict-click-save");
+    // Moved sections redirect, so they aren't listed (#384).
+    for (const moved of ["/concepts", "/project", "/practice"]) {
+      expect(paths.some((p) => p === moved || p.startsWith(`${moved}?`))).toBe(
+        false,
+      );
+    }
+    expect(paths.some((p) => p.startsWith("/practice/"))).toBe(false);
     expect(new Set(paths).size).toBe(paths.length);
     for (const path of paths) {
       const [pathname, search = ""] = path.split("?");

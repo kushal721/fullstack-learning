@@ -78,7 +78,7 @@ describe("HomePage", () => {
       .getByRole("heading", { name: "How this works" })
       .closest("section");
     expect(section).not.toBeNull();
-    for (const name of ["Learn", "Concepts", "Build", "Flow"]) {
+    for (const name of ["Learn", "Course map", "Flow", "Explorer", "Build"]) {
       expect(
         within(section as HTMLElement).getByRole("link", {
           name: new RegExp(`^${name}`),

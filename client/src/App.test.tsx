@@ -1,8 +1,13 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, useLocation } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App.tsx";
+
+function Where() {
+  const { pathname, search } = useLocation();
+  return <p data-testid="where">{pathname + search}</p>;
+}
 
 function renderAt(path: string) {
   return render(
@@ -22,12 +27,11 @@ describe("App routing", () => {
   it.each([
     ["/learn", "Learn"],
     ["/learn/html", "Couldn't load this topic"],
-    ["/concepts", "Concepts"],
+    ["/course-map", "Course map"],
     ["/concepts/react-usestate", "Couldn't load this concept"],
     ["/build", "Build"],
     ["/build/create-project", "Couldn't load this build step"],
     ["/explorer", "Explorer"],
-    ["/project", "Project"],
     ["/flow", "Flow"],
     ["/no-such-page", "Page not found"],
   ])("renders %s inside the layout", async (path, heading) => {
@@ -39,13 +43,40 @@ describe("App routing", () => {
     expect(screen.getByRole("main")).toBeInTheDocument();
   });
 
-  it("marks the current section in the navigation", () => {
-    renderAt("/concepts/react-usestate");
-    const nav = screen.getByRole("navigation", { name: "Main" });
-    expect(within(nav).getByRole("link", { name: "Concepts" })).toHaveAttribute(
-      "aria-current",
-      "page",
+  it.each([
+    ["/concepts", "/course-map", "Course map"],
+    ["/practice", "/course-map", "Course map"],
+    ["/practice/predict-blank-title", "/course-map", "Course map"],
+    ["/project?step=2", "/explorer?step=2", "Explorer"],
+  ])("sends the old address %s to %s", async (from, to, heading) => {
+    render(
+      <MemoryRouter initialEntries={[from]}>
+        <App />
+        <Where />
+      </MemoryRouter>,
     );
+    expect(
+      await screen.findByRole("heading", { level: 1, name: heading }),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("where")).toHaveTextContent(to);
+  });
+
+  it("has five sections in the main navigation", () => {
+    renderAt("/");
+    const nav = screen.getByRole("navigation", { name: "Main" });
+    expect(
+      within(nav)
+        .getAllByRole("link")
+        .map((l) => l.textContent),
+    ).toEqual(["Learn", "Course map", "Flow", "Explorer", "Build"]);
+  });
+
+  it("marks the current section in the navigation", () => {
+    renderAt("/course-map");
+    const nav = screen.getByRole("navigation", { name: "Main" });
+    expect(
+      within(nav).getByRole("link", { name: "Course map" }),
+    ).toHaveAttribute("aria-current", "page");
     expect(
       within(nav).getByRole("link", { name: "Learn" }),
     ).not.toHaveAttribute("aria-current");
