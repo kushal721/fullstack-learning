@@ -97,7 +97,10 @@ function Objectives({ items }: { items: string[] }) {
             <span aria-hidden="true" className="text-accent">
               ✓
             </span>
-            <StepText text={item} />
+            {/* One box for the text, so its code words wrap with it. */}
+            <span>
+              <StepText text={item} />
+            </span>
           </li>
         ))}
       </ul>
