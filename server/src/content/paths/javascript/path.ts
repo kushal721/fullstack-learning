@@ -44,7 +44,7 @@ const clickScene: Scene = {
   ],
 };
 
-// JavaScript: 20 Basic, 12 Intermediate and 9 Advanced steps, numbered 1–41.
+// JavaScript: 18 Basic, 12 Intermediate and 9 Advanced steps, numbered 1–39.
 export const javascriptPath: TopicPath = {
   topicId: "javascript",
   summary: {

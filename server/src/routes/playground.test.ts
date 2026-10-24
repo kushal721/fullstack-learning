@@ -5,6 +5,7 @@ import {
   JS_RUNNER_POLICY,
   MAX_PLAYGROUND_CODE,
   PLAYGROUND_POLICY,
+  testCalls,
 } from "./playground.js";
 
 const app = createApp();
@@ -81,5 +82,27 @@ describe("GET /playground/js", () => {
       `/playground/js?code=${"a".repeat(MAX_PLAYGROUND_CODE + 1)}`,
     );
     expect(res.status).toBe(400);
+  });
+
+  it("runs a your-turn exercise's tests after the code and reports the count to the step", async () => {
+    const tests = [{ call: "double(2)", expect: "4" }];
+    const res = await request(app).get(
+      `/playground/js?code=${encodeURIComponent("const double = (n) => n * 2;")}&tests=${encodeURIComponent(JSON.stringify(tests))}`,
+    );
+    expect(res.status).toBe(200);
+    expect(res.text).toContain(
+      JSON.stringify(testCalls(tests)).slice(1, -1).replace(/</g, "\\u003c"),
+    );
+    expect(res.text).toContain("const total = 1;");
+    expect(res.text).toContain('parent.postMessage({ source: "fsl-runner"');
+  });
+
+  it("refuses tests that aren't a list of calls and expected values", async () => {
+    for (const tests of ["nope", '[{"call":1}]', '{"call":"a","expect":"b"}']) {
+      const res = await request(app).get(
+        `/playground/js?code=1&tests=${encodeURIComponent(tests)}`,
+      );
+      expect(res.status, tests).toBe(400);
+    }
   });
 });

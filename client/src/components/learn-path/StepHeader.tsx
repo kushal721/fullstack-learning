@@ -30,6 +30,12 @@ export function StepHeader({
         <Badge tone={style.tone}>{style.name}</Badge>
         Step {step.number} · {position} of {level.steps.length} in {style.name}{" "}
         · about {step.minutes} min
+        {step.parts && (
+          <>
+            {" "}
+            · <Badge tone="info">Module · {step.parts} parts</Badge>
+          </>
+        )}
       </p>
       <h2
         ref={title}

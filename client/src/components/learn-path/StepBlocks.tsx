@@ -12,6 +12,12 @@ import { Badge } from "../ui/Badge.tsx";
 import { PlaygroundBlock, ReferenceTable } from "./ReferenceBlocks.tsx";
 import { ScenePlayer } from "./ScenePlayer.tsx";
 import { StepText } from "./StepText.tsx";
+import {
+  AnatomyBlock,
+  MistakeBlock,
+  TraceBlock,
+  YourTurnBlock,
+} from "./TeachingBlocks.tsx";
 import { TryIt } from "./TryItWidgets.tsx";
 
 type Context = {
@@ -251,5 +257,13 @@ export function StepBlock({
       return <ReferenceTable block={block} glossary={context.glossary} />;
     case "playground":
       return <PlaygroundBlock block={block} />;
+    case "anatomy":
+      return <AnatomyBlock block={block} glossary={context.glossary} />;
+    case "trace":
+      return <TraceBlock block={block} glossary={context.glossary} />;
+    case "yourTurn":
+      return <YourTurnBlock block={block} glossary={context.glossary} />;
+    case "mistake":
+      return <MistakeBlock block={block} glossary={context.glossary} />;
   }
 }

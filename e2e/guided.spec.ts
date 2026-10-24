@@ -15,7 +15,10 @@ type CourseMap = {
   topics: {
     topic: { slug: string };
     status: "ready" | "planned";
-    levels: { level: string; steps: { id: string; kind: string }[] }[];
+    levels: {
+      level: string;
+      steps: { id: string; kind: string; parts?: number }[];
+    }[];
   }[];
 };
 type StepResponse = {
@@ -44,8 +47,12 @@ test("every guided step", async ({ page, request }, testInfo) => {
   for (const { topic, levels } of await readyTopics(request)) {
     paths.push(`/learn/${topic.slug}`);
     for (const level of levels) {
-      for (const step of level.steps)
+      for (const step of level.steps) {
         paths.push(`/learn/${topic.slug}/${step.id}`);
+        // A module: every one of its parts too.
+        for (let part = 2; part <= (step.parts ?? 0); part++)
+          paths.push(`/learn/${topic.slug}/${step.id}?part=${part}`);
+      }
     }
   }
   const problems: string[] = [];
@@ -221,4 +228,54 @@ test("a JavaScript playground runs the code and shows what it logs", async ({
   await expect(output).toContainText("Stopped", { timeout: 10_000 });
   await page.getByRole("button", { name: "Reset" }).click();
   await expect(output).toContainText("Hello!");
+});
+
+test("a module: every part is accessible, and a your-turn exercise checks the learner's code", async ({
+  page,
+}) => {
+  test.setTimeout(180_000);
+  const base = "/learn/javascript/functions";
+  await page.goto(base);
+  await expect(
+    page.getByRole("region", { name: "What you'll learn" }),
+  ).toBeVisible();
+  const parts = Number(
+    (await page.getByText(/^Part 1 of \d+$/).textContent())!.match(/\d+$/)![0],
+  );
+  expect(parts).toBeGreaterThanOrEqual(6);
+
+  // Walk through with the Next button, scanning every part.
+  const problems: string[] = [];
+  for (let part = 1; part <= parts; part++) {
+    await expect(page.getByText(`Part ${part} of ${parts}`)).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    problems.push(...(await axe(page)).map((p) => `part ${part}: ${p}`));
+    if (part < parts) {
+      await page.getByRole("button", { name: /^Next: / }).click();
+      await expect(page).toHaveURL(`${base}?part=${part + 1}`);
+    }
+  }
+  expect(problems, problems.join("\n\n")).toEqual([]);
+
+  // Step through a trace.
+  await page.goto(`${base}?part=4`);
+  const trace = page.locator("figure").filter({ hasText: "Step through" });
+  await trace.getByRole("button", { name: "Next move →" }).click();
+  await expect(trace.getByText(/^Move 2 of/)).toBeVisible();
+
+  // A wrong answer fails, the solution passes.
+  await page.goto(`${base}?part=${parts - 1}`);
+  const exercise = page.getByRole("region", { name: "Your turn: Is it even?" });
+  await exercise.getByRole("button", { name: "▶ Check my code" }).click();
+  await expect(exercise.getByRole("status")).toHaveText(/^0 of 3 tests pass/);
+  await expect(exercise.frameLocator("iframe").locator("#out")).toContainText(
+    "✗ isEven(4) gives undefined, expected true",
+  );
+  await exercise
+    .getByLabel("Your code")
+    .fill("function isEven(n) {\n  return n % 2 === 0;\n}");
+  await exercise.getByRole("button", { name: "▶ Check my code" }).click();
+  await expect(exercise.getByRole("status")).toHaveText(
+    "All 3 tests pass. Well done!",
+  );
 });

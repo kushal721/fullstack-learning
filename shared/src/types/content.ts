@@ -525,7 +525,72 @@ export type Block =
       code: string;
       /** "html" when left out. */
       language?: "html" | "js";
+    }
+  | {
+      /** A line or two of code with each part labelled: what it is, and why. */
+      type: "anatomy";
+      caption: string;
+      code: string;
+      /** In order; `text` is found in the code after the previous part. */
+      parts: { text: string; label: string; note: string }[];
+    }
+  | {
+      /**
+       * Code run one move at a time, the way the computer does: the line it
+       * is on, what the variables hold, which functions are running, and
+       * what has been printed. Every value is written out by the author.
+       */
+      type: "trace";
+      caption: string;
+      code: string;
+      steps: TraceStep[];
+    }
+  | {
+      /**
+       * The learner writes code; Check runs it with the tests in the
+       * sandboxed JavaScript runner and shows which pass.
+       */
+      type: "yourTurn";
+      title: string;
+      /** What to write. */
+      task: string;
+      starter: string;
+      /** `call` is run after the learner's code; `expect` is a JS value. */
+      tests: { call: string; expect: string }[];
+      hint: string;
+      solution: string;
+    }
+  | {
+      /** A common mistake: the wrong code, what goes wrong, and the fix. */
+      type: "mistake";
+      title: string;
+      wrong: string;
+      problem: string;
+      right: string;
+      why: string;
     };
+
+/** One move of a trace. */
+export type TraceStep = {
+  /** 1-based line of the code being run. */
+  line: number;
+  /** What happens, in one or two sentences. */
+  note: string;
+  /** Every variable that exists now, with its value written as code. */
+  vars?: [name: string, value: string][];
+  /** The functions running now, outermost first. */
+  stack?: string[];
+  /** A line printed at this move. */
+  output?: string;
+};
+
+/** A part of a module lesson: a heading over a run of its blocks. */
+export type LessonSection = {
+  id: string;
+  title: string;
+  /** How many of the lesson's blocks, in order, belong to this part. */
+  blockCount: number;
+};
 
 /** A question of a level check: a practice exercise and the step it tests. */
 export type LevelCheckQuestion = { exerciseId: string; stepId: string };
@@ -543,6 +608,13 @@ export type Step =
       title: string;
       minutes: number;
       blocks: Block[];
+      /**
+       * A module: a core idea taught in depth, one part at a time. The
+       * parts split `blocks` in order; `objectives` say what the learner
+       * can do at the end.
+       */
+      objectives?: string[];
+      sections?: LessonSection[];
     }
   | {
       /** The level check, always the last step of a level. */

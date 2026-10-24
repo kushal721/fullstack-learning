@@ -1,6 +1,5 @@
 import type { LevelPlan } from "@fsl/shared";
 import {
-  analogy,
   code,
   explain,
   inTheNotesApp,
@@ -11,8 +10,9 @@ import {
   quickCheck,
   reference,
 } from "../blocks.js";
+import { functionsModule } from "./functions.js";
 
-// Basic: steps 1–20. Values, variables, conditions, loops, functions,
+// Basic: steps 1–18. Values, variables, conditions, loops, functions,
 // arrays and objects, then the page: finding elements, changing them and
 // reacting to events. Most steps have code you can run.
 export const basic: LevelPlan = {
@@ -233,69 +233,7 @@ export const basic: LevelPlan = {
         "[[js-loop|`for…of`]] gives you each item in turn, with no counter to manage.",
       ),
     ),
-    lesson(
-      "functions",
-      "Functions: reusable steps",
-      3,
-      explain(
-        "A [[js-function|function]] is a named block of steps you can run again and again. Its inputs are parameters; [[js-return|`return`]] hands a result back.",
-      ),
-      jsPlayground("Write and call a function", [
-        "function greet(name) {",
-        "  return `Hello, ${name}!`;",
-        "}",
-        "",
-        'console.log(greet("Sam"));',
-        'console.log(greet("Alex"));',
-      ]),
-      analogy(
-        "A recipe: written once, cooked whenever you like, with different ingredients each time.",
-      ),
-    ),
-    lesson(
-      "arrow-functions",
-      "Arrow functions",
-      2,
-      explain(
-        "An [[js-arrow-function|arrow function]] is a shorter way to write a function, ideal for small ones you pass to other code.",
-      ),
-      jsPlayground("The same function, two ways", [
-        "function double(n) {",
-        "  return n * 2;",
-        "}",
-        "const triple = (n) => n * 3;",
-        "",
-        "console.log(double(4), triple(4));",
-      ]),
-      quickCheck(
-        "What does `const add = (a, b) => a + b;` return for `add(2, 3)`?",
-        ["`5`", "`undefined`", '`"23"`'],
-        0,
-        "Without curly braces, an arrow function returns its expression.",
-      ),
-    ),
-    lesson(
-      "scope",
-      "Where variables live: scope",
-      2,
-      explain(
-        "A variable made with `let` or `const` exists only inside the curly braces it was made in. This [[js-scope|scope]] keeps parts of a program from tripping over each other's names.",
-      ),
-      jsPlayground("Inside and outside a block", [
-        'const outside = "I am everywhere";',
-        "if (true) {",
-        '  const inside = "I live in this block";',
-        '  console.log(outside, "|", inside);',
-        "}",
-        "console.log(typeof inside);",
-      ]),
-      quickCheck(
-        "A `const` is declared inside an `if`. Can code after the `if` use it?",
-        ["Yes", "No, it only exists inside the block", "Only if it's a number"],
-        1,
-        "`let` and `const` are block-scoped: they disappear at the closing brace.",
-      ),
-    ),
+    functionsModule,
     lesson(
       "arrays",
       "Arrays: lists of values",
