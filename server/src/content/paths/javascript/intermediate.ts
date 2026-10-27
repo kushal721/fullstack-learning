@@ -12,7 +12,7 @@ import {
   reference,
 } from "../blocks.js";
 
-// Intermediate: steps 21–32. Data as JSON, waiting with promises and
+// Intermediate: steps 19–30. Data as JSON, waiting with promises and
 // async/await, fetching from an API, handling errors, modules, and the
 // modern syntax the Notes App's code uses.
 export const intermediate: LevelPlan = {

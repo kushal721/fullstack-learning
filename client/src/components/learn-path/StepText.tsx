@@ -39,7 +39,14 @@ export function StepText({ text, glossary = [] }: Props) {
               title={entry?.short}
               className={`${termClass} ${id === open ? "bg-accent/15" : ""}`}
             >
-              {label ?? (entry ? termInText(entry, startsSentence) : id)}
+              {label && /^`[^`]+`$/.test(label) ? (
+                // A code word as the link text: [[js-return|`return`]].
+                <code className="font-mono text-[0.9em]">
+                  {label.slice(1, -1)}
+                </code>
+              ) : (
+                (label ?? (entry ? termInText(entry, startsSentence) : id))
+              )}
             </Link>
           );
         }

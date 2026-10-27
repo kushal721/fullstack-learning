@@ -52,7 +52,16 @@ export function getPath(topicId: string): TopicPath | undefined {
 
 function toStepSummary({ number, level, step }: NumberedStep): StepSummary {
   const { id, kind, title, minutes } = step;
-  return { id, number, level, kind, title, minutes };
+  const parts = step.kind === "lesson" ? step.sections?.length : undefined;
+  return {
+    id,
+    number,
+    level,
+    kind,
+    title,
+    minutes,
+    ...(parts ? { parts } : {}),
+  };
 }
 
 function levelsOf(path: TopicPath): LevelSummary[] {
@@ -136,6 +145,10 @@ export function getStepView(
       .filter((entry) => entry !== undefined)
       .map(toEntrySummary),
   };
+  if (step.kind === "lesson" && step.sections) {
+    view.objectives = step.objectives ?? [];
+    view.sections = step.sections;
+  }
   if (step.kind === "check") {
     view.questions = step.questions.map((question) => {
       const tested = steps.find((s) => s.step.id === question.stepId)!;

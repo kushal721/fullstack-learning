@@ -14,6 +14,7 @@ import {
   stepLinks,
   termLinks,
 } from "./guided-learning.js";
+import { runTests } from "./run-tests.js";
 import { SLUG_PATTERN } from "./slug.js";
 
 /** Steps per level, level check included. */
@@ -43,6 +44,19 @@ export const LIMITS = {
   referenceExampleLines: 4,
   playgroundLines: 20,
   sceneSteps: [3, 12],
+  // Modules: a core idea in depth, one part at a time.
+  objectives: [3, 6],
+  objective: 120,
+  sections: [6, 14],
+  blocksPerSection: [1, 5],
+  traces: 1,
+  yourTurns: 2,
+  anatomyParts: [2, 8],
+  anatomyLines: 4,
+  partNote: 220,
+  traceSteps: [2, 16],
+  yourTurnTests: [2, 6],
+  mistakeLines: 10,
   caption: 120,
   short: 160,
   body: 600,
@@ -246,8 +260,166 @@ function validateBlock(
       }
       break;
     }
+    case "anatomy": {
+      if (!block.caption.trim())
+        errors.push(`${where} anatomy needs a caption.`);
+      const lines = block.code.split("\n").length;
+      if (lines > LIMITS.anatomyLines) {
+        errors.push(
+          `${where} anatomy has ${lines} lines; keep it to ${LIMITS.anatomyLines}.`,
+        );
+      }
+      if (outside(block.parts.length, LIMITS.anatomyParts)) {
+        errors.push(`${where} anatomy needs 2–8 parts.`);
+      }
+      let from = 0;
+      block.parts.forEach((part, i) => {
+        const at = block.code.indexOf(part.text, from);
+        if (!part.text || at < 0) {
+          errors.push(
+            `${where} anatomy part ${i + 1} "${part.text}" is not in the code after part ${i}.`,
+          );
+        } else from = at + part.text.length;
+        if (!part.label.trim()) {
+          errors.push(`${where} anatomy part ${i + 1} needs a label.`);
+        }
+        tooLong(part.note, LIMITS.partNote, `anatomy part ${i + 1} note`);
+      });
+      break;
+    }
+    case "trace": {
+      if (!block.caption.trim()) errors.push(`${where} trace needs a caption.`);
+      const lines = block.code.split("\n").length;
+      if (lines > LIMITS.codeLines) {
+        errors.push(
+          `${where} trace code has ${lines} lines; keep it to ${LIMITS.codeLines}.`,
+        );
+      }
+      if (outside(block.steps.length, LIMITS.traceSteps)) {
+        errors.push(
+          `${where} trace needs 2–16 moves (has ${block.steps.length}).`,
+        );
+      }
+      block.steps.forEach((move, i) => {
+        if (move.line < 1 || move.line > lines) {
+          errors.push(
+            `${where} trace move ${i + 1} is on line ${move.line}, which doesn't exist.`,
+          );
+        }
+        tooLong(move.note, LIMITS.partNote, `trace move ${i + 1} note`);
+      });
+      break;
+    }
+    case "yourTurn": {
+      if (!block.title.trim()) errors.push(`${where} yourTurn needs a title.`);
+      tooLong(block.task, LIMITS.explain, "yourTurn task");
+      tooLong(block.hint, LIMITS.partNote, "yourTurn hint");
+      if (outside(block.tests.length, LIMITS.yourTurnTests)) {
+        errors.push(`${where} yourTurn needs 2–6 tests.`);
+      }
+      for (const [code, what] of [
+        [block.starter, "starter"],
+        [block.solution, "solution"],
+      ] as const) {
+        if (code.split("\n").length > LIMITS.codeLines) {
+          errors.push(
+            `${where} yourTurn ${what} needs at most ${LIMITS.codeLines} lines.`,
+          );
+        }
+      }
+      // The solution must pass every test, and the starter must not.
+      const solved = runTests(block.solution, block.tests);
+      solved.failures.forEach((failure) =>
+        errors.push(`${where} yourTurn solution fails: ${failure}`),
+      );
+      if (runTests(block.starter, block.tests).failures.length === 0) {
+        errors.push(
+          `${where} yourTurn starter already passes every test; leave the learner something to do.`,
+        );
+      }
+      break;
+    }
+    case "mistake": {
+      if (!block.title.trim()) errors.push(`${where} mistake needs a title.`);
+      tooLong(block.problem, LIMITS.partNote, "mistake problem");
+      tooLong(block.why, LIMITS.partNote, "mistake why");
+      for (const [code, what] of [
+        [block.wrong, "wrong"],
+        [block.right, "right"],
+      ] as const) {
+        const lines = code.split("\n").length;
+        if (!code.trim() || lines > LIMITS.mistakeLines) {
+          errors.push(
+            `${where} mistake "${what}" code needs 1–${LIMITS.mistakeLines} lines.`,
+          );
+        }
+      }
+      break;
+    }
     case "tryIt":
       break;
+  }
+  return errors;
+}
+
+/** A module's own rules: objectives, parts over its blocks, and practice. */
+function validateModule(
+  where: string,
+  step: Extract<Step, { kind: "lesson" }>,
+  read: (text: string) => string,
+): string[] {
+  const errors: string[] = [];
+  const sections = step.sections ?? [];
+  const objectives = step.objectives ?? [];
+  if (outside(objectives.length, LIMITS.objectives)) {
+    errors.push(
+      `${where} is a module; it needs 3–6 objectives (has ${objectives.length}).`,
+    );
+  }
+  objectives.forEach((objective, i) => {
+    const length = read(objective).length;
+    if (!objective.trim() || length > LIMITS.objective) {
+      errors.push(
+        `${where} objective ${i + 1} needs 1–${LIMITS.objective} characters (has ${length}).`,
+      );
+    }
+  });
+  if (outside(sections.length, LIMITS.sections)) {
+    errors.push(`${where} needs 6–14 parts (has ${sections.length}).`);
+  }
+  errors.push(
+    ...duplicates(
+      sections.map((section) => section.id),
+      (id) => `${where} has part "${id}" more than once.`,
+    ),
+  );
+  for (const section of sections) {
+    const at = `${where} part "${section.id}"`;
+    if (!SLUG_PATTERN.test(section.id)) {
+      errors.push(
+        `${at} needs an id of lowercase letters, numbers and single hyphens.`,
+      );
+    }
+    if (!section.title.trim()) errors.push(`${at} needs a title.`);
+    if (outside(section.blockCount, LIMITS.blocksPerSection)) {
+      errors.push(`${at} needs 1–5 blocks (has ${section.blockCount}).`);
+    }
+  }
+  const counted = sections.reduce((sum, s) => sum + s.blockCount, 0);
+  if (counted !== step.blocks.length) {
+    errors.push(
+      `${where} parts cover ${counted} blocks, but it has ${step.blocks.length}.`,
+    );
+  }
+  const count = (type: Block["type"]) =>
+    step.blocks.filter((block) => block.type === type).length;
+  if (count("trace") < LIMITS.traces) {
+    errors.push(`${where} is a module; show how it runs with a trace.`);
+  }
+  if (count("yourTurn") < LIMITS.yourTurns) {
+    errors.push(
+      `${where} is a module; it needs at least ${LIMITS.yourTurns} "your turn" exercises.`,
+    );
   }
   return errors;
 }
@@ -269,16 +441,27 @@ function validateStep(
   if (!Number.isInteger(step.minutes) || step.minutes < 1) {
     errors.push(`${where} needs a whole number of minutes.`);
   }
+  const isModule = step.kind === "lesson" && step.sections !== undefined;
   const [min, max] = LIMITS.blocksPerStep;
-  if (step.kind === "lesson" && outside(step.blocks.length, [min!, max!])) {
-    errors.push(`${where} needs 1–4 blocks (has ${step.blocks.length}).`);
+  if (step.kind === "lesson" && isModule) {
+    errors.push(...validateModule(where, step, read));
+  } else if (step.kind === "lesson") {
+    if (outside(step.blocks.length, [min!, max!])) {
+      errors.push(`${where} needs 1–4 blocks (has ${step.blocks.length}).`);
+    }
+    if (step.objectives) {
+      errors.push(`${where} has objectives but no parts; only modules do.`);
+    }
   }
   if (step.kind === "check" && step.blocks.length > 1) {
     errors.push(
       `${where} is a level check; it may have one introduction block at most.`,
     );
   }
-  if (step.blocks.filter((block) => block.type === "analogy").length > 1) {
+  if (
+    !isModule &&
+    step.blocks.filter((block) => block.type === "analogy").length > 1
+  ) {
     errors.push(`${where} has more than one analogy.`);
   }
   for (const block of step.blocks) {

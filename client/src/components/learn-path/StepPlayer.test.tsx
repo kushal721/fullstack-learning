@@ -177,4 +177,64 @@ describe("StepPlayer", () => {
     expect(screen.queryByRole("button", { name: /Done|Finish/ })).toBeNull();
     expect(screen.getByRole("link", { name: "← Step 2" })).toBeInTheDocument();
   });
+
+  it("shows a module one part at a time, with its objectives first", async () => {
+    const user = userEvent.setup();
+    mockFetchRoutes({
+      ...routes,
+      "/api/paths/html/steps/basic-2": {
+        ...htmlStep2Fixture,
+        step: { ...htmlStep2Fixture.step, parts: 2 },
+        objectives: ["Write a link."],
+        blocks: [
+          { type: "explain", text: "Part one, first block." },
+          { type: "explain", text: "Part one, second block." },
+          { type: "explain", text: "Part two's block." },
+        ],
+        sections: [
+          { id: "one", title: "The first part", blockCount: 2 },
+          { id: "two", title: "The second part", blockCount: 1 },
+        ],
+      },
+    });
+    renderAt("/learn/html/basic-2");
+
+    expect(
+      await screen.findByRole("heading", { name: "The first part" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: "What you'll learn" }),
+    ).toHaveTextContent("Write a link.");
+    expect(screen.getByText("Part 1 of 2")).toBeInTheDocument();
+    expect(screen.getByText("Part one, second block.")).toBeInTheDocument();
+    expect(screen.queryByText("Part two's block.")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Done, next step/ }),
+    ).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: "Next: The second part →" }),
+    );
+    expect(screen.getByTestId("where")).toHaveTextContent(
+      "/learn/html/basic-2?part=2",
+    );
+    const heading = screen.getByRole("heading", { name: "The second part" });
+    expect(heading).toHaveFocus();
+    expect(screen.getByText("Part two's block.")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Part one, first block."),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("region", { name: "What you'll learn" }),
+    ).not.toBeInTheDocument();
+
+    // The last part moves on to the next step; the first link goes back.
+    expect(
+      screen.getByRole("button", { name: /Done, next step/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "← Part 1" })).toHaveAttribute(
+      "href",
+      "/learn/html/basic-2",
+    );
+  });
 });

@@ -16,7 +16,7 @@ const PLANNED: [
   ["how-the-web-works", 18, 30, 40],
   ["html", 20, 34, 43],
   ["css", 18, 30, 40],
-  ["javascript", 20, 32, 41],
+  ["javascript", 18, 30, 39],
 ];
 
 describe.each(PLANNED)(
@@ -57,3 +57,25 @@ describe.each(PLANNED)(
     });
   },
 );
+
+describe("the JavaScript Functions module", () => {
+  it("is step 9, in parts that cover all its blocks, with objectives", async () => {
+    const path = (await request(app).get("/api/paths/javascript"))
+      .body as PathResponse;
+    const summary = path.levels[0]!.steps.find((s) => s.id === "functions")!;
+    expect(summary.number).toBe(9);
+
+    const body = (
+      await request(app).get("/api/paths/javascript/steps/functions")
+    ).body as StepResponse;
+    expect(summary.parts).toBe(body.sections!.length);
+    expect(body.objectives!.length).toBeGreaterThanOrEqual(3);
+    expect(body.sections!.reduce((n, s) => n + s.blockCount, 0)).toBe(
+      body.blocks.length,
+    );
+    const types = new Set(body.blocks.map((b) => b.type));
+    for (const type of ["anatomy", "trace", "yourTurn", "mistake", "check"]) {
+      expect(types, type).toContain(type);
+    }
+  });
+});

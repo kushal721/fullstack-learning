@@ -586,3 +586,141 @@ describe("validatePaths", () => {
     });
   });
 });
+
+describe("modules", () => {
+  const trace: Block = {
+    type: "trace",
+    caption: "Calling it",
+    code: "const a = 1;\nconsole.log(a);",
+    steps: [
+      { line: 1, note: "`a` is 1.", vars: [["a", "1"]] },
+      { line: 2, note: "It prints 1.", output: "1" },
+    ],
+  };
+  const yourTurn = (solution = "function f() { return 1; }"): Block => ({
+    type: "yourTurn",
+    title: "Return one",
+    task: "Make `f` return 1.",
+    starter: "function f() {}",
+    tests: [
+      { call: "f()", expect: "1" },
+      { call: "f() + 1", expect: "2" },
+    ],
+    hint: "Use `return`.",
+    solution,
+  });
+  const blocks = (): Block[] => [
+    { type: "explain", text: "Why." },
+    quickCheck(),
+    trace,
+    yourTurn(),
+    yourTurn(),
+    { type: "explain", text: "Recap." },
+  ];
+  const moduleStep = (
+    changes: Partial<Extract<Step, { kind: "lesson" }>> = {},
+  ): Step => ({
+    kind: "lesson",
+    id: "web-b-2",
+    title: "A module",
+    minutes: 30,
+    objectives: ["Do one.", "Do two.", "Do three."],
+    blocks: blocks(),
+    sections: ["a", "b", "c", "d", "e", "f"].map((id) => ({
+      id,
+      title: `Part ${id}`,
+      blockCount: 1,
+    })),
+    ...changes,
+  });
+  const withModule = (step: Step) => {
+    const path = makePath();
+    path.levels.basic.steps[1] = step;
+    return validatePaths([path], glossary(), refs);
+  };
+
+  it("accepts a module with objectives, parts, a trace and practice", () => {
+    expect(withModule(moduleStep())).toEqual([]);
+  });
+
+  it("reports objectives, parts that don't cover the blocks, and missing practice", () => {
+    expect(
+      withModule(
+        moduleStep({
+          objectives: ["Only one."],
+          blocks: [...blocks().slice(0, 3), { type: "explain", text: "x" }],
+          sections: [
+            { id: "a", title: "A", blockCount: 2 },
+            { id: "a", title: "", blockCount: 6 },
+          ],
+        }),
+      ),
+    ).toEqual([
+      `${step2} is a module; it needs 3–6 objectives (has 1).`,
+      `${step2} needs 6–14 parts (has 2).`,
+      `${step2} has part "a" more than once.`,
+      `${step2} part "a" needs a title.`,
+      `${step2} part "a" needs 1–5 blocks (has 6).`,
+      `${step2} parts cover 8 blocks, but it has 4.`,
+      `${step2} is a module; it needs at least 2 "your turn" exercises.`,
+    ]);
+  });
+
+  it("runs each exercise: the solution must pass and the starter must not", () => {
+    const errors = withModule(
+      moduleStep({
+        blocks: [
+          ...blocks().slice(0, 3),
+          yourTurn("function f() { return 2; }"),
+          yourTurn("function f() {}"),
+          { type: "explain", text: "Recap." },
+        ],
+      }),
+    );
+    expect(errors).toEqual([
+      `${step2} yourTurn solution fails: ✗ f() gives 2, expected 1`,
+      `${step2} yourTurn solution fails: ✗ f() + 1 gives 3, expected 2`,
+      `${step2} yourTurn solution fails: ✗ f() gives undefined, expected 1`,
+      `${step2} yourTurn solution fails: ✗ f() + 1 gives NaN, expected 2`,
+    ]);
+  });
+
+  it("checks anatomy parts are in the code and trace moves are on real lines", () => {
+    const errors = withModule(
+      moduleStep({
+        blocks: [
+          {
+            type: "anatomy",
+            caption: "Parts",
+            code: "function add(a, b) {}",
+            parts: [
+              { text: "add", label: "name", note: "Its name." },
+              { text: "function", label: "keyword", note: "Comes first." },
+            ],
+          },
+          quickCheck(),
+          { ...trace, steps: [{ line: 9, note: "Nowhere." }] } as Block,
+          yourTurn(),
+          yourTurn(),
+          { type: "explain", text: "Recap." },
+        ],
+      }),
+    );
+    expect(errors).toEqual([
+      `${step2} anatomy part 2 "function" is not in the code after part 1.`,
+      `${step2} trace needs 2–16 moves (has 1).`,
+      `${step2} trace move 1 is on line 9, which doesn't exist.`,
+    ]);
+  });
+
+  it("allows objectives only on modules", () => {
+    const path = makePath();
+    path.levels.basic.steps[1] = {
+      ...lesson("web-b-2"),
+      objectives: ["Do it."],
+    } as Step;
+    expect(validatePaths([path], glossary(), refs)).toEqual([
+      `${step2} has objectives but no parts; only modules do.`,
+    ]);
+  });
+});

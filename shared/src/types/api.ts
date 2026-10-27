@@ -8,6 +8,7 @@ import type {
   FileTreeFolder,
   Flow,
   GlossaryEntry,
+  LessonSection,
   Level,
   PathSummary,
   PublicExercise,
@@ -323,6 +324,8 @@ export type StepSummary = {
   kind: Step["kind"];
   title: string;
   minutes: number;
+  /** A module's number of parts; left out for a one-screen step. */
+  parts?: number;
 };
 
 /** One level of a topic's path, with its numbered steps. */
@@ -371,6 +374,9 @@ export type StepResponse = {
   scenes: Record<string, Scene>;
   /** Every glossary entry the step links, in reading order. */
   glossary: GlossaryEntrySummary[];
+  /** A module's objectives and parts (see `Step`). */
+  objectives?: string[];
+  sections?: LessonSection[];
   /** Level checks only. */
   questions?: LevelCheckQuestionView[];
   /** The steps before and after, across levels. */

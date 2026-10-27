@@ -47,6 +47,28 @@ test("glossary panel", async ({ page }) => {
   await shoot(page, "glossary-panel");
 });
 
+test("module step-through", async ({ page }) => {
+  await page.goto("/learn/javascript/functions?part=7");
+  const trace = page.locator("figure").filter({ hasText: "Step through" });
+  for (let i = 0; i < 4; i++)
+    await trace.getByRole("button", { name: "Next move →" }).click();
+  await trace.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  await trace.screenshot({ path: `${OUT}/module-trace.png` });
+});
+
+test("your turn", async ({ page }) => {
+  await page.goto("/learn/javascript/functions?part=12");
+  const exercise = page.getByRole("region", { name: "Your turn: Is it even?" });
+  await exercise
+    .getByLabel("Your code")
+    .fill("function isEven(n) {\n  return n % 2 === 1;\n}");
+  await exercise.getByRole("button", { name: "▶ Check my code" }).click();
+  await expect(exercise.getByRole("status")).toHaveText(/tests pass/);
+  await page.waitForTimeout(300);
+  await exercise.screenshot({ path: `${OUT}/your-turn.png` });
+});
+
 test("course map", async ({ page }) => {
   await page.goto("/course-map");
   await shoot(page, "course-map");

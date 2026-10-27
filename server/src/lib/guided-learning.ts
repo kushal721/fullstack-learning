@@ -52,6 +52,14 @@ export function blockTexts(block: Block): string[] {
       return block.items;
     case "reference":
       return block.rows.map((row) => row.text);
+    case "anatomy":
+      return block.parts.map((part) => part.note);
+    case "trace":
+      return block.steps.map((step) => step.note);
+    case "yourTurn":
+      return [block.task, block.hint];
+    case "mistake":
+      return [block.problem, block.why];
     case "check":
       return [
         block.question,
@@ -65,9 +73,10 @@ export function blockTexts(block: Block): string[] {
 
 /** The glossary ids a step links, each once, in reading order. */
 export function stepLinks(step: Step): string[] {
-  const ids = step.blocks
-    .flatMap(blockTexts)
-    .flatMap((text) => termLinks(text).map((link) => link.id));
+  const objectives = step.kind === "lesson" ? (step.objectives ?? []) : [];
+  const ids = [...objectives, ...step.blocks.flatMap(blockTexts)].flatMap(
+    (text) => termLinks(text).map((link) => link.id),
+  );
   return [...new Set(ids)];
 }
 

@@ -3,6 +3,7 @@ import type {
   CodeExample,
   LevelCheckQuestion,
   Step,
+  TraceStep,
   TryItWidget,
 } from "@fsl/shared";
 
@@ -110,4 +111,89 @@ export const jsPlayground = (caption: string, lines: string[]): Block => ({
   caption,
   code: lines.join("\n"),
   language: "js",
+});
+
+// --- Modules: a core idea in depth, one part at a time --------------------
+
+/** One part of a module: a heading over its blocks. */
+export type Part = { id: string; title: string; blocks: Block[] };
+
+export const part = (id: string, title: string, ...blocks: Block[]): Part => ({
+  id,
+  title,
+  blocks,
+});
+
+/** A module lesson: objectives, then parts shown one at a time. */
+export const moduleLesson = (
+  id: string,
+  title: string,
+  minutes: number,
+  objectives: string[],
+  ...parts: Part[]
+): Step => ({
+  kind: "lesson",
+  id,
+  title,
+  minutes,
+  objectives,
+  blocks: parts.flatMap((p) => p.blocks),
+  sections: parts.map((p) => ({
+    id: p.id,
+    title: p.title,
+    blockCount: p.blocks.length,
+  })),
+});
+
+/** Code with labelled parts: [text in the code, label, note] in order. */
+export const anatomy = (
+  caption: string,
+  lines: string[],
+  parts: [text: string, label: string, note: string][],
+): Block => ({
+  type: "anatomy",
+  caption,
+  code: lines.join("\n"),
+  parts: parts.map(([text, label, note]) => ({ text, label, note })),
+});
+
+/** Code run one move at a time, with variables, call stack and output. */
+export const trace = (
+  caption: string,
+  lines: string[],
+  steps: TraceStep[],
+): Block => ({ type: "trace", caption, code: lines.join("\n"), steps });
+
+/** The learner writes code; tests are [call, expected value as code]. */
+export const yourTurn = (exercise: {
+  title: string;
+  task: string;
+  starter: string[];
+  tests: [call: string, expect: string][];
+  hint: string;
+  solution: string[];
+}): Block => ({
+  type: "yourTurn",
+  title: exercise.title,
+  task: exercise.task,
+  starter: exercise.starter.join("\n"),
+  tests: exercise.tests.map(([call, expect]) => ({ call, expect })),
+  hint: exercise.hint,
+  solution: exercise.solution.join("\n"),
+});
+
+/** A common mistake: the wrong code, what goes wrong, the fix and why. */
+export const mistake = (m: {
+  title: string;
+  wrong: string[];
+  problem: string;
+  right: string[];
+  why: string;
+}): Block => ({
+  type: "mistake",
+  title: m.title,
+  wrong: m.wrong.join("\n"),
+  problem: m.problem,
+  right: m.right.join("\n"),
+  why: m.why,
 });

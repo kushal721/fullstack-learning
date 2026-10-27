@@ -79,38 +79,96 @@ const show = (v) => typeof v === "string" ? v
   : v instanceof Error ? v.name + ": " + v.message
   : typeof v === "function" ? "function " + (v.name || "(anonymous)")
   : v === undefined ? "undefined"
+  : typeof v === "number" || typeof v === "bigint" || typeof v === "symbol" ? String(v)
   : (() => { try { return JSON.stringify(v); } catch { return String(v); } })();
 const send = (kind) => (...args) => postMessage({ kind, text: args.map(show).join(" ") });
 self.console = { log: send("log"), info: send("log"), warn: send("warn"), error: send("error") };
 self.addEventListener("unhandledrejection", (e) => postMessage({ kind: "error", text: "Uncaught (in promise) " + show(e.reason) }));
+const same = (a, b) => Object.is(a, b) || (typeof a === "object" && typeof b === "object" && a !== null && b !== null && JSON.stringify(a) === JSON.stringify(b));
+self.__test = (label, run, expected) => {
+  try {
+    const got = run();
+    postMessage(same(got, expected)
+      ? { kind: "pass", text: "✓ " + label + " gives " + show(got) }
+      : { kind: "fail", text: "✗ " + label + " gives " + show(got) + ", expected " + show(expected) });
+  } catch (error) {
+    postMessage({ kind: "fail", text: "✗ " + label + " failed: " + show(error) });
+  }
+};
 `;
 
-/** A page that runs `code` in a worker and prints what it logs. */
-export function jsRunnerPage(code: string): string {
-  const source = JSON.stringify(
-    WORKER_PRELUDE + code + "\n;postMessage({ kind: 'done' });",
-  )
+/** A "your turn" test: an expression to run and the value it should give. */
+export type RunnerTest = { call: string; expect: string };
+
+/** Code that runs each test after the learner's code, in the same scope. */
+export function testCalls(tests: RunnerTest[]): string {
+  return tests
+    .map(
+      ({ call, expect }) =>
+        `__test(${JSON.stringify(call)}, () => (${call}), (${expect}));`,
+    )
+    .join("\n");
+}
+
+/** The worker's whole script: prelude, the code, its tests, then "done". */
+export function workerSource(code: string, tests: RunnerTest[] = []): string {
+  return `${WORKER_PRELUDE}${code}\n;${testCalls(tests)}\npostMessage({ kind: "done" });`;
+}
+
+/**
+ * A page that runs `code` (and any tests) in a worker and prints what it
+ * logs. With tests, it tells the page that framed it how many passed.
+ */
+export function jsRunnerPage(code: string, tests: RunnerTest[] = []): string {
+  const source = JSON.stringify(workerSource(code, tests))
     // Keep the code inside the <script> element whatever it contains.
     .replace(/</g, "\\u003c");
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><style>
 body{margin:0;font:13px/1.6 ui-monospace,monospace;color:#1f2328;background:#fff}
 #out{margin:0;padding:8px 12px;white-space:pre-wrap;word-break:break-word}
-.warn{color:#9a6700}.error{color:#b42318}.note{color:#59636e;font-style:italic}
+.warn{color:#9a6700}.error,.fail{color:#b42318}.pass{color:#1a7f37}.note{color:#59636e;font-style:italic}
 </style></head><body><pre id="out"></pre><script>
 const out = document.getElementById("out");
 const line = (text, kind) => { const span = document.createElement("span"); span.className = kind; span.textContent = text + "\\n"; out.append(span); };
-let done = false;
+const total = ${tests.length};
+let done = false, passed = 0;
+const finish = () => { done = true; if (total) parent.postMessage({ source: "fsl-runner", passed, total }, "*"); };
 const worker = new Worker(URL.createObjectURL(new Blob([${source}], { type: "text/javascript" })));
-worker.onmessage = (e) => { if (e.data.kind === "done") { done = true; if (!out.childNodes.length) line("(nothing was logged)", "note"); } else line(e.data.text, e.data.kind); };
-worker.onerror = (e) => { e.preventDefault(); done = true; line(e.message, "error"); };
-setTimeout(() => { worker.terminate(); if (!done) line("Stopped: still running after ${JS_TIME_LIMIT_MS / 1000} seconds. An endless loop?", "error"); }, ${JS_TIME_LIMIT_MS});
+worker.onmessage = (e) => { if (e.data.kind === "done") { if (!out.childNodes.length) line("(nothing was logged)", "note"); finish(); } else { if (e.data.kind === "pass") passed++; line(e.data.text, e.data.kind); } };
+worker.onerror = (e) => { e.preventDefault(); line(e.message, "error"); finish(); };
+setTimeout(() => { worker.terminate(); if (!done) { line("Stopped: still running after ${JS_TIME_LIMIT_MS / 1000} seconds. An endless loop?", "error"); finish(); } }, ${JS_TIME_LIMIT_MS});
 </script></body></html>`;
 }
 
-// GET /playground/js?code=… — runs a step's JavaScript example and shows
-// its console output, in a sandboxed iframe on the step.
+function parseTests(raw: unknown): RunnerTest[] | undefined {
+  if (typeof raw !== "string" || raw.length > MAX_PLAYGROUND_CODE) return;
+  try {
+    const value: unknown = JSON.parse(raw);
+    if (
+      Array.isArray(value) &&
+      value.every(
+        (t: unknown) =>
+          typeof t === "object" &&
+          t !== null &&
+          typeof (t as RunnerTest).call === "string" &&
+          typeof (t as RunnerTest).expect === "string",
+      )
+    ) {
+      return (value as RunnerTest[]).map(({ call, expect }) => ({
+        call,
+        expect,
+      }));
+    }
+  } catch {
+    // not JSON
+  }
+}
+
+// GET /playground/js?code=…&tests=… — runs a step's JavaScript example (with
+// a "your turn" exercise's tests) and shows its console output, in a
+// sandboxed iframe on the step.
 playgroundRouter.get("/js", (req, res) => {
-  const { code = "" } = req.query;
+  const { code = "", tests: rawTests = "[]" } = req.query;
   if (typeof code !== "string" || code.length > MAX_PLAYGROUND_CODE) {
     res
       .status(400)
@@ -118,10 +176,20 @@ playgroundRouter.get("/js", (req, res) => {
       .send(`code must be text of at most ${MAX_PLAYGROUND_CODE} characters.`);
     return;
   }
+  const tests = parseTests(rawTests);
+  if (!tests) {
+    res
+      .status(400)
+      .type("text/plain")
+      .send(
+        `tests must be a JSON list of { call, expect } of at most ${MAX_PLAYGROUND_CODE} characters.`,
+      );
+    return;
+  }
   res
     .set("Content-Security-Policy", JS_RUNNER_POLICY)
     .set("X-Frame-Options", "SAMEORIGIN")
     .set("Cache-Control", "no-store")
     .type("html")
-    .send(jsRunnerPage(code));
+    .send(jsRunnerPage(code, tests));
 });

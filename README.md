@@ -64,6 +64,17 @@ step has a reference table of the real tags with examples.
 
 ![An HTML step with a reference table of tags](docs/screenshots/guided-step.png)
 
+### A module: functions in depth
+
+The step-through runs code one move at a time: the line, the variables,
+the call stack and the output.
+
+![A step-through of two functions working together, with the call stack](docs/screenshots/module-trace.png)
+
+"Your turn" exercises run the learner's code against tests in the sandbox.
+
+![A your-turn exercise with its test results](docs/screenshots/your-turn.png)
+
 ### Code you can run
 
 JavaScript examples run in a safe sandbox on the page: edit the code, press
@@ -100,16 +111,24 @@ The site follows the system's light or dark setting and works from phone width u
   Works → HTML → CSS → JavaScript → Git & GitHub → React → HTTP & APIs →
   Backend → Databases → Authentication → Security → Testing → Deployment →
   How Everything Connects. Topics with a guided path so far: How the Web
-  Works, HTML, CSS and JavaScript (164 steps); the rest show their classic
+  Works, HTML, CSS and JavaScript (162 steps); the rest show their classic
   topic page until their path is written.
 - **Three levels, one count.** Every topic starts at Basic. Numbering carries
-  on between levels (for example Basic 1–20, Intermediate 21–32, Advanced
-  33–41), and the learner can switch levels at any time.
+  on between levels (for example Basic 1–18, Intermediate 19–30, Advanced
+  31–39), and the learner can switch levels at any time.
 - **Steps made of blocks.** A step is a lesson or a check. A lesson is built
   from blocks: explanations, analogies, key points, diagrams, animated
   scenes, annotated code, reference tables (tags, properties, methods with
   examples), live playgrounds, interactive widgets, quick checks, and "In
   the Notes App" links to the real code.
+- **Modules for the core ideas.** The ideas everything else depends on
+  are taught in depth as modules: objectives first, then parts shown one
+  at a time (JavaScript's Functions module has 13). Modules add labelled
+  code ("anatomy"), a **step-through** that runs code line by line showing
+  the variables, the call stack and the output, **common mistakes** shown
+  wrong → right, and **"your turn" exercises**: the learner writes code
+  and Check runs tests on it in the sandbox. Every exercise's solution is
+  run when the content is validated.
 - **No word left unexplained.** Every term is a link. Clicking one opens the
   **glossary panel** on the right, with a plain explanation, related words,
   where it is taught, and search. Words inside an explanation are links

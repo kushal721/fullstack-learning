@@ -75,5 +75,27 @@ export function termInText(
 }
 
 /** Where a playground's result comes from: the server's locked-down pages. */
-export const playgroundSrc = (code: string, language: "html" | "js" = "html") =>
-  `/playground${language === "js" ? "/js" : ""}?code=${encodeURIComponent(code)}`;
+export const playgroundSrc = (
+  code: string,
+  language: "html" | "js" = "html",
+  /** A "your turn" exercise's tests, run after the code (JavaScript only). */
+  tests?: { call: string; expect: string }[],
+) =>
+  `/playground${language === "js" ? "/js" : ""}?code=${encodeURIComponent(code)}${
+    tests ? `&tests=${encodeURIComponent(JSON.stringify(tests))}` : ""
+  }`;
+
+/** A module part's position from the URL's `?part=` (1-based), clamped. */
+export function partIndex(search: string, parts: number): number {
+  const n = Number(new URLSearchParams(search).get("part"));
+  return Number.isInteger(n) && n >= 1 ? Math.min(n, parts) - 1 : 0;
+}
+
+/** The same URL with another part (a 0-based index), keeping `?term=`. */
+export function partHref(pathname: string, search: string, index: number) {
+  const params = new URLSearchParams(search);
+  if (index === 0) params.delete("part");
+  else params.set("part", String(index + 1));
+  const query = params.toString();
+  return query ? `${pathname}?${query}` : pathname;
+}
