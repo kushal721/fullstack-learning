@@ -41,10 +41,16 @@ jobs:
       - run: npm run build
 
   browser:
-    name: Browser check
+    name: Browser check (${{ matrix.shard }}/3)
     needs: checks
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
+    # Split across three runners: every module part is a page checked in
+    # three views, so one runner can't keep up as the course grows.
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
     steps:
       - uses: actions/checkout@v7
 
@@ -73,13 +79,13 @@ jobs:
 
       # Every page at 375px light, 375px dark and 1280px light (see
       # CONTRIBUTING): overflow, exactly one <h1>, no JavaScript errors.
-      - run: npm run check:browser
+      - run: npm run check:browser -- --shard=${{ matrix.shard }}/3
 
       - name: Upload screenshots of failures
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: browser-check-failures
+          name: browser-check-failures-${{ matrix.shard }}
           path: |
             test-results/
             playwright-report/
