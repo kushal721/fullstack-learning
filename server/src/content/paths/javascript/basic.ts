@@ -13,6 +13,7 @@ import {
 import { decisionsModule } from "./decisions.js";
 import { functionsModule } from "./functions.js";
 import { gettingStartedModule } from "./getting-started.js";
+import { loopsModule } from "./loops.js";
 import { textAndNumbersModule } from "./text-and-numbers.js";
 import { variablesModule } from "./variables.js";
 
@@ -27,36 +28,7 @@ export const basic: LevelPlan = {
     variablesModule,
     textAndNumbersModule,
     decisionsModule,
-    lesson(
-      "loops",
-      "Repeating: loops",
-      3,
-      reference("Kinds of loop", [
-        [
-          "for…of",
-          "Once for each item of an array.",
-          "for (const note of notes) { … }",
-        ],
-        ["for", "With a counter.", "for (let i = 0; i < 3; i++) { … }"],
-        ["while", "As long as a condition is true.", "while (count > 0) { … }"],
-        ["break", "Leave the loop early.", "if (found) break;"],
-      ]),
-      jsPlayground("Loop over a list", [
-        'const notes = ["Milk", "Bread", "Eggs"];',
-        "for (const note of notes) {",
-        '  console.log("-", note);',
-        "}",
-        "for (let i = 3; i > 0; i--) {",
-        "  console.log(i);",
-        "}",
-      ]),
-      quickCheck(
-        "Which loop is easiest for doing something to every item in an array?",
-        ["`while`", "`for…of`", "`if`"],
-        1,
-        "[[js-loop|`for…of`]] gives you each item in turn, with no counter to manage.",
-      ),
-    ),
+    loopsModule,
     functionsModule,
     lesson(
       "arrays",

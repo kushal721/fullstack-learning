@@ -64,6 +64,7 @@ const JS_MODULES: [id: string, number: number][] = [
   ["variables", 2],
   ["text-and-numbers", 3],
   ["decisions", 4],
+  ["loops", 5],
   ["functions", 6],
 ];
 
