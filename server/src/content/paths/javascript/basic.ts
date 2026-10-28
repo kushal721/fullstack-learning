@@ -12,6 +12,7 @@ import {
 } from "../blocks.js";
 import { decisionsModule } from "./decisions.js";
 import { functionsModule } from "./functions.js";
+import { gettingStartedModule } from "./getting-started.js";
 import { variablesModule } from "./variables.js";
 
 // Basic: steps 1–16. Values, variables, conditions, loops, functions,
@@ -21,22 +22,7 @@ export const basic: LevelPlan = {
   outcome:
     "Write small programs: store values, make decisions, repeat work, write functions and react to clicks.",
   steps: [
-    lesson(
-      "what-javascript-does",
-      "What JavaScript does",
-      3,
-      explain(
-        "[[javascript]] makes pages *do* things: react to a click, check a form, load new data, update what you see. It's a programming language: a list of instructions the browser follows, one after another.",
-      ),
-      explain(
-        "[[console-log|`console.log()`]] prints a value so you can see it. Press Run, then change the text and run it again.",
-      ),
-      jsPlayground("Your first program", [
-        'console.log("Hello!");',
-        "console.log(2 + 3);",
-        'console.log("2 + 3 is", 2 + 3);',
-      ]),
-    ),
+    gettingStartedModule,
     variablesModule,
     lesson(
       "strings",
