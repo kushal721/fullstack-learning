@@ -10,6 +10,7 @@ import {
   quickCheck,
   reference,
 } from "../blocks.js";
+import { arraysModule } from "./arrays.js";
 import { decisionsModule } from "./decisions.js";
 import { functionsModule } from "./functions.js";
 import { gettingStartedModule } from "./getting-started.js";
@@ -17,7 +18,7 @@ import { loopsModule } from "./loops.js";
 import { textAndNumbersModule } from "./text-and-numbers.js";
 import { variablesModule } from "./variables.js";
 
-// Basic: steps 1–15. Values, variables, conditions, loops, functions,
+// Basic: steps 1–14. Values, variables, conditions, loops, functions,
 // arrays and objects, then the page: finding elements, changing them and
 // reacting to events. Most steps have code you can run.
 export const basic: LevelPlan = {
@@ -30,73 +31,7 @@ export const basic: LevelPlan = {
     decisionsModule,
     loopsModule,
     functionsModule,
-    lesson(
-      "arrays",
-      "Arrays: lists of values",
-      3,
-      explain(
-        "An array is a list in square brackets. Items are numbered from 0. See [[js-object-array|objects and arrays]].",
-      ),
-      reference("Array basics", [
-        ["[i]", "The item at position i, from 0.", "notes[0]"],
-        ["length", "How many items.", "notes.length"],
-        ["push()", "Add to the end.", 'notes.push("Tea")'],
-        ["includes()", "Is it in the list?", 'notes.includes("Milk")'],
-        [
-          "indexOf()",
-          "Where is it? -1 if not there.",
-          'notes.indexOf("Bread")',
-        ],
-      ]),
-      jsPlayground("Make a list", [
-        'const notes = ["Milk", "Bread"];',
-        'notes.push("Eggs");',
-        "console.log(notes);",
-        "console.log(notes.length, notes[0]);",
-        'console.log(notes.includes("Tea"));',
-      ]),
-    ),
-    lesson(
-      "array-methods",
-      "Array methods: map, filter, find",
-      4,
-      reference("Array methods you'll use daily", [
-        [
-          "map()",
-          "A new array with each item changed.",
-          "prices.map((p) => p * 2)",
-        ],
-        [
-          "filter()",
-          "A new array with only matching items.",
-          "notes.filter((n) => n.done)",
-        ],
-        ["find()", "The first matching item.", "notes.find((n) => n.id === 7)"],
-        [
-          "forEach()",
-          "Do something with each item.",
-          "notes.forEach((n) => console.log(n))",
-        ],
-        ["some()", "Does any item match?", "notes.some((n) => n.done)"],
-        ["join()", "One string from all items.", 'tags.join(", ")'],
-      ]),
-      jsPlayground("Transform a list", [
-        "const notes = [",
-        '  { title: "Milk", done: true },',
-        '  { title: "Bread", done: false },',
-        '  { title: "Eggs", done: true },',
-        "];",
-        "console.log(notes.map((n) => n.title));",
-        "console.log(notes.filter((n) => n.done).length);",
-        'console.log(notes.find((n) => n.title === "Bread"));',
-      ]),
-      quickCheck(
-        "You want a list of only the unfinished notes. Which method?",
-        ["`map`", "`filter`", "`find`"],
-        1,
-        "[[array-methods|`filter`]] keeps the items its function returns true for.",
-      ),
-    ),
+    arraysModule,
     lesson(
       "objects",
       "Objects: named values",
@@ -283,7 +218,7 @@ export const basic: LevelPlan = {
       ["js-basic-plus", "text-and-numbers"],
       ["js-basic-equals", "decisions"],
       ["js-basic-return", "functions"],
-      ["js-basic-filter", "array-methods"],
+      ["js-basic-filter", "arrays"],
       ["js-basic-listener", "events"],
     ]),
   ],
