@@ -111,11 +111,11 @@ The site follows the system's light or dark setting and works from phone width u
   Works → HTML → CSS → JavaScript → Git & GitHub → React → HTTP & APIs →
   Backend → Databases → Authentication → Security → Testing → Deployment →
   How Everything Connects. Topics with a guided path so far: How the Web
-  Works, HTML, CSS and JavaScript (162 steps); the rest show their classic
+  Works, HTML, CSS and JavaScript (161 steps); the rest show their classic
   topic page until their path is written.
 - **Three levels, one count.** Every topic starts at Basic. Numbering carries
   on between levels (for example Basic 1–18, Intermediate 19–30, Advanced
-  31–39), and the learner can switch levels at any time.
+  31–40), and the learner can switch levels at any time.
 - **Steps made of blocks.** A step is a lesson or a check. A lesson is built
   from blocks: explanations, analogies, key points, diagrams, animated
   scenes, annotated code, reference tables (tags, properties, methods with
@@ -123,7 +123,8 @@ The site follows the system's light or dark setting and works from phone width u
   the Notes App" links to the real code.
 - **Modules for the core ideas.** The ideas everything else depends on
   are taught in depth as modules: objectives first, then parts shown one
-  at a time (JavaScript's Functions module has 13). Modules add labelled
+  at a time. JavaScript has two so far: Variables and values (12 parts)
+  and Functions (13). Modules add labelled
   code ("anatomy"), a **step-through** that runs code line by line showing
   the variables, the call stack and the output, **common mistakes** shown
   wrong → right, and **"your turn" exercises**: the learner writes code
@@ -208,7 +209,7 @@ flowchart TB
 Request path for a guided step:
 
 ```text
-Click step 9 ─► React Router: /learn/javascript/functions
+Click step 8 ─► React Router: /learn/javascript/functions
              ─► services/api.ts: GET /api/paths/javascript/steps/functions
              ─► Express route ─► content + glossary lookups (answers removed)
              ─► JSON ─► StepPlayer renders the blocks; words become glossary links
