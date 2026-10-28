@@ -8,10 +8,10 @@ import {
   lesson,
   levelCheck,
   quickCheck,
-  reference,
 } from "../blocks.js";
 import { arraysModule } from "./arrays.js";
 import { decisionsModule } from "./decisions.js";
+import { domModule } from "./dom.js";
 import { functionsModule } from "./functions.js";
 import { gettingStartedModule } from "./getting-started.js";
 import { loopsModule } from "./loops.js";
@@ -19,7 +19,7 @@ import { objectsModule } from "./objects.js";
 import { textAndNumbersModule } from "./text-and-numbers.js";
 import { variablesModule } from "./variables.js";
 
-// Basic: steps 1–14. Values, variables, conditions, loops, functions,
+// Basic: steps 1–13. Values, variables, conditions, loops, functions,
 // arrays and objects, then the page: finding elements, changing them and
 // reacting to events. Most steps have code you can run.
 export const basic: LevelPlan = {
@@ -34,90 +34,7 @@ export const basic: LevelPlan = {
     functionsModule,
     arraysModule,
     objectsModule,
-    lesson(
-      "finding-elements",
-      "Finding elements on the page",
-      3,
-      explain(
-        "In the browser, JavaScript reaches the page through `document`. [[dom-query|Finding elements]] uses the same selectors as CSS.",
-      ),
-      reference("Finding elements", [
-        [
-          "querySelector()",
-          "The first element matching a CSS selector.",
-          'document.querySelector(".note")',
-        ],
-        [
-          "querySelectorAll()",
-          "All matches, as a list.",
-          'document.querySelectorAll("li")',
-        ],
-        [
-          "getElementById()",
-          "The element with that id.",
-          'document.getElementById("title")',
-        ],
-      ]),
-      code(
-        "js",
-        "find a heading and read its text",
-        [
-          'const heading = document.querySelector("h1");',
-          "console.log(heading.textContent);",
-        ],
-        { 1: "same selector as in CSS" },
-      ),
-    ),
-    lesson(
-      "changing-the-page",
-      "Changing the page",
-      3,
-      reference("Changing elements", [
-        [
-          "textContent",
-          "Read or replace the text.",
-          'el.textContent = "Saved";',
-        ],
-        [
-          "classList",
-          "Add, remove or toggle classes.",
-          'el.classList.add("done");',
-        ],
-        [
-          "setAttribute()",
-          "Set an attribute.",
-          'img.setAttribute("alt", "A cat");',
-        ],
-        [
-          "createElement()",
-          "Make a new element.",
-          'const li = document.createElement("li");',
-        ],
-        ["append()", "Put it inside another.", "list.append(li);"],
-        ["remove()", "Take it off the page.", "el.remove();"],
-      ]),
-      code(
-        "js",
-        "add a note to a list",
-        [
-          'const list = document.querySelector("#notes");',
-          'const item = document.createElement("li");',
-          'item.textContent = "Buy milk";',
-          "list.append(item);",
-        ],
-        { 2: "a new <li>, not on the page yet", 4: "now it appears" },
-      ),
-      quickCheck(
-        "Why prefer `textContent` to `innerHTML` for text someone typed?",
-        [
-          "It's faster to type",
-          "It never turns the text into HTML, so it can't run a hidden script",
-          "It keeps the formatting",
-        ],
-        1,
-        "[[dom-manipulation|`textContent`]] treats everything as plain text, which stops cross-site scripting.",
-      ),
-    ),
+    domModule,
     lesson(
       "events",
       "Reacting to the user: events",
