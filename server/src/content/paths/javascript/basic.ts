@@ -10,10 +10,11 @@ import {
   quickCheck,
   reference,
 } from "../blocks.js";
+import { decisionsModule } from "./decisions.js";
 import { functionsModule } from "./functions.js";
 import { variablesModule } from "./variables.js";
 
-// Basic: steps 1–17. Values, variables, conditions, loops, functions,
+// Basic: steps 1–16. Values, variables, conditions, loops, functions,
 // arrays and objects, then the page: finding elements, changing them and
 // reacting to events. Most steps have code you can run.
 export const basic: LevelPlan = {
@@ -102,64 +103,7 @@ export const basic: LevelPlan = {
         "With a [[js-string|string]] on one side, `+` joins text. Turn it into a [[js-number|number]] first with `Number()`.",
       ),
     ),
-    lesson(
-      "comparisons",
-      "Comparing values",
-      4,
-      reference("Comparison and logic", [
-        [
-          "===",
-          "Same value and same type.",
-          '3 === 3 // true; 3 === "3" // false',
-        ],
-        ["!==", "Not the same.", "a !== b"],
-        ["> < >= <=", "Bigger, smaller.", "age >= 18"],
-        ["&&", "Both true (and).", "isAdult && hasTicket"],
-        ["||", "At least one true (or).", "isAdmin || isOwner"],
-        ["!", "The opposite (not).", "!done"],
-      ]),
-      jsPlayground("Truthy, falsy and ===", [
-        'console.log(3 === "3", 3 == "3");',
-        'console.log(Boolean(""), Boolean("hi"));',
-        "console.log(Boolean(0), Boolean([]));",
-        "const done = false;",
-        "console.log(!done);",
-      ]),
-      quickCheck(
-        "Which values count as false in a condition?",
-        [
-          '`0`, `""`, `null` and `undefined` (and a few more)',
-          "Only `false`",
-          "Every number",
-        ],
-        0,
-        "These are [[truthy-falsy|falsy]]. Always compare with [[js-operator|`===`]], which checks the type too.",
-      ),
-    ),
-    lesson(
-      "if-else",
-      "Making decisions: if and else",
-      3,
-      explain(
-        "[[js-condition|`if`]] runs code only when a condition is true; `else` runs when it isn't.",
-      ),
-      jsPlayground("Change the hour and run it", [
-        "const hour = 14;",
-        "",
-        "if (hour < 12) {",
-        '  console.log("Good morning");',
-        "} else if (hour < 18) {",
-        '  console.log("Good afternoon");',
-        "} else {",
-        '  console.log("Good evening");',
-        "}",
-      ]),
-      keyPoints(
-        "Conditions go in round brackets, code in curly ones.",
-        "Only the first true branch runs.",
-        "`else` is optional.",
-      ),
-    ),
+    decisionsModule,
     lesson(
       "loops",
       "Repeating: loops",
@@ -442,7 +386,7 @@ export const basic: LevelPlan = {
     levelCheck("basic-check", "Basic check", [
       ["js-basic-const", "variables"],
       ["js-basic-plus", "numbers-and-maths"],
-      ["js-basic-equals", "comparisons"],
+      ["js-basic-equals", "decisions"],
       ["js-basic-return", "functions"],
       ["js-basic-filter", "array-methods"],
       ["js-basic-listener", "events"],
