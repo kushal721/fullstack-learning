@@ -60,6 +60,7 @@ describe.each(PLANNED)(
 
 // The JavaScript modules: [step id, its number in Basic].
 const JS_MODULES: [id: string, number: number][] = [
+  ["getting-started", 1],
   ["variables", 2],
   ["decisions", 5],
   ["functions", 7],
