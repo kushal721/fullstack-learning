@@ -16,7 +16,7 @@ const PLANNED: [
   ["how-the-web-works", 18, 30, 40],
   ["html", 20, 34, 43],
   ["css", 18, 30, 40],
-  ["javascript", 18, 30, 39],
+  ["javascript", 17, 29, 38],
 ];
 
 describe.each(PLANNED)(
@@ -58,16 +58,21 @@ describe.each(PLANNED)(
   },
 );
 
-describe("the JavaScript Functions module", () => {
-  it("is step 9, in parts that cover all its blocks, with objectives", async () => {
+// The JavaScript modules: [step id, its number in Basic].
+const JS_MODULES: [id: string, number: number][] = [
+  ["variables", 2],
+  ["functions", 8],
+];
+
+describe.each(JS_MODULES)("the JavaScript %s module", (id, number) => {
+  it(`is step ${number}, in parts that cover all its blocks, with objectives`, async () => {
     const path = (await request(app).get("/api/paths/javascript"))
       .body as PathResponse;
-    const summary = path.levels[0]!.steps.find((s) => s.id === "functions")!;
-    expect(summary.number).toBe(9);
+    const summary = path.levels[0]!.steps.find((s) => s.id === id)!;
+    expect(summary.number).toBe(number);
 
-    const body = (
-      await request(app).get("/api/paths/javascript/steps/functions")
-    ).body as StepResponse;
+    const body = (await request(app).get(`/api/paths/javascript/steps/${id}`))
+      .body as StepResponse;
     expect(summary.parts).toBe(body.sections!.length);
     expect(body.objectives!.length).toBeGreaterThanOrEqual(3);
     expect(body.sections!.reduce((n, s) => n + s.blockCount, 0)).toBe(

@@ -11,8 +11,9 @@ import {
   reference,
 } from "../blocks.js";
 import { functionsModule } from "./functions.js";
+import { variablesModule } from "./variables.js";
 
-// Basic: steps 1–18. Values, variables, conditions, loops, functions,
+// Basic: steps 1–17. Values, variables, conditions, loops, functions,
 // arrays and objects, then the page: finding elements, changing them and
 // reacting to events. Most steps have code you can run.
 export const basic: LevelPlan = {
@@ -35,51 +36,7 @@ export const basic: LevelPlan = {
         'console.log("2 + 3 is", 2 + 3);',
       ]),
     ),
-    lesson(
-      "values-and-types",
-      "Values and their types",
-      3,
-      reference("The types you'll meet first", [
-        ["string", "Text, in quotes.", '"Buy milk"'],
-        ["number", "Whole or decimal numbers.", "42, 3.14"],
-        ["boolean", "Yes or no.", "true, false"],
-        ["undefined", "No value given yet.", "let x; // undefined"],
-        ["null", "Deliberately nothing.", "let user = null;"],
-        ["array", "An ordered list.", '["milk", "bread"]'],
-        ["object", "Named values together.", '{ title: "Milk", done: false }'],
-      ]),
-      jsPlayground("Ask each value its type", [
-        'console.log(typeof "hi");',
-        "console.log(typeof 42);",
-        "console.log(typeof true);",
-        "console.log(typeof undefined);",
-        'console.log(typeof { title: "Milk" });',
-      ]),
-      explain(
-        "Each value's type decides what you can do with it ([[js-value|values and types]]): add numbers, join text, look inside objects.",
-      ),
-    ),
-    lesson(
-      "variables",
-      "Variables: naming values",
-      3,
-      explain(
-        "A [[js-variable|variable]] is a name for a value. `const` can never point at a new value; `let` can. Use `const` unless the value has to change.",
-      ),
-      jsPlayground("const and let", [
-        'const name = "Sam";',
-        "let count = 1;",
-        "count = count + 1;",
-        'console.log(name, "has", count, "notes");',
-        '// Try: name = "Alex"; and run it.',
-      ]),
-      quickCheck(
-        "A score goes up during a game. How do you declare it?",
-        ["`const score = 0;`", "`let score = 0;`", "Either works"],
-        1,
-        "It changes, so `let`. `const` refuses a new value.",
-      ),
-    ),
+    variablesModule,
     lesson(
       "strings",
       "Working with text",
