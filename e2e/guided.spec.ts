@@ -315,3 +315,118 @@ test("a module: every part is accessible, and a your-turn exercise checks the le
     "All 3 tests pass. Well done!",
   );
 });
+
+type PageCheck = { kind: string; label: string; selector: string };
+type RunnerReport = {
+  source: string;
+  passed: number;
+  total: number;
+  results?: { label: string; pass: boolean; detail: string }[];
+};
+
+/** Opens the page runner on its own and waits for its checks' report. */
+async function runPage(page: Page, code: string, checks: PageCheck[]) {
+  await page.addInitScript(() => {
+    const w = window as unknown as { __reports: unknown[] };
+    w.__reports = [];
+    // On its own the runner's parent is itself, so it hears its report.
+    addEventListener("message", (e) => w.__reports.push(e.data));
+  });
+  await page.goto(
+    `/playground/page?code=${encodeURIComponent(code)}&checks=${encodeURIComponent(JSON.stringify(checks))}`,
+  );
+  const report = await page.waitForFunction(() =>
+    (window as unknown as { __reports: RunnerReport[] }).__reports.find(
+      (r) => r?.source === "fsl-runner",
+    ),
+  );
+  return (await report.jsonValue()) as RunnerReport;
+}
+
+test("the page runner runs scripts and checks the page: styles, clicks, typing and a form", async ({
+  page,
+}) => {
+  const code = [
+    "<style>h1 { color: rgb(255, 0, 0); padding: 1rem; }</style>",
+    "<h1>Notes</h1><ul id='list'></ul><button id='add'>Add</button>",
+    "<form><input id='title'><button>Save</button></form><p id='status'></p>",
+    "<script>",
+    "document.querySelector('#add').addEventListener('click', () => {",
+    "  const li = document.createElement('li'); li.textContent = 'New';",
+    "  document.querySelector('#list').append(li);",
+    "});",
+    "document.querySelector('form').addEventListener('submit', (e) => {",
+    "  e.preventDefault();",
+    "  document.querySelector('#status').textContent = 'Saved ' + document.querySelector('#title').value;",
+    "});",
+    "</script>",
+  ].join("\n");
+  const report = await runPage(page, code, [
+    {
+      kind: "style",
+      label: "red heading",
+      selector: "h1",
+      property: "color",
+      value: "rgb(255, 0, 0)",
+    },
+    {
+      kind: "style",
+      label: "1rem is 16px",
+      selector: "h1",
+      property: "padding-top",
+      value: "16px",
+    },
+    { kind: "count", label: "empty list", selector: "#list li", count: 0 },
+    { kind: "click", label: "click Add", selector: "#add" },
+    { kind: "count", label: "one item", selector: "#list li", count: 1 },
+    { kind: "type", label: "type Tea", selector: "#title", value: "Tea" },
+    { kind: "submit", label: "submit", selector: "form" },
+    { kind: "text", label: "saved", selector: "#status", text: "Saved Tea" },
+  ] as PageCheck[]);
+  expect(
+    report.results?.filter((r) => !r.pass),
+    JSON.stringify(report),
+  ).toEqual([]);
+  expect(report.passed).toBe(8);
+  // The form was handled by the script, not sent: the page is still here.
+  await expect(page.locator("#status")).toHaveText("Saved Tea");
+});
+
+test("every page exercise: its solution passes every check in a real browser, and its starter doesn't", async ({
+  page,
+  request,
+}) => {
+  test.setTimeout(300_000);
+  const problems: string[] = [];
+  for (const { topic, levels } of await readyTopics(request)) {
+    for (const level of levels) {
+      for (const step of level.steps.filter((s) => s.kind === "lesson")) {
+        const { blocks } = await get<{
+          blocks: {
+            type: string;
+            language?: string;
+            title?: string;
+            starter?: string;
+            solution?: string;
+            checks?: PageCheck[];
+          }[];
+        }>(request, `/api/paths/${topic.slug}/steps/${step.id}`);
+        for (const b of blocks) {
+          if (b.type !== "yourTurn" || b.language !== "page") continue;
+          const where = `${topic.slug}/${step.id} "${b.title}"`;
+          const solved = await runPage(page, b.solution!, b.checks!);
+          if (solved.passed !== solved.total) {
+            problems.push(
+              `${where} solution: ${JSON.stringify(solved.results)}`,
+            );
+          }
+          const starter = await runPage(page, b.starter!, b.checks!);
+          if (starter.passed === starter.total) {
+            problems.push(`${where} starter already passes every check`);
+          }
+        }
+      }
+    }
+  }
+  expect(problems, problems.join("\n")).toEqual([]);
+});

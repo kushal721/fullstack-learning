@@ -1,5 +1,9 @@
 import type { GlossaryEntrySummary, PublicBlock } from "@fsl/shared";
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
+import {
+  type FrameMessage,
+  useFrameMessages,
+} from "../../hooks/useFrameMessages.ts";
 import { CodeBlock } from "../code-viewer/CodeBlock.tsx";
 import { Badge } from "../ui/Badge.tsx";
 import { playgroundSrc } from "./levels.ts";
@@ -216,17 +220,23 @@ export function TraceBlock({
   );
 }
 
-type RunResult = { passed: number; total: number };
+type RunResult = Omit<
+  Extract<FrameMessage, { source: "fsl-runner" }>,
+  "source"
+>;
 
 /**
- * An exercise: write code, then Check runs it with the tests in the
- * sandboxed JavaScript runner. The runner reports how many passed.
+ * An exercise: write code, then Check runs it in a sandboxed runner. For
+ * JavaScript the tests run after the code; for a page (HTML, CSS and
+ * scripts) the checks run on the page once it has loaded. The runner
+ * reports how many passed (and, for a page, each check's result).
  */
 export function YourTurnBlock({
   block,
   glossary,
 }: { block: Of<"yourTurn"> } & Glossary) {
   const id = useId();
+  const isPage = block.language === "page";
   const [code, setCode] = useState(block.starter);
   // The code that was checked, and a key that re-runs the frame.
   const [checked, setChecked] = useState<string | null>(null);
@@ -234,22 +244,14 @@ export function YourTurnBlock({
   const [result, setResult] = useState<RunResult | null>(null);
   const frame = useRef<HTMLIFrameElement>(null);
 
-  useEffect(() => {
-    function onMessage(event: MessageEvent) {
-      // Only this exercise's own runner, never another frame or page.
-      if (event.source !== frame.current?.contentWindow) return;
-      const data = event.data as Partial<RunResult> & { source?: string };
-      if (
-        data?.source === "fsl-runner" &&
-        typeof data.passed === "number" &&
-        typeof data.total === "number"
-      ) {
-        setResult({ passed: data.passed, total: data.total });
-      }
-    }
-    window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
-  }, []);
+  useFrameMessages(frame, (message) => {
+    if (message.source !== "fsl-runner") return;
+    setResult({
+      passed: message.passed,
+      total: message.total,
+      results: message.results,
+    });
+  });
 
   function check() {
     setResult(null);
@@ -258,6 +260,7 @@ export function YourTurnBlock({
   }
 
   const solved = result !== null && result.passed === result.total;
+  const what = isPage ? "checks" : "tests";
   return (
     <section
       aria-label={`Your turn: ${block.title}`}
@@ -277,16 +280,24 @@ export function YourTurnBlock({
         </p>
         <div className="text-sm">
           <p className="mb-1 text-muted">Check will run:</p>
-          <ul className="flex flex-wrap gap-1.5">
-            {block.tests.map((test) => (
-              <li
-                key={test.call}
-                className="rounded bg-foreground/5 px-2 py-0.5 font-mono"
-              >
-                {test.call} → {test.expect}
-              </li>
-            ))}
-          </ul>
+          {isPage ? (
+            <ol className="list-decimal pl-5 leading-6">
+              {(block.checks ?? []).map((c, i) => (
+                <li key={i}>{c.label}</li>
+              ))}
+            </ol>
+          ) : (
+            <ul className="flex flex-wrap gap-1.5">
+              {block.tests.map((test) => (
+                <li
+                  key={test.call}
+                  className="rounded bg-foreground/5 px-2 py-0.5 font-mono"
+                >
+                  {test.call} → {test.expect}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
         <label htmlFor={id} className="text-xs font-medium text-muted">
           Your code
@@ -296,7 +307,7 @@ export function YourTurnBlock({
           value={code}
           onChange={(event) => setCode(event.target.value)}
           spellCheck={false}
-          rows={Math.min(16, Math.max(5, code.split("\n").length + 1))}
+          rows={Math.min(18, Math.max(5, code.split("\n").length + 1))}
           className="w-full resize-y rounded-md bg-[var(--code-bg)] px-3 py-2 font-mono text-sm leading-6 text-[var(--code-fg)]"
         />
         <div className="flex flex-wrap items-center gap-2">
@@ -315,17 +326,40 @@ export function YourTurnBlock({
         <p role="status" className="text-sm font-medium">
           {result &&
             (solved
-              ? `All ${result.total} tests pass. Well done!`
-              : `${result.passed} of ${result.total} tests pass. Read the ✗ lines, change your code and check again.`)}
+              ? `All ${result.total} ${what} pass. Well done!`
+              : `${result.passed} of ${result.total} ${what} pass. Read the ✗ lines, change your code and check again.`)}
         </p>
+        {result?.results && (
+          <ul className="flex flex-col gap-1 text-sm">
+            {result.results.map((r, i) => (
+              <li
+                key={i}
+                className={
+                  r.pass
+                    ? "text-green-800 dark:text-green-400"
+                    : "text-red-700 dark:text-red-400"
+                }
+              >
+                {r.pass ? "✓" : "✗"} {r.label}
+                {!r.pass && (
+                  <span className="text-muted"> (got: {r.detail})</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
         {checked !== null && (
           <iframe
             ref={frame}
             key={runs}
-            title={`Test results: ${block.title}`}
-            sandbox="allow-scripts"
-            src={playgroundSrc(checked, "js", block.tests)}
-            className="min-h-32 w-full rounded-md border border-border bg-white"
+            title={`${isPage ? "Your page" : "Test results"}: ${block.title}`}
+            sandbox={isPage ? "allow-scripts allow-forms" : "allow-scripts"}
+            src={
+              isPage
+                ? playgroundSrc(checked, "page", block.checks ?? [])
+                : playgroundSrc(checked, "js", block.tests)
+            }
+            className={`${isPage ? "min-h-48" : "min-h-32"} w-full rounded-md border border-border bg-white`}
           />
         )}
         <details className="text-sm">
@@ -341,7 +375,12 @@ export function YourTurnBlock({
             Show a solution
           </summary>
           <div className="mt-2 overflow-hidden rounded-md border border-border">
-            <CodeBlock example={{ language: "js", code: block.solution }} />
+            <CodeBlock
+              example={{
+                language: isPage ? "html" : "js",
+                code: block.solution,
+              }}
+            />
           </div>
         </details>
       </div>
@@ -362,7 +401,9 @@ export function MistakeBlock({
           <p className="px-4 pt-2 text-sm font-semibold text-red-700 dark:text-red-400">
             ✗ Wrong
           </p>
-          <CodeBlock example={{ language: "js", code: block.wrong }} />
+          <CodeBlock
+            example={{ language: block.language ?? "js", code: block.wrong }}
+          />
           <p className="px-4 pb-3 text-sm leading-6">
             <StepText text={block.problem} glossary={glossary} />
           </p>
@@ -371,7 +412,9 @@ export function MistakeBlock({
           <p className="px-4 pt-2 text-sm font-semibold text-green-800 dark:text-green-400">
             ✓ Right
           </p>
-          <CodeBlock example={{ language: "js", code: block.right }} />
+          <CodeBlock
+            example={{ language: block.language ?? "js", code: block.right }}
+          />
           <p className="px-4 pb-3 text-sm leading-6">
             <StepText text={block.why} glossary={glossary} />
           </p>

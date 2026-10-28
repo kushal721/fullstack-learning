@@ -96,4 +96,38 @@ describe("PlaygroundBlock", () => {
     expect(rerun).not.toBe(frame);
     expect(rerun).toHaveAttribute("src", frame.getAttribute("src"));
   });
+
+  it("runs a page with its scripts and forms, and shows what its own frame logs", async () => {
+    render(
+      <PlaygroundBlock
+        block={{
+          type: "playground",
+          caption: "A button",
+          code: "<button>Hi</button>",
+          language: "page",
+        }}
+      />,
+    );
+    const frame = screen.getByTitle("Preview: A button") as HTMLIFrameElement;
+    expect(frame).toHaveAttribute("sandbox", "allow-scripts allow-forms");
+    expect(frame).toHaveAttribute(
+      "src",
+      `/playground/page?code=${encodeURIComponent("<button>Hi</button>")}`,
+    );
+    expect(screen.getByText("(nothing logged)")).toBeInTheDocument();
+
+    const log = (source: MessageEventSource | null, text: string) =>
+      act(() => {
+        window.dispatchEvent(
+          new MessageEvent("message", {
+            source,
+            data: { source: "fsl-page", kind: "log", text },
+          }),
+        );
+      });
+    await log(window, "from elsewhere");
+    await log(frame.contentWindow, "clicked");
+    expect(screen.getByText("clicked")).toBeInTheDocument();
+    expect(screen.queryByText("from elsewhere")).toBeNull();
+  });
 });

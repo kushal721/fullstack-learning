@@ -138,6 +138,66 @@ describe("YourTurnBlock", () => {
   });
 });
 
+describe("YourTurnBlock on a page", () => {
+  const block = {
+    type: "yourTurn" as const,
+    title: "Add an item",
+    task: "Add one item to the list.",
+    language: "page" as const,
+    starter: "<ul></ul>",
+    tests: [],
+    checks: [
+      { kind: "exists" as const, label: "There's a list", selector: "ul" },
+      {
+        kind: "count" as const,
+        label: "It has one item",
+        selector: "ul li",
+        count: 1,
+      },
+    ],
+    hint: "Append an `li`.",
+    solution: "<ul><li>Tea</li></ul>",
+  };
+
+  it("lists the checks, runs the page with scripts and forms, and shows each check's result", async () => {
+    const user = userEvent.setup();
+    inRouter(<YourTurnBlock block={block} glossary={[]} />);
+    expect(screen.getByText("It has one item")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "▶ Check my code" }));
+    const frame = screen.getByTitle(
+      "Your page: Add an item",
+    ) as HTMLIFrameElement;
+    expect(frame).toHaveAttribute("sandbox", "allow-scripts allow-forms");
+    expect(frame).toHaveAttribute(
+      "src",
+      `/playground/page?code=${encodeURIComponent("<ul></ul>")}&checks=${encodeURIComponent(JSON.stringify(block.checks))}`,
+    );
+
+    await act(() => {
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          source: frame.contentWindow,
+          data: {
+            source: "fsl-runner",
+            passed: 1,
+            total: 2,
+            results: [
+              { label: "There's a list", pass: true, detail: "found" },
+              { label: "It has one item", pass: false, detail: "0 found" },
+            ],
+          },
+        }),
+      );
+    });
+    expect(screen.getByRole("status")).toHaveTextContent("1 of 2 checks pass.");
+    expect(screen.getByText("✓ There's a list")).toBeInTheDocument();
+    expect(screen.getByText(/✗ It has one item/)).toHaveTextContent(
+      "(got: 0 found)",
+    );
+  });
+});
+
 describe("MistakeBlock", () => {
   it("shows the wrong code and its problem, then the fix and why", () => {
     inRouter(

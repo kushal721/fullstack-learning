@@ -72,6 +72,10 @@ the call stack and the output.
 ![A step-through of two functions working together, with the call stack](docs/screenshots/module-trace.png)
 
 "Your turn" exercises run the learner's code against tests in the sandbox.
+JavaScript exercises run tests such as `double(2) → 4`; page exercises
+(HTML, CSS and the DOM) run checks on the page the learner built, such as
+"the list has 3 items", "after clicking Add it has 4" or "the heading's
+padding is 16px", and show ✓ or ✗ for each.
 
 ![A your-turn exercise with its test results](docs/screenshots/your-turn.png)
 
@@ -79,7 +83,9 @@ the call stack and the output.
 
 JavaScript examples run in a safe sandbox on the page: edit the code, press
 **Run**, and see the console output. HTML and CSS playgrounds show the
-rendered result as you type.
+rendered result as you type. Page playgrounds run HTML, CSS and scripts
+together, so DOM and event code works on a real page, with its console
+shown underneath.
 
 ![A JavaScript playground showing console output](docs/screenshots/js-playground.png)
 
@@ -130,7 +136,9 @@ The site follows the system's light or dark setting and works from phone width u
   the variables, the call stack and the output, **common mistakes** shown
   wrong → right, and **"your turn" exercises**: the learner writes code
   and Check runs tests on it in the sandbox. Every exercise's solution is
-  run when the content is validated.
+  run when the content is validated (page exercises in jsdom), and the
+  browser check runs every page exercise's solution and starter in
+  Chromium, where style checks need a real layout.
 - **No word left unexplained.** Every term is a link. Clicking one opens the
   **glossary panel** on the right, with a plain explanation, related words,
   where it is taught, and search. Words inside an explanation are links
@@ -177,7 +185,7 @@ and diagram is written content, served from the API.
 flowchart TB
   subgraph Browser
     UI["React client (client/)<br/>pages · components · hooks"]
-    PG["Sandboxed playground iframes<br/>/playground, /playground/js"]
+    PG["Sandboxed playground iframes<br/>/playground, /playground/js, /playground/page"]
   end
   subgraph Server["Node.js + Express (server/)"]
     API["/api routes<br/>paths · glossary · course-map · concepts · files · flows · search …"]
@@ -320,6 +328,13 @@ All under `/api`, JSON, read-only except answer checks:
     a policy with no network access, inside a Web Worker that is stopped
     after 2 seconds so an endless loop can't freeze the page. The code is
     JSON-encoded with `<` escaped so it can't break out of its script.
+  - Pages with scripts (DOM examples and page exercises) load
+    `/playground/page` in an iframe sandboxed to `allow-scripts allow-forms`
+    (a unique origin, no cookies or storage), under a policy with no
+    network access and `form-action 'none'`, so a form fires its submit
+    event but can't be sent anywhere. Exercise checks are JSON-encoded
+    with `<` escaped, and the step only accepts results from its own
+    frame.
 - **Rate limits** per IP for the API and for answer checks.
 - Answers are removed from steps and checked on the server.
 - The Docker image runs as a non-root user and reports health at `/api/health`.

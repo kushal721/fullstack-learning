@@ -14,7 +14,7 @@ import {
   stepLinks,
   termLinks,
 } from "./guided-learning.js";
-import { runTests } from "./run-tests.js";
+import { runPageChecks, runTests } from "./run-tests.js";
 import { SLUG_PATTERN } from "./slug.js";
 
 /** Steps per level, level check included. */
@@ -56,6 +56,7 @@ export const LIMITS = {
   partNote: 220,
   traceSteps: [2, 16],
   yourTurnTests: [2, 6],
+  pageChecks: [2, 8],
   mistakeLines: 10,
   caption: 120,
   short: 160,
@@ -314,18 +315,44 @@ function validateBlock(
       if (!block.title.trim()) errors.push(`${where} yourTurn needs a title.`);
       tooLong(block.task, LIMITS.explain, "yourTurn task");
       tooLong(block.hint, LIMITS.partNote, "yourTurn hint");
-      if (outside(block.tests.length, LIMITS.yourTurnTests)) {
-        errors.push(`${where} yourTurn needs 2–6 tests.`);
-      }
+      const isPage = block.language === "page";
+      const maxLines = isPage ? LIMITS.playgroundLines : LIMITS.codeLines;
       for (const [code, what] of [
         [block.starter, "starter"],
         [block.solution, "solution"],
       ] as const) {
-        if (code.split("\n").length > LIMITS.codeLines) {
+        if (code.split("\n").length > maxLines) {
           errors.push(
-            `${where} yourTurn ${what} needs at most ${LIMITS.codeLines} lines.`,
+            `${where} yourTurn ${what} needs at most ${maxLines} lines.`,
           );
         }
+      }
+      if (isPage) {
+        const checks = block.checks ?? [];
+        if (block.tests.length > 0) {
+          errors.push(`${where} yourTurn on a page uses checks, not tests.`);
+        }
+        if (outside(checks.length, LIMITS.pageChecks)) {
+          errors.push(`${where} yourTurn needs 2–8 checks.`);
+        }
+        // The solution must pass every check, and the starter must not.
+        // Style checks need a real browser: the browser check runs them.
+        runPageChecks(block.solution, checks).failures.forEach((failure) =>
+          errors.push(`${where} yourTurn solution fails: ${failure}`),
+        );
+        const starter = runPageChecks(block.starter, checks);
+        if (starter.skipped < checks.length && starter.failures.length === 0) {
+          errors.push(
+            `${where} yourTurn starter already passes every check; leave the learner something to do.`,
+          );
+        }
+        break;
+      }
+      if (block.checks) {
+        errors.push(`${where} yourTurn in JavaScript uses tests, not checks.`);
+      }
+      if (outside(block.tests.length, LIMITS.yourTurnTests)) {
+        errors.push(`${where} yourTurn needs 2–6 tests.`);
       }
       // The solution must pass every test, and the starter must not.
       const solved = runTests(block.solution, block.tests);

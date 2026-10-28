@@ -523,8 +523,12 @@ export type Block =
       type: "playground";
       caption: string;
       code: string;
-      /** "html" when left out. */
-      language?: "html" | "js";
+      /**
+       * "html" (the default): HTML and CSS shown as a page, no scripts.
+       * "js": JavaScript run with its console output shown.
+       * "page": HTML, CSS and `<script>`s together, the page and its console.
+       */
+      language?: "html" | "js" | "page";
     }
   | {
       /** A line or two of code with each part labelled: what it is, and why. */
@@ -547,16 +551,21 @@ export type Block =
     }
   | {
       /**
-       * The learner writes code; Check runs it with the tests in the
-       * sandboxed JavaScript runner and shows which pass.
+       * The learner writes code; Check runs it in a sandboxed runner and
+       * shows which tests or checks pass. JavaScript ("js", the default)
+       * runs `tests`; a page ("page": HTML, CSS and scripts) runs `checks`
+       * on the page it makes.
        */
       type: "yourTurn";
       title: string;
       /** What to write. */
       task: string;
+      language?: "js" | "page";
       starter: string;
       /** `call` is run after the learner's code; `expect` is a JS value. */
       tests: { call: string; expect: string }[];
+      /** For a page: checks run in order once it has loaded. */
+      checks?: PageCheck[];
       hint: string;
       solution: string;
     }
@@ -564,11 +573,33 @@ export type Block =
       /** A common mistake: the wrong code, what goes wrong, and the fix. */
       type: "mistake";
       title: string;
+      /** The code's language; "js" when left out. */
+      language?: CodeExample["language"];
       wrong: string;
       problem: string;
       right: string;
       why: string;
     };
+
+/**
+ * A check on the page a "your turn" exercise makes. Each has a label the
+ * learner sees. click, type and submit are actions: they change the page
+ * for the checks after them, and pass when their element exists.
+ */
+export type PageCheck = { label: string } & (
+  | { kind: "exists"; selector: string }
+  | { kind: "missing"; selector: string }
+  | { kind: "count"; selector: string; count: number }
+  /** The element's text, trimmed, with runs of spaces made one. */
+  | { kind: "text"; selector: string; text: string }
+  /** Has the attribute, or (with `value`) has it with that value. */
+  | { kind: "attr"; selector: string; name: string; value?: string }
+  /** A computed style, as the browser reports it (e.g. "16px"). */
+  | { kind: "style"; selector: string; property: string; value: string }
+  | { kind: "click"; selector: string }
+  | { kind: "type"; selector: string; value: string }
+  | { kind: "submit"; selector: string }
+);
 
 /** One move of a trace. */
 export type TraceStep = {

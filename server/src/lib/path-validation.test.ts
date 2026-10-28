@@ -713,6 +713,67 @@ describe("modules", () => {
     ]);
   });
 
+  const pageTurn = (solution: string, starter = "<ul></ul>"): Block => ({
+    type: "yourTurn",
+    title: "Add an item",
+    task: "Add one item to the list with JavaScript.",
+    language: "page",
+    starter,
+    tests: [],
+    checks: [
+      { kind: "exists", label: "There's a list", selector: "ul" },
+      { kind: "count", label: "It has one item", selector: "ul li", count: 1 },
+      {
+        kind: "style",
+        label: "Items are red",
+        selector: "li",
+        property: "color",
+        value: "rgb(255, 0, 0)",
+      },
+    ],
+    hint: "Make an `li` and append it.",
+    solution,
+  });
+  const withPageTurns = (...turns: Block[]) =>
+    withModule(
+      moduleStep({
+        blocks: [
+          ...blocks().slice(0, 3),
+          ...turns,
+          { type: "explain", text: "Recap." },
+        ],
+      }),
+    );
+  const working =
+    '<ul></ul><style>li{color:red}</style><script>const li = document.createElement("li"); document.querySelector("ul").append(li);</script>';
+
+  it("runs a page exercise's checks: the solution must pass and the starter must not", () => {
+    expect(withPageTurns(pageTurn(working), pageTurn(working))).toEqual([]);
+    expect(
+      withPageTurns(
+        pageTurn("<ul><li>a</li><li>b</li></ul><script>oops()</script>"),
+        pageTurn(working, "<ul><li>done already</li></ul>"),
+      ),
+    ).toEqual([
+      `${step2} yourTurn solution fails: It has one item: 2 found`,
+      `${step2} yourTurn solution fails: it throws: Uncaught [ReferenceError: oops is not defined]`,
+      `${step2} yourTurn starter already passes every check; leave the learner something to do.`,
+    ]);
+  });
+
+  it("keeps tests for JavaScript and checks for pages", () => {
+    const js = yourTurn();
+    expect(
+      withPageTurns(
+        { ...pageTurn(working), tests: [{ call: "1", expect: "1" }] } as Block,
+        { ...js, checks: [] } as Block,
+      ),
+    ).toEqual([
+      `${step2} yourTurn on a page uses checks, not tests.`,
+      `${step2} yourTurn in JavaScript uses tests, not checks.`,
+    ]);
+  });
+
   it("allows objectives only on modules", () => {
     const path = makePath();
     path.levels.basic.steps[1] = {
