@@ -13,9 +13,10 @@ import {
 import { decisionsModule } from "./decisions.js";
 import { functionsModule } from "./functions.js";
 import { gettingStartedModule } from "./getting-started.js";
+import { textAndNumbersModule } from "./text-and-numbers.js";
 import { variablesModule } from "./variables.js";
 
-// Basic: steps 1–16. Values, variables, conditions, loops, functions,
+// Basic: steps 1–15. Values, variables, conditions, loops, functions,
 // arrays and objects, then the page: finding elements, changing them and
 // reacting to events. Most steps have code you can run.
 export const basic: LevelPlan = {
@@ -24,71 +25,7 @@ export const basic: LevelPlan = {
   steps: [
     gettingStartedModule,
     variablesModule,
-    lesson(
-      "strings",
-      "Working with text",
-      3,
-      reference("Common string tools", [
-        ["length", "How many characters.", '"milk".length // 4'],
-        [
-          "toUpperCase()",
-          "A copy in capitals.",
-          '"milk".toUpperCase() // "MILK"',
-        ],
-        [
-          "trim()",
-          "A copy without spaces at the ends.",
-          '"  hi  ".trim() // "hi"',
-        ],
-        [
-          "includes()",
-          "Does it contain this text?",
-          '"hello".includes("ell") // true',
-        ],
-        ["slice()", "A piece of it.", '"hello".slice(0, 2) // "he"'],
-        [
-          "`…${}…`",
-          "A template literal: text with values inside.",
-          "`Hi ${name}`",
-        ],
-      ]),
-      jsPlayground("Try the string tools", [
-        'const title = "  Buy milk  ";',
-        "console.log(title.trim());",
-        "console.log(title.trim().toUpperCase());",
-        'console.log(title.includes("milk"));',
-        'const user = "Sam";',
-        "console.log(`Hello, ${user}!`);",
-      ]),
-      explain(
-        "A [[js-string|string]] in backticks is a [[template-literal]]: `${}` drops a value into the text.",
-      ),
-    ),
-    lesson(
-      "numbers-and-maths",
-      "Numbers and maths",
-      3,
-      reference("Arithmetic operators", [
-        ["+ - * /", "Add, subtract, multiply, divide.", "7 / 2 // 3.5"],
-        ["%", "The remainder after dividing.", "7 % 2 // 1"],
-        ["**", "To the power of.", "2 ** 3 // 8"],
-        ["++ / +=", "Add one, or add and store.", "count += 5;"],
-        ["Number()", "Turn text into a number.", 'Number("42") // 42'],
-        ["Math.round()", "Round to a whole number.", "Math.round(2.6) // 3"],
-      ]),
-      jsPlayground("Maths in JavaScript", [
-        "console.log(7 / 2, 7 % 2, 2 ** 3);",
-        'console.log("2" + 3);',
-        'console.log(Number("2") + 3);',
-        "console.log(0.1 + 0.2);",
-      ]),
-      quickCheck(
-        'What does `"2" + 3` give?',
-        ["`5`", '`"23"`', "An error"],
-        1,
-        "With a [[js-string|string]] on one side, `+` joins text. Turn it into a [[js-number|number]] first with `Number()`.",
-      ),
-    ),
+    textAndNumbersModule,
     decisionsModule,
     lesson(
       "loops",
@@ -371,7 +308,7 @@ export const basic: LevelPlan = {
     ),
     levelCheck("basic-check", "Basic check", [
       ["js-basic-const", "variables"],
-      ["js-basic-plus", "numbers-and-maths"],
+      ["js-basic-plus", "text-and-numbers"],
       ["js-basic-equals", "decisions"],
       ["js-basic-return", "functions"],
       ["js-basic-filter", "array-methods"],
