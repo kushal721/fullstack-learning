@@ -6,6 +6,8 @@ test("Tab reaches the skip link first, and it moves focus to the content", async
   page,
 }) => {
   await page.goto("/learn");
+  // Wait for the page's content, so it doesn't re-render after the skip.
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await page.keyboard.press("Tab");
   await expect(
     page.getByRole("link", { name: "Skip to content" }),
