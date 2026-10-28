@@ -4,6 +4,7 @@ import { createApp } from "../app.js";
 import {
   JS_RUNNER_POLICY,
   MAX_PLAYGROUND_CODE,
+  PAGE_RUNNER_POLICY,
   PLAYGROUND_POLICY,
   testCalls,
 } from "./playground.js";
@@ -104,5 +105,73 @@ describe("GET /playground/js", () => {
       );
       expect(res.status, tests).toBe(400);
     }
+  });
+});
+
+describe("GET /playground/page", () => {
+  const checks = [{ kind: "exists", label: "A list", selector: "ul" }];
+  const get = (code: string, rawChecks?: string) =>
+    request(app).get(
+      `/playground/page?code=${encodeURIComponent(code)}${
+        rawChecks === undefined
+          ? ""
+          : `&checks=${encodeURIComponent(rawChecks)}`
+      }`,
+    );
+
+  it("runs the learner's page with its scripts, as a powerless origin that can't send forms", async () => {
+    const res = await get("<ul></ul><script>console.log(1)</script>");
+    expect(res.status).toBe(200);
+    expect(res.type).toBe("text/html");
+    const policy = res.headers["content-security-policy"];
+    expect(policy).toBe(PAGE_RUNNER_POLICY);
+    expect(policy).toContain("default-src 'none'");
+    expect(policy).toContain("script-src 'unsafe-inline'");
+    expect(policy).toContain("form-action 'none'");
+    expect(policy).toContain("frame-ancestors 'self'");
+    expect(policy).toContain("sandbox allow-scripts allow-forms");
+    expect(policy).not.toContain("allow-same-origin");
+    expect(policy).not.toContain("connect-src");
+    expect(res.headers["x-frame-options"]).toBe("SAMEORIGIN");
+    expect(res.text).toContain("<ul></ul><script>console.log(1)</script>");
+  });
+
+  it("puts the harness before the learner's code, in a fragment or a whole document", async () => {
+    const fragment = (await get("<p>Hi</p>")).text;
+    expect(fragment.indexOf("fsl-page")).toBeGreaterThan(0);
+    expect(fragment.indexOf("fsl-page")).toBeLessThan(
+      fragment.indexOf("<p>Hi</p>"),
+    );
+
+    const doc =
+      "<!doctype html><html><head><title>Mine</title></head><body><script>x()</script></body></html>";
+    const whole = (await get(doc)).text;
+    expect(whole.startsWith("<!doctype html><html><head><script>")).toBe(true);
+    expect(whole.indexOf("fsl-page")).toBeLessThan(whole.indexOf("<title>"));
+  });
+
+  it("runs an exercise's checks after load, and keeps them inside the script", async () => {
+    const tricky = [
+      { kind: "text", label: "</script><b>", selector: "p", text: "x" },
+    ];
+    const res = await get("<p>x</p>", JSON.stringify(tricky));
+    expect(res.status).toBe(200);
+    expect(res.text).toContain("\\u003c/script>\\u003cb>");
+    expect(res.text).not.toContain("</script><b>");
+    expect(res.text).toContain('addEventListener("load"');
+    expect((await get("<ul></ul>", JSON.stringify(checks))).status).toBe(200);
+  });
+
+  it("refuses checks that aren't a list of known page checks, and code that is too long", async () => {
+    for (const bad of [
+      "nope",
+      "{}",
+      JSON.stringify([{ kind: "exists", selector: "ul" }]),
+      JSON.stringify([{ kind: "eval", label: "x", selector: "ul" }]),
+      JSON.stringify([{ kind: "count", label: "x", selector: "ul" }]),
+    ]) {
+      expect((await get("<ul></ul>", bad)).status, bad).toBe(400);
+    }
+    expect((await get("x".repeat(MAX_PLAYGROUND_CODE + 1))).status).toBe(400);
   });
 });

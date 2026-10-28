@@ -1,4 +1,4 @@
-import type { Level, LevelSummary, StepSummary } from "@fsl/shared";
+import type { Level, LevelSummary, PageCheck, StepSummary } from "@fsl/shared";
 import type { PathProgress } from "../../hooks/usePathProgress.ts";
 
 /** How each level is named and coloured, everywhere it appears. */
@@ -77,12 +77,17 @@ export function termInText(
 /** Where a playground's result comes from: the server's locked-down pages. */
 export const playgroundSrc = (
   code: string,
-  language: "html" | "js" = "html",
-  /** A "your turn" exercise's tests, run after the code (JavaScript only). */
-  tests?: { call: string; expect: string }[],
+  language: "html" | "js" | "page" = "html",
+  /**
+   * A "your turn" exercise's tests (JavaScript: run after the code) or
+   * checks (a page: run once it has loaded).
+   */
+  tests?: { call: string; expect: string }[] | PageCheck[],
 ) =>
-  `/playground${language === "js" ? "/js" : ""}?code=${encodeURIComponent(code)}${
-    tests ? `&tests=${encodeURIComponent(JSON.stringify(tests))}` : ""
+  `/playground${language === "html" ? "" : `/${language}`}?code=${encodeURIComponent(code)}${
+    tests
+      ? `&${language === "page" ? "checks" : "tests"}=${encodeURIComponent(JSON.stringify(tests))}`
+      : ""
   }`;
 
 /** A module part's position from the URL's `?part=` (1-based), clamped. */

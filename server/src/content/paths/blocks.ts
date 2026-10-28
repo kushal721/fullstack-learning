@@ -2,6 +2,7 @@ import type {
   Block,
   CodeExample,
   LevelCheckQuestion,
+  PageCheck,
   Step,
   TraceStep,
   TryItWidget,
@@ -182,9 +183,42 @@ export const yourTurn = (exercise: {
   solution: exercise.solution.join("\n"),
 });
 
+/**
+ * The learner writes a page (HTML, CSS, scripts); its checks run in order
+ * on the page once it has loaded.
+ */
+export const pageYourTurn = (exercise: {
+  title: string;
+  task: string;
+  starter: string[];
+  checks: PageCheck[];
+  hint: string;
+  solution: string[];
+}): Block => ({
+  type: "yourTurn",
+  title: exercise.title,
+  task: exercise.task,
+  language: "page",
+  starter: exercise.starter.join("\n"),
+  tests: [],
+  checks: exercise.checks,
+  hint: exercise.hint,
+  solution: exercise.solution.join("\n"),
+});
+
+/** Editable HTML, CSS and scripts: the page and its console. */
+export const pagePlayground = (caption: string, lines: string[]): Block => ({
+  type: "playground",
+  caption,
+  code: lines.join("\n"),
+  language: "page",
+});
+
 /** A common mistake: the wrong code, what goes wrong, the fix and why. */
 export const mistake = (m: {
   title: string;
+  /** "js" when left out. */
+  language?: CodeExample["language"];
   wrong: string[];
   problem: string;
   right: string[];
@@ -192,6 +226,7 @@ export const mistake = (m: {
 }): Block => ({
   type: "mistake",
   title: m.title,
+  ...(m.language ? { language: m.language } : {}),
   wrong: m.wrong.join("\n"),
   problem: m.problem,
   right: m.right.join("\n"),

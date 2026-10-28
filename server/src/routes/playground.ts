@@ -1,4 +1,6 @@
+import type { PageCheck } from "@fsl/shared";
 import { Router } from "express";
+import { PAGE_CHECK_SOURCE, parseChecks } from "../lib/page-checks.js";
 
 export const playgroundRouter = Router();
 
@@ -192,4 +194,108 @@ playgroundRouter.get("/js", (req, res) => {
     .set("Cache-Control", "no-store")
     .type("html")
     .send(jsRunnerPage(code, tests));
+});
+
+/**
+ * The page runner's policy: HTML, CSS and the learner's own inline scripts
+ * (and inline event handlers) may run, as a unique origin with no network,
+ * storage or access to this site. Forms may fire their submit event, but
+ * `form-action 'none'` stops them being sent anywhere.
+ */
+export const PAGE_RUNNER_POLICY = [
+  "default-src 'none'",
+  "script-src 'unsafe-inline'",
+  "style-src 'unsafe-inline'",
+  "img-src data: https:",
+  "media-src data: https:",
+  "font-src data:",
+  "form-action 'none'",
+  "base-uri 'none'",
+  "frame-ancestors 'self'",
+  "sandbox allow-scripts allow-forms",
+].join("; ");
+
+/**
+ * Runs before the learner's code: console output and errors go to the
+ * page that framed this one. With checks, once the page has loaded they
+ * run in order and the results are sent as one message.
+ */
+function pageHarness(checks: PageCheck[]): string {
+  const list = JSON.stringify(checks).replace(/</g, "\\u003c");
+  return `<script>(() => {
+const post = (m) => parent.postMessage(m, "*");
+const show = (v) => typeof v === "string" ? v : v instanceof Error ? v.name + ": " + v.message : (() => { try { return JSON.stringify(v); } catch { return String(v); } })();
+for (const kind of ["log", "info", "warn", "error"]) {
+  const original = console[kind].bind(console);
+  console[kind] = (...args) => { post({ source: "fsl-page", kind: kind === "info" ? "log" : kind, text: args.map(show).join(" ") }); original(...args); };
+}
+addEventListener("error", (e) => post({ source: "fsl-page", kind: "error", text: e.message }));
+${PAGE_CHECK_SOURCE}
+const checks = ${list};
+if (!checks.length) return;
+const run = async () => {
+  const results = [];
+  for (const c of checks) {
+    let result;
+    try { result = window.__fslCheck(c); } catch (e) { result = { pass: false, detail: show(e) }; }
+    results.push({ label: c.label, ...result });
+    await new Promise((r) => setTimeout(r, 0));
+  }
+  post({ source: "fsl-runner", passed: results.filter((r) => r.pass).length, total: results.length, results });
+};
+addEventListener("load", () => setTimeout(run, 50));
+})();</script>`;
+}
+
+/** The learner's page with the harness first, so it sees every log. */
+export function pageRunnerPage(code: string, checks: PageCheck[] = []): string {
+  const harness = pageHarness(checks);
+  const page = playgroundPage(code);
+  const head = /<head[^>]*>/i.exec(page);
+  if (head) {
+    const at = head.index + head[0].length;
+    return page.slice(0, at) + harness + page.slice(at);
+  }
+  // A whole document without a <head>: put it straight after <html>.
+  return page.replace(/<html[^>]*>/i, (tag) => tag + harness);
+}
+
+// GET /playground/page?code=…&checks=… — a page made of HTML, CSS and
+// scripts (a DOM example, or a "your turn" exercise with its checks), in a
+// sandboxed iframe on the step.
+playgroundRouter.get("/page", (req, res) => {
+  const { code = "", checks: rawChecks = "[]" } = req.query;
+  if (typeof code !== "string" || code.length > MAX_PLAYGROUND_CODE) {
+    res
+      .status(400)
+      .type("text/plain")
+      .send(`code must be text of at most ${MAX_PLAYGROUND_CODE} characters.`);
+    return;
+  }
+  let checks: PageCheck[] | undefined;
+  if (
+    typeof rawChecks === "string" &&
+    rawChecks.length <= MAX_PLAYGROUND_CODE
+  ) {
+    try {
+      checks = parseChecks(JSON.parse(rawChecks));
+    } catch {
+      // not JSON
+    }
+  }
+  if (!checks) {
+    res
+      .status(400)
+      .type("text/plain")
+      .send(
+        `checks must be a JSON list of page checks of at most ${MAX_PLAYGROUND_CODE} characters.`,
+      );
+    return;
+  }
+  res
+    .set("Content-Security-Policy", PAGE_RUNNER_POLICY)
+    .set("X-Frame-Options", "SAMEORIGIN")
+    .set("Cache-Control", "no-store")
+    .type("html")
+    .send(pageRunnerPage(code, checks));
 });

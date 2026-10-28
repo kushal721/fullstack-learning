@@ -1,5 +1,6 @@
 import type { GlossaryEntrySummary, PublicBlock } from "@fsl/shared";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { useFrameMessages } from "../../hooks/useFrameMessages.ts";
 import { Badge } from "../ui/Badge.tsx";
 import { playgroundSrc } from "./levels.ts";
 import { StepText } from "./StepText.tsx";
@@ -93,18 +94,37 @@ export function ReferenceTable({
  * in a sandboxed frame that allows styles but no scripts. JavaScript runs in
  * a frame that allows only scripts, as a unique origin with no network or
  * storage, inside a worker stopped after 2 seconds; its console is shown.
+ * A page (HTML, CSS and scripts) runs in a frame that allows scripts and
+ * forms but no network; the page is shown with its console under it.
  */
 export function PlaygroundBlock({ block }: { block: Playground }) {
   const id = useId();
-  const isJs = block.language === "js";
+  const language = block.language ?? "html";
+  const isJs = language === "js";
+  const isPage = language === "page";
+  const frame = useRef<HTMLIFrameElement>(null);
   const [code, setCode] = useState(block.code);
   // Update the result shortly after typing stops, not on every key.
   const [shown, setShown] = useState(block.code);
   const [runs, setRuns] = useState(0);
   useEffect(() => {
-    const timer = setTimeout(() => setShown(code), isJs ? 700 : 400);
+    const timer = setTimeout(() => setShown(code), isJs || isPage ? 700 : 400);
     return () => clearTimeout(timer);
-  }, [code, isJs]);
+  }, [code, isJs, isPage]);
+  // A page's console, kept only for the run that's showing.
+  const run = `${runs}:${shown}`;
+  const [logs, setLogs] = useState<{
+    run: string;
+    lines: { kind: string; text: string }[];
+  }>({ run, lines: [] });
+  useFrameMessages(frame, (message) => {
+    if (message.source !== "fsl-page") return;
+    setLogs((current) => ({
+      run,
+      lines: [...(current.run === run ? current.lines : []), message],
+    }));
+  });
+  const consoleLines = logs.run === run ? logs.lines : [];
 
   return (
     <section
@@ -115,7 +135,7 @@ export function PlaygroundBlock({ block }: { block: Playground }) {
         <Badge tone="warning">Try it</Badge>
         <span className="font-medium">{block.caption}</span>
         <span className="ml-auto flex gap-2">
-          {isJs && (
+          {(isJs || isPage) && (
             <button
               type="button"
               onClick={() => {
@@ -165,13 +185,46 @@ export function PlaygroundBlock({ block }: { block: Playground }) {
             {isJs ? "Console output" : "What the browser shows"}
           </span>
           <iframe
+            ref={frame}
             // A new key re-runs the same code when Run is pressed.
             key={runs}
             title={`${isJs ? "Output" : "Preview"}: ${block.caption}`}
-            sandbox={isJs ? "allow-scripts" : ""}
-            src={playgroundSrc(shown, isJs ? "js" : "html")}
+            sandbox={
+              isJs ? "allow-scripts" : isPage ? "allow-scripts allow-forms" : ""
+            }
+            src={playgroundSrc(shown, language)}
             className="min-h-56 w-full flex-1 bg-white"
           />
+          {isPage && (
+            <div className="border-t border-border">
+              <p className="px-4 pt-2 text-xs font-medium text-muted">
+                Console
+              </p>
+              <pre
+                aria-live="polite"
+                className="max-h-40 overflow-auto whitespace-pre-wrap break-words px-4 pb-2 font-mono text-xs leading-5"
+              >
+                {consoleLines.length === 0 ? (
+                  <span className="text-muted">(nothing logged)</span>
+                ) : (
+                  consoleLines.map((line, i) => (
+                    <span
+                      key={i}
+                      className={
+                        line.kind === "error"
+                          ? "block text-red-700 dark:text-red-400"
+                          : line.kind === "warn"
+                            ? "block text-amber-700 dark:text-amber-400"
+                            : "block"
+                      }
+                    >
+                      {line.text}
+                    </span>
+                  ))
+                )}
+              </pre>
+            </div>
+          )}
         </div>
       </div>
     </section>
