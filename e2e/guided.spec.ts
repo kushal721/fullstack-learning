@@ -41,25 +41,61 @@ async function readyTopics(request: APIRequestContext) {
   return ready;
 }
 
-test("every guided step", async ({ page, request }, testInfo) => {
-  test.setTimeout(300_000);
-  const paths: string[] = [];
-  for (const { topic, levels } of await readyTopics(request)) {
-    paths.push(`/learn/${topic.slug}`);
-    for (const level of levels) {
+// One test per topic and level, so they run in parallel (and across CI
+// shards) and each has its own time budget as modules add parts. A topic
+// without a guided path yet is skipped.
+const TOPICS = [
+  "how-the-web-works",
+  "html",
+  "css",
+  "javascript",
+  "git",
+  "react",
+  "http",
+  "backend",
+  "databases",
+  "authentication",
+  "security",
+  "testing",
+  "deployment",
+  "how-everything-connects",
+];
+const LEVELS = ["basic", "intermediate", "advanced"];
+
+test("every topic in the course map is in the every-step check", async ({
+  request,
+}) => {
+  const map = await get<CourseMap>(request, "/api/course-map");
+  expect(map.topics.map((t) => t.topic.slug)).toEqual(TOPICS);
+});
+
+for (const slug of TOPICS) {
+  for (const levelName of LEVELS) {
+    test(`every guided step: ${slug}, ${levelName}`, async ({
+      page,
+      request,
+    }, testInfo) => {
+      test.setTimeout(600_000);
+      const ready = (await readyTopics(request)).find(
+        (t) => t.topic.slug === slug,
+      );
+      test.skip(!ready, `${slug} has no guided path yet`);
+      const level = ready!.levels.find((l) => l.level === levelName)!;
+      const paths: string[] = [];
+      if (levelName === "basic") paths.push(`/learn/${slug}`);
       for (const step of level.steps) {
-        paths.push(`/learn/${topic.slug}/${step.id}`);
+        paths.push(`/learn/${slug}/${step.id}`);
         // A module: every one of its parts too.
         for (let part = 2; part <= (step.parts ?? 0); part++)
-          paths.push(`/learn/${topic.slug}/${step.id}?part=${part}`);
+          paths.push(`/learn/${slug}/${step.id}?part=${part}`);
       }
-    }
+      const problems: string[] = [];
+      for (const path of paths)
+        problems.push(...(await checkPage(page, path, testInfo)));
+      expect(problems, problems.join("\n")).toEqual([]);
+    });
   }
-  const problems: string[] = [];
-  for (const path of paths)
-    problems.push(...(await checkPage(page, path, testInfo)));
-  expect(problems, problems.join("\n")).toEqual([]);
-});
+}
 
 test("the glossary panel, on a step of each level", async ({
   page,

@@ -154,14 +154,17 @@ A page fails when:
 - it logs a JavaScript error (the API's expected 404 on not-found pages is
   ignored).
 
-It takes about two minutes. CI runs it on every pull request (the **Browser
-check** job) and uploads screenshots of failing pages as an artifact.
+Locally it takes a few minutes. CI runs it on every pull request, split
+across three runners (the **Browser check (1/3)**, **(2/3)** and **(3/3)**
+jobs, using Playwright's `--shard`), and uploads screenshots of failing
+pages as an artifact for each shard.
 The first time, install the browser with `npx playwright install chromium`.
 Useful options: `npm run check:browser -- --no-build` (reuse the last build)
 and `-- --project=phone-light` or `-g "every concept"` to run part of it.
 Tests live in `e2e/`; add a page there when you add a route. Guided paths
-need no changes there: `e2e/guided.spec.ts` finds every topic with a path
-and checks every step, the glossary panel, the keyboard path, and runs axe
+need no changes there: `e2e/guided.spec.ts` has one test per topic and
+level, which skips topics without a path and checks every step and every
+module part, the glossary panel, the keyboard path, and runs axe
 (serious or critical WCAG A/AA findings fail) on each kind of guided screen.
 
 `npm run validate` checks the learning content: ids are unique and every
