@@ -123,9 +123,9 @@ The site follows the system's light or dark setting and works from phone width u
   the Notes App" links to the real code.
 - **Modules for the core ideas.** The ideas everything else depends on
   are taught in depth as modules: objectives first, then parts shown one
-  at a time. JavaScript has seven so far: Getting started (11 parts),
+  at a time. JavaScript has eight so far: Getting started (11 parts),
   Variables and values (12), Text and numbers (12), Making decisions
-  (12), Loops (12), Functions (13) and Arrays (12). Modules add labelled
+  (12), Loops (12), Functions (13), Arrays (12) and Objects (13). Modules add labelled
   code ("anatomy"), a **step-through** that runs code line by line showing
   the variables, the call stack and the output, **common mistakes** shown
   wrong → right, and **"your turn" exercises**: the learner writes code
