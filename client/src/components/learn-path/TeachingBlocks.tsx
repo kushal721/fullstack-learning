@@ -123,7 +123,7 @@ export function TraceBlock({
   return (
     <figure className="overflow-hidden rounded-lg border border-border">
       <Header badge="Step through" title={block.caption} />
-      <div className="grid md:grid-cols-2">
+      <div className="grid md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div className="min-w-0">
           <CodeBlock
             example={{
