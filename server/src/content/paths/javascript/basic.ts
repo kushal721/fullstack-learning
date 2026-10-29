@@ -15,6 +15,7 @@ import { decisionsModule } from "./decisions.js";
 import { functionsModule } from "./functions.js";
 import { gettingStartedModule } from "./getting-started.js";
 import { loopsModule } from "./loops.js";
+import { objectsModule } from "./objects.js";
 import { textAndNumbersModule } from "./text-and-numbers.js";
 import { variablesModule } from "./variables.js";
 
@@ -32,30 +33,7 @@ export const basic: LevelPlan = {
     loopsModule,
     functionsModule,
     arraysModule,
-    lesson(
-      "objects",
-      "Objects: named values",
-      3,
-      explain(
-        'An object groups named values, called properties: `{ title: "Milk", done: false }`. Read and change them with a dot.',
-      ),
-      jsPlayground("Make and change an object", [
-        "const note = {",
-        '  title: "Milk",',
-        "  done: false,",
-        '  tags: ["shopping"],',
-        "};",
-        "note.done = true;",
-        "console.log(note.title, note.done);",
-        "console.log(note);",
-      ]),
-      quickCheck(
-        "How do you read the `title` of `note`?",
-        ["`note[title]`", "`note.title`", "`title.note`"],
-        1,
-        'Dot notation reads a property. `note["title"]` also works, with quotes.',
-      ),
-    ),
+    objectsModule,
     lesson(
       "finding-elements",
       "Finding elements on the page",
