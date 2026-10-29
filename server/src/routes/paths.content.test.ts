@@ -16,7 +16,7 @@ const PLANNED: [
   ["how-the-web-works", 18, 30, 40],
   ["html", 20, 34, 43],
   ["css", 18, 30, 40],
-  ["javascript", 11, 23, 32],
+  ["javascript", 11, 22, 31],
 ];
 
 describe.each(PLANNED)(
@@ -70,13 +70,16 @@ const JS_MODULES: [id: string, number: number][] = [
   ["objects", 8],
   ["the-dom", 9],
   ["events", 10],
+  ["json", 12],
 ];
 
 describe.each(JS_MODULES)("the JavaScript %s module", (id, number) => {
   it(`is step ${number}, in parts that cover all its blocks, with objectives`, async () => {
     const path = (await request(app).get("/api/paths/javascript"))
       .body as PathResponse;
-    const summary = path.levels[0]!.steps.find((s) => s.id === id)!;
+    const summary = path.levels
+      .flatMap((level) => level.steps)
+      .find((s) => s.id === id)!;
     expect(summary.number).toBe(number);
 
     const body = (await request(app).get(`/api/paths/javascript/steps/${id}`))
