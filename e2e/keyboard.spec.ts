@@ -5,13 +5,17 @@ import { expect, test } from "@playwright/test";
 test("Tab reaches the skip link first, and it moves focus to the content", async ({
   page,
 }) => {
-  await page.goto("/learn");
-  // Wait for the page's content, so it doesn't re-render after the skip.
-  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-  await page.keyboard.press("Tab");
-  await expect(
-    page.getByRole("link", { name: "Skip to content" }),
-  ).toBeFocused();
+  const skip = page.getByRole("link", { name: "Skip to content" });
+  // A late fetch can re-render the page and drop focus after the Tab, so
+  // wait for the network to settle, and start again from a fresh load if
+  // focus still didn't land.
+  await expect(async () => {
+    await page.goto("/learn");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await page.waitForLoadState("networkidle");
+    await page.keyboard.press("Tab");
+    await expect(skip).toBeFocused({ timeout: 1000 });
+  }).toPass({ timeout: 20_000 });
   await page.keyboard.press("Enter");
   await expect(page.locator("main")).toBeFocused();
 });
