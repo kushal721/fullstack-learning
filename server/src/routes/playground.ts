@@ -129,6 +129,7 @@ export function jsRunnerPage(code: string, tests: RunnerTest[] = []): string {
 body{margin:0;font:13px/1.6 ui-monospace,monospace;color:#1f2328;background:#fff}
 #out{margin:0;padding:8px 12px;white-space:pre-wrap;word-break:break-word}
 .warn{color:#9a6700}.error,.fail{color:#b42318}.pass{color:#1a7f37}.note{color:#59636e;font-style:italic}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark}body{color:#e6edf3;background:#0a0a0a}.warn{color:#d29922}.error,.fail{color:#f85149}.pass{color:#3fb950}.note{color:#9198a1}}
 </style></head><body><pre id="out"></pre><script>
 const out = document.getElementById("out");
 const line = (text, kind) => { const span = document.createElement("span"); span.className = kind; span.textContent = text + "\\n"; out.append(span); };

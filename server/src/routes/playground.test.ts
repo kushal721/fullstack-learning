@@ -70,6 +70,12 @@ describe("GET /playground/js", () => {
     expect(res.text).toContain("console.log(1 + 1)");
   });
 
+  it("prints in dark colours when the learner's system is dark, like the site", async () => {
+    const res = await request(app).get("/playground/js?code=1");
+    expect(res.text).toContain("@media (prefers-color-scheme:dark)");
+    expect(res.text).toContain("color-scheme:dark");
+  });
+
   it("keeps the learner's code inside the script, whatever it contains", async () => {
     const res = await request(app).get(
       `/playground/js?code=${encodeURIComponent("</script><img src=x onerror=alert(1)>")}`,
