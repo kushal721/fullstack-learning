@@ -87,14 +87,21 @@ const send = (kind) => (...args) => postMessage({ kind, text: args.map(show).joi
 self.console = { log: send("log"), info: send("log"), warn: send("warn"), error: send("error") };
 self.addEventListener("unhandledrejection", (e) => postMessage({ kind: "error", text: "Uncaught (in promise) " + show(e.reason) }));
 const same = (a, b) => Object.is(a, b) || (typeof a === "object" && typeof b === "object" && a !== null && b !== null && JSON.stringify(a) === JSON.stringify(b));
+// A test that gives back a promise is awaited; "done" waits for them all.
+const __pending = [];
 self.__test = (label, run, expected) => {
+  const report = (got) => postMessage(same(got, expected)
+    ? { kind: "pass", text: "✓ " + label + " gives " + show(got) }
+    : { kind: "fail", text: "✗ " + label + " gives " + show(got) + ", expected " + show(expected) });
+  const fail = (error) => postMessage({ kind: "fail", text: "✗ " + label + " failed: " + show(error) });
   try {
     const got = run();
-    postMessage(same(got, expected)
-      ? { kind: "pass", text: "✓ " + label + " gives " + show(got) }
-      : { kind: "fail", text: "✗ " + label + " gives " + show(got) + ", expected " + show(expected) });
+    if (got !== null && typeof got === "object" && typeof got.then === "function") {
+      postMessage({ kind: "async" });
+      __pending.push(Promise.resolve(got).then(report, fail));
+    } else report(got);
   } catch (error) {
-    postMessage({ kind: "fail", text: "✗ " + label + " failed: " + show(error) });
+    fail(error);
   }
 };
 `;
@@ -114,7 +121,7 @@ export function testCalls(tests: RunnerTest[]): string {
 
 /** The worker's whole script: prelude, the code, its tests, then "done". */
 export function workerSource(code: string, tests: RunnerTest[] = []): string {
-  return `${WORKER_PRELUDE}${code}\n;${testCalls(tests)}\npostMessage({ kind: "done" });`;
+  return `${WORKER_PRELUDE}${code}\n;${testCalls(tests)}\nPromise.all(__pending).then(() => postMessage({ kind: "done" }));`;
 }
 
 /**
@@ -137,7 +144,7 @@ const total = ${tests.length};
 let done = false, passed = 0;
 const finish = () => { done = true; if (total) parent.postMessage({ source: "fsl-runner", passed, total }, "*"); };
 const worker = new Worker(URL.createObjectURL(new Blob([${source}], { type: "text/javascript" })));
-worker.onmessage = (e) => { if (e.data.kind === "done") { if (!out.childNodes.length) line("(nothing was logged)", "note"); finish(); } else { if (e.data.kind === "pass") passed++; line(e.data.text, e.data.kind); } };
+worker.onmessage = (e) => { if (e.data.kind === "async") return; if (e.data.kind === "done") { if (!out.childNodes.length) line("(nothing was logged)", "note"); finish(); } else { if (e.data.kind === "pass") passed++; line(e.data.text, e.data.kind); } };
 worker.onerror = (e) => { e.preventDefault(); line(e.message, "error"); finish(); };
 setTimeout(() => { worker.terminate(); if (!done) { line("Stopped: still running after ${JS_TIME_LIMIT_MS / 1000} seconds. An endless loop?", "error"); finish(); } }, ${JS_TIME_LIMIT_MS});
 </script></body></html>`;

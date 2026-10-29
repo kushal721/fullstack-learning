@@ -136,7 +136,7 @@ The site follows the system's light or dark setting and works from phone width u
   code ("anatomy"), a **step-through** that runs code line by line showing
   the variables, the call stack and the output, **common mistakes** shown
   wrong → right, and **"your turn" exercises**: the learner writes code
-  and Check runs tests on it in the sandbox. Every exercise's solution is
+  and Check runs tests on it in the sandbox (a test that gives back a promise is awaited, so async code can be tested too). Every exercise's solution is
   run when the content is validated (page exercises in jsdom), and the
   browser check runs every page exercise's solution and starter in
   Chromium, where style checks need a real layout.
