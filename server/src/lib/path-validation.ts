@@ -24,6 +24,12 @@ export const LEVEL_SIZES: Record<Level, [min: number, max: number]> = {
   advanced: [6, 12],
 };
 
+/**
+ * A module replaces about three short lessons, so it counts as three steps
+ * toward a level's minimum. The maximum counts real steps.
+ */
+export const MODULE_WEIGHT = 3;
+
 /** Size limits from the design's block table, in characters a learner reads. */
 export const LIMITS = {
   summary: 220,
@@ -510,7 +516,12 @@ function validateLevels(
     const where = `${name} ${level}`;
     if (!plan.outcome.trim()) errors.push(`${where} needs an outcome.`);
     const [min, max] = LEVEL_SIZES[level];
-    if (plan.steps.length < min || plan.steps.length > max) {
+    const size = plan.steps.reduce(
+      (sum, step) =>
+        sum + (step.kind === "lesson" && step.sections ? MODULE_WEIGHT : 1),
+      0,
+    );
+    if (size < min || plan.steps.length > max) {
       errors.push(
         `${where} needs ${min}–${max} steps (has ${plan.steps.length}).`,
       );

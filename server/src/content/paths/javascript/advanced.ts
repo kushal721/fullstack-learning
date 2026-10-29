@@ -11,7 +11,7 @@ import {
   reference,
 } from "../blocks.js";
 
-// Advanced: steps 26–34. How JavaScript works underneath (closures, the
+// Advanced: steps 24–32. How JavaScript works underneath (closures, the
 // event loop, `this`, references), classes, TypeScript, and debugging.
 export const advanced: LevelPlan = {
   outcome:
