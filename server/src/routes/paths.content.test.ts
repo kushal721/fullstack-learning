@@ -72,6 +72,7 @@ const JS_MODULES: [id: string, number: number][] = [
   ["events", 10],
   ["json", 12],
   ["async", 13],
+  ["errors", 14],
 ];
 
 describe.each(JS_MODULES)("the JavaScript %s module", (id, number) => {
