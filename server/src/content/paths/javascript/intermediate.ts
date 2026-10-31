@@ -9,48 +9,17 @@ import {
   lesson,
   levelCheck,
   quickCheck,
-  reference,
 } from "../blocks.js";
+import { jsonAndDataModule } from "./json-and-data.js";
 
-// Intermediate: steps 12–23. Data as JSON, waiting with promises and
+// Intermediate: steps 12–22. Data as JSON, waiting with promises and
 // async/await, fetching from an API, handling errors, modules, and the
 // modern syntax the Notes App's code uses.
 export const intermediate: LevelPlan = {
   outcome:
     "Load data from an API, handle what goes wrong, and read modern JavaScript like the Notes App's.",
   steps: [
-    lesson(
-      "json",
-      "JSON: data as text",
-      3,
-      explain(
-        "[[json|JSON]] writes objects and arrays as text, so they can travel between the browser and a server. It looks like JavaScript, but keys need double quotes.",
-      ),
-      reference("Converting to and from JSON", [
-        [
-          "JSON.stringify()",
-          "A value to JSON text.",
-          "JSON.stringify({ a: 1 }) // '{\"a\":1}'",
-        ],
-        [
-          "JSON.parse()",
-          "JSON text back to a value.",
-          "JSON.parse('{\"a\":1}').a // 1",
-        ],
-        [
-          "response.json()",
-          "Read a fetch response as JSON.",
-          "const data = await response.json();",
-        ],
-      ]),
-      jsPlayground("Round trip", [
-        'const note = { title: "Milk", done: false, tags: ["shop"] };',
-        "const text = JSON.stringify(note);",
-        "console.log(text, typeof text);",
-        "const back = JSON.parse(text);",
-        "console.log(back.title, typeof back);",
-      ]),
-    ),
+    jsonAndDataModule,
     lesson(
       "asynchronous",
       "Waiting without stopping: promises",
@@ -262,48 +231,6 @@ export const intermediate: LevelPlan = {
         "`{ ...obj, key: value }`: a copy with one change.",
         "`[...arr, item]`: a copy with an item added.",
         "`(...args)` in a function: the rest of the arguments, as an array.",
-      ),
-    ),
-    lesson(
-      "more-array-methods",
-      "More array methods",
-      4,
-      reference("Sorting, summing and more", [
-        [
-          "reduce()",
-          "Boil a list down to one value.",
-          "prices.reduce((sum, p) => sum + p, 0)",
-        ],
-        ["sort()", "Order the list (changes it!).", "names.sort()"],
-        ["toSorted()", "A sorted copy.", "nums.toSorted((a, b) => a - b)"],
-        ["every()", "Do all items match?", "notes.every((n) => n.done)"],
-        [
-          "findIndex()",
-          "Where is the first match?",
-          "notes.findIndex((n) => n.id === 7)",
-        ],
-        [
-          "Object.entries()",
-          "An object's [key, value] pairs.",
-          "Object.entries({ a: 1 })",
-        ],
-      ]),
-      jsPlayground("Totals and order", [
-        "const items = [",
-        '  { name: "Milk", price: 1.2 },',
-        '  { name: "Bread", price: 2.5 },',
-        '  { name: "Eggs", price: 3 },',
-        "];",
-        "const total = items.reduce((sum, i) => sum + i.price, 0);",
-        "console.log(total.toFixed(2));",
-        "const cheapest = items.toSorted((a, b) => a.price - b.price);",
-        "console.log(cheapest.map((i) => i.name));",
-      ]),
-      quickCheck(
-        "You need the total of all prices. Which method?",
-        ["`filter`", "`reduce`", "`find`"],
-        1,
-        "[[array-methods|`reduce`]] carries a running total through the list.",
       ),
     ),
     lesson(
