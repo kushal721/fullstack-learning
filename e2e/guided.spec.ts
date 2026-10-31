@@ -343,6 +343,37 @@ async function runPage(page: Page, code: string, checks: PageCheck[]) {
   return (await report.jsonValue()) as RunnerReport;
 }
 
+test("the JS runner awaits tests that give back a promise", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const w = window as unknown as { __reports: unknown[] };
+    w.__reports = [];
+    addEventListener("message", (e) => w.__reports.push(e.data));
+  });
+  const code = [
+    "const wait = (ms) => new Promise((r) => setTimeout(r, ms));",
+    "async function titles() { await wait(50); return ['A']; }",
+  ].join("\n");
+  const tests = [
+    { call: "titles()", expect: '["A"]' },
+    { call: "titles()", expect: '["B"]' },
+  ];
+  await page.goto(
+    `/playground/js?code=${encodeURIComponent(code)}&tests=${encodeURIComponent(JSON.stringify(tests))}`,
+  );
+  const report = await page.waitForFunction(() =>
+    (window as unknown as { __reports: RunnerReport[] }).__reports.find(
+      (r) => r?.source === "fsl-runner",
+    ),
+  );
+  expect(await report.jsonValue()).toMatchObject({ passed: 1, total: 2 });
+  await expect(page.locator("#out")).toContainText('✓ titles() gives ["A"]');
+  await expect(page.locator("#out")).toContainText(
+    '✗ titles() gives ["A"], expected ["B"]',
+  );
+});
+
 test("the page runner runs scripts and checks the page: styles, clicks, typing and a form", async ({
   page,
 }) => {

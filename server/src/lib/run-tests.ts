@@ -1,7 +1,9 @@
 import type { PageCheck } from "@fsl/shared";
 import { JSDOM, VirtualConsole } from "jsdom";
+import { spawnSync } from "node:child_process";
 import { runInNewContext } from "node:vm";
 import {
+  JS_TIME_LIMIT_MS,
   playgroundPage,
   type RunnerTest,
   workerSource,
@@ -18,28 +20,18 @@ export function runTests(
   code: string,
   tests: RunnerTest[],
 ): { passed: number; failures: string[] } {
-  const messages: { kind: string; text?: string }[] = [];
+  const source = workerSource(code, tests);
+  let messages: RunnerMessage[] = [];
   const failures: string[] = [];
-  const self = {
-    addEventListener: () => {},
-  } as Record<string, unknown>;
-  const context = {
-    self,
-    postMessage: (message: { kind: string; text?: string }) =>
-      messages.push(message),
-  };
-  // The worker's `self.x` globals are plain globals in the browser.
-  Object.defineProperty(self, "__test", {
-    set: (fn: unknown) => ((context as Record<string, unknown>).__test = fn),
-  });
-  Object.defineProperty(self, "console", {
-    set: (value: unknown) =>
-      ((context as Record<string, unknown>).console = value),
-  });
+  const context = workerContext((message) => messages.push(message));
   try {
-    runInNewContext(workerSource(code, tests), context, { timeout: 1000 });
+    runInNewContext(source, context, { timeout: 1000 });
   } catch (error) {
     failures.push(`it throws: ${String(error)}`);
+  }
+  // A test gave back a promise: run again where it can be awaited.
+  if (messages.some((m) => m.kind === "async")) {
+    messages = runAsync(source, failures);
   }
   for (const message of messages) {
     if (message.kind === "fail") failures.push(message.text ?? "");
@@ -90,4 +82,53 @@ export function runPageChecks(
   failures.push(...errors.map((error) => `it throws: ${error}`));
   dom.window.close();
   return { passed, failures, skipped };
+}
+
+type RunnerMessage = { kind: string; text?: string };
+
+/** The worker's globals, in a Node.js context. */
+function workerContext(post: (message: RunnerMessage) => void) {
+  const context: Record<string, unknown> = {
+    self: { addEventListener: () => {} },
+    postMessage: post,
+  };
+  // The worker's `self.x` globals are plain globals in the browser.
+  for (const name of ["__test", "console"]) {
+    Object.defineProperty(context.self, name, {
+      set: (value: unknown) => (context[name] = value),
+    });
+  }
+  return context;
+}
+
+// Runs a worker script in a child Node.js process with real timers, waits
+// for "done" (or the time limit), and prints the messages as JSON. The
+// source comes in on stdin. Plain JS, set up like workerContext.
+const ASYNC_RUNNER = `
+const vm = require("node:vm");
+const source = require("node:fs").readFileSync(0, "utf8");
+const messages = [];
+const finish = () => { process.stdout.write(JSON.stringify(messages)); process.exit(0); };
+const context = { self: { addEventListener() {} }, setTimeout, clearTimeout };
+context.postMessage = (m) => { messages.push(m); if (m.kind === "done") finish(); };
+for (const name of ["__test", "console"]) {
+  Object.defineProperty(context.self, name, { set: (value) => (context[name] = value) });
+}
+process.on("unhandledRejection", (e) => messages.push({ kind: "error", text: String(e) }));
+setTimeout(() => { messages.push({ kind: "fail", text: "still running after ${JS_TIME_LIMIT_MS / 1000} seconds" }); finish(); }, ${JS_TIME_LIMIT_MS});
+try { vm.runInNewContext(source, context, { timeout: 1000 }); } catch (e) { messages.push({ kind: "fail", text: "it throws: " + e }); finish(); }
+`;
+
+function runAsync(source: string, failures: string[]): RunnerMessage[] {
+  const child = spawnSync(process.execPath, ["-e", ASYNC_RUNNER], {
+    input: source,
+    encoding: "utf8",
+    timeout: JS_TIME_LIMIT_MS + 3000,
+  });
+  try {
+    return JSON.parse(child.stdout) as RunnerMessage[];
+  } catch {
+    failures.push(`the async run failed: ${child.stderr || child.error}`);
+    return [];
+  }
 }
