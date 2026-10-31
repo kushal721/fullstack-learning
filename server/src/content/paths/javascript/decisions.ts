@@ -173,7 +173,6 @@ export const decisionsModule = moduleLesson(
           line: 9,
           note: "A branch has run, so the `else` is skipped without being checked. The decision is over.",
           vars: [["hour", "15"]],
-          output: "Good afternoon",
         },
       ],
     ),

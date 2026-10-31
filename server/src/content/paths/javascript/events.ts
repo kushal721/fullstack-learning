@@ -1,0 +1,547 @@
+import {
+  analogy,
+  anatomy,
+  code,
+  diagram,
+  explain,
+  inTheNotesApp,
+  jsPlayground,
+  keyPoints,
+  mistake,
+  moduleLesson,
+  pagePlayground,
+  pageYourTurn,
+  part,
+  quickCheck,
+  reference,
+  trace,
+} from "../blocks.js";
+
+// Events and forms in depth: why events, callbacks (functions you hand
+// over), addEventListener's parts, how a click runs, the event object,
+// the common events, forms and preventDefault, reading inputs, bubbling
+// and delegation, where they're used, mistakes, practice and a recap.
+export const eventsModule = moduleLesson(
+  "events",
+  "Events and forms: reacting to the user",
+  45,
+  [
+    "Explain events and callbacks: functions the browser calls for you later.",
+    "Listen for clicks, typing and key presses with `addEventListener`.",
+    "Use the event object: `target`, `key` and `preventDefault()`.",
+    "Handle a form: stop the reload, read its inputs and show the result.",
+    "Use one listener on a parent for many children (event delegation).",
+  ],
+
+  part(
+    "why",
+    "Why events?",
+    explain(
+      "So far, code ran from top to bottom and finished. A real page has to **wait** for the user: a click, a key, a form being sent. Each of those is an [[js-event|event]]. You tell the browser *when this happens, run this function*, and it calls your function every time the event happens, however long that takes.",
+    ),
+    diagram([
+      ["the user clicks", "an event happens"],
+      ["the browser notices", "on that button"],
+      ["your function runs", "the listener"],
+      ["the page changes", "textContent, classes…"],
+    ]),
+    analogy(
+      "A doorbell: you don't stand at the door all day. You wire the bell to ring, and when someone presses it, you go and answer.",
+    ),
+  ),
+
+  part(
+    "callbacks",
+    "Callbacks: functions you hand over",
+    explain(
+      "A [[callback]] is a function you give to other code, for **it** to call later. You've already met them: the function inside `map` and `filter`. [[js-event-listener|Event listeners]] are callbacks too, and so is the function you give a timer. The key is to pass the function itself, without brackets: `save`, not `save()`.",
+    ),
+    jsPlayground("Code that runs later", [
+      'console.log("1. Start");',
+      "",
+      "function later() {",
+      '  console.log("3. One second later");',
+      "}",
+      "setTimeout(later, 1000); // hand over later, don't call it",
+      "",
+      'console.log("2. Carry on straight away");',
+    ]),
+    quickCheck(
+      "What does `setTimeout(later(), 1000)` do?",
+      [
+        "Runs `later` after one second",
+        "Runs `later` straight away, then hands its result (`undefined`) to the timer",
+        "Nothing",
+      ],
+      1,
+      "Brackets call the function now. To hand it over, write the name alone: `setTimeout(later, 1000)`.",
+    ),
+  ),
+
+  part(
+    "listener",
+    "Listening for an event",
+    anatomy(
+      "addEventListener",
+      [
+        'button.addEventListener("click", () => {',
+        '  console.log("Clicked!");',
+        "});",
+      ],
+      [
+        [
+          "button",
+          "the element",
+          "Which element to listen on, found with `querySelector`.",
+        ],
+        [".addEventListener(", "the method", "Every element has it."],
+        ['"click"', "event type", "Which event to listen for, as text."],
+        [
+          "() => {",
+          "listener",
+          "The callback: a function the browser runs on every click.",
+        ],
+        ['console.log("Clicked!")', "its body", "What happens each time."],
+      ],
+    ),
+    pagePlayground("Count the clicks", [
+      "<button>Click me</button>",
+      "<p>Clicked 0 times</p>",
+      "<script>",
+      '  const button = document.querySelector("button");',
+      '  const text = document.querySelector("p");',
+      "  let clicks = 0;",
+      "",
+      '  button.addEventListener("click", () => {',
+      "    clicks++;",
+      "    text.textContent = `Clicked ${clicks} times`;",
+      '    console.log("click", clicks);',
+      "  });",
+      "</script>",
+    ]),
+    keyPoints(
+      "Find the element, then listen on it.",
+      "The listener runs on **every** event, not once.",
+      "Variables outside the listener (like `clicks`) remember between clicks.",
+    ),
+  ),
+
+  part(
+    "how-it-runs",
+    "What happens on a click",
+    explain(
+      "Adding a listener doesn't run it. The script finishes, and the function waits. Each click, the browser calls it. Watch the order:",
+    ),
+    trace(
+      "A listener waiting for clicks",
+      [
+        "let clicks = 0;",
+        'button.addEventListener("click", () => {',
+        "  clicks++;",
+        "});",
+        'console.log("Ready");',
+      ],
+      [
+        { line: 1, note: "`clicks` starts at 0.", vars: [["clicks", "0"]] },
+        {
+          line: 2,
+          note: "The listener is **registered**: the browser stores the function. Its body doesn't run now.",
+          vars: [["clicks", "0"]],
+        },
+        {
+          line: 5,
+          note: "The script carries on and finishes.",
+          vars: [["clicks", "0"]],
+          output: "Ready",
+        },
+        {
+          line: 3,
+          note: "Later, the user clicks. The browser calls the function, and `clicks` becomes 1.",
+          vars: [["clicks", "1"]],
+          stack: ["click event", "the listener"],
+        },
+        {
+          line: 3,
+          note: "Another click, another call: `clicks` is 2.",
+          vars: [["clicks", "2"]],
+          stack: ["click event", "the listener"],
+        },
+      ],
+    ),
+  ),
+
+  part(
+    "event-object",
+    "The event object",
+    explain(
+      "The browser calls your listener with one argument: an **event object** describing what happened. Name it `event` (or `e`) to use it.",
+    ),
+    reference("Useful parts of the event object", [
+      [
+        "event.target",
+        "The element the event happened on.",
+        "event.target.textContent",
+      ],
+      ["event.type", "Which event it was.", '"click", "input"…'],
+      [
+        "event.key",
+        "The key pressed (keyboard events).",
+        '"Enter", "a", "Escape"',
+      ],
+      ["event.target.value", "What's in an input now.", "on input events"],
+      [
+        "event.preventDefault()",
+        "Stop the browser's own action.",
+        "a form's reload, a link's jump",
+      ],
+    ]),
+    pagePlayground("Type in the box", [
+      '<input placeholder="Type here">',
+      "<p>You typed: <span></span></p>",
+      "<script>",
+      '  const input = document.querySelector("input");',
+      '  const out = document.querySelector("span");',
+      "",
+      '  input.addEventListener("input", (event) => {',
+      "    out.textContent = event.target.value;",
+      "  });",
+      "",
+      '  input.addEventListener("keydown", (event) => {',
+      '    if (event.key === "Enter") console.log("Enter:", input.value);',
+      "  });",
+      "</script>",
+    ]),
+  ),
+
+  part(
+    "common-events",
+    "The events you'll use most",
+    reference("Common events", [
+      ["click", "A press on a button, link or anything.", "button"],
+      ["input", "The value of an input changed (every key).", "search box"],
+      [
+        "change",
+        "A value was committed (checkbox, select, leaving a field).",
+        "checkbox",
+      ],
+      ["submit", "A form is sent (button or Enter).", "form"],
+      ["keydown", "A key went down.", "shortcuts, Enter"],
+      ["focus / blur", "An element got or lost focus.", "showing help"],
+      ["DOMContentLoaded", "The page's HTML has been read.", "document"],
+    ]),
+    quickCheck(
+      "You want results to update as someone types in a search box. Which event?",
+      ["`change`", "`input`", "`submit`"],
+      1,
+      "`input` fires on every change to the value; `change` waits until the field is left.",
+    ),
+  ),
+
+  part(
+    "forms",
+    "Forms: submit and preventDefault",
+    explain(
+      "Listen for `submit` on the **form**, not `click` on its button: then Enter works too. A form's default action is to send its data and reload the page, which would wipe out your JavaScript. `event.preventDefault()` stops that, so your code can handle the data itself.",
+    ),
+    pagePlayground("A form handled by JavaScript", [
+      "<form>",
+      '  <label>Note <input id="title" required></label>',
+      "  <button>Save</button>",
+      "</form>",
+      "<ul></ul>",
+      "<script>",
+      '  const form = document.querySelector("form");',
+      '  const input = document.querySelector("#title");',
+      "",
+      '  form.addEventListener("submit", (event) => {',
+      "    event.preventDefault(); // no reload",
+      '    const li = document.createElement("li");',
+      "    li.textContent = input.value.trim();",
+      '    document.querySelector("ul").append(li);',
+      "    form.reset(); // empty the input",
+      "  });",
+      "</script>",
+    ]),
+    keyPoints(
+      "Listen for `submit` on the form.",
+      "Call `event.preventDefault()` first.",
+      "Read each field's `.value`, then `form.reset()` to clear them.",
+      "`required` in the HTML stops empty submits before your code runs.",
+    ),
+  ),
+
+  part(
+    "delegation",
+    "One listener for many: bubbling and delegation",
+    explain(
+      "An event doesn't stay on the element it happened on: it **bubbles** up through every parent. So instead of a listener on each of 100 delete buttons, put one listener on their list and use `event.target` to see which was clicked. This is **event delegation**, and it works for items added later too.",
+    ),
+    code(
+      "js",
+      "one listener for every delete button",
+      [
+        'list.addEventListener("click", (event) => {',
+        '  const button = event.target.closest(".delete");',
+        "  if (!button) return; // a click somewhere else",
+        '  button.closest("li").remove();',
+        "});",
+      ],
+      {
+        2: "was it a delete button (or inside one)?",
+        4: "remove that button's own item",
+      },
+    ),
+    pagePlayground("Delete any item", [
+      "<ul>",
+      '  <li>Milk <button class="delete">×</button></li>',
+      '  <li>Bread <button class="delete">×</button></li>',
+      '  <li>Eggs <button class="delete">×</button></li>',
+      "</ul>",
+      "<script>",
+      '  const list = document.querySelector("ul");',
+      '  list.addEventListener("click", (event) => {',
+      '    const button = event.target.closest(".delete");',
+      "    if (!button) return;",
+      '    button.closest("li").remove();',
+      '    console.log(list.children.length, "left");',
+      "  });",
+      "</script>",
+    ]),
+  ),
+
+  part(
+    "where-used",
+    "Where you'll use events",
+    keyPoints(
+      "Buttons: save, delete, open a menu.",
+      "Forms: create a note, log in, sign up.",
+      "Typing: live search, character counters.",
+      "Keys: Escape to close a dialog, Enter to send.",
+    ),
+    inTheNotesApp(
+      "The Notes App's `handleSave` is the form's submit listener. It starts with `event.preventDefault()`, then sends the note to the API and adds it to the list.",
+      { symbolId: "fn:handleSave" },
+    ),
+  ),
+
+  part(
+    "mistakes",
+    "Common mistakes",
+    mistake({
+      title: "Calling the function instead of passing it",
+      wrong: ['button.addEventListener("click", save());'],
+      problem:
+        "`save()` runs once, straight away, and its result (`undefined`) is passed as the listener. Clicks then do nothing.",
+      right: ['button.addEventListener("click", save);'],
+      why: "Pass the function itself. The browser adds the brackets when the event happens.",
+    }),
+    mistake({
+      title: "Forgetting preventDefault on a form",
+      wrong: [
+        'form.addEventListener("submit", () => {',
+        "  showNote(input.value);",
+        "});",
+      ],
+      problem: "The note flashes up, then the page reloads and it's gone.",
+      right: [
+        'form.addEventListener("submit", (event) => {',
+        "  event.preventDefault();",
+        "  showNote(input.value);",
+        "});",
+      ],
+      why: "Stop the browser's own reload before handling the form yourself.",
+    }),
+    mistake({
+      title: "Reading the input too early",
+      wrong: [
+        "const title = input.value; // empty: nobody has typed yet",
+        'form.addEventListener("submit", (event) => {',
+        "  event.preventDefault();",
+        "  console.log(title);",
+        "});",
+      ],
+      problem:
+        "The value was read once, when the page loaded, so it's always empty.",
+      right: [
+        'form.addEventListener("submit", (event) => {',
+        "  event.preventDefault();",
+        "  console.log(input.value);",
+        "});",
+      ],
+      why: "Read `.value` inside the listener, when the event happens.",
+    }),
+  ),
+
+  part(
+    "practice",
+    "Your turn",
+    pageYourTurn({
+      title: "A counter",
+      task: "Make the button add one to the number in `#count` each time it's clicked.",
+      starter: [
+        "<button>+1</button>",
+        '<p id="count">0</p>',
+        "<script>",
+        "",
+        "</script>",
+      ],
+      checks: [
+        {
+          kind: "text",
+          label: "It starts at 0",
+          selector: "#count",
+          text: "0",
+        },
+        { kind: "click", label: "Click the button", selector: "button" },
+        { kind: "text", label: "It says 1", selector: "#count", text: "1" },
+        { kind: "click", label: "Click again", selector: "button" },
+        { kind: "text", label: "It says 2", selector: "#count", text: "2" },
+      ],
+      hint: "Keep a `let count = 0;`. In a click listener, add one and set `#count`'s `textContent`.",
+      solution: [
+        "<button>+1</button>",
+        '<p id="count">0</p>',
+        "<script>",
+        "  let count = 0;",
+        '  document.querySelector("button").addEventListener("click", () => {',
+        "    count++;",
+        '    document.querySelector("#count").textContent = count;',
+        "  });",
+        "</script>",
+      ],
+    }),
+    pageYourTurn({
+      title: "Add a note from a form",
+      task: "When the form is submitted, stop the reload and add the input's text as a new `<li>` in `#notes`. Then empty the input with `form.reset()`.",
+      starter: [
+        "<form>",
+        '  <input id="title">',
+        "  <button>Add</button>",
+        "</form>",
+        '<ul id="notes"></ul>',
+        "<script>",
+        "",
+        "</script>",
+      ],
+      checks: [
+        {
+          kind: "type",
+          label: "Type Buy milk",
+          selector: "#title",
+          value: "Buy milk",
+        },
+        { kind: "submit", label: "Submit the form", selector: "form" },
+        {
+          kind: "count",
+          label: "There's one note",
+          selector: "#notes li",
+          count: 1,
+        },
+        {
+          kind: "text",
+          label: "It says Buy milk",
+          selector: "#notes li",
+          text: "Buy milk",
+        },
+      ],
+      hint: "Listen for `submit` on the form, call `event.preventDefault()`, make an `li` with the input's `.value`, append it, then `form.reset()`.",
+      solution: [
+        "<form>",
+        '  <input id="title">',
+        "  <button>Add</button>",
+        "</form>",
+        '<ul id="notes"></ul>',
+        "<script>",
+        '  const form = document.querySelector("form");',
+        '  form.addEventListener("submit", (event) => {',
+        "    event.preventDefault();",
+        '    const li = document.createElement("li");',
+        '    li.textContent = document.querySelector("#title").value;',
+        '    document.querySelector("#notes").append(li);',
+        "    form.reset();",
+        "  });",
+        "</script>",
+      ],
+    }),
+    pageYourTurn({
+      title: "Mark done by clicking",
+      task: "Using **one** listener on the list, make clicking any item toggle the class `done` on that item.",
+      starter: [
+        "<ul>",
+        "  <li>Milk</li>",
+        "  <li>Bread</li>",
+        "</ul>",
+        "<script>",
+        "",
+        "</script>",
+      ],
+      checks: [
+        { kind: "click", label: "Click Bread", selector: "li:nth-child(2)" },
+        {
+          kind: "exists",
+          label: "Bread is done",
+          selector: "li:nth-child(2).done",
+        },
+        {
+          kind: "missing",
+          label: "Milk isn't",
+          selector: "li:first-child.done",
+        },
+        {
+          kind: "click",
+          label: "Click Bread again",
+          selector: "li:nth-child(2)",
+        },
+        { kind: "missing", label: "Now nothing is done", selector: "li.done" },
+      ],
+      hint: 'Listen for `click` on the `ul`; inside, `event.target.closest("li")` is the clicked item. Then `classList.toggle("done")`.',
+      solution: [
+        "<ul>",
+        "  <li>Milk</li>",
+        "  <li>Bread</li>",
+        "</ul>",
+        "<script>",
+        '  document.querySelector("ul").addEventListener("click", (event) => {',
+        '    const li = event.target.closest("li");',
+        '    if (li) li.classList.toggle("done");',
+        "  });",
+        "</script>",
+      ],
+    }),
+  ),
+
+  part(
+    "recap",
+    "Recap and cheat sheet",
+    reference("Events cheat sheet", [
+      [
+        "listen",
+        "Element, event type, function.",
+        'el.addEventListener("click", fn)',
+      ],
+      ["callback", "Pass it; don't call it.", "save, not save()"],
+      ["event object", "What happened, and where.", "event.target, event.key"],
+      [
+        "forms",
+        "Listen for submit; stop the reload.",
+        "event.preventDefault()",
+      ],
+      ["inputs", "Read .value inside the listener.", "input.value"],
+      [
+        "delegation",
+        "One listener on the parent.",
+        'event.target.closest(".delete")',
+      ],
+    ]),
+    quickCheck(
+      "Which of these is true?",
+      [
+        "A listener runs once, when it's added",
+        "Events bubble up to parents, so one listener can handle many children",
+        "Listen for click on a form's button to handle Enter too",
+      ],
+      1,
+      "A listener runs on every event, and `submit` on the form covers both the button and Enter.",
+    ),
+  ),
+);

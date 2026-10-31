@@ -643,6 +643,14 @@ describe("modules", () => {
     expect(withModule(moduleStep())).toEqual([]);
   });
 
+  it("counts a module as three steps toward a level's minimum", () => {
+    const path = makePath();
+    path.levels.basic.steps[1] = moduleStep();
+    // 11 steps, but the module counts as three: 13.
+    path.levels.basic.steps.splice(10, 1);
+    expect(validatePaths([path], glossary(), refs)).toEqual([]);
+  });
+
   it("reports objectives, parts that don't cover the blocks, and missing practice", () => {
     expect(
       withModule(
