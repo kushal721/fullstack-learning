@@ -10,6 +10,7 @@ import {
   quickCheck,
 } from "../blocks.js";
 import { asyncModule } from "./async.js";
+import { errorsModule } from "./errors.js";
 import { jsonAndDataModule } from "./json-and-data.js";
 
 // Intermediate: steps 12–20. Data as JSON, waiting with promises and
@@ -21,32 +22,7 @@ export const intermediate: LevelPlan = {
   steps: [
     jsonAndDataModule,
     asyncModule,
-    lesson(
-      "errors",
-      "Handling errors: try and catch",
-      3,
-      explain(
-        "Code that might fail goes in `try`; if it throws, `catch` gets the error instead of the program stopping. `finally` runs either way. See [[js-error-handling|error handling]].",
-      ),
-      jsPlayground("Catch the error", [
-        "function parse(text) {",
-        "  try {",
-        "    return JSON.parse(text);",
-        "  } catch (error) {",
-        '    console.log("Not JSON:", error.message);',
-        "    return null;",
-        "  } finally {",
-        '    console.log("Tried:", text);',
-        "  }",
-        "}",
-        "console.log(parse('{\"a\":1}'));",
-        'console.log(parse("oops"));',
-      ]),
-      inTheNotesApp(
-        "`handleSave` wraps the save in try/catch/finally: show the error if it fails, and always turn off the saving state.",
-        { symbolId: "fn:handleSave" },
-      ),
-    ),
+    errorsModule,
     lesson(
       "modules",
       "Modules: import and export",
