@@ -16,7 +16,7 @@ const PLANNED: [
   ["how-the-web-works", 18, 30, 40],
   ["html", 20, 34, 43],
   ["css", 18, 30, 40],
-  ["javascript", 11, 22, 31],
+  ["javascript", 11, 20, 29],
 ];
 
 describe.each(PLANNED)(
@@ -71,6 +71,7 @@ const JS_MODULES: [id: string, number: number][] = [
   ["the-dom", 9],
   ["events", 10],
   ["json", 12],
+  ["async", 13],
 ];
 
 describe.each(JS_MODULES)("the JavaScript %s module", (id, number) => {

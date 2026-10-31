@@ -1,6 +1,5 @@
 import type { LevelPlan } from "@fsl/shared";
 import {
-  analogy,
   code,
   explain,
   inTheNotesApp,
@@ -10,9 +9,10 @@ import {
   levelCheck,
   quickCheck,
 } from "../blocks.js";
+import { asyncModule } from "./async.js";
 import { jsonAndDataModule } from "./json-and-data.js";
 
-// Intermediate: steps 12–22. Data as JSON, waiting with promises and
+// Intermediate: steps 12–20. Data as JSON, waiting with promises and
 // async/await, fetching from an API, handling errors, modules, and the
 // modern syntax the Notes App's code uses.
 export const intermediate: LevelPlan = {
@@ -20,101 +20,7 @@ export const intermediate: LevelPlan = {
     "Load data from an API, handle what goes wrong, and read modern JavaScript like the Notes App's.",
   steps: [
     jsonAndDataModule,
-    lesson(
-      "asynchronous",
-      "Waiting without stopping: promises",
-      4,
-      explain(
-        "Loading data takes time. Instead of freezing the page, JavaScript gives you a [[js-promise|promise]]: a value that isn't ready yet. `.then()` says what to do once it is.",
-      ),
-      analogy(
-        "A buzzer at a café: you order, get the buzzer straight away, and carry on until it buzzes.",
-      ),
-      jsPlayground("A promise that settles later", [
-        "const later = new Promise((resolve) => {",
-        '  setTimeout(() => resolve("Your coffee"), 500);',
-        "});",
-        'console.log("Ordered");',
-        'later.then((value) => console.log(value, "is ready"));',
-        'console.log("Waiting, but not stuck");',
-      ]),
-      quickCheck(
-        "A promise is…",
-        [
-          "A value that will be ready later, or fail",
-          "A way to make code faster",
-          "A kind of loop",
-        ],
-        0,
-        "It's pending, then either fulfilled with a value or rejected with an error.",
-      ),
-    ),
-    lesson(
-      "async-await",
-      "async and await",
-      3,
-      explain(
-        "[[js-async-await|`await`]] pauses a function until a promise settles, so asynchronous code reads top to bottom. You can only use it inside an `async` function.",
-      ),
-      jsPlayground("The same wait, with await", [
-        "const wait = (ms) => new Promise((r) => setTimeout(r, ms));",
-        "",
-        "async function makeCoffee() {",
-        '  console.log("Brewing…");',
-        "  await wait(500);",
-        '  return "Coffee";',
-        "}",
-        "",
-        'makeCoffee().then((drink) => console.log(drink, "done"));',
-        'console.log("Meanwhile, other code runs");',
-      ]),
-      quickCheck(
-        "What does an `async` function always return?",
-        ["A promise", "A string", "Nothing"],
-        0,
-        'Even `return "Coffee"` comes back wrapped in a promise; `await` or `.then()` unwraps it.',
-      ),
-    ),
-    lesson(
-      "fetch",
-      "Loading data with fetch",
-      4,
-      explain(
-        "[[js-fetch|`fetch()`]] sends an HTTP request and returns a promise of the response. Read the body with `response.json()`, which is another promise.",
-      ),
-      code(
-        "js",
-        "load notes from the API",
-        [
-          "async function loadNotes() {",
-          '  const response = await fetch("/api/notes");',
-          "  if (!response.ok) {",
-          '    throw new Error("Could not load notes");',
-          "  }",
-          "  return response.json();",
-          "}",
-        ],
-        {
-          2: "wait for the response",
-          3: "a 404 or 500 doesn't throw: check it",
-          6: "read the JSON body",
-        },
-      ),
-      inTheNotesApp(
-        "Every Notes App request goes through one `request()` function: it calls `fetch`, checks `response.ok`, and throws the server's error message.",
-        { fileId: "frontend/src/services/request.js" },
-      ),
-      quickCheck(
-        "The server answers 500. Does `fetch` throw?",
-        [
-          "Yes, always",
-          "No: it only fails when the network does, so check `response.ok`",
-          "Only for 404",
-        ],
-        1,
-        "Any answer from the server counts as success to `fetch`; the status is yours to check.",
-      ),
-    ),
+    asyncModule,
     lesson(
       "errors",
       "Handling errors: try and catch",
@@ -303,8 +209,8 @@ export const intermediate: LevelPlan = {
     ),
     levelCheck("intermediate-check", "Intermediate check", [
       ["js-intermediate-json", "json"],
-      ["js-intermediate-async", "async-await"],
-      ["js-intermediate-fetch-ok", "fetch"],
+      ["js-intermediate-async", "async"],
+      ["js-intermediate-fetch-ok", "async"],
       ["js-intermediate-spread", "spread"],
       ["js-intermediate-nullish", "optional-chaining"],
     ]),

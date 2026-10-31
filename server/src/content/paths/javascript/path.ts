@@ -44,7 +44,56 @@ const clickScene: Scene = {
   ],
 };
 
-// JavaScript: 18 Basic, 12 Intermediate and 9 Advanced steps, numbered 1–39.
+const fetchScene: Scene = {
+  id: "fetch",
+  title: "fetch: asking a server for data",
+  actors: [
+    { id: "js", label: "Your code", sub: "an async function" },
+    { id: "browser", label: "Browser", sub: "sends requests" },
+    { id: "server", label: "Server", sub: "the API" },
+    { id: "page", label: "Page", sub: "the DOM" },
+  ],
+  steps: [
+    {
+      from: "js",
+      to: "browser",
+      message: 'fetch("/api/notes")',
+      caption:
+        "Your code asks for the notes and gets a pending promise at once.",
+      detail: "await pauses only this function; the page keeps working.",
+    },
+    {
+      from: "browser",
+      to: "server",
+      message: "GET /api/notes",
+      caption: "The browser sends an HTTP request to the server.",
+      detail: "This is the slow part: it travels over the network.",
+    },
+    {
+      from: "server",
+      to: "browser",
+      message: "200 OK + JSON",
+      caption: "The server answers with a status code and a JSON body.",
+      detail: "A 404 or 500 is an answer too, so fetch doesn't reject.",
+    },
+    {
+      from: "browser",
+      to: "js",
+      message: "response",
+      caption: "The promise is fulfilled, and your function carries on.",
+      detail: "Check response.ok, then await response.json() for the data.",
+    },
+    {
+      from: "js",
+      to: "page",
+      message: "show the notes",
+      caption: "Your code puts the notes on the page.",
+      detail: "Until now the page showed a loading message.",
+    },
+  ],
+};
+
+// JavaScript: 11 Basic, 9 Intermediate and 9 Advanced steps, numbered 1–29.
 export const javascriptPath: TopicPath = {
   topicId: "javascript",
   summary: {
@@ -53,6 +102,6 @@ export const javascriptPath: TopicPath = {
     how: "The browser runs your code step by step; it waits for events and network replies without freezing, then runs the functions you gave it.",
   },
   overviewSceneId: "click",
-  scenes: [clickScene],
+  scenes: [clickScene, fetchScene],
   levels: { basic, intermediate, advanced },
 };
