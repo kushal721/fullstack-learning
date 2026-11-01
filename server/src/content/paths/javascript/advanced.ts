@@ -10,6 +10,7 @@ import {
   quickCheck,
   reference,
 } from "../blocks.js";
+import { closuresModule } from "./closures.js";
 
 // Advanced: steps 18–26. How JavaScript works underneath (closures, the
 // event loop, `this`, references), classes, TypeScript, and debugging.
@@ -17,37 +18,7 @@ export const advanced: LevelPlan = {
   outcome:
     "Understand the behaviour behind surprising bugs, use TypeScript's types, and debug with confidence.",
   steps: [
-    lesson(
-      "closures",
-      "Closures: functions that remember",
-      4,
-      explain(
-        "A function keeps access to the variables around it when it was made, even after that outer code has finished. That's a [[closure]].",
-      ),
-      jsPlayground("A counter that remembers", [
-        "function makeCounter() {",
-        "  let count = 0;",
-        "  return () => {",
-        "    count++;",
-        "    return count;",
-        "  };",
-        "}",
-        "const next = makeCounter();",
-        "console.log(next(), next(), next());",
-        "const other = makeCounter();",
-        "console.log(other());",
-      ]),
-      quickCheck(
-        "Why does `other()` print 1?",
-        [
-          "Each call to `makeCounter` makes a new `count`",
-          "Counters reset after three calls",
-          "`count` is shared by every counter",
-        ],
-        0,
-        "Each closure remembers its own copy of the variables from the call that made it ([[js-scope|scope]]).",
-      ),
-    ),
+    closuresModule,
     lesson(
       "event-loop",
       "The event loop",
