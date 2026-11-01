@@ -117,7 +117,7 @@ The site follows the system's light or dark setting and works from phone width u
   Works → HTML → CSS → JavaScript → Git & GitHub → React → HTTP & APIs →
   Backend → Databases → Authentication → Security → Testing → Deployment →
   How Everything Connects. Topics with a guided path so far: How the Web
-  Works, HTML, CSS and JavaScript (152 steps); the rest show their classic
+  Works, HTML, CSS and JavaScript (149 steps); the rest show their classic
   topic page until their path is written.
 - **Three levels, one count.** Every topic starts at Basic. Numbering carries
   on between levels (for example Basic 1–18, Intermediate 19–30, Advanced
@@ -129,10 +129,10 @@ The site follows the system's light or dark setting and works from phone width u
   the Notes App" links to the real code.
 - **Modules for the core ideas.** The ideas everything else depends on
   are taught in depth as modules: objectives first, then parts shown one
-  at a time. JavaScript has thirteen so far: Getting started (11 parts),
+  at a time. JavaScript has fourteen so far: Getting started (11 parts),
   Variables and values (12), Text and numbers (12), Making decisions
   (12), Loops (12), Functions (13), Arrays (12), Objects (13), The DOM
-  (12), Events and forms (12), JSON and working with data (14), Async code (14) and Handling errors (13). Modules add labelled
+  (12), Events and forms (12), JSON and working with data (14), Async code (14), Handling errors (13) and Modules and modern syntax (14). Modules add labelled
   code ("anatomy"), a **step-through** that runs code line by line showing
   the variables, the call stack and the output, **common mistakes** shown
   wrong → right, and **"your turn" exercises**: the learner writes code
