@@ -9,6 +9,7 @@ import type {
 import { useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useApi } from "../../hooks/useApi.ts";
+import { type ModuleView, useModuleView } from "../../hooks/useModuleView.ts";
 import { apiPaths } from "../../services/api.ts";
 import { ErrorState } from "../ui/ErrorState.tsx";
 import { Loading } from "../ui/Loading.tsx";
@@ -157,6 +158,78 @@ function PartNav({
   );
 }
 
+/** Read a module part by part, or all on one page. */
+function ViewSwitch({
+  view,
+  onChange,
+}: {
+  view: ModuleView;
+  onChange: (view: ModuleView) => void;
+}) {
+  const options: [ModuleView, string][] = [
+    ["parts", "Part by part"],
+    ["page", "One page"],
+  ];
+  return (
+    <div
+      role="group"
+      aria-label="How to read this module"
+      className="inline-flex self-start rounded-md border border-border p-0.5 text-sm"
+    >
+      {options.map(([value, label]) => (
+        <button
+          key={value}
+          type="button"
+          aria-pressed={view === value}
+          onClick={() => onChange(value)}
+          className={`rounded px-3 py-1 font-medium transition ${
+            view === value
+              ? "bg-accent text-white dark:text-black"
+              : "text-muted hover:bg-foreground/5"
+          }`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+const partId = (section: LessonSection) => `part-${section.id}`;
+
+/** Jump to a part's heading (focus and scroll), without changing the URL. */
+function jumpTo(section: LessonSection) {
+  const heading = document.getElementById(partId(section));
+  heading?.focus();
+  heading?.scrollIntoView?.();
+}
+
+/** A one-page module's contents: every part, linked to its heading. */
+function OnThisPage({ sections }: { sections: LessonSection[] }) {
+  return (
+    <nav aria-label="On this page" className="text-sm">
+      <p className="font-medium">On this page</p>
+      <ol className="mt-2 flex flex-col gap-0.5">
+        {sections.map((section, i) => (
+          <li key={section.id}>
+            <a
+              href={`#${partId(section)}`}
+              onClick={(event) => {
+                event.preventDefault();
+                jumpTo(section);
+              }}
+              className="flex gap-2 rounded px-2 py-1 text-accent hover:bg-foreground/5"
+            >
+              <span className="w-5 text-right text-muted">{i + 1}</span>
+              {section.title}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}
+
 /**
  * One step on one screen: its words, its blocks, and a footer that moves
  * on, across levels (Basic's last step leads to Intermediate's first).
@@ -177,12 +250,19 @@ export function StepPlayer({
   );
   const sections = data?.sections;
   const part = sections ? partIndex(search, sections.length) : 0;
+  const [view, setView] = useModuleView();
+  const onePage = Boolean(sections) && view === "page";
 
   // Moving between parts puts focus (and the view) on the new part.
   const focusPart = (state as { focusPart?: boolean } | null)?.focusPart;
   useEffect(() => {
     if (focusPart) partHeading.current?.focus();
   }, [part, focusPart]);
+
+  // On one page, a ?part= link (or switching to one page) goes to that part.
+  useEffect(() => {
+    if (onePage && sections && part > 0) jumpTo(sections[part]!);
+  }, [onePage, sections, part]);
 
   if (isLoading) return <Loading label="Loading step…" />;
   if (error || !data) {
@@ -216,7 +296,7 @@ export function StepPlayer({
   const shown = sections
     ? data.blocks.slice(first, first + sections[part]!.blockCount)
     : data.blocks;
-  const lastPart = !sections || part === sections.length - 1;
+  const lastPart = !sections || onePage || part === sections.length - 1;
   const goToPart = (index: number) =>
     navigate(partHref(pathname, search, index), {
       state: { focusPart: true },
@@ -225,11 +305,47 @@ export function StepPlayer({
   return (
     <>
       <div className="mt-5 flex flex-col gap-5">
-        {sections && part === 0 && data.objectives && (
+        {sections && (onePage || part === 0) && data.objectives && (
           <Objectives items={data.objectives} />
         )}
         <WordsBox glossary={data.glossary} />
-        {sections && (
+        {sections && <ViewSwitch view={view} onChange={setView} />}
+        {sections && onePage && (
+          <>
+            <OnThisPage sections={sections} />
+            {sections.map((section, s) => {
+              const start = sections
+                .slice(0, s)
+                .reduce((sum, x) => sum + x.blockCount, 0);
+              return (
+                <section
+                  key={section.id}
+                  aria-labelledby={partId(section)}
+                  className="flex flex-col gap-5"
+                >
+                  <h3
+                    id={partId(section)}
+                    tabIndex={-1}
+                    className="scroll-mt-20 border-t border-border pt-6 text-xl font-semibold focus:outline-none"
+                  >
+                    <span className="text-muted">{s + 1}.</span> {section.title}
+                  </h3>
+                  {data.blocks
+                    .slice(start, start + section.blockCount)
+                    .map((block, i) => (
+                      <StepBlock
+                        key={start + i}
+                        block={block}
+                        index={start + i}
+                        context={context}
+                      />
+                    ))}
+                </section>
+              );
+            })}
+          </>
+        )}
+        {sections && !onePage && (
           <>
             <PartNav sections={sections} index={part} />
             <h3
@@ -241,15 +357,16 @@ export function StepPlayer({
             </h3>
           </>
         )}
-        {shown.map((block, i) => (
-          <StepBlock
-            // Keyed by its place in the whole step, so a new part starts fresh.
-            key={first + i}
-            block={block}
-            index={first + i}
-            context={context}
-          />
-        ))}
+        {!onePage &&
+          shown.map((block, i) => (
+            <StepBlock
+              // Keyed by its place in the whole step, so a new part starts fresh.
+              key={first + i}
+              block={block}
+              index={first + i}
+              context={context}
+            />
+          ))}
         {data.questions && (
           <LevelCheck
             topicSlug={topicSlug}
@@ -266,7 +383,7 @@ export function StepPlayer({
         aria-label="Step"
         className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-6"
       >
-        {part > 0 ? (
+        {part > 0 && !onePage ? (
           <Link
             to={partHref(pathname, search, part - 1)}
             state={{ focusPart: true }}

@@ -316,6 +316,36 @@ test("a module: every part is accessible, and a your-turn exercise checks the le
   );
 });
 
+test("a module on one page: every part, a contents list, accessible, and remembered", async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  const base = "/learn/javascript/functions";
+  await page.goto(base);
+  const total = Number(
+    (await page.getByText(/^Part 1 of \d+$/).textContent())!.match(/\d+$/)![0],
+  );
+  await page
+    .getByRole("group", { name: "How to read this module" })
+    .getByRole("button", { name: "One page" })
+    .click();
+
+  const contents = page.getByRole("navigation", { name: "On this page" });
+  await expect(contents.getByRole("link")).toHaveCount(total);
+  await expect(page.locator("main section h3")).toHaveCount(total);
+  await page.waitForLoadState("networkidle");
+  const problems = await axe(page);
+  expect(problems, problems.join("\n\n")).toEqual([]);
+
+  // The contents list jumps to a part; a reload keeps one page.
+  await contents.getByRole("link").last().click();
+  await expect(page.locator("main section h3").last()).toBeFocused();
+  await page.reload();
+  await expect(
+    page.getByRole("navigation", { name: "On this page" }),
+  ).toBeVisible();
+});
+
 type PageCheck = { kind: string; label: string; selector: string };
 type RunnerReport = {
   source: string;
