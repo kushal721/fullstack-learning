@@ -1,20 +1,18 @@
 import type { LevelPlan } from "@fsl/shared";
 import {
-  code,
   explain,
   jsPlayground,
-  keyPoints,
   lesson,
   levelCheck,
-  quickCheck,
   reference,
 } from "../blocks.js";
 import { closuresModule } from "./closures.js";
 import { eventLoopModule } from "./event-loop.js";
 import { referencesModule } from "./references.js";
 import { thisAndClassesModule } from "./this-and-classes.js";
+import { typescriptModule } from "./typescript.js";
 
-// Advanced: steps 18–25. How JavaScript works underneath (closures, the
+// Advanced: steps 18–24. How JavaScript works underneath (closures, the
 // event loop, `this`, references), classes, TypeScript, and debugging.
 export const advanced: LevelPlan = {
   outcome:
@@ -24,65 +22,7 @@ export const advanced: LevelPlan = {
     eventLoopModule,
     thisAndClassesModule,
     referencesModule,
-    lesson(
-      "typescript-why",
-      "Why TypeScript",
-      3,
-      explain(
-        "[[typescript-why|TypeScript]] is JavaScript plus types. A checker reads your code before it runs and catches mistakes like a misspelt property or a missing argument.",
-      ),
-      code(
-        "ts",
-        "the mistake is caught before running",
-        [
-          "type Note = { title: string; done: boolean };",
-          "",
-          "function finish(note: Note) {",
-          "  note.dne = true;",
-          "}",
-        ],
-        { 4: "error: Property 'dne' does not exist on type 'Note'" },
-      ),
-      keyPoints(
-        "Types are removed when it's built: browsers run plain JavaScript.",
-        "Your editor uses them for autocomplete and warnings.",
-        "This course's own code is written in TypeScript.",
-      ),
-    ),
-    lesson(
-      "typescript-types",
-      "Writing types",
-      4,
-      reference("TypeScript's common types", [
-        ["string, number, boolean", "The basic types.", "let title: string;"],
-        ["T[]", "An array of T.", "const tags: string[] = [];"],
-        [
-          "type",
-          "Name the shape of an object.",
-          "type Note = { id: number; title: string };",
-        ],
-        ["?", "An optional property.", "{ content?: string }"],
-        ["|", "One of several types.", 'type Status = "draft" | "saved";'],
-        [
-          "(a: T) => R",
-          "A function's parameters and result.",
-          "(n: number) => string",
-        ],
-      ]),
-      explain(
-        "[[typescript-types|Types]] describe shapes, not values. Most of the time TypeScript works them out itself; you write them for function parameters and shared data.",
-      ),
-      quickCheck(
-        "What does `content?: string` mean?",
-        [
-          "`content` may be missing; if present, it's a string",
-          "`content` must be a question",
-          "`content` can be any type",
-        ],
-        0,
-        "The `?` marks an optional property.",
-      ),
-    ),
+    typescriptModule,
     lesson(
       "debugging",
       "Debugging",
@@ -124,7 +64,7 @@ export const advanced: LevelPlan = {
       ["js-advanced-closure", "closures"],
       ["js-advanced-event-loop", "event-loop"],
       ["js-advanced-reference", "references"],
-      ["js-advanced-optional-type", "typescript-types"],
+      ["js-advanced-optional-type", "typescript"],
     ]),
   ],
 };

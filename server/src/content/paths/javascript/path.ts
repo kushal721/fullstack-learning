@@ -93,7 +93,7 @@ const fetchScene: Scene = {
   ],
 };
 
-// JavaScript: 11 Basic, 6 Intermediate and 8 Advanced steps, numbered 1–25.
+// JavaScript: 11 Basic, 6 Intermediate and 7 Advanced steps, numbered 1–24.
 export const javascriptPath: TopicPath = {
   topicId: "javascript",
   summary: {
