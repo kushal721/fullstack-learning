@@ -11,6 +11,7 @@ import {
 } from "../blocks.js";
 import { closuresModule } from "./closures.js";
 import { eventLoopModule } from "./event-loop.js";
+import { referencesModule } from "./references.js";
 import { thisAndClassesModule } from "./this-and-classes.js";
 
 // Advanced: steps 18–25. How JavaScript works underneath (closures, the
@@ -22,40 +23,7 @@ export const advanced: LevelPlan = {
     closuresModule,
     eventLoopModule,
     thisAndClassesModule,
-    lesson(
-      "references",
-      "Copies and references",
-      4,
-      explain(
-        "Numbers and strings are copied when assigned. Objects and arrays aren't: two variables can point at the same object, so changing it through one changes it for both. See [[reference-vs-value]].",
-      ),
-      jsPlayground("Same object, two names", [
-        "let a = 1;",
-        "let b = a;",
-        "b = 2;",
-        "console.log(a, b);",
-        "",
-        'const note = { title: "Milk" };',
-        "const same = note;",
-        'same.title = "Bread";',
-        "console.log(note.title);",
-        "",
-        "const copy = { ...note };",
-        'copy.title = "Eggs";',
-        "console.log(note.title, copy.title);",
-        "console.log(note === same, note === copy);",
-      ]),
-      quickCheck(
-        "Why does React want a new array instead of `notes.push(note)`?",
-        [
-          "It compares references: the same array looks unchanged",
-          "`push` is slow",
-          "Arrays can't change",
-        ],
-        0,
-        "A changed copy (`[...notes, note]`) is a new reference, so React sees the change.",
-      ),
-    ),
+    referencesModule,
     lesson(
       "typescript-why",
       "Why TypeScript",
