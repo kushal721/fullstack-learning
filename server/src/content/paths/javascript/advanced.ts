@@ -1,7 +1,6 @@
 import type { LevelPlan } from "@fsl/shared";
 import {
   code,
-  diagram,
   explain,
   jsPlayground,
   keyPoints,
@@ -11,6 +10,7 @@ import {
   reference,
 } from "../blocks.js";
 import { closuresModule } from "./closures.js";
+import { eventLoopModule } from "./event-loop.js";
 
 // Advanced: steps 18–26. How JavaScript works underneath (closures, the
 // event loop, `this`, references), classes, TypeScript, and debugging.
@@ -19,35 +19,7 @@ export const advanced: LevelPlan = {
     "Understand the behaviour behind surprising bugs, use TypeScript's types, and debug with confidence.",
   steps: [
     closuresModule,
-    lesson(
-      "event-loop",
-      "The event loop",
-      4,
-      explain(
-        "JavaScript runs one thing at a time. Timers, clicks and network replies wait in queues; the [[event-loop|event loop]] runs the next one whenever the current code finishes. Promise callbacks jump ahead of timers.",
-      ),
-      diagram([
-        ["Your code", "runs to the end"],
-        ["Promise queue", ".then, await"],
-        ["Task queue", "timers, clicks"],
-      ]),
-      jsPlayground("Guess the order, then run it", [
-        'console.log("1");',
-        'setTimeout(() => console.log("timer"), 0);',
-        'Promise.resolve().then(() => console.log("promise"));',
-        'console.log("2");',
-      ]),
-      quickCheck(
-        "A loop runs for five seconds. What happens to clicks meanwhile?",
-        [
-          "They're handled at once",
-          "They wait until the loop finishes: the page feels frozen",
-          "They're lost",
-        ],
-        1,
-        "Nothing else runs until the current code finishes, so keep long work short or async.",
-      ),
-    ),
+    eventLoopModule,
     lesson(
       "this",
       "What `this` means",
