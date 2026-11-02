@@ -11,8 +11,9 @@ import {
 } from "../blocks.js";
 import { closuresModule } from "./closures.js";
 import { eventLoopModule } from "./event-loop.js";
+import { thisAndClassesModule } from "./this-and-classes.js";
 
-// Advanced: steps 18–26. How JavaScript works underneath (closures, the
+// Advanced: steps 18–25. How JavaScript works underneath (closures, the
 // event loop, `this`, references), classes, TypeScript, and debugging.
 export const advanced: LevelPlan = {
   outcome:
@@ -20,64 +21,7 @@ export const advanced: LevelPlan = {
   steps: [
     closuresModule,
     eventLoopModule,
-    lesson(
-      "this",
-      "What `this` means",
-      3,
-      explain(
-        "Inside a function called as `obj.method()`, [[this-keyword|`this`]] is `obj`. Arrow functions don't have their own `this`; they use the one around them.",
-      ),
-      jsPlayground("this depends on how it's called", [
-        "const note = {",
-        '  title: "Milk",',
-        "  show() {",
-        "    return `Note: ${this.title}`;",
-        "  },",
-        "};",
-        "console.log(note.show());",
-        "const loose = note.show;",
-        "try { console.log(loose()); }",
-        'catch (e) { console.log("Lost this:", e.message); }',
-      ]),
-      quickCheck(
-        "Why did `loose()` fail?",
-        [
-          "Called on its own, the method has no object, so `this` is undefined",
-          "Methods can't be copied",
-          "`title` was deleted",
-        ],
-        0,
-        "`this` is decided by the call, not where the function was written.",
-      ),
-    ),
-    lesson(
-      "classes",
-      "Classes",
-      3,
-      explain(
-        "A [[js-class|class]] is a template for objects that share the same methods. `constructor` sets up each new object; `new` makes one.",
-      ),
-      jsPlayground("A class and two objects", [
-        "class Note {",
-        "  constructor(title) {",
-        "    this.title = title;",
-        "    this.done = false;",
-        "  }",
-        "  finish() {",
-        "    this.done = true;",
-        "  }",
-        "}",
-        'const a = new Note("Milk");',
-        'const b = new Note("Bread");',
-        "a.finish();",
-        "console.log(a.done, b.done);",
-      ]),
-      keyPoints(
-        "`extends` builds one class on another.",
-        "React code uses functions, but you still meet classes: `new Error()`, `new Map()`.",
-        "A class is still objects and functions underneath.",
-      ),
-    ),
+    thisAndClassesModule,
     lesson(
       "references",
       "Copies and references",
