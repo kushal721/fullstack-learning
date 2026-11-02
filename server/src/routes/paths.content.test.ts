@@ -80,6 +80,7 @@ const JS_MODULES: [id: string, number: number][] = [
   ["this-and-classes", 20],
   ["references", 21],
   ["typescript", 22],
+  ["debugging", 23],
 ];
 
 describe.each(JS_MODULES)("the JavaScript %s module", (id, number) => {

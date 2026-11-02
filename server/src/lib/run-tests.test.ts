@@ -36,6 +36,18 @@ describe("runTests", () => {
     ).toEqual({ passed: 0, failures: ["✗ f() failed: Error: no"] });
   });
 
+  it("fails, without crashing, a test that forgets to await a timer", () => {
+    const code = [
+      "const wait = (ms) => new Promise((r) => setTimeout(r, ms));",
+      "async function getNotes() { await wait(10); return [1, 2]; }",
+      "function count() { const notes = getNotes(); return notes.length; }",
+    ].join("\n");
+    expect(runTests(code, [{ call: "count()", expect: "2" }])).toEqual({
+      passed: 0,
+      failures: ["✗ count() gives undefined, expected 2"],
+    });
+  });
+
   it("stops a promise that never settles", () => {
     const result = runTests("const f = () => new Promise(() => {});", [
       { call: "f()", expect: "1" },

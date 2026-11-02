@@ -84,7 +84,25 @@ const show = (v) => typeof v === "string" ? v
   : typeof v === "number" || typeof v === "bigint" || typeof v === "symbol" ? String(v)
   : (() => { try { return JSON.stringify(v); } catch { return String(v); } })();
 const send = (kind) => (...args) => postMessage({ kind, text: args.map(show).join(" ") });
-self.console = { log: send("log"), info: send("log"), warn: send("warn"), error: send("error") };
+// console.table as text: an (index) column, then one column per key.
+const tableText = (data) => {
+  const rows = Object.entries(data ?? {});
+  const isObj = (r) => r !== null && typeof r === "object";
+  const keys = [...new Set(rows.flatMap(([, r]) => (isObj(r) ? Object.keys(r) : ["Value"])))];
+  const cell = (r, k) => (isObj(r) ? (k in r ? show(r[k]) : "") : k === "Value" ? show(r) : "");
+  const grid = [["(index)", ...keys], ...rows.map(([i, r]) => [i, ...keys.map((k) => cell(r, k))])];
+  const widths = grid[0].map((_, c) => Math.max(...grid.map((row) => row[c].length)));
+  return grid.map((row) => row.map((text, c) => text.padEnd(widths[c])).join(" │ ").trimEnd()).join("\\n");
+};
+const counts = {}, timers = {};
+self.console = {
+  log: send("log"), info: send("log"), warn: send("warn"), error: send("error"),
+  table: (data) => postMessage({ kind: "log", text: tableText(data) }),
+  count: (label = "default") => send("log")(label + ": " + (counts[label] = (counts[label] || 0) + 1)),
+  assert: (ok, ...args) => { if (!ok) send("error")("Assertion failed:", ...args); },
+  time: (label = "default") => { timers[label] = Date.now(); },
+  timeEnd: (label = "default") => send("log")(label + ": " + (Date.now() - timers[label]) + " ms"),
+};
 self.addEventListener("unhandledrejection", (e) => postMessage({ kind: "error", text: "Uncaught (in promise) " + show(e.reason) }));
 const same = (a, b) => Object.is(a, b) || (typeof a === "object" && typeof b === "object" && a !== null && b !== null && JSON.stringify(a) === JSON.stringify(b));
 // A test that gives back a promise is awaited; "done" waits for them all.

@@ -1,3 +1,4 @@
+import { runInNewContext } from "node:vm";
 import request from "supertest";
 import { describe, expect, it } from "vitest";
 import { createApp } from "../app.js";
@@ -7,6 +8,7 @@ import {
   PAGE_RUNNER_POLICY,
   PLAYGROUND_POLICY,
   testCalls,
+  workerSource,
 } from "./playground.js";
 
 const app = createApp();
@@ -74,6 +76,37 @@ describe("GET /playground/js", () => {
     const res = await request(app).get("/playground/js?code=1");
     expect(res.text).toContain("@media (prefers-color-scheme:dark)");
     expect(res.text).toContain("color-scheme:dark");
+  });
+
+  it("gives the worker console.table, count and assert, as text", () => {
+    const lines: string[] = [];
+    // In a worker, self is the global object.
+    const context: Record<string, unknown> = {
+      addEventListener: () => {},
+      postMessage: (m: { text?: string }) => m.text && lines.push(m.text),
+    };
+    context.self = context;
+    runInNewContext(
+      workerSource(
+        [
+          'console.table([{ id: 1, title: "Milk" }, { id: 2, done: true }]);',
+          "console.count(); console.count();",
+          'console.assert(1 > 2, "maths");',
+          "console.assert(true);",
+        ].join("\n"),
+      ),
+      context,
+    );
+    expect(lines).toEqual([
+      [
+        "(index) │ id │ title │ done",
+        "0       │ 1  │ Milk  │",
+        "1       │ 2  │       │ true",
+      ].join("\n"),
+      "default: 1",
+      "default: 2",
+      "Assertion failed: maths",
+    ]);
   });
 
   it("keeps the learner's code inside the script, whatever it contains", async () => {
