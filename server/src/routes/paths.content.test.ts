@@ -76,6 +76,7 @@ const JS_MODULES: [id: string, number: number][] = [
   ["modules-and-syntax", 15],
   ["reading-the-notes-api", 16],
   ["closures", 18],
+  ["event-loop", 19],
 ];
 
 describe.each(JS_MODULES)("the JavaScript %s module", (id, number) => {
