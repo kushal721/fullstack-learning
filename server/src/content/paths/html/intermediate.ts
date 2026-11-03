@@ -3,7 +3,6 @@ import {
   code,
   diagram,
   explain,
-  inTheNotesApp,
   keyPoints,
   lesson,
   levelCheck,
@@ -11,124 +10,15 @@ import {
   quickCheck,
   reference,
 } from "../blocks.js";
+import { structureModule } from "./structure.js";
 
-// Intermediate: steps 19–32. Meaningful structure, real forms, tables,
+// Intermediate: steps 19–30. Meaningful structure, real forms, tables,
 // accessibility and what the browser builds from HTML.
 export const intermediate: LevelPlan = {
   outcome:
     "Structure a page so browsers, search engines and screen readers all understand it, with forms that check themselves.",
   steps: [
-    lesson(
-      "semantic-structure",
-      "Meaningful structure",
-      3,
-      explain(
-        "[[html-semantic-structure|Semantic HTML]] picks the element that says what a part *is*: `<header>`, `<nav>`, `<main>`, `<article>`, `<footer>`. Each main region is a [[landmark]].",
-      ),
-      code(
-        "html",
-        "a page's landmarks",
-        [
-          "<header>…</header>",
-          "<nav>…</nav>",
-          "<main>",
-          "  <article>…</article>",
-          "</main>",
-          "<footer>…</footer>",
-        ],
-        { 3: "the one main content area" },
-      ),
-      quickCheck(
-        'Why prefer `<nav>` over `<div class="nav">`?',
-        [
-          "It looks better",
-          "Browsers and screen readers know it's navigation",
-          "It loads faster",
-        ],
-        1,
-        "A `<div>` means nothing; `<nav>` is a [[landmark]] people can jump to.",
-      ),
-    ),
-    lesson(
-      "structure-tags",
-      "The structure tags",
-      4,
-      reference("Tags that say what a part of the page is", [
-        [
-          "<header>",
-          "The top of the page or of a section: logo, title, main links.",
-          "<header><h1>Notes</h1></header>",
-        ],
-        [
-          "<nav>",
-          "A group of main navigation links.",
-          '<nav><a href="/">Home</a></nav>',
-        ],
-        ["<main>", "The page's main content; one per page.", "<main>…</main>"],
-        [
-          "<section>",
-          "A themed part of a page, with its own heading.",
-          "<section><h2>Today</h2>…</section>",
-        ],
-        [
-          "<article>",
-          "Something that makes sense on its own: a note, a post.",
-          "<article><h3>Milk</h3></article>",
-        ],
-        [
-          "<aside>",
-          "Content beside the main point: tips, related links.",
-          "<aside>Tip: …</aside>",
-        ],
-        [
-          "<footer>",
-          "The bottom of the page or a section: credits, links.",
-          "<footer>© 2026</footer>",
-        ],
-        [
-          "<figure>",
-          "An image or diagram with its `<figcaption>`.",
-          "<figure><img …><figcaption>…</figcaption></figure>",
-        ],
-        [
-          "<time>",
-          "A date or time machines can read.",
-          '<time datetime="2026-10-21">Today</time>',
-        ],
-      ]),
-      playground("Lay out a page with landmarks", [
-        "<header><h1>Notes</h1></header>",
-        '<nav><a href="#">All</a> · <a href="#">Starred</a></nav>',
-        "<main>",
-        "  <article><h2>Shopping</h2><p>Milk, bread.</p></article>",
-        "  <aside>Tip: star important notes.</aside>",
-        "</main>",
-        "<footer>Made by you</footer>",
-      ]),
-      quickCheck(
-        "Each note in a list makes sense on its own. Which element wraps one note?",
-        ["`<aside>`", "`<article>`", "`<nav>`"],
-        1,
-        "An `<article>` is self-contained: a note, a post, a comment.",
-      ),
-    ),
-    lesson(
-      "heading-outline",
-      "The heading outline",
-      2,
-      explain(
-        "Headings form the page's [[outline]], like a table of contents. Go down one level at a time: `<h2>` inside an `<h1>` section, `<h3>` inside an `<h2>`.",
-      ),
-      keyPoints(
-        "One `<h1>`: what the whole page is about.",
-        "Don't skip levels to get a smaller font.",
-        "Sizes are CSS's job; levels are HTML's.",
-      ),
-      inTheNotesApp(
-        "The Notes App's header uses `<header>` with a `<nav>` inside for the logged-in user's controls.",
-        { fileId: "frontend/src/components/Navbar.jsx" },
-      ),
-    ),
+    structureModule,
     lesson(
       "form-validation",
       "Forms that check themselves",
