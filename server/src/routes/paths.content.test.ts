@@ -14,7 +14,7 @@ const PLANNED: [
   advanced: number,
 ][] = [
   ["how-the-web-works", 18, 30, 40],
-  ["html", 20, 34, 43],
+  ["html", 18, 32, 41],
   ["css", 18, 30, 40],
   ["javascript", 11, 17, 24],
 ];
@@ -83,25 +83,38 @@ const JS_MODULES: [id: string, number: number][] = [
   ["debugging", 23],
 ];
 
-describe.each(JS_MODULES)("the JavaScript %s module", (id, number) => {
-  it(`is step ${number}, in parts that cover all its blocks, with objectives`, async () => {
-    const path = (await request(app).get("/api/paths/javascript"))
-      .body as PathResponse;
-    const summary = path.levels
-      .flatMap((level) => level.steps)
-      .find((s) => s.id === id)!;
-    expect(summary.number).toBe(number);
+// What every module must have: its number, parts covering all its blocks,
+// objectives, and each kind of teaching block.
+async function checkModule(topic: string, id: string, number: number) {
+  const path = (await request(app).get(`/api/paths/${topic}`))
+    .body as PathResponse;
+  const summary = path.levels
+    .flatMap((level) => level.steps)
+    .find((s) => s.id === id)!;
+  expect(summary.number).toBe(number);
 
-    const body = (await request(app).get(`/api/paths/javascript/steps/${id}`))
-      .body as StepResponse;
-    expect(summary.parts).toBe(body.sections!.length);
-    expect(body.objectives!.length).toBeGreaterThanOrEqual(3);
-    expect(body.sections!.reduce((n, s) => n + s.blockCount, 0)).toBe(
-      body.blocks.length,
-    );
-    const types = new Set(body.blocks.map((b) => b.type));
-    for (const type of ["anatomy", "trace", "yourTurn", "mistake", "check"]) {
-      expect(types, type).toContain(type);
-    }
-  });
+  const body = (await request(app).get(`/api/paths/${topic}/steps/${id}`))
+    .body as StepResponse;
+  expect(summary.parts).toBe(body.sections!.length);
+  expect(body.objectives!.length).toBeGreaterThanOrEqual(3);
+  expect(body.sections!.reduce((n, s) => n + s.blockCount, 0)).toBe(
+    body.blocks.length,
+  );
+  const types = new Set(body.blocks.map((b) => b.type));
+  for (const type of ["anatomy", "trace", "yourTurn", "mistake", "check"]) {
+    expect(types, type).toContain(type);
+  }
+}
+
+describe.each(JS_MODULES)("the JavaScript %s module", (id, number) => {
+  it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
+    checkModule("javascript", id, number));
+});
+
+// The HTML modules: [step id, its number].
+const HTML_MODULES: [id: string, number: number][] = [["forms", 14]];
+
+describe.each(HTML_MODULES)("the HTML %s module", (id, number) => {
+  it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
+    checkModule("html", id, number));
 });

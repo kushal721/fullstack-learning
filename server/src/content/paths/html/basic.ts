@@ -2,7 +2,6 @@ import type { LevelPlan } from "@fsl/shared";
 import {
   analogy,
   code,
-  diagram,
   explain,
   inTheNotesApp,
   keyPoints,
@@ -12,8 +11,9 @@ import {
   quickCheck,
   reference,
 } from "../blocks.js";
+import { formsModule } from "./forms.js";
 
-// Basic: steps 1–20. Tags, elements and attributes (with references of the
+// Basic: steps 1–18. Tags, elements and attributes (with references of the
 // everyday ones and live examples), the page skeleton, text, lists, links,
 // images and simple forms.
 export const basic: LevelPlan = {
@@ -407,67 +407,7 @@ export const basic: LevelPlan = {
         'A purely decorative image gets `alt=""`, so it is skipped.',
       ),
     ),
-    lesson(
-      "forms",
-      "Forms",
-      3,
-      explain(
-        "A [[html-form|form]] groups fields and a button, so what someone types can be sent together: a login, a search, a new note.",
-      ),
-      diagram([
-        ["Fields", "what you type"],
-        ["Button", "Send"],
-        ["Request", "to the server"],
-      ]),
-      quickCheck(
-        "What does a form do when it's submitted?",
-        [
-          "Sends its fields' values together",
-          "Saves them in the HTML file",
-          "Clears the page",
-        ],
-        0,
-        "A [[html-form|form]] collects every named field and sends them in one request.",
-      ),
-    ),
-    lesson(
-      "inputs-and-labels",
-      "Inputs and labels",
-      3,
-      explain(
-        "An [[html-input|input]] is a box to type in or a control to tick. Every input needs a [[label]] that says what to type; `for` on the label matches `id` on the input.",
-      ),
-      code(
-        "html",
-        "a labelled field",
-        [
-          '<label for="email">Email</label>',
-          '<input id="email" name="email" type="email">',
-        ],
-        {
-          1: "for= points at the input's id",
-          2: "name= is the key it's sent under",
-        },
-      ),
-      inTheNotesApp(
-        "The Notes App's `Input` component always pairs a label with its field this way.",
-        { fileId: "frontend/src/components/Input.jsx" },
-      ),
-    ),
-    lesson(
-      "buttons",
-      "Buttons",
-      2,
-      explain(
-        'A [[html-button|button]] triggers an action. Inside a form, a button sends the form; `type="button"` makes one that does nothing until code listens to it.',
-      ),
-      quickCheck(
-        "Something you click to *go to another page* should be…",
-        ["A `<button>`", "A link (`<a>`)", "A `<div>`"],
-        1,
-        "Links go places; buttons do things. Using the right one keeps the keyboard and screen readers working.",
-      ),
-    ),
+    formsModule,
     lesson(
       "comments-and-whitespace",
       "Comments and spaces",
@@ -594,7 +534,7 @@ export const basic: LevelPlan = {
       ["html-basic-head", "page-skeleton"],
       ["html-basic-ordered-list", "lists"],
       ["html-basic-alt", "images"],
-      ["html-basic-label", "inputs-and-labels"],
+      ["html-basic-label", "forms"],
       ["html-basic-block-inline", "block-and-inline"],
     ]),
   ],

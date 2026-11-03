@@ -10,7 +10,7 @@ import {
   quickCheck,
 } from "../blocks.js";
 
-// Advanced: steps 35–43. ARIA, search engines, loading, images, web
+// Advanced: steps 33–41. ARIA, search engines, loading, images, web
 // components and how HTML looks inside React.
 export const advanced: LevelPlan = {
   outcome:
