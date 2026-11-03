@@ -88,9 +88,17 @@ type RunnerMessage = { kind: string; text?: string };
 
 /** The worker's globals, in a Node.js context. */
 function workerContext(post: (message: RunnerMessage) => void) {
+  const never = () => 0;
   const context: Record<string, unknown> = {
     self: { addEventListener: () => {} },
     postMessage: post,
+    // Timers never fire in this synchronous run, but code that sets one
+    // mustn't throw. A test that needs one gives back a promise, and the
+    // async run has real timers.
+    setTimeout: never,
+    clearTimeout: never,
+    setInterval: never,
+    clearInterval: never,
   };
   // The worker's `self.x` globals are plain globals in the browser.
   for (const name of ["__test", "console"]) {
