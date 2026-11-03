@@ -26,7 +26,9 @@ function topic(id: string, order: number, children: Topic[] = []): Topic {
 }
 
 describe("validateContent", () => {
-  it("finds no problems in the real content", () => {
+  // Slow by design: it runs every exercise, and each async one in its own
+  // Node.js process.
+  it("finds no problems in the real content", { timeout: 60_000 }, () => {
     expect(validateContent()).toEqual([]);
   });
 
