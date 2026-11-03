@@ -1,6 +1,5 @@
 import type { LevelPlan } from "@fsl/shared";
 import {
-  analogy,
   code,
   explain,
   inTheNotesApp,
@@ -11,46 +10,17 @@ import {
   quickCheck,
   reference,
 } from "../blocks.js";
+import { elementsModule } from "./elements.js";
 import { formsModule } from "./forms.js";
 
-// Basic: steps 1–18. Tags, elements and attributes (with references of the
+// Basic: steps 1–13. Tags, elements and attributes (with references of the
 // everyday ones and live examples), the page skeleton, text, lists, links,
 // images and simple forms.
 export const basic: LevelPlan = {
   outcome:
     "Write a simple page by hand: headings, text, lists, links, images and a form.",
   steps: [
-    lesson(
-      "what-html-is",
-      "What HTML is",
-      2,
-      explain(
-        "[[html]] is the language web pages are written in. It doesn't decide colours or behaviour; it says *what each piece of content is*: a heading, a paragraph, a link, a button.",
-      ),
-      explain(
-        "A page is one text file, an [[html-document]]. The browser reads it top to bottom and builds the page from it.",
-      ),
-      analogy(
-        "Like labelling the boxes when you move house: “kitchen”, “books”. HTML labels each piece of content so the browser knows what it is.",
-      ),
-    ),
-    lesson(
-      "elements-and-tags",
-      "Elements and tags",
-      3,
-      explain(
-        "Each piece of content is an [[html-element|element]]. You mark where it starts and ends with [[tag|tags]]: an opening tag like `<p>` and a closing tag like `</p>`.",
-      ),
-      code("html", "one paragraph element", ["<p>Buy milk</p>"], {
-        1: "opening tag, content, closing tag",
-      }),
-      quickCheck(
-        "Which part of `<h1>My notes</h1>` is the content?",
-        ["`<h1>`", "`My notes`", "`</h1>`"],
-        1,
-        "The [[tag|tags]] mark the start and end; `My notes` is what appears on the page.",
-      ),
-    ),
+    elementsModule,
     lesson(
       "tags-for-text",
       "Tags for text",
@@ -101,126 +71,6 @@ export const basic: LevelPlan = {
         ["`<em>`", "`<strong>`", "`<p>`"],
         1,
         "`<strong>` means important (shown bold); `<em>` means stressed (shown in italics).",
-      ),
-    ),
-    lesson(
-      "attributes",
-      "Attributes: extra settings",
-      3,
-      explain(
-        'An [[attribute]] adds a setting to an element, written inside the opening tag as `name="value"`.',
-      ),
-      code(
-        "html",
-        "attributes",
-        [
-          '<a href="/notes">My notes</a>',
-          '<img src="cat.jpg" alt="A sleeping cat">',
-        ],
-        {
-          1: "href: where the link goes",
-          2: "src: which picture; alt: what it shows",
-        },
-      ),
-      explain(
-        "`<img>` has no closing tag: it has no content, only attributes. That makes it a [[void-element|void element]].",
-      ),
-    ),
-    lesson(
-      "common-attributes",
-      "Attributes you'll use everywhere",
-      3,
-      reference("Everyday attributes", [
-        ["id", "A unique name for one element on the page.", '<h2 id="intro">'],
-        [
-          "class",
-          "A group name for styling or scripts; many elements can share it.",
-          '<p class="note">',
-        ],
-        ["href", "Where a link goes.", '<a href="/notes">'],
-        [
-          "src",
-          "Which file to show, for images, video and scripts.",
-          '<img src="cat.jpg">',
-        ],
-        [
-          "alt",
-          "What an image shows, for when it can't be seen.",
-          '<img alt="A cat">',
-        ],
-        ["type", "Which kind of input or button.", '<input type="email">'],
-        [
-          "name",
-          "The key a form field's value is sent under.",
-          '<input name="title">',
-        ],
-        [
-          "value",
-          "A field's starting value, or what a choice sends.",
-          '<input value="Milk">',
-        ],
-        [
-          "title",
-          "Extra text shown on hover; don't rely on it alone.",
-          '<abbr title="HyperText…">HTML</abbr>',
-        ],
-        [
-          "lang",
-          "The language of the page or a part of it.",
-          '<html lang="en">',
-        ],
-      ]),
-      quickCheck(
-        "Several notes on a page should share the same look. Which attribute groups them?",
-        ["`id`", "`class`", "`name`"],
-        1,
-        "An `id` must be unique; a `class` can be shared by many elements.",
-      ),
-    ),
-    lesson(
-      "nesting",
-      "Elements inside elements",
-      3,
-      explain(
-        "Elements can contain other elements. This [[nesting]] is how a page gets its structure: a list holds items, an article holds a heading and paragraphs.",
-      ),
-      code(
-        "html",
-        "nesting",
-        ["<p>", "  This is <strong>very</strong> important.", "</p>"],
-        { 2: "<strong> sits inside the <p>" },
-      ),
-      quickCheck(
-        "Which of these is nested correctly?",
-        [
-          "`<p><strong>Hi</p></strong>`",
-          "`<p><strong>Hi</strong></p>`",
-          "`<p><strong>Hi</p>`",
-        ],
-        1,
-        "Close the inner element first: the last tag opened is the first one closed.",
-      ),
-    ),
-    lesson(
-      "block-and-inline",
-      "Boxes and words: block and inline",
-      3,
-      explain(
-        "Most elements are either [[block-inline|block or inline]]. A block element, like `<p>` or `<h1>`, starts on a new line and takes the whole width. An inline element, like `<strong>` or `<a>`, sits inside a line of text.",
-      ),
-      explain(
-        "[[div-span|`<div>` and `<span>`]] are the plain versions: a `<div>` is a block box and a `<span>` an inline piece, with no meaning of their own. Use them only when no element with a meaning fits.",
-      ),
-      playground("Blocks stack, inline pieces flow", [
-        "<div>A div is a block</div>",
-        "<div>so this one starts on a new line.</div>",
-        "<p>A <span>span</span> and a <strong>strong</strong> stay in the line.</p>",
-      ]),
-      quickCheck(
-        "Which one starts on a new line by itself?",
-        ["`<span>`", "`<a>`", "`<p>`"],
-        2,
-        "`<p>` is a block element; `<span>` and `<a>` are inline.",
       ),
     ),
     lesson(
@@ -529,13 +379,13 @@ export const basic: LevelPlan = {
       ),
     ),
     levelCheck("basic-check", "Basic check", [
-      ["html-basic-closing-tag", "elements-and-tags"],
-      ["html-basic-nesting", "nesting"],
+      ["html-basic-closing-tag", "elements-and-attributes"],
+      ["html-basic-nesting", "elements-and-attributes"],
       ["html-basic-head", "page-skeleton"],
       ["html-basic-ordered-list", "lists"],
       ["html-basic-alt", "images"],
       ["html-basic-label", "forms"],
-      ["html-basic-block-inline", "block-and-inline"],
+      ["html-basic-block-inline", "elements-and-attributes"],
     ]),
   ],
 };
