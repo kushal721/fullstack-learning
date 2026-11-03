@@ -127,7 +127,7 @@ export function TraceBlock({
         <div className="min-w-0">
           <CodeBlock
             example={{
-              language: "js",
+              language: block.language ?? "js",
               code: block.code,
               highlightLines: [move.line],
             }}

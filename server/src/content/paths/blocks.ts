@@ -163,7 +163,15 @@ export const trace = (
   caption: string,
   lines: string[],
   steps: TraceStep[],
-): Block => ({ type: "trace", caption, code: lines.join("\n"), steps });
+  /** "html" for a page's markup; JavaScript when left out. */
+  options: { language?: "html" } = {},
+): Block => ({
+  type: "trace",
+  caption,
+  ...options,
+  code: lines.join("\n"),
+  steps,
+});
 
 /** The learner writes code; tests are [call, expected value as code]. */
 export const yourTurn = (exercise: {

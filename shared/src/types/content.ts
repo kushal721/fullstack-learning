@@ -546,6 +546,8 @@ export type Block =
        */
       type: "trace";
       caption: string;
+      /** How the code is highlighted; JavaScript when left out. */
+      language?: "js" | "html";
       code: string;
       steps: TraceStep[];
     }
