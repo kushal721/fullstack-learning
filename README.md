@@ -140,6 +140,9 @@ The site follows the system's light or dark setting and works from phone width u
   run when the content is validated (page exercises in jsdom), and the
   browser check runs every page exercise's solution and starter in
   Chromium, where style checks need a real layout.
+- **One page or part by part.** A module can be read one part at a time
+  (the default) or as one long page with an "On this page" list; the
+  choice is remembered in the browser.
 - **No word left unexplained.** Every term is a link. Clicking one opens the
   **glossary panel** on the right, with a plain explanation, related words,
   where it is taught, and search. Words inside an explanation are links

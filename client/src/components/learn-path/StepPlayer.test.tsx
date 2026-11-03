@@ -11,6 +11,7 @@ import {
   topicTreeFixture,
 } from "../../test/fixtures.ts";
 import { mockFetchRoutes } from "../../test/mock-fetch.ts";
+import { MODULE_VIEW_KEY } from "../../hooks/useModuleView.ts";
 import { resetProgress } from "../../hooks/usePathProgress.ts";
 
 const tree = {
@@ -48,6 +49,7 @@ function renderAt(path: string) {
 describe("StepPlayer", () => {
   beforeEach(() => {
     resetProgress();
+    localStorage.clear();
     vi.spyOn(window, "scrollTo").mockImplementation(() => {});
   });
 
@@ -236,5 +238,67 @@ describe("StepPlayer", () => {
       "href",
       "/learn/html/basic-2",
     );
+  });
+
+  const moduleStep = {
+    ...htmlStep2Fixture,
+    step: { ...htmlStep2Fixture.step, parts: 2 },
+    objectives: ["Write a link."],
+    blocks: [
+      { type: "explain", text: "Part one, first block." },
+      { type: "explain", text: "Part one, second block." },
+      { type: "explain", text: "Part two's block." },
+    ],
+    sections: [
+      { id: "one", title: "The first part", blockCount: 2 },
+      { id: "two", title: "The second part", blockCount: 1 },
+    ],
+  };
+
+  it("reads a module on one page when asked, and remembers the choice", async () => {
+    const user = userEvent.setup();
+    mockFetchRoutes({ ...routes, "/api/paths/html/steps/basic-2": moduleStep });
+    const { unmount } = renderAt("/learn/html/basic-2");
+
+    const switcher = await screen.findByRole("group", {
+      name: "How to read this module",
+    });
+    expect(
+      within(switcher).getByRole("button", { name: "Part by part" }),
+    ).toHaveAttribute("aria-pressed", "true");
+    await user.click(
+      within(switcher).getByRole("button", { name: "One page" }),
+    );
+
+    // Every part, each under its heading, with a list that jumps to each.
+    expect(
+      screen.getByRole("region", { name: "1. The first part" }),
+    ).toHaveTextContent("Part one, second block.");
+    expect(
+      screen.getByRole("region", { name: "2. The second part" }),
+    ).toHaveTextContent("Part two's block.");
+    expect(screen.queryByText("Part 1 of 2")).not.toBeInTheDocument();
+    const contents = screen.getByRole("navigation", { name: "On this page" });
+    await user.click(
+      within(contents).getByRole("link", { name: /The second part/ }),
+    );
+    expect(
+      screen.getByRole("heading", { name: "2. The second part" }),
+    ).toHaveFocus();
+    expect(screen.getByTestId("where")).toHaveTextContent(
+      "/learn/html/basic-2",
+    );
+    expect(
+      screen.getByRole("button", { name: /Done, next step/ }),
+    ).toBeInTheDocument();
+    expect(localStorage.getItem(MODULE_VIEW_KEY)).toBe("page");
+
+    // Next visit: still one page, and a ?part= link goes to that part.
+    unmount();
+    renderAt("/learn/html/basic-2?part=2");
+    expect(
+      await screen.findByRole("heading", { name: "2. The second part" }),
+    ).toHaveFocus();
+    expect(screen.getByText("Part one, first block.")).toBeInTheDocument();
   });
 });
