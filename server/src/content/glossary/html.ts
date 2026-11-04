@@ -137,6 +137,20 @@ export const htmlGlossary: GlossaryEntry[] = [
     { aliases: ["viewport", "meta viewport"] },
   ),
   term(
+    "doctype",
+    "Doctype",
+    "The first line of every page, `<!doctype html>`, telling the browser it's modern HTML.",
+    "Without it, browsers fall back to “quirks mode” and copy old, buggy layout rules from the 1990s, so CSS behaves differently. It isn't an element, just an instruction, and it's the same on every page you'll write. See [[html-document]].",
+    { aliases: ["<!doctype html>", "DOCTYPE", "quirks mode"] },
+  ),
+  term(
+    "character-encoding",
+    "Character encoding",
+    'How letters are stored as bytes; `<meta charset="utf-8">` says which way the page uses.',
+    "UTF-8 can store every language's letters and emoji, and it's what you should always use. If the browser guesses the wrong encoding, “café” turns into “cafÃ©”. The `<meta charset>` line belongs first in `<head>`.",
+    { aliases: ["charset", "utf-8", "encoding"] },
+  ),
+  term(
     "html-comment",
     "Comment",
     "A note in the HTML for people, which the browser ignores: `<!-- … -->`.",
