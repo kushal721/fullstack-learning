@@ -2,7 +2,6 @@ import type { LevelPlan } from "@fsl/shared";
 import {
   code,
   explain,
-  inTheNotesApp,
   keyPoints,
   lesson,
   levelCheck,
@@ -12,8 +11,9 @@ import {
 } from "../blocks.js";
 import { elementsModule } from "./elements.js";
 import { formsModule } from "./forms.js";
+import { skeletonModule } from "./skeleton.js";
 
-// Basic: steps 1–13. Tags, elements and attributes (with references of the
+// Basic: steps 1–10. Tags, elements and attributes (with references of the
 // everyday ones and live examples), the page skeleton, text, lists, links,
 // images and simple forms.
 export const basic: LevelPlan = {
@@ -73,84 +73,7 @@ export const basic: LevelPlan = {
         "`<strong>` means important (shown bold); `<em>` means stressed (shown in italics).",
       ),
     ),
-    lesson(
-      "page-skeleton",
-      "The page skeleton",
-      4,
-      code(
-        "html",
-        "every page starts like this",
-        [
-          "<!doctype html>",
-          '<html lang="en">',
-          "  <head>",
-          "    <title>My notes</title>",
-          "  </head>",
-          "  <body>",
-          "    <h1>My notes</h1>",
-          "  </body>",
-          "</html>",
-        ],
-        {
-          1: "this is modern HTML",
-          2: "the page's language",
-          3: "about the page (not shown)",
-          6: "everything you see",
-        },
-      ),
-      playground("Your first page: edit the body", [
-        "<!doctype html>",
-        '<html lang="en">',
-        "  <head>",
-        "    <title>My notes</title>",
-        "  </head>",
-        "  <body>",
-        "    <h1>My notes</h1>",
-        "    <p>Write anything here.</p>",
-        "  </body>",
-        "</html>",
-      ]),
-      quickCheck(
-        "Where does the text you see on the page go?",
-        ["In `<head>`", "In `<body>`", "Before `<!doctype html>`"],
-        1,
-        "`<body>` holds everything visible; `<head>` describes the page.",
-      ),
-    ),
-    lesson(
-      "the-head",
-      "The head: about the page",
-      3,
-      explain(
-        "`<head>` holds information for the browser: the character set, the tab title, links to style sheets and the [[viewport-meta|viewport meta tag]] that makes phones show the page at their real width.",
-      ),
-      code(
-        "html",
-        "a typical head",
-        [
-          "<head>",
-          '  <meta charset="utf-8">',
-          '  <meta name="viewport" content="width=device-width, initial-scale=1">',
-          "  <title>My notes</title>",
-          "</head>",
-        ],
-        {
-          2: "how letters are stored",
-          3: "phones: use your real width",
-          4: "the tab's title",
-        },
-      ),
-      quickCheck(
-        "Without the viewport line, what happens on a phone?",
-        [
-          "Nothing changes",
-          "The page is shown as a shrunk-down desktop page",
-          "The page doesn't load",
-        ],
-        1,
-        "Phones assume a wide desktop page and zoom out, unless the [[viewport-meta|viewport meta tag]] says otherwise.",
-      ),
-    ),
+    skeletonModule,
     lesson(
       "headings-and-text",
       "Headings and paragraphs",
@@ -259,25 +182,6 @@ export const basic: LevelPlan = {
     ),
     formsModule,
     lesson(
-      "comments-and-whitespace",
-      "Comments and spaces",
-      2,
-      explain(
-        "A [[html-comment|comment]], `<!-- like this -->`, is a note for people that the browser ignores. Extra spaces and line breaks are ignored too: the browser shows one space.",
-      ),
-      keyPoints(
-        "Indent nested elements so the structure is easy to read.",
-        "Comments are sent to every visitor: no secrets.",
-        "Use `<p>` for new paragraphs, not empty lines.",
-      ),
-      quickCheck(
-        "You put three empty lines between two words in the HTML. What does the page show?",
-        ["Three empty lines", "One space", "An error"],
-        1,
-        "The browser collapses spaces and line breaks into a single space.",
-      ),
-    ),
-    lesson(
       "tag-cheat-sheet",
       "Your everyday tag cheat sheet",
       3,
@@ -352,30 +256,6 @@ export const basic: LevelPlan = {
         ["`<input>`", "`<textarea>`", "`<p>`"],
         1,
         "`<input>` holds one line; `<textarea>` holds several.",
-      ),
-    ),
-    lesson(
-      "the-notes-app-page",
-      "The Notes App's page",
-      3,
-      inTheNotesApp(
-        'The Notes App\'s `index.html` is a full skeleton with an almost empty body: one `<div id="root">` that React fills, and one script.',
-        { fileId: "frontend/index.html" },
-      ),
-      keyPoints(
-        "`<head>`: charset, viewport and the title “Notes”.",
-        "`<body>`: one empty `<div>` and a `<script>`.",
-        "Everything else is HTML that React writes into the div.",
-      ),
-      quickCheck(
-        "Why is the Notes App's `<body>` almost empty?",
-        [
-          "The page is broken",
-          "JavaScript (React) builds the content inside it",
-          "The content is in `<head>`",
-        ],
-        1,
-        'React creates the elements and puts them into `<div id="root">` while the page runs.',
       ),
     ),
     levelCheck("basic-check", "Basic check", [

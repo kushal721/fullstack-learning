@@ -4,7 +4,7 @@ import { basic } from "./basic.js";
 import { intermediate } from "./intermediate.js";
 import { pageScene } from "./scenes.js";
 
-// HTML: 13 Basic, 12 Intermediate and 9 Advanced steps, numbered 1–34.
+// HTML: 10 Basic, 12 Intermediate and 9 Advanced steps, numbered 1–31.
 export const htmlPath: TopicPath = {
   topicId: "html",
   summary: {
