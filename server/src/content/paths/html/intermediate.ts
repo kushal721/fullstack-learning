@@ -12,7 +12,7 @@ import {
 } from "../blocks.js";
 import { structureModule } from "./structure.js";
 
-// Intermediate: steps 8–19. Meaningful structure, real forms, tables,
+// Intermediate: steps 8–18. Meaningful structure, real forms, tables,
 // accessibility and what the browser builds from HTML.
 export const intermediate: LevelPlan = {
   outcome:
@@ -270,40 +270,6 @@ export const intermediate: LevelPlan = {
       ),
     ),
     lesson(
-      "special-characters",
-      "Special characters",
-      3,
-      explain(
-        "`<` and `&` start tags and codes, so to show them as text you write a [[html-entity|character entity]]: `&lt;` shows <, `&amp;` shows &.",
-      ),
-      reference("Entities you'll need", [
-        [
-          "&lt;  &gt;",
-          "The < and > signs, for showing tags as text.",
-          "&lt;p&gt; shows <p>",
-        ],
-        ["&amp;", "The & sign.", "Tom &amp; Jerry"],
-        [
-          "&quot;",
-          "A double quote inside an attribute value.",
-          'title="Say &quot;hi&quot;"',
-        ],
-        ["&nbsp;", "A space that never breaks the line.", "10&nbsp;km"],
-        ["&copy;  &mdash;", "Symbols like © and —.", "&copy; 2026"],
-      ]),
-      playground("Show code as text", [
-        "<p>To make a paragraph, write &lt;p&gt;Hello&lt;/p&gt;.</p>",
-        "<p>Salt &amp; pepper</p>",
-        "<p>Distance: 10&nbsp;km</p>",
-      ]),
-      quickCheck(
-        "You want the page to show the text `<b>` instead of making bold text. What do you write?",
-        ["`<b>`", "`&lt;b&gt;`", "`\\<b\\>`"],
-        1,
-        "`&lt;` and `&gt;` show the angle brackets as text, so the browser doesn't read a tag.",
-      ),
-    ),
-    lesson(
       "the-dom",
       "From HTML to the DOM",
       3,
@@ -331,7 +297,6 @@ export const intermediate: LevelPlan = {
       ["html-intermediate-required", "form-validation"],
       ["html-intermediate-radio", "choices"],
       ["html-intermediate-icon-button", "accessible-names"],
-      ["html-intermediate-entity", "special-characters"],
     ]),
   ],
 };

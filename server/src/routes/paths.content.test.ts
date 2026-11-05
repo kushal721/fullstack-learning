@@ -14,7 +14,7 @@ const PLANNED: [
   advanced: number,
 ][] = [
   ["how-the-web-works", 18, 30, 40],
-  ["html", 7, 19, 28],
+  ["html", 7, 18, 27],
   ["css", 18, 30, 40],
   ["javascript", 11, 17, 24],
 ];

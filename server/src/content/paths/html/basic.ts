@@ -126,6 +126,7 @@ export const basic: LevelPlan = {
       ["html-basic-nesting", "elements-and-attributes"],
       ["html-basic-head", "page-skeleton"],
       ["html-basic-ordered-list", "text-lists-links"],
+      ["html-basic-entity", "text-lists-links"],
       ["html-basic-alt", "images"],
       ["html-basic-label", "forms"],
       ["html-basic-block-inline", "elements-and-attributes"],

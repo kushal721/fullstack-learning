@@ -173,22 +173,31 @@ export const textModule = moduleLesson(
     explain(
       "Some characters mean something to HTML: `<` starts a [[tag]] and `&` starts an [[html-entity|entity]]. To show them as text, write them as entities: `&lt;` for <, `&gt;` for >, `&amp;` for &. Everything else, like é, ₹ or 🎉, you can type directly, because the page is UTF-8.",
     ),
-    code(
-      "html",
-      "showing < and & as text",
+    reference("Entities you'll need", [
       [
-        "<p>Use &lt;p&gt; for a paragraph.</p>",
-        "<p>Salt &amp; pepper</p>",
-        "<p>10&nbsp;kg</p>",
-        "<p>© 2026 · café · 🎉</p>",
+        "&lt;  &gt;",
+        "The < and > signs, for showing tags as text.",
+        "&lt;p&gt; shows <p>",
       ],
-      {
-        1: "shows: Use <p> for a paragraph.",
-        2: "shows: Salt & pepper",
-        3: "a space that never breaks the line",
-        4: "type these directly",
-      },
-    ),
+      ["&amp;", "The & sign.", "Salt &amp; pepper"],
+      [
+        "&quot;",
+        "A double quote inside an attribute value.",
+        'title="Say &quot;hi&quot;"',
+      ],
+      ["&nbsp;", "A space that never breaks the line.", "10&nbsp;km"],
+      [
+        "&copy;  &mdash;",
+        "Symbols like © and —, if you can't type them.",
+        "&copy; 2026",
+      ],
+    ]),
+    playground("Show code as text", [
+      "<p>To make a paragraph, write &lt;p&gt;Hello&lt;/p&gt;.</p>",
+      "<p>Salt &amp; pepper</p>",
+      "<p>Distance: 10&nbsp;km</p>",
+      "<p>&copy; 2026 &mdash; or just type them: © — café 🎉</p>",
+    ]),
     quickCheck(
       "You want the page to show the text `<b>` instead of making things bold. What do you write?",
       ["`<b>`", "`&lt;b&gt;`", '`"<b>"`'],
