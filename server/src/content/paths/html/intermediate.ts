@@ -12,7 +12,7 @@ import {
 } from "../blocks.js";
 import { structureModule } from "./structure.js";
 
-// Intermediate: steps 11–22. Meaningful structure, real forms, tables,
+// Intermediate: steps 8–19. Meaningful structure, real forms, tables,
 // accessibility and what the browser builds from HTML.
 export const intermediate: LevelPlan = {
   outcome:
