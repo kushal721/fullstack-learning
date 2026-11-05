@@ -451,7 +451,7 @@ export const levelCheckExercises: PredictExercise[] = [
       "`<span>` is inline, so both sit in the same line of text (“OneTwo”). Two `<div>`s, which are block elements, would each start on a new line.",
   }),
   question({
-    id: "html-intermediate-entity",
+    id: "html-basic-entity",
     title: "Showing a tag as text",
     prompt:
       "A page should show the text `<p>` to the reader. What goes in the HTML?",
