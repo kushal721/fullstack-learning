@@ -10,7 +10,7 @@ import {
   quickCheck,
 } from "../blocks.js";
 
-// Advanced: steps 19–27. ARIA, search engines, loading, images, web
+// Advanced: steps 18–25. ARIA, search engines, loading, images, web
 // components and how HTML looks inside React.
 export const advanced: LevelPlan = {
   outcome:
@@ -115,40 +115,6 @@ export const advanced: LevelPlan = {
       inTheNotesApp(
         "The Notes App loads its code with a module script, so the page never waits for it.",
         { fileId: "frontend/index.html" },
-      ),
-    ),
-    lesson(
-      "responsive-images",
-      "Images for every screen",
-      3,
-      explain(
-        "[[responsive-images]] offer several sizes of one picture; the browser downloads the smallest that looks sharp on that screen.",
-      ),
-      code(
-        "html",
-        "srcset and sizes",
-        [
-          "<img",
-          '  src="photo-800.jpg"',
-          '  srcset="photo-400.jpg 400w, photo-800.jpg 800w, photo-1600.jpg 1600w"',
-          '  sizes="(max-width: 600px) 100vw, 600px"',
-          '  alt="Notes on a desk" loading="lazy">',
-        ],
-        {
-          3: "the files and their widths",
-          4: "how wide it will be shown",
-          5: "wait until it's near the screen",
-        },
-      ),
-      quickCheck(
-        'What does `loading="lazy"` do?',
-        [
-          "Loads the image only when it's about to be seen",
-          "Makes the image blurry",
-          "Loads it before the HTML",
-        ],
-        0,
-        "Images far down the page wait, so the first screen loads sooner.",
       ),
     ),
     lesson(

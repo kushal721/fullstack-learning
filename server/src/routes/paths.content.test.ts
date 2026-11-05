@@ -14,7 +14,7 @@ const PLANNED: [
   advanced: number,
 ][] = [
   ["how-the-web-works", 18, 30, 40],
-  ["html", 7, 18, 27],
+  ["html", 7, 17, 25],
   ["css", 18, 30, 40],
   ["javascript", 11, 17, 24],
 ];
@@ -116,6 +116,7 @@ const HTML_MODULES: [id: string, number: number][] = [
   ["elements-and-attributes", 1],
   ["page-skeleton", 2],
   ["text-lists-links", 3],
+  ["images-and-media", 4],
   ["forms", 5],
   ["semantic-structure", 8],
 ];

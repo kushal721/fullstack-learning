@@ -1,8 +1,5 @@
 import type { LevelPlan } from "@fsl/shared";
 import {
-  code,
-  explain,
-  keyPoints,
   lesson,
   levelCheck,
   playground,
@@ -11,6 +8,7 @@ import {
 } from "../blocks.js";
 import { elementsModule } from "./elements.js";
 import { formsModule } from "./forms.js";
+import { mediaModule } from "./media.js";
 import { skeletonModule } from "./skeleton.js";
 import { textModule } from "./text.js";
 
@@ -24,25 +22,7 @@ export const basic: LevelPlan = {
     elementsModule,
     skeletonModule,
     textModule,
-    lesson(
-      "images",
-      "Images and alt text",
-      3,
-      explain(
-        "`<img>` shows a picture from its `src`. Its `alt` [[attribute]] is the [[alt-text]]: words that stand in for the picture when it can't be seen.",
-      ),
-      code(
-        "html",
-        "an image",
-        ['<img src="team.jpg" alt="Four people around a laptop, laughing">'],
-        { 1: "describe what matters in the picture" },
-      ),
-      keyPoints(
-        "Screen readers read the alt text aloud.",
-        "Browsers show it when the image fails to load.",
-        'A purely decorative image gets `alt=""`, so it is skipped.',
-      ),
-    ),
+    mediaModule,
     formsModule,
     lesson(
       "tag-cheat-sheet",
@@ -127,7 +107,7 @@ export const basic: LevelPlan = {
       ["html-basic-head", "page-skeleton"],
       ["html-basic-ordered-list", "text-lists-links"],
       ["html-basic-entity", "text-lists-links"],
-      ["html-basic-alt", "images"],
+      ["html-basic-alt", "images-and-media"],
       ["html-basic-label", "forms"],
       ["html-basic-block-inline", "elements-and-attributes"],
     ]),

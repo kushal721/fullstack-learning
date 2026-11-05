@@ -12,7 +12,7 @@ import {
 } from "../blocks.js";
 import { structureModule } from "./structure.js";
 
-// Intermediate: steps 8–18. Meaningful structure, real forms, tables,
+// Intermediate: steps 8–17. Meaningful structure, real forms, tables,
 // accessibility and what the browser builds from HTML.
 export const intermediate: LevelPlan = {
   outcome:
@@ -156,46 +156,6 @@ export const intermediate: LevelPlan = {
         ],
         1,
         "Tables are for data; layout is CSS's job.",
-      ),
-    ),
-    lesson(
-      "media",
-      "Video, audio and embedded pages",
-      3,
-      explain(
-        "[[media-element|`<video>` and `<audio>`]] play media with the browser's own controls. An [[iframe]] shows another whole page inside yours, like a map or a video from another site.",
-      ),
-      reference("Media tags", [
-        [
-          "<video>",
-          "A video; `controls` shows play, pause and volume.",
-          '<video src="intro.mp4" controls></video>',
-        ],
-        [
-          "<audio>",
-          "Sound with controls.",
-          '<audio src="hello.mp3" controls></audio>',
-        ],
-        [
-          "<track>",
-          "Captions for a video, as a text file.",
-          '<track kind="captions" src="en.vtt">',
-        ],
-        [
-          "<iframe>",
-          "Another page inside this one.",
-          '<iframe src="https://…" title="Map"></iframe>',
-        ],
-      ]),
-      quickCheck(
-        "Why give an `<iframe>` a `title`?",
-        [
-          "It shows as a heading",
-          "Screen readers use it to say what the embedded page is",
-          "It makes the frame load faster",
-        ],
-        1,
-        "The `title` is the frame's name for people who can't see what's inside.",
       ),
     ),
     lesson(
