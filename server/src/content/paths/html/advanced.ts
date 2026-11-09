@@ -9,36 +9,16 @@ import {
   playground,
   quickCheck,
 } from "../blocks.js";
+import { searchModule } from "./search.js";
 
-// Advanced: steps 17–22. Search engines, loading scripts, web components,
-// built-in interactive elements and how HTML looks inside React.
+// Advanced: steps 16–21. Search engines and link previews, loading
+// scripts, web components, built-in interactive elements and how HTML looks
+// inside React.
 export const advanced: LevelPlan = {
   outcome:
     "Make custom widgets accessible, help search engines and keep pages fast to load.",
   steps: [
-    lesson(
-      "seo",
-      "Search engines read HTML",
-      3,
-      explain(
-        "[[seo]] is mostly good HTML: a clear `<title>`, a description, real headings, descriptive links and pages that show their content without waiting for clicks.",
-      ),
-      keyPoints(
-        "One page, one topic, one `<h1>`.",
-        "Every page has its own title and description.",
-        "Fast pages rank better and keep visitors.",
-      ),
-      quickCheck(
-        "Which helps search engines most?",
-        [
-          "Hiding keywords in white text",
-          "A clear title and headings that match the content",
-          "Many pages with the same title",
-        ],
-        1,
-        "Search engines reward pages whose [[heading|headings]] and title honestly describe them.",
-      ),
-    ),
+    searchModule,
     lesson(
       "script-loading",
       "Loading scripts without blocking",

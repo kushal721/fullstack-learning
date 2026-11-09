@@ -225,7 +225,7 @@ export const htmlGlossary: GlossaryEntry[] = [
     "Meta tags",
     "Lines in `<head>` that describe the page to browsers, search engines and link previews.",
     '`<meta name="description" content="…">` is the snippet under a search result; `og:title` and `og:image` shape the preview when the link is shared. See [[seo]].',
-    { aliases: ["meta", "description", "open graph", "og"] },
+    { aliases: ["meta", "description", "meta description"] },
   ),
   term(
     "keyboard-focus",
@@ -254,6 +254,20 @@ export const htmlGlossary: GlossaryEntry[] = [
     "Search engine optimisation: helping search engines understand and show your pages.",
     "Mostly good HTML again: a clear `<title>`, a [[meta-tag|description]], real [[heading|headings]], descriptive [[anchor|links]] and fast pages. Search engines read the HTML, so content shouldn't need clicks to appear.",
     { aliases: ["search engine optimisation", "search engine optimization"] },
+  ),
+  term(
+    "open-graph",
+    "Open Graph",
+    "The `og:` meta tags that decide a link's preview card in chat apps and social sites.",
+    '`<meta property="og:title" content="…">`, `og:description` and `og:image` give the card its title, text and picture. Without them, apps guess from the `<title>` and description, or show a bare link. The image needs a full `https://` address. See [[meta-tag|meta tags]].',
+    { aliases: ["og", "og:title", "og:image", "link preview"] },
+  ),
+  term(
+    "canonical-url",
+    "Canonical URL",
+    'The one official address of a page, given with `<link rel="canonical">`.',
+    "The same page is often reachable at several addresses (with `?ref=…`, with or without a trailing slash). The canonical link tells [[seo|search engines]] which one to show, so the copies don't compete.",
+    { aliases: ["canonical", "rel=canonical"] },
   ),
   term(
     "script-loading",

@@ -14,7 +14,7 @@ import { accessibleModule } from "./accessible.js";
 import { structureModule } from "./structure.js";
 import { tablesModule } from "./tables.js";
 
-// Intermediate: steps 8–16. Meaningful structure, real forms, tables,
+// Intermediate: steps 8–15. Meaningful structure, real forms, tables,
 // accessibility and what the browser builds from HTML.
 export const intermediate: LevelPlan = {
   outcome:
@@ -133,29 +133,6 @@ export const intermediate: LevelPlan = {
     ),
     tablesModule,
     accessibleModule,
-    lesson(
-      "meta-tags",
-      "Meta tags and link previews",
-      2,
-      explain(
-        "[[meta-tag|Meta tags]] in `<head>` describe the page to others: `description` is the snippet under a search result, and `og:` tags shape the preview when the link is shared.",
-      ),
-      code(
-        "html",
-        "describing a page",
-        [
-          '<meta name="description" content="Write and keep your notes.">',
-          '<meta property="og:title" content="Notes">',
-          '<meta property="og:image" content="https://notes.app/preview.png">',
-        ],
-        { 1: "the search snippet", 2: "the shared link's title and picture" },
-      ),
-      keyPoints(
-        "They're invisible on the page itself.",
-        "Each page should have its own title and description.",
-        "This platform sets them per page on the server.",
-      ),
-    ),
     lesson(
       "the-dom",
       "From HTML to the DOM",
