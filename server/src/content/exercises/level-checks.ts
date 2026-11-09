@@ -378,7 +378,7 @@ export const levelCheckExercises: PredictExercise[] = [
 
   // HTML: Advanced
   question({
-    id: "html-advanced-aria",
+    id: "html-intermediate-aria",
     title: "What ARIA does",
     prompt: 'You add `aria-expanded="true"` to a menu button. What happens?',
     choices: [
@@ -393,7 +393,7 @@ export const levelCheckExercises: PredictExercise[] = [
       "ARIA attributes only change what assistive technology hears. Your code still has to open the menu and update the attribute when it closes.",
   }),
   question({
-    id: "html-advanced-div-button",
+    id: "html-intermediate-div-button",
     title: "A div that acts as a button",
     prompt:
       'A `<div role="button">` has an onclick. What\'s still missing compared with `<button>`?',
@@ -461,6 +461,18 @@ export const levelCheckExercises: PredictExercise[] = [
     hint: "The browser reads `<` as the start of a tag.",
     explanation:
       "`&lt;` and `&gt;` are character entities for < and >, so the browser shows them as text instead of starting a new paragraph element.",
+  }),
+  question({
+    id: "html-advanced-custom-element",
+    title: "Naming your own element",
+    prompt:
+      "You register a custom element with `customElements.define`. Which name works?",
+    choices: ["`notecard`", "`note-card`", "`NoteCard`"],
+    correct: 1,
+    conceptIds: ["html-element"],
+    hint: "Built-in elements never have one character that custom ones must.",
+    explanation:
+      "Custom element names must contain a hyphen and be lowercase, so they can never clash with a built-in HTML element. `NoteCard` is how a React component would be named.",
   }),
   question({
     id: "html-advanced-details",

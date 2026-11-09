@@ -14,7 +14,7 @@ const PLANNED: [
   advanced: number,
 ][] = [
   ["how-the-web-works", 18, 30, 40],
-  ["html", 7, 17, 25],
+  ["html", 7, 16, 22],
   ["css", 18, 30, 40],
   ["javascript", 11, 17, 24],
 ];
@@ -120,6 +120,7 @@ const HTML_MODULES: [id: string, number: number][] = [
   ["forms", 5],
   ["semantic-structure", 8],
   ["tables", 12],
+  ["accessible-html", 13],
 ];
 
 describe.each(HTML_MODULES)("the HTML %s module", (id, number) => {
