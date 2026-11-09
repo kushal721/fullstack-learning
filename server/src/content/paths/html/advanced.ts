@@ -9,6 +9,7 @@ import {
   playground,
   quickCheck,
 } from "../blocks.js";
+import { reactModule } from "./react.js";
 import { searchModule } from "./search.js";
 
 // Advanced: steps 16–21. Search engines and link previews, loading
@@ -99,36 +100,7 @@ export const advanced: LevelPlan = {
         "Built-in elements bring the behaviour and the accessibility for free.",
       ),
     ),
-    lesson(
-      "html-in-react",
-      "HTML inside React",
-      3,
-      explain(
-        "In React you write HTML-like tags in JavaScript. Almost everything is the same, but a few attribute names change because they clash with JavaScript words.",
-      ),
-      code(
-        "jsx",
-        "the Notes App's Input",
-        [
-          "<label htmlFor={id}>{label}</label>",
-          '<input id={id} className="field" />',
-        ],
-        {
-          1: "for becomes htmlFor",
-          2: "class becomes className; void elements need />",
-        },
-      ),
-      quickCheck(
-        'In React, how do you write `<label for="email">`?',
-        [
-          '`<label for="email">`',
-          '`<label htmlFor="email">`',
-          '`<label name="email">`',
-        ],
-        1,
-        "`for` is a JavaScript keyword, so React calls it `htmlFor`. It ends up as `for` in the real page.",
-      ),
-    ),
+    reactModule,
     levelCheck("advanced-check", "Advanced check", [
       ["html-advanced-defer", "script-loading"],
       ["html-advanced-htmlfor", "html-in-react"],
