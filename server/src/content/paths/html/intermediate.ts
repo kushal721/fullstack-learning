@@ -11,6 +11,7 @@ import {
   reference,
 } from "../blocks.js";
 import { structureModule } from "./structure.js";
+import { tablesModule } from "./tables.js";
 
 // Intermediate: steps 8–17. Meaningful structure, real forms, tables,
 // accessibility and what the browser builds from HTML.
@@ -129,35 +130,7 @@ export const intermediate: LevelPlan = {
         "Every choice still needs a label.",
       ),
     ),
-    lesson(
-      "tables",
-      "Tables, for data",
-      3,
-      explain(
-        "A [[html-table|table]] shows data in rows and columns. `<th>` cells are headers; `<td>` cells hold the data.",
-      ),
-      code(
-        "html",
-        "a small table",
-        [
-          "<table>",
-          '  <tr><th scope="col">Note</th><th scope="col">Edited</th></tr>',
-          "  <tr><td>Shopping</td><td>Today</td></tr>",
-          "</table>",
-        ],
-        { 2: "headers, each for its column", 3: "one row of data" },
-      ),
-      quickCheck(
-        "When should you use a table?",
-        [
-          "To place things side by side on the page",
-          "For data that has rows and columns",
-          "Never",
-        ],
-        1,
-        "Tables are for data; layout is CSS's job.",
-      ),
-    ),
+    tablesModule,
     lesson(
       "accessibility",
       "Pages for everyone",

@@ -119,6 +119,7 @@ const HTML_MODULES: [id: string, number: number][] = [
   ["images-and-media", 4],
   ["forms", 5],
   ["semantic-structure", 8],
+  ["tables", 12],
 ];
 
 describe.each(HTML_MODULES)("the HTML %s module", (id, number) => {
