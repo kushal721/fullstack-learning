@@ -228,6 +228,20 @@ export const htmlGlossary: GlossaryEntry[] = [
     { aliases: ["meta", "description", "open graph", "og"] },
   ),
   term(
+    "keyboard-focus",
+    "Focus",
+    "The one element that keyboard presses go to right now, usually shown with an outline.",
+    "Tab moves focus to the next link, button or form field; Shift+Tab goes back; Enter or Space uses it. Real controls get focus for free. Never hide the outline without replacing it: keyboard users would be lost. See [[accessibility]].",
+    { aliases: ["focus", "tab order", "tabindex", "focus outline"] },
+  ),
+  term(
+    "live-region",
+    "Live region",
+    "A part of the page whose changes a screen reader announces, like an error message appearing.",
+    '`role="alert"` interrupts with urgent messages; `role="status"` (or `aria-live="polite"`) waits for a pause. The element should exist before its text changes. It\'s part of [[aria]].',
+    { aliases: ["aria-live", "role=alert", "role=status"] },
+  ),
+  term(
     "aria",
     "ARIA",
     "Extra attributes that describe custom widgets to screen readers, like `aria-expanded`.",

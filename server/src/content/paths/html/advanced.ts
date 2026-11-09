@@ -10,64 +10,12 @@ import {
   quickCheck,
 } from "../blocks.js";
 
-// Advanced: steps 18–25. ARIA, search engines, loading, images, web
-// components and how HTML looks inside React.
+// Advanced: steps 17–22. Search engines, loading scripts, web components,
+// built-in interactive elements and how HTML looks inside React.
 export const advanced: LevelPlan = {
   outcome:
     "Make custom widgets accessible, help search engines and keep pages fast to load.",
   steps: [
-    lesson(
-      "aria",
-      "ARIA: describing custom widgets",
-      3,
-      explain(
-        '[[aria]] attributes tell screen readers what a custom widget is and what state it\'s in: `role="tab"`, `aria-expanded="true"`, `aria-current="page"`.',
-      ),
-      code(
-        "html",
-        "a menu button",
-        [
-          '<button aria-expanded="false" aria-controls="menu">Menu</button>',
-          '<ul id="menu" hidden>…</ul>',
-        ],
-        { 1: "says whether the menu is open, and which list it opens" },
-      ),
-      quickCheck(
-        "What does `aria-expanded` change?",
-        [
-          "Whether the menu opens",
-          "What a screen reader announces",
-          "The button's colour",
-        ],
-        1,
-        "[[aria]] adds no behaviour; your code must still open and close the menu.",
-      ),
-    ),
-    lesson(
-      "first-rule-of-aria",
-      "The first rule of ARIA",
-      3,
-      explain(
-        'If a real HTML element does the job, use it. A `<div>` with `role="button"` still needs keyboard handling, focus and an [[accessible-name]]; a `<button>` has all of that already.',
-      ),
-      code(
-        "html",
-        "the same button, twice",
-        [
-          '<div role="button" tabindex="0" onclick="save()">Save</div>',
-          '<button type="button" onclick="save()">Save</button>',
-        ],
-        {
-          1: "still no Enter or Space key",
-          2: "keyboard, focus and name for free",
-        },
-      ),
-      keyPoints(
-        "No ARIA is better than wrong ARIA.",
-        "Use ARIA for states (expanded, current, selected) and live updates.",
-        "Test with a keyboard and a screen reader.",
-      ),
-    ),
     lesson(
       "seo",
       "Search engines read HTML",
@@ -202,11 +150,10 @@ export const advanced: LevelPlan = {
       ),
     ),
     levelCheck("advanced-check", "Advanced check", [
-      ["html-advanced-aria", "aria"],
-      ["html-advanced-div-button", "first-rule-of-aria"],
       ["html-advanced-defer", "script-loading"],
       ["html-advanced-htmlfor", "html-in-react"],
       ["html-advanced-details", "details-and-dialog"],
+      ["html-advanced-custom-element", "web-components"],
     ]),
   ],
 };

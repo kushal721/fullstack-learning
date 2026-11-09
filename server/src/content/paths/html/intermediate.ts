@@ -10,10 +10,11 @@ import {
   quickCheck,
   reference,
 } from "../blocks.js";
+import { accessibleModule } from "./accessible.js";
 import { structureModule } from "./structure.js";
 import { tablesModule } from "./tables.js";
 
-// Intermediate: steps 8–17. Meaningful structure, real forms, tables,
+// Intermediate: steps 8–16. Meaningful structure, real forms, tables,
 // accessibility and what the browser builds from HTML.
 export const intermediate: LevelPlan = {
   outcome:
@@ -131,54 +132,7 @@ export const intermediate: LevelPlan = {
       ),
     ),
     tablesModule,
-    lesson(
-      "accessibility",
-      "Pages for everyone",
-      3,
-      explain(
-        "[[accessibility]] means people who can't see, can't use a mouse or zoom in can still use the page. A [[screen-reader]] reads the page's structure aloud, so good HTML does most of the work.",
-      ),
-      keyPoints(
-        "Real buttons and links work with the keyboard for free.",
-        "Labels, alt text and headings are what people hear.",
-        "Try it: use a page with only Tab, Enter and Space.",
-      ),
-      diagram([
-        ["HTML", "what each thing is"],
-        ["Screen reader", "reads it aloud"],
-        ["Person", "uses the page"],
-      ]),
-    ),
-    lesson(
-      "accessible-names",
-      "Names for everything",
-      3,
-      explain(
-        "Every control needs an [[accessible-name]]: what a screen reader calls it. A button's text, a field's label and an image's alt are names.",
-      ),
-      code(
-        "html",
-        "a button with only an icon",
-        [
-          '<button type="button">✕</button>',
-          '<button type="button" aria-label="Close">✕</button>',
-        ],
-        {
-          1: "announced as “multiplication sign, button”",
-          2: "announced as “Close, button”",
-        },
-      ),
-      quickCheck(
-        "A search box has a placeholder “Search…” but no label. What's the problem?",
-        [
-          "None",
-          "Placeholders vanish when typing and aren't a reliable name",
-          "Placeholders make the page slow",
-        ],
-        1,
-        "Use a real [[label]] (it can be visually hidden); a placeholder is only a hint.",
-      ),
-    ),
+    accessibleModule,
     lesson(
       "meta-tags",
       "Meta tags and link previews",
@@ -229,7 +183,9 @@ export const intermediate: LevelPlan = {
       ["html-intermediate-main", "semantic-structure"],
       ["html-intermediate-required", "form-validation"],
       ["html-intermediate-radio", "choices"],
-      ["html-intermediate-icon-button", "accessible-names"],
+      ["html-intermediate-icon-button", "accessible-html"],
+      ["html-intermediate-aria", "accessible-html"],
+      ["html-intermediate-div-button", "accessible-html"],
     ]),
   ],
 };
