@@ -122,6 +122,7 @@ const HTML_MODULES: [id: string, number: number][] = [
   ["tables", 12],
   ["accessible-html", 13],
   ["search-and-sharing", 16],
+  ["html-in-react", 20],
 ];
 
 describe.each(HTML_MODULES)("the HTML %s module", (id, number) => {
