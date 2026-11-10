@@ -2,7 +2,6 @@ import type { LevelPlan } from "@fsl/shared";
 import {
   code,
   explain,
-  inTheNotesApp,
   keyPoints,
   lesson,
   levelCheck,
@@ -10,6 +9,7 @@ import {
   quickCheck,
 } from "../blocks.js";
 import { reactModule } from "./react.js";
+import { scriptsModule } from "./scripts.js";
 import { searchModule } from "./search.js";
 
 // Advanced: steps 14–19. Search engines and link previews, loading
@@ -20,32 +20,7 @@ export const advanced: LevelPlan = {
     "Make custom widgets accessible, help search engines and keep pages fast to load.",
   steps: [
     searchModule,
-    lesson(
-      "script-loading",
-      "Loading scripts without blocking",
-      3,
-      explain(
-        "A plain `<script>` stops the browser reading the HTML until it has downloaded and run. [[script-loading|`defer` and `async`]] let the page keep loading meanwhile.",
-      ),
-      code(
-        "html",
-        "three ways to load a script",
-        [
-          '<script src="app.js"></script>',
-          '<script src="app.js" defer></script>',
-          '<script type="module" src="/src/main.jsx"></script>',
-        ],
-        {
-          1: "blocks the page while it loads",
-          2: "runs after the HTML is read",
-          3: "modules are deferred too",
-        },
-      ),
-      inTheNotesApp(
-        "The Notes App loads its code with a module script, so the page never waits for it.",
-        { fileId: "frontend/index.html" },
-      ),
-    ),
+    scriptsModule,
     lesson(
       "web-components",
       "Your own elements",
