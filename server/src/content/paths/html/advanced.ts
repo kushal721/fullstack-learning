@@ -1,13 +1,12 @@
 import type { LevelPlan } from "@fsl/shared";
 import {
-  code,
   explain,
-  keyPoints,
   lesson,
   levelCheck,
   playground,
   quickCheck,
 } from "../blocks.js";
+import { componentsModule } from "./components.js";
 import { reactModule } from "./react.js";
 import { scriptsModule } from "./scripts.js";
 import { searchModule } from "./search.js";
@@ -21,32 +20,7 @@ export const advanced: LevelPlan = {
   steps: [
     searchModule,
     scriptsModule,
-    lesson(
-      "web-components",
-      "Your own elements",
-      3,
-      explain(
-        "A [[web-component]] is an element you define yourself, like `<note-card>`, built into the browser. JavaScript registers it with `customElements.define`.",
-      ),
-      code(
-        "js",
-        "a tiny custom element",
-        [
-          "class NoteCard extends HTMLElement {",
-          "  connectedCallback() {",
-          '    this.innerHTML = `<p>${this.getAttribute("title")}</p>`;',
-          "  }",
-          "}",
-          'customElements.define("note-card", NoteCard);',
-        ],
-        { 6: 'now <note-card title="…"> works' },
-      ),
-      keyPoints(
-        "Names must contain a hyphen: `note-card`, not `notecard`.",
-        "They work in any page, with or without a framework.",
-        "React components are different: they exist only inside React.",
-      ),
-    ),
+    componentsModule,
     lesson(
       "details-and-dialog",
       "Built-in interactive elements",
