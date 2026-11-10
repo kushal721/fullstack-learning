@@ -126,6 +126,7 @@ const HTML_MODULES: [id: string, number: number][] = [
   ["search-and-sharing", 14],
   ["script-loading", 15],
   ["web-components", 16],
+  ["details-and-dialog", 17],
   ["html-in-react", 18],
 ];
 
