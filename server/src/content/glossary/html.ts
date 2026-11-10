@@ -342,4 +342,18 @@ export const htmlGlossary: GlossaryEntry[] = [
     "`<details>` with a `<summary>` opens and closes on a click, with keyboard and [[screen-reader]] support built in. `<dialog>` is a pop-up box; `showModal()` opens it and keeps focus inside.",
     { aliases: ["details", "summary", "dialog", "accordion", "modal"] },
   ),
+  term(
+    "dom-node",
+    "Node",
+    "One piece of the DOM tree: the document, an element, a piece of text or a comment.",
+    "Elements are the nodes you write as tags; the words inside them, and even the whitespace between tags, are text nodes. Every node except the document has one parent. See [[dom]].",
+    { aliases: ["nodes", "text node", "element node", "child node"] },
+  ),
+  term(
+    "html-parser",
+    "HTML parser",
+    "The part of the browser that reads HTML text and builds the DOM from it.",
+    "It reads the file once, top to bottom, opening and closing elements as it goes. When the markup is broken it repairs it by fixed rules, the same in every browser, so HTML never fails with an error.",
+    { aliases: ["parser", "parsing", "parse"] },
+  ),
 ];
