@@ -122,6 +122,7 @@ const HTML_MODULES: [id: string, number: number][] = [
   ["forms-in-depth", 9],
   ["tables", 10],
   ["accessible-html", 11],
+  ["the-dom", 12],
   ["search-and-sharing", 14],
   ["html-in-react", 18],
 ];
