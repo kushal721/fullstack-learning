@@ -6,7 +6,7 @@ import { formsDepthModule } from "./forms-depth.js";
 import { structureModule } from "./structure.js";
 import { tablesModule } from "./tables.js";
 
-// Intermediate: steps 8–13. Meaningful structure, forms in depth, tables,
+// Intermediate: steps 7–12. Meaningful structure, forms in depth, tables,
 // accessibility and what the browser builds from HTML.
 export const intermediate: LevelPlan = {
   outcome:
