@@ -14,7 +14,7 @@ const PLANNED: [
   advanced: number,
 ][] = [
   ["how-the-web-works", 18, 30, 40],
-  ["html", 7, 13, 19],
+  ["html", 6, 12, 18],
   ["css", 18, 30, 40],
   ["javascript", 11, 17, 24],
 ];
@@ -118,16 +118,16 @@ const HTML_MODULES: [id: string, number: number][] = [
   ["text-lists-links", 3],
   ["images-and-media", 4],
   ["forms", 5],
-  ["semantic-structure", 8],
-  ["forms-in-depth", 9],
-  ["tables", 10],
-  ["accessible-html", 11],
-  ["the-dom", 12],
-  ["search-and-sharing", 14],
-  ["script-loading", 15],
-  ["web-components", 16],
-  ["details-and-dialog", 17],
-  ["html-in-react", 18],
+  ["semantic-structure", 7],
+  ["forms-in-depth", 8],
+  ["tables", 9],
+  ["accessible-html", 10],
+  ["the-dom", 11],
+  ["search-and-sharing", 13],
+  ["script-loading", 14],
+  ["web-components", 15],
+  ["details-and-dialog", 16],
+  ["html-in-react", 17],
 ];
 
 describe.each(HTML_MODULES)("the HTML %s module", (id, number) => {

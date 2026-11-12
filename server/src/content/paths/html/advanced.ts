@@ -6,7 +6,7 @@ import { reactModule } from "./react.js";
 import { scriptsModule } from "./scripts.js";
 import { searchModule } from "./search.js";
 
-// Advanced: steps 14–19. Search engines and link previews, loading
+// Advanced: steps 13–18. Search engines and link previews, loading
 // scripts, web components, built-in interactive elements and how HTML looks
 // inside React.
 export const advanced: LevelPlan = {

@@ -531,6 +531,11 @@ export const skeletonModule = moduleLesson(
       ["<html lang>", "The root; the page's language.", '<html lang="en">'],
       ["<head>", "About the page; nothing drawn.", "charset, viewport, title"],
       ["<body>", "Everything visible.", "<h1>, <p>, <img>, <form>"],
+      [
+        "<header> <main> <footer>",
+        "The body's big regions; more in Intermediate.",
+        "<main>…</main>",
+      ],
       ["<meta charset>", "UTF-8, first in the head.", '<meta charset="utf-8">'],
       [
         "viewport",
