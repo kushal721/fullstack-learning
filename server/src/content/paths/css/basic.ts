@@ -10,9 +10,10 @@ import {
   reference,
 } from "../blocks.js";
 import { boxModelModule } from "./box-model.js";
+import { flexboxModule } from "./flexbox.js";
 
-// Basic: steps 1–16. Rules and selectors, colours and text, units, the box
-// model (a module), display and flexbox, with live examples to edit.
+// Basic: steps 1–15. Rules and selectors, colours and text, units, the box
+// model and flexbox (modules), display, with live examples to edit.
 export const basic: LevelPlan = {
   outcome:
     "Style a page yourself: pick elements, set colours, fonts and spacing, and line things up with flexbox.",
@@ -305,77 +306,7 @@ export const basic: LevelPlan = {
         "</div>",
       ]),
     ),
-    lesson(
-      "flexbox",
-      "Flexbox: a row of things",
-      3,
-      explain(
-        "[[css-flexbox|Flexbox]] lines children up. `display: flex` on the parent puts its children in a row; `gap` spaces them.",
-      ),
-      playground("A navigation bar with flexbox", [
-        "<style>",
-        "  nav { display: flex; gap: 16px; padding: 12px; background: #eef; }",
-        "  nav a { color: navy; }",
-        "</style>",
-        "<nav>",
-        '  <a href="#">Home</a>',
-        '  <a href="#">Notes</a>',
-        '  <a href="#">Settings</a>',
-        "</nav>",
-      ]),
-      quickCheck(
-        "Where do you write `display: flex`?",
-        ["On each child", "On the parent", "On the `<body>` only"],
-        1,
-        "The parent becomes a flex container; its direct children become flex items.",
-      ),
-    ),
-    lesson(
-      "flex-alignment",
-      "Aligning with flexbox",
-      4,
-      reference("Flex container properties", [
-        [
-          "flex-direction",
-          "row (default) or column.",
-          "flex-direction: column;",
-        ],
-        [
-          "justify-content",
-          "Along the main axis: start, center, space-between.",
-          "justify-content: space-between;",
-        ],
-        [
-          "align-items",
-          "Across it: start, center, stretch.",
-          "align-items: center;",
-        ],
-        ["gap", "Space between items.", "gap: 1rem;"],
-        ["flex-wrap", "Let items move onto a new line.", "flex-wrap: wrap;"],
-        [
-          "flex: 1",
-          "(on a child) Grow to fill free space.",
-          ".search { flex: 1; }",
-        ],
-      ]),
-      playground("Logo left, buttons right, all centred", [
-        "<style>",
-        "  header { display: flex; justify-content: space-between;",
-        "    align-items: center; padding: 12px; background: #eef; }",
-        "  .buttons { display: flex; gap: 8px; }",
-        "</style>",
-        "<header>",
-        "  <strong>Notes</strong>",
-        '  <div class="buttons"><button>New</button><button>Log out</button></div>',
-        "</header>",
-      ]),
-      quickCheck(
-        "Items are in a row. Which property centres them vertically?",
-        ["`justify-content`", "`align-items`", "`text-align`"],
-        1,
-        "In a row, the [[main-axis|main axis]] is horizontal, so the vertical direction is the cross axis: `align-items`.",
-      ),
-    ),
+    flexboxModule,
     lesson(
       "backgrounds-and-borders",
       "Backgrounds, borders and shadows",
@@ -431,7 +362,7 @@ export const basic: LevelPlan = {
       ["css-basic-rem", "units"],
       ["css-basic-padding", "box-model"],
       ["css-basic-display-none", "display"],
-      ["css-basic-align", "flex-alignment"],
+      ["css-basic-align", "flexbox"],
     ]),
   ],
 };
