@@ -139,6 +139,11 @@ export const boxModelModule = moduleLesson(
         "A coloured stripe down the left.",
         "border-left: 4px solid crimson;",
       ],
+      [
+        "margin: 0 auto",
+        "auto left and right margins share the free space: a block with a width is centred.",
+        "max-width: 40rem; margin: 0 auto;",
+      ],
     ]),
     playground("Space and lines on one side", [
       "<style>",
