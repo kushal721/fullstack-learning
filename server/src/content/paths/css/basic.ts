@@ -2,18 +2,17 @@ import type { LevelPlan } from "@fsl/shared";
 import {
   analogy,
   code,
-  diagram,
   explain,
-  inTheNotesApp,
   lesson,
   levelCheck,
   playground,
   quickCheck,
   reference,
 } from "../blocks.js";
+import { boxModelModule } from "./box-model.js";
 
-// Basic: steps 1–18. Rules and selectors, colours and text, units, the box
-// model, display and flexbox, with live examples to edit.
+// Basic: steps 1–16. Rules and selectors, colours and text, units, the box
+// model (a module), display and flexbox, with live examples to edit.
 export const basic: LevelPlan = {
   outcome:
     "Style a page yourself: pick elements, set colours, fonts and spacing, and line things up with flexbox.",
@@ -240,75 +239,7 @@ export const basic: LevelPlan = {
         "`rem` is relative to the root font size, which the browser setting changes.",
       ),
     ),
-    lesson(
-      "box-model",
-      "Every element is a box",
-      3,
-      explain(
-        "The [[css-box-model|box model]]: every element is a rectangle of content, padding around it, a border, and margin outside that pushes other boxes away.",
-      ),
-      diagram([
-        ["Margin", "space outside"],
-        ["Border", "the line"],
-        ["Padding", "space inside"],
-        ["Content", "text, image"],
-      ]),
-      analogy(
-        "A framed picture: the picture, the mount around it, the frame, and the gap to the next frame on the wall.",
-      ),
-    ),
-    lesson(
-      "spacing",
-      "Padding, border and margin",
-      4,
-      reference("Box properties", [
-        ["padding", "Space inside the border.", "padding: 1rem;"],
-        [
-          "border",
-          "Width, style and colour of the line.",
-          "border: 2px solid gray;",
-        ],
-        ["border-radius", "Rounded corners.", "border-radius: 8px;"],
-        ["margin", "Space outside, pushing others away.", "margin: 1rem 0;"],
-        ["margin: 0 auto", "Centres a block with a width.", "margin: 0 auto;"],
-      ]),
-      playground("Space things out", [
-        "<style>",
-        "  .card {",
-        "    padding: 16px;",
-        "    border: 2px solid steelblue;",
-        "    border-radius: 8px;",
-        "    margin: 12px 0;",
-        "  }",
-        "</style>",
-        '<div class="card">Padding is inside the line.</div>',
-        '<div class="card">Margin is the gap between cards.</div>',
-      ]),
-      quickCheck(
-        "You want more space between a card's border and its text. Which property?",
-        ["`margin`", "`padding`", "`border`"],
-        1,
-        "Padding is inside the border; margin is outside it.",
-      ),
-    ),
-    lesson(
-      "box-sizing",
-      "Width that means width",
-      2,
-      explain(
-        "By default, `width: 200px` plus `padding: 20px` makes a 240px-wide box. [[box-sizing|`box-sizing: border-box`]] makes `width` include padding and border, so 200px stays 200px.",
-      ),
-      code(
-        "css",
-        "the line almost every stylesheet starts with",
-        ["*,", "*::before,", "*::after {", "  box-sizing: border-box;", "}"],
-        { 4: "width now includes padding and border" },
-      ),
-      inTheNotesApp(
-        "The Notes App's stylesheet starts with exactly this rule.",
-        { fileId: "frontend/src/index.css" },
-      ),
-    ),
+    boxModelModule,
     lesson(
       "display",
       "display: how a box behaves",
@@ -498,7 +429,7 @@ export const basic: LevelPlan = {
       ["css-basic-property", "rules"],
       ["css-basic-class", "class-or-id"],
       ["css-basic-rem", "units"],
-      ["css-basic-padding", "spacing"],
+      ["css-basic-padding", "box-model"],
       ["css-basic-display-none", "display"],
       ["css-basic-align", "flex-alignment"],
     ]),

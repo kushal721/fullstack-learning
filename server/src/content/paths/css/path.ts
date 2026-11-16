@@ -44,7 +44,7 @@ const rulesScene: Scene = {
   ],
 };
 
-// CSS: 18 Basic, 12 Intermediate and 10 Advanced steps, numbered 1–40.
+// CSS: 16 Basic, 12 Intermediate and 10 Advanced steps, numbered 1–38.
 export const cssPath: TopicPath = {
   topicId: "css",
   summary: {

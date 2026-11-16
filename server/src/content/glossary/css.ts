@@ -119,6 +119,20 @@ export const cssGlossary: GlossaryEntry[] = [
     { aliases: ["border-box", "content-box"] },
   ),
   term(
+    "css-shorthand",
+    "Shorthand property",
+    "One property that sets several at once, like `padding` for all four sides.",
+    "`padding: 8px 16px` sets top and bottom to 8px and left and right to 16px. With four values the order is clockwise from the top: top, right, bottom, left. `border` and `margin` work the same way. See [[css-box-model]].",
+    { aliases: ["shorthand", "clockwise", "TRBL"] },
+  ),
+  term(
+    "margin-collapsing",
+    "Margin collapsing",
+    "When two vertical margins meet between blocks, only the larger one is used.",
+    "A `margin-bottom` of 30px above a `margin-top` of 20px makes a 30px gap, not 50px. Left and right margins never collapse, and neither do margins of flex or grid items. Part of [[css-box-model]].",
+    { aliases: ["collapsing margins", "collapse"] },
+  ),
+  term(
     "css-display",
     "display",
     "The property that decides how an element is laid out: block, inline, flex, grid or none.",
