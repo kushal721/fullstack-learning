@@ -434,7 +434,7 @@ export const flexboxModule = moduleLesson(
     "layouts",
     "Three layouts you'll build again and again",
     explain(
-      "Most flexbox in real sites is one of three patterns. A **navbar**: a row, `space-between` and `center`. A **centred box**: a container with `justify-content` and `align-items` both `center`. A **row of cards**: `wrap`, `gap`, and `flex: 1 1 12rem` so each card grows but starts a new line below 12rem.",
+      "Most flexbox in real sites is one of three patterns. A **navbar**: a row, `space-between` and `center`. A **centred box**: a container with `justify-content` and `align-items` both `center`. A **row of cards**: `wrap`, `gap`, and `flex: 1 1 8rem` so each card grows but starts a new line below 8rem.",
     ),
     playground("Navbar, centred box, wrapping cards", [
       "<style>",
@@ -496,7 +496,7 @@ export const flexboxModule = moduleLesson(
       language: "css",
       wrong: [".nav a { display: flex; }"],
       problem:
-        "Each link becomes its own (empty) flex container; the links still don't line up next to each other the flex way.",
+        "Each link only becomes a flex container for its own text. The links themselves are still not flex items, so `gap` and `justify-content` on them do nothing.",
       right: [".nav { display: flex; }"],
       why: "Put `display: flex` on the **parent** whose children you want to line up.",
     }),
