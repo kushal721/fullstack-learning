@@ -10,80 +10,15 @@ import {
   quickCheck,
   reference,
 } from "../blocks.js";
+import { gridModule } from "./grid.js";
 
-// Intermediate: steps 16–27. Grid, responsive layouts, positioning, states,
+// Intermediate: steps 16–26. Grid (a module), responsive layouts, positioning, states,
 // which rule wins, and transitions.
 export const intermediate: LevelPlan = {
   outcome:
     "Build layouts that work on every screen, and know which rule wins when two disagree.",
   steps: [
-    lesson(
-      "grid",
-      "Grid: rows and columns",
-      3,
-      explain(
-        "[[css-grid|CSS grid]] places children in rows and columns at once. `grid-template-columns` says how many columns and how wide; `1fr` is one share of the free space.",
-      ),
-      playground("Three equal columns", [
-        "<style>",
-        "  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }",
-        "  .grid div { padding: 12px; background: #eef3ff; border-radius: 8px; }",
-        "</style>",
-        '<div class="grid">',
-        "  <div>One</div><div>Two</div><div>Three</div>",
-        "  <div>Four</div><div>Five</div>",
-        "</div>",
-      ]),
-      quickCheck(
-        "What does `grid-template-columns: 1fr 2fr` make?",
-        ["Two columns, the second twice as wide", "Three columns", "Two rows"],
-        0,
-        "`fr` shares out the free space: one share and two shares.",
-      ),
-    ),
-    lesson(
-      "grid-reference",
-      "Grid properties",
-      3,
-      reference("Grid, on the container and its items", [
-        [
-          "grid-template-columns",
-          "The columns and their widths.",
-          "grid-template-columns: 200px 1fr;",
-        ],
-        ["repeat()", "The same column several times.", "repeat(4, 1fr)"],
-        [
-          "minmax()",
-          "A column with a smallest and largest size.",
-          "minmax(12rem, 1fr)",
-        ],
-        [
-          "auto-fill",
-          "As many columns as fit.",
-          "repeat(auto-fill, minmax(12rem, 1fr))",
-        ],
-        ["gap", "Space between rows and columns.", "gap: 1rem;"],
-        [
-          "grid-column",
-          "(on an item) Span several columns.",
-          "grid-column: span 2;",
-        ],
-      ]),
-      playground("Cards that fit any width (resize your window)", [
-        "<style>",
-        "  .cards { display: grid; gap: 8px;",
-        "    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); }",
-        "  .cards div { padding: 12px; background: #eef3ff; border-radius: 8px; }",
-        "  .wide { grid-column: span 2; }",
-        "</style>",
-        '<div class="cards">',
-        '  <div class="wide">Wide</div><div>A</div><div>B</div><div>C</div><div>D</div>',
-        "</div>",
-      ]),
-      explain(
-        "Grid for two directions, flexbox for one: a page layout or a card wall is grid; a row of buttons is flexbox.",
-      ),
-    ),
+    gridModule,
     lesson(
       "media-queries",
       "Responsive design with media queries",
