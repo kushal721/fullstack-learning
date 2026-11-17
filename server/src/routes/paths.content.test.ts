@@ -140,6 +140,7 @@ const CSS_MODULES: [id: string, number: number][] = [
   ["box-model", 9],
   ["flexbox", 12],
   ["grid", 16],
+  ["media-queries", 17],
 ];
 
 describe.each(CSS_MODULES)("the CSS %s module", (id, number) => {

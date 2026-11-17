@@ -11,48 +11,16 @@ import {
   reference,
 } from "../blocks.js";
 import { gridModule } from "./grid.js";
+import { responsiveModule } from "./responsive.js";
 
-// Intermediate: steps 16–26. Grid (a module), responsive layouts, positioning, states,
-// which rule wins, and transitions.
+// Intermediate: steps 16–26. Grid and responsive design (modules),
+// positioning, states, which rule wins, and transitions.
 export const intermediate: LevelPlan = {
   outcome:
     "Build layouts that work on every screen, and know which rule wins when two disagree.",
   steps: [
     gridModule,
-    lesson(
-      "media-queries",
-      "Responsive design with media queries",
-      4,
-      explain(
-        "[[css-responsive|Responsive design]] makes one page work on every screen. A [[media-query]] applies CSS only when the screen meets a condition, such as being at least 40rem wide.",
-      ),
-      code(
-        "css",
-        "mobile first: one column, then more",
-        [
-          ".notes { display: grid; grid-template-columns: 1fr; }",
-          "",
-          "@media (min-width: 40rem) {",
-          "  .notes { grid-template-columns: repeat(2, 1fr); }",
-          "}",
-        ],
-        { 1: "phones: the default", 3: "only on screens 40rem or wider" },
-      ),
-      inTheNotesApp(
-        "The Notes App's notes grid does exactly this: one column, two from 40rem, three from 64rem.",
-        { fileId: "frontend/src/index.css" },
-      ),
-      quickCheck(
-        "Mobile-first CSS means…",
-        [
-          "Writing the phone styles first, then media queries for wider screens",
-          "Hiding things on phones",
-          "Building a separate phone site",
-        ],
-        0,
-        "Start simple for small screens and add layout as space allows.",
-      ),
-    ),
+    responsiveModule,
     lesson(
       "position",
       "Positioning",
