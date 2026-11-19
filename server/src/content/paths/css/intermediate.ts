@@ -1,6 +1,5 @@
 import type { LevelPlan } from "@fsl/shared";
 import {
-  code,
   explain,
   inTheNotesApp,
   keyPoints,
@@ -10,11 +9,12 @@ import {
   quickCheck,
   reference,
 } from "../blocks.js";
+import { cascadeModule } from "./cascade.js";
 import { gridModule } from "./grid.js";
 import { responsiveModule } from "./responsive.js";
 
-// Intermediate: steps 16–26. Grid and responsive design (modules),
-// positioning, states, which rule wins, and transitions.
+// Intermediate: steps 16–25. Grid, responsive design and the cascade
+// (modules), positioning, states and transitions.
 export const intermediate: LevelPlan = {
   outcome:
     "Build layouts that work on every screen, and know which rule wins when two disagree.",
@@ -129,52 +129,7 @@ export const intermediate: LevelPlan = {
         "A [[pseudo-class]] matches a state or a position, so you don't need extra classes or JavaScript for these.",
       ),
     ),
-    lesson(
-      "cascade",
-      "When rules disagree: the cascade",
-      3,
-      explain(
-        "Two rules can set the same property on the same element. [[cascade|The cascade]] picks one: first by importance, then by how specific the selector is, then by which comes last.",
-      ),
-      code(
-        "css",
-        "the later rule wins when they're equally specific",
-        ["p { color: navy; }", "p { color: green; }"],
-        { 2: "this one wins: same selector, written later" },
-      ),
-      quickCheck(
-        "Both rules use the selector `p`. Which colour does a paragraph get?",
-        ["The first one", "The last one", "A mix of both"],
-        1,
-        "With equal [[specificity]], the rule written last wins.",
-      ),
-    ),
-    lesson(
-      "specificity",
-      "Specificity: which selector is stronger",
-      3,
-      explain(
-        "[[specificity]] counts what a selector uses: ids beat classes, classes beat element names. A stronger selector wins even if it comes earlier.",
-      ),
-      reference("From weak to strong", [
-        ["p", "An element name: weakest.", "0 – 0 – 1"],
-        [".note", "A class (or attribute, or pseudo-class).", "0 – 1 – 0"],
-        [".note p", "Adds up: one class, one element.", "0 – 1 – 1"],
-        ["#title", "An id: stronger than any number of classes.", "1 – 0 – 0"],
-        ['style="…"', "Inline styles beat all selectors.", "—"],
-        [
-          "!important",
-          "Overrides everything else; avoid it.",
-          "color: red !important;",
-        ],
-      ]),
-      quickCheck(
-        "`.title { color: red }` comes after `#main h1 { color: blue }`. The h1 has both. Colour?",
-        ["Red, it's later", "Blue, the id makes it more specific", "Black"],
-        1,
-        "Specificity is checked before order: an id beats a class.",
-      ),
-    ),
+    cascadeModule,
     lesson(
       "transitions",
       "Transitions: smooth changes",
@@ -258,7 +213,7 @@ export const intermediate: LevelPlan = {
       ["css-intermediate-fr", "grid"],
       ["css-intermediate-mobile-first", "media-queries"],
       ["css-intermediate-absolute", "position"],
-      ["css-intermediate-specificity", "specificity"],
+      ["css-intermediate-specificity", "cascade"],
     ]),
   ],
 };

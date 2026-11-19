@@ -243,6 +243,15 @@ export const cssGlossary: GlossaryEntry[] = [
     },
   ),
   term(
+    "user-agent-stylesheet",
+    "Browser default styles",
+    "The browser's own stylesheet: why headings are big, links blue and lists bulleted before you write any CSS.",
+    "It's also called the user-agent stylesheet. Any rule of yours beats it, whatever the specificity, because author styles come from a stronger origin. `body { margin: 0; }` removes its 8px page margin. Part of [[cascade|the cascade]].",
+    {
+      aliases: ["user agent stylesheet", "browser defaults", "default styles"],
+    },
+  ),
+  term(
     "cascade",
     "The cascade",
     "How CSS decides which rule wins when several set the same property.",
