@@ -96,6 +96,22 @@ export const cssGlossary: GlossaryEntry[] = [
     { aliases: ["color", "colour", "hex", "rgb", "hsl"] },
   ),
   term(
+    "color-contrast",
+    "Colour contrast",
+    "How different a text colour is from its background, as a ratio from 1:1 to 21:1.",
+    "Aim for at least 4.5:1 for normal text and 3:1 for large text: `#595959` on white is 7:1, `#999` only 2.85:1. DevTools shows the ratio when you inspect a colour. Part of [[accessibility]].",
+    { aliases: ["contrast", "contrast ratio"] },
+  ),
+  term(
+    "font-stack",
+    "Font stack",
+    "A `font-family` list: the browser uses the first font it has, ending with a generic family.",
+    '`font-family: "Inter", system-ui, sans-serif;` tries Inter, then the system font, then any sans-serif. Generic families like `serif`, `sans-serif` and `monospace` always exist. A web font is downloaded with `@font-face` or a font service\'s `<link>`.',
+    {
+      aliases: ["fallback font", "generic family", "web font", "@font-face"],
+    },
+  ),
+  term(
     "typography",
     "Typography",
     "How text looks: its font, size, weight, line height and alignment.",

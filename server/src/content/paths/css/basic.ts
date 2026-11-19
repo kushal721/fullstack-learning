@@ -8,120 +8,18 @@ import {
   reference,
 } from "../blocks.js";
 import { boxModelModule } from "./box-model.js";
+import { coloursAndTextModule } from "./colours-and-text.js";
 import { flexboxModule } from "./flexbox.js";
 import { gettingStartedModule } from "./getting-started.js";
 
-// Basic: steps 1–11. Getting started, the box model and flexbox (modules),
-// colours and text, units, display, with live examples to edit.
+// Basic: steps 1–8. Getting started, colours and text, the box model and
+// flexbox (modules), display, sizing and backgrounds.
 export const basic: LevelPlan = {
   outcome:
     "Style a page yourself: pick elements, set colours, fonts and spacing, and line things up with flexbox.",
   steps: [
     gettingStartedModule,
-    lesson(
-      "colours",
-      "Colours",
-      3,
-      reference("Ways to write a colour", [
-        ["name", "About 140 named colours.", "color: tomato;"],
-        ["hex", "Red, green and blue in base 16.", "color: #1d4ed8;"],
-        [
-          "rgb()",
-          "Red, green and blue from 0 to 255.",
-          "color: rgb(29 78 216);",
-        ],
-        [
-          "hsl()",
-          "Hue (0–360), saturation and lightness: easy to tweak.",
-          "color: hsl(220 76% 48%);",
-        ],
-        [
-          "/ alpha",
-          "A fourth part for transparency.",
-          "background: rgb(0 0 0 / 40%);",
-        ],
-      ]),
-      playground("Text and background colours", [
-        "<style>",
-        "  body { background: hsl(220 40% 96%); }",
-        "  h1 { color: #1d4ed8; }",
-        "  p { color: rgb(80 80 80); }",
-        "  .tag { background: rgb(29 78 216 / 15%); }",
-        "</style>",
-        "<h1>Colours</h1>",
-        '<p>A <span class="tag">tag</span> with a see-through background.</p>',
-      ]),
-      quickCheck(
-        "`color` and `background-color`: which one colours the text?",
-        ["`color`", "`background-color`", "Both"],
-        0,
-        "`color` is the text; `background-color` is behind it. Keep enough contrast between the two ([[css-color|colours in CSS]]).",
-      ),
-    ),
-    lesson(
-      "text-and-fonts",
-      "Text and fonts",
-      3,
-      explain(
-        "[[typography]] is most of design: the font, its size and weight, the space between lines and how text lines up.",
-      ),
-      reference("Text properties", [
-        [
-          "font-family",
-          "Which font, with fallbacks.",
-          "font-family: Georgia, serif;",
-        ],
-        ["font-size", "How big.", "font-size: 1.25rem;"],
-        ["font-weight", "How bold: 400 normal, 700 bold.", "font-weight: 700;"],
-        [
-          "line-height",
-          "Space between lines; ~1.5 for body text.",
-          "line-height: 1.5;",
-        ],
-        ["text-align", "Left, center, right.", "text-align: center;"],
-        ["text-decoration", "Underline, or none.", "text-decoration: none;"],
-        [
-          "text-transform",
-          "Uppercase or capitalize.",
-          "text-transform: uppercase;",
-        ],
-      ]),
-      playground("Make the text readable", [
-        "<style>",
-        "  body { font-family: Georgia, serif; line-height: 1.6; }",
-        "  h1 { font-family: system-ui, sans-serif; text-align: center; }",
-        "  .small { font-size: 0.8rem; text-transform: uppercase; }",
-        "</style>",
-        "<h1>A good read</h1>",
-        '<p class="small">Chapter one</p>',
-        "<p>Change the line height to 1 and see how much harder this is to read.</p>",
-      ]),
-    ),
-    lesson(
-      "units",
-      "Units: px, rem, % and more",
-      3,
-      reference("Units you'll meet", [
-        ["px", "Fixed pixels.", "border: 1px solid;"],
-        [
-          "rem",
-          "× the root font size (usually 16px); grows when people enlarge text.",
-          "font-size: 1.5rem;",
-        ],
-        ["em", "× this element's font size.", "padding: 0.5em;"],
-        ["%", "Part of the parent's size.", "width: 50%;"],
-        ["vw / vh", "Part of the window's width or height.", "height: 100vh;"],
-      ]),
-      explain(
-        "Use `rem` for most sizes so the page grows with people's text settings, and `px` for thin lines. See [[css-unit|units]].",
-      ),
-      quickCheck(
-        "Someone sets a bigger default text size. Which font size follows it?",
-        ["`16px`", "`1rem`", "Neither"],
-        1,
-        "`rem` is relative to the root font size, which the browser setting changes.",
-      ),
-    ),
+    coloursAndTextModule,
     boxModelModule,
     lesson(
       "display",
@@ -224,24 +122,10 @@ export const basic: LevelPlan = {
         '<div class="card"><strong>Shopping</strong><p>Milk, bread.</p></div>',
       ]),
     ),
-    lesson(
-      "inheritance",
-      "What children inherit",
-      2,
-      explain(
-        "Some properties pass from a parent to its children: [[inheritance]]. Set `font-family` and `color` once on `body` and every element inside uses them. Box properties like `margin` and `border` don't pass down.",
-      ),
-      quickCheck(
-        "You set `color: navy` on a `<div>`. What colour is the `<p>` inside it?",
-        ["Black, the default", "Navy, inherited", "It depends on the margin"],
-        1,
-        "`color` is inherited, so children use their parent's colour unless they set their own.",
-      ),
-    ),
     levelCheck("basic-check", "Basic check", [
       ["css-basic-property", "getting-started"],
       ["css-basic-class", "getting-started"],
-      ["css-basic-rem", "units"],
+      ["css-basic-rem", "colours-and-text"],
       ["css-basic-padding", "box-model"],
       ["css-basic-display-none", "display"],
       ["css-basic-align", "flexbox"],

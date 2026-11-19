@@ -15,7 +15,7 @@ const PLANNED: [
 ][] = [
   ["how-the-web-works", 18, 30, 40],
   ["html", 6, 12, 18],
-  ["css", 11, 21, 31],
+  ["css", 8, 18, 28],
   ["javascript", 11, 17, 24],
 ];
 
@@ -138,11 +138,12 @@ describe.each(HTML_MODULES)("the HTML %s module", (id, number) => {
 // The CSS modules: [step id, its number].
 const CSS_MODULES: [id: string, number: number][] = [
   ["getting-started", 1],
-  ["box-model", 5],
-  ["flexbox", 8],
-  ["grid", 12],
-  ["media-queries", 13],
-  ["cascade", 17],
+  ["colours-and-text", 2],
+  ["box-model", 3],
+  ["flexbox", 6],
+  ["grid", 9],
+  ["media-queries", 10],
+  ["cascade", 14],
 ];
 
 describe.each(CSS_MODULES)("the CSS %s module", (id, number) => {
