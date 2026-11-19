@@ -36,7 +36,7 @@ export const coloursAndTextModule = moduleLesson(
     "colour-basics",
     "Colour and background",
     explain(
-      "Two properties do most of the colouring. `color` sets the **text** colour, and also the default for borders and underlines. `background-color` fills the box **behind** the text, including its padding. The simplest values are the 140 or so colour names, like `navy`, `crimson` or `lightyellow`.",
+      "Two properties do most of the colouring. `color` sets the **text** colour, and also the default for borders and underlines. `background-color` fills the box **behind** the text, including its padding. The simplest values are the nearly 150 colour names, like `navy`, `crimson` or `lightyellow`.",
     ),
     playground("Text colour and background", [
       "<style>",
@@ -62,7 +62,7 @@ export const coloursAndTextModule = moduleLesson(
       "Names are handy but limited. Screens mix every colour from **red, green and blue** light, and the other formats say how much of each. Hex writes the three amounts in base 16, `00` to `ff`. `rgb()` writes them from 0 to 255. `hsl()` describes the colour the way people do: which hue, how strong, how light.",
     ),
     reference("Ways to write a colour", [
-      ["name", "About 140 named colours.", "color: tomato;"],
+      ["name", "Nearly 150 named colours.", "color: tomato;"],
       ["hex", "Red, green and blue in base 16.", "color: #1d4ed8;"],
       ["short hex", "One digit each, doubled: #f60 = #ff6600.", "color: #f60;"],
       ["rgb()", "Red, green and blue from 0 to 255.", "color: rgb(29 78 216);"],
@@ -80,7 +80,7 @@ export const coloursAndTextModule = moduleLesson(
         [
           "220",
           "hue",
-          "An angle on the colour wheel: 0 red, 120 green, 220 blue.",
+          "An angle on the colour wheel: 0 red, 120 green, 240 blue. 220 is a blue leaning to green.",
         ],
         ["76%", "saturation", "How strong: 0% is grey, 100% is vivid."],
         ["48%", "lightness", "0% is black, 100% white, 50% the pure colour."],
