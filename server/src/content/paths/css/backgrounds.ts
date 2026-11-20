@@ -503,7 +503,7 @@ export const backgroundsModule = moduleLesson(
       },
     ),
     inTheNotesApp(
-      "Every `background` in the app uses the shorthand with a single colour, so nothing is left over from another rule.",
+      "Every `background` in the app uses the shorthand with one colour (or `none`), so nothing is left over from another rule.",
       { fileId: "frontend/src/index.css" },
     ),
   ),
