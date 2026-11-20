@@ -1,0 +1,691 @@
+import {
+  anatomy,
+  code,
+  explain,
+  inTheNotesApp,
+  keyPoints,
+  mistake,
+  moduleLesson,
+  pageYourTurn,
+  part,
+  playground,
+  quickCheck,
+  reference,
+  trace,
+} from "../blocks.js";
+
+// Display and sizing: block, inline and inline-block, changing and hiding
+// boxes, how wide a box is by default, width and its limits step by step,
+// min and max sizes, a centred column, heights, sizing to the content,
+// overflow, the Notes App's page widths, mistakes, practice and a recap.
+export const displayAndSizingModule = moduleLesson(
+  "display-and-sizing",
+  "Display and sizing",
+  40,
+  [
+    "Explain how block, inline and inline-block boxes behave, and change one into another.",
+    "Hide an element with `display: none`, and know when `visibility` or `opacity` fits better.",
+    "Work out a box's width from `width`, `%`, `min-width` and `max-width`.",
+    "Centre a readable column with `max-width` and `margin: 0 auto`.",
+    "Handle content that doesn't fit with `overflow`, scrolling and ellipses.",
+  ],
+
+  part(
+    "display-types",
+    "Block, inline and inline-block",
+    explain(
+      "Every element has a [[css-display|`display`]] value, and it decides how the box sits among its neighbours. **Block** boxes (`<div>`, `<p>`, `<h1>`) start on a new line and stretch across their parent. **Inline** boxes (`<a>`, `<span>`, `<strong>`) flow inside a line of text and ignore `width` and `height`. **Inline-block** flows like text but takes a width, height and padding like a block.",
+    ),
+    playground("Three kinds of box", [
+      "<style>",
+      "  span { background: gold; padding: 4px; width: 120px; height: 40px; }",
+      "  .ib { display: inline-block; }",
+      "  .b { display: block; }",
+      "</style>",
+      "<p>An <span>inline</span> box ignores width and height.</p>",
+      '<p>An <span class="ib">inline-block</span> takes them, in the line.</p>',
+      '<p>A <span class="b">block</span> starts its own line.</p>',
+    ]),
+    quickCheck(
+      "Which kind of box starts on a new line and fills the width of its parent?",
+      ["Inline", "Inline-block", "Block"],
+      2,
+      "Block boxes stack down the page, each as wide as its parent unless you say otherwise. Inline and inline-block boxes sit side by side in a line.",
+    ),
+  ),
+
+  part(
+    "display-values",
+    "Changing what a box is",
+    explain(
+      "An element's default `display` comes from the browser's own stylesheet, and you can change it. A link can become a block so its whole row is clickable; a list can become a row with `display: flex`. The HTML still means the same thing, so pick elements for their meaning and `display` for their look.",
+    ),
+    reference("display values", [
+      ["block", "New line, full width of the parent.", "display: block;"],
+      [
+        "inline",
+        "Flows in the text; width and height are ignored.",
+        "display: inline;",
+      ],
+      [
+        "inline-block",
+        "Flows in the text but takes a width and height.",
+        "display: inline-block;",
+      ],
+      ["flex", "A block that lines its children up.", "display: flex;"],
+      [
+        "inline-flex",
+        "The same, but sits in a line like a word.",
+        "display: inline-flex;",
+      ],
+      ["grid", "A block that places its children in a grid.", "display: grid;"],
+      ["none", "Not drawn at all and takes no space.", "display: none;"],
+    ]),
+    playground("A menu: from inline links to blocks", [
+      "<style>",
+      "  nav { width: 12rem; border: 1px solid #d0d7de; }",
+      "  nav a { display: block; padding: 8px 12px; text-decoration: none; }",
+      "  nav a:hover { background: #eef3ff; }",
+      "</style>",
+      "<nav>",
+      '  <a href="#">All notes</a>',
+      '  <a href="#">Shopping</a>',
+      '  <a href="#">Work</a>',
+      "</nav>",
+    ]),
+    keyPoints(
+      "Delete `display: block` above and the links run together on one line.",
+      "As blocks, the whole row is clickable, not just the words.",
+      "`flex` and `grid` change how the children are laid out, too.",
+    ),
+  ),
+
+  part(
+    "hiding",
+    "Hiding: none, hidden and opacity",
+    explain(
+      "Three properties make an element invisible, and they differ in what's left behind. `display: none` removes the box: no space, no clicks, and screen readers skip it. `visibility: hidden` leaves an empty gap where it was. `opacity: 0` only makes it see-through: it still takes space, can still be clicked, and is still read out.",
+    ),
+    reference("Ways to hide", [
+      [
+        "display: none",
+        "Gone: no space, no clicks, not read out.",
+        "display: none;",
+      ],
+      [
+        "visibility: hidden",
+        "Invisible and not read out, but its space stays.",
+        "visibility: hidden;",
+      ],
+      [
+        "opacity: 0",
+        "See-through only: takes space, clickable, read out.",
+        "opacity: 0;",
+      ],
+      [
+        "hidden attribute",
+        "HTML for display: none; CSS can override it.",
+        "<p hidden>…</p>",
+      ],
+    ]),
+    playground("Where does the middle box go?", [
+      "<style>",
+      "  .box { display: inline-block; width: 32px; height: 32px; background: #1d4ed8; }",
+      "  .a .middle { display: none; }",
+      "  .b .middle { visibility: hidden; }",
+      "  .c .middle { opacity: 0; }",
+      "</style>",
+      '<p class="a">none: <span class="box"></span> <span class="box middle"></span> <span class="box"></span></p>',
+      '<p class="b">hidden: <span class="box"></span> <span class="box middle"></span> <span class="box"></span></p>',
+      '<p class="c">opacity: <span class="box"></span> <span class="box middle"></span> <span class="box"></span></p>',
+    ]),
+    quickCheck(
+      "A dropdown menu is closed. Which hides it so it takes no space and can't be clicked or read out?",
+      ["`opacity: 0`", "`display: none`", "`visibility: hidden`"],
+      1,
+      "`display: none` removes it from the layout and from what screen readers announce. `visibility: hidden` would leave a gap; `opacity: 0` would leave it clickable.",
+    ),
+  ),
+
+  part(
+    "auto-width",
+    "How wide is a box by default?",
+    explain(
+      "With no `width`, a block box is `width: auto`: it fills its parent's content area, minus its own margins, and its height grows to fit what's inside. An inline-block is the opposite: it **shrinks** to fit its content. A `%` width is a share of the parent's content width, so it follows the parent as it changes.",
+    ),
+    playground("auto, shrink-to-fit and %", [
+      "<style>",
+      "  .parent { width: 300px; padding: 8px; border: 2px dashed #888; }",
+      "  .parent > * { background: #eef3ff; margin: 4px 0; }",
+      "  .ib { display: inline-block; }",
+      "  .half { width: 50%; }",
+      "</style>",
+      '<div class="parent">',
+      "  <div>A block fills the width.</div>",
+      '  <div class="ib">An inline-block fits its text.</div>',
+      '  <div class="half">50% is 150px.</div>',
+      "</div>",
+    ]),
+    quickCheck(
+      "A `<div>` with no width sits inside a 400px-wide `<main>` (no padding) and has `margin: 0 20px`. How wide is the div?",
+      ["400px", "360px", "As wide as its text"],
+      1,
+      "`width: auto` fills what's left: 400 minus 20px on each side is 360px.",
+    ),
+  ),
+
+  part(
+    "sizing-trace",
+    "Width and its limits, move by move",
+    explain(
+      "`min-width` and `max-width` put a floor and a ceiling on a width. The browser works out `width` first, then clamps it: never above the max, never below the min. Step through a card on a wide page, then on a phone:",
+    ),
+    trace(
+      "How wide is the card?",
+      [
+        "<style>",
+        "  .page { width: 600px; }",
+        "  .card { width: 50%; min-width: 200px; max-width: 250px; }",
+        "  .card p { margin: 0; line-height: 24px; }",
+        "</style>",
+        '<div class="page">',
+        '  <div class="card">',
+        "    <p>Milk, bread and eggs.</p>",
+        "  </div>",
+        "</div>",
+      ],
+      [
+        {
+          line: 2,
+          note: "The page is 600px wide. The card's `%` will be worked out from this.",
+          vars: [[".page", "600px"]],
+        },
+        {
+          line: 3,
+          note: "`width: 50%` of 600px asks for 300px.",
+          vars: [
+            [".page", "600px"],
+            ["asked for", "300px"],
+          ],
+        },
+        {
+          line: 3,
+          note: "300px is above `max-width: 250px`, so it's cut down to 250px. It's above the 200px minimum, so that changes nothing.",
+          vars: [
+            [".page", "600px"],
+            ["asked for", "300px"],
+            [".card width", "250px"],
+          ],
+        },
+        {
+          line: 8,
+          note: "No height was set, so the card is as tall as its content: one line of 24px.",
+          vars: [
+            [".card width", "250px"],
+            [".card height", "24px"],
+          ],
+        },
+        {
+          line: 2,
+          note: "On a 300px page, 50% asks for 150px. That's below `min-width: 200px`, so the card stays 200px.",
+          vars: [
+            [".page", "300px"],
+            ["asked for", "150px"],
+            [".card width", "200px"],
+          ],
+          output: "600px page: 250px · 300px page: 200px",
+        },
+      ],
+      { language: "html" },
+    ),
+    quickCheck(
+      "A box has `width: 800px; max-width: 100%` inside a 500px parent. How wide is it?",
+      ["800px", "500px", "It overflows by 300px"],
+      1,
+      "`max-width: 100%` caps it at the parent's 500px. On a wider parent it would be 800px.",
+    ),
+  ),
+
+  part(
+    "min-max",
+    "min- and max-: sizes that bend",
+    explain(
+      "A fixed `width` is the same on every screen, which is why it breaks on phones. The `min-` and `max-` properties give a range instead, so the box can bend. If they disagree, `min-width` wins over `max-width`, and both win over `width`.",
+    ),
+    reference("Sizing", [
+      ["width / height", "A size to ask for.", "width: 20rem;"],
+      ["max-width", "Never wider; can shrink.", "max-width: 40rem;"],
+      ["min-width", "Never narrower; can grow.", "min-width: 12rem;"],
+      [
+        "min-height",
+        "At least this tall; grows with content.",
+        "min-height: 10rem;",
+      ],
+      [
+        "max-height",
+        "Never taller; pair it with overflow.",
+        "max-height: 20rem;",
+      ],
+      [
+        "auto",
+        "The default: fill the parent (blocks) or fit the content.",
+        "width: auto;",
+      ],
+    ]),
+    playground("Make the window narrower", [
+      "<style>",
+      "  .fixed { width: 500px; background: #ffe4e4; }",
+      "  .flexible { max-width: 500px; background: #e4f5e4; }",
+      "  .tall { min-height: 80px; background: #eef3ff; }",
+      "  div { padding: 8px; margin-bottom: 8px; }",
+      "</style>",
+      '<div class="fixed">width: 500px sticks out on a phone.</div>',
+      '<div class="flexible">max-width: 500px shrinks with the screen.</div>',
+      '<div class="tall">min-height: 80px, and taller if the text needs it.</div>',
+    ]),
+  ),
+
+  part(
+    "centring",
+    "A centred, readable column",
+    explain(
+      "Long lines are tiring to read, so most pages put their text in a column: `max-width` stops it growing on wide screens, and `margin: 0 auto` splits the space left over equally on both sides. `auto` margins only centre a block that's narrower than its parent, so they need the `max-width` (or a `width`).",
+    ),
+    anatomy(
+      "A centred column",
+      [
+        ".article {",
+        "  max-width: 40rem;",
+        "  margin: 0 auto;",
+        "  padding: 0 1rem; }",
+      ],
+      [
+        [".article", "selector", "The box that holds the page's text."],
+        [
+          "max-width: 40rem",
+          "ceiling",
+          "Never wider than 640px (at the usual 16px), but free to shrink on a phone.",
+        ],
+        ["0", "top and bottom", "No margin above or below."],
+        [
+          "auto",
+          "left and right",
+          "Each side takes half the space left over, which centres the box.",
+        ],
+        [
+          "padding: 0 1rem",
+          "breathing room",
+          "Keeps the text off the edges of a phone screen.",
+        ],
+      ],
+    ),
+    playground("Centred on a wide screen, full width on a phone", [
+      "<style>",
+      "  body { margin: 0; background: #f6f8fa; }",
+      "  .article { max-width: 30rem; margin: 0 auto; padding: 0 1rem; background: white; }",
+      "</style>",
+      '<div class="article">',
+      "  <h1>A good read</h1>",
+      "  <p>The column stops at 30rem and sits in the middle. Make the window narrow and it fills the width, with 1rem of space at each side.</p>",
+      "</div>",
+    ]),
+  ),
+
+  part(
+    "heights",
+    "Heights grow with content",
+    explain(
+      "Let heights be `auto` whenever you can: the box grows to fit its text, whatever the screen width or font size. A `%` height needs a parent with a set height; under an `auto` parent it's ignored. To fill the screen, use `min-height` with `vh` (1% of the window's height) or `dvh`, which allows for a phone's browser bars as they appear and disappear.",
+    ),
+    playground("A page at least as tall as the screen", [
+      "<style>",
+      "  body { margin: 0; }",
+      "  .screen { min-height: 100dvh; display: flex; flex-direction: column; }",
+      "  header, footer { background: #1d4ed8; color: white; padding: 8px; }",
+      "  main { flex-grow: 1; padding: 8px; }",
+      "</style>",
+      '<div class="screen">',
+      "  <header>Notes</header>",
+      "  <main>Short content, but the footer still sits at the bottom.</main>",
+      "  <footer>Footer</footer>",
+      "</div>",
+    ]),
+    quickCheck(
+      "A box has `height: 100px` and its text needs 150px. What happens?",
+      [
+        "The box grows to 150px",
+        "The text spills out below the box",
+        "The text shrinks to fit",
+      ],
+      1,
+      "A fixed height doesn't grow, and `overflow` is `visible` by default, so the text spills out. `min-height: 100px` would let it grow.",
+    ),
+  ),
+
+  part(
+    "intrinsic",
+    "Sizing to the content",
+    explain(
+      "Some widths come from the content itself, an [[intrinsic-size]]. `max-content` is as wide as the content on one line, never wrapping. `min-content` is as narrow as it can be, the longest word. `fit-content` is `max-content`, but no wider than the space there is: handy for tags and buttons that should hug their text.",
+    ),
+    playground("Three content-based widths", [
+      "<style>",
+      "  .parent { width: 260px; border: 2px dashed #888; padding: 4px; }",
+      "  .parent > p { background: #eef3ff; margin: 4px 0; }",
+      "  .min { width: min-content; }",
+      "  .max { width: max-content; }",
+      "  .fit { width: fit-content; }",
+      "</style>",
+      '<div class="parent">',
+      '  <p class="min">min-content: every word on its own line</p>',
+      '  <p class="max">max-content: one line, even if it sticks out</p>',
+      '  <p class="fit">fit-content: hugs short text</p>',
+      "</div>",
+    ]),
+    quickCheck(
+      "A label should be only as wide as its text, but wrap rather than stick out of a narrow card. Which width?",
+      ["`max-content`", "`fit-content`", "`100%`"],
+      1,
+      "`fit-content` hugs the text and stops at the space available. `max-content` never wraps, so long text would stick out.",
+    ),
+  ),
+
+  part(
+    "overflow",
+    "When content doesn't fit",
+    explain(
+      "When content is bigger than its box, [[overflow]] decides what happens. The default, `visible`, lets it spill out over whatever is next. `hidden` cuts it off; `auto` adds a scrollbar only when it's needed. One long word or URL can overflow a narrow box too: `overflow-wrap: anywhere` lets it break.",
+    ),
+    reference("overflow and long text", [
+      ["visible", "The default: content spills out.", "overflow: visible;"],
+      ["hidden", "Cut off at the padding edge.", "overflow: hidden;"],
+      ["auto", "A scrollbar only when needed.", "overflow: auto;"],
+      ["scroll", "Always a scrollbar.", "overflow: scroll;"],
+      ["overflow-x / -y", "One direction only.", "overflow-x: auto;"],
+      [
+        "text-overflow",
+        "… at the end of a cut-off single line.",
+        "text-overflow: ellipsis;",
+      ],
+      [
+        "overflow-wrap",
+        "Break long words and URLs.",
+        "overflow-wrap: anywhere;",
+      ],
+    ]),
+    playground("Scroll, cut off, or break", [
+      "<style>",
+      "  div { width: 200px; border: 1px solid #d0d7de; margin-bottom: 12px; padding: 4px; }",
+      "  .scroll { height: 60px; overflow: auto; }",
+      "  .one-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }",
+      "  .url { overflow-wrap: anywhere; }",
+      "</style>",
+      '<div class="scroll">Milk. Bread. Eggs. Butter. Cheese. Apples. Coffee. Tea.</div>',
+      '<div class="one-line">A note title that is far too long to fit</div>',
+      '<div class="url">https://example.com/a/very/long/address/that/never/breaks</div>',
+    ]),
+    quickCheck(
+      "A note title should stay on one line and end in … when it's too long. Which property is **not** needed?",
+      [
+        "`white-space: nowrap`",
+        "`overflow: hidden`",
+        "`overflow-wrap: anywhere`",
+      ],
+      2,
+      "The ellipsis needs all three of `white-space: nowrap`, `overflow: hidden` and `text-overflow: ellipsis`. `overflow-wrap` is for breaking long words onto new lines.",
+    ),
+  ),
+
+  part(
+    "notes-app",
+    "The Notes App's page widths",
+    explain(
+      "The Notes App sizes its pages the way this module does: no fixed widths, a `max-width` per kind of page, and `margin: 0 auto` to centre it. The dashboard can be wide enough for three columns of notes; the login form is kept narrow so its fields are a comfortable length.",
+    ),
+    code(
+      "css",
+      "page widths in the Notes App's index.css",
+      [
+        ".dashboard,",
+        ".auth-page,",
+        ".page-message {",
+        "  max-width: 60rem;",
+        "  margin: 0 auto;",
+        "  padding: 1.5rem 1rem;",
+        "}",
+        "",
+        ".auth-page {",
+        "  max-width: 24rem;",
+        "}",
+      ],
+      {
+        4: "960px at most, for the grid of notes",
+        5: "centred, with the space left over split",
+        6: "1rem at the sides keeps text off a phone's edges",
+        10: "a later rule narrows only the login page",
+      },
+    ),
+    inTheNotesApp(
+      "Nothing in the app sets a fixed `width` or `height`, so every page shrinks to a phone and every note card grows with its text.",
+      { fileId: "frontend/src/index.css" },
+    ),
+  ),
+
+  part(
+    "mistakes",
+    "Common mistakes",
+    mistake({
+      title: "A fixed height on a box of text",
+      language: "css",
+      wrong: [".note { height: 120px; }"],
+      problem:
+        "A longer note, a narrower screen or a bigger font and the text spills out over the next card.",
+      right: [".note { min-height: 120px; }"],
+      why: "`min-height` keeps the size you wanted and still grows with the content.",
+    }),
+    mistake({
+      title: "width: 100vw makes the page scroll sideways",
+      language: "css",
+      wrong: [".banner { width: 100vw; }"],
+      problem:
+        "`vw` includes the vertical scrollbar, so on a computer the banner is a little wider than the page and a horizontal scrollbar appears.",
+      right: [".banner { width: 100%; }"],
+      why: "A block already fills its parent; `100%` (or no width at all) never counts the scrollbar.",
+    }),
+    mistake({
+      title: "The hidden attribute that doesn't hide",
+      language: "css",
+      wrong: [".menu { display: flex; }", '/* <nav class="menu" hidden> */'],
+      problem:
+        "`hidden` works through the browser's own `display: none`, and your `display: flex` beats it, so the menu still shows.",
+      right: [".menu { display: flex; }", ".menu[hidden] { display: none; }"],
+      why: "A rule for the hidden state puts `display: none` back whenever the attribute is there.",
+    }),
+    mistake({
+      title: "overflow: hidden to hide a layout bug",
+      language: "css",
+      wrong: ["body { overflow-x: hidden; }"],
+      problem:
+        "The sideways scroll goes away, but whatever was too wide is now cut off, and it may be a button or text people need.",
+      right: ["img, video { max-width: 100%; }"],
+      why: "Find the box that's too wide (DevTools highlights it) and fix its size instead.",
+    }),
+  ),
+
+  part(
+    "practice",
+    "Your turn",
+    pageYourTurn({
+      title: "A menu and a hidden note",
+      task: "Make the links in `nav` block boxes, so each sits on its own line, and hide the `.draft` note completely with `display`.",
+      starter: [
+        "<style>",
+        "</style>",
+        "<nav>",
+        '  <a href="#">All notes</a>',
+        '  <a href="#">Shopping</a>',
+        "</nav>",
+        '<p class="draft">Not finished yet.</p>',
+        "<p>Milk and bread.</p>",
+      ],
+      checks: [
+        {
+          kind: "style",
+          label: "The nav links are blocks",
+          selector: "nav a",
+          property: "display",
+          value: "block",
+        },
+        {
+          kind: "style",
+          label: "The draft is hidden and takes no space",
+          selector: ".draft",
+          property: "display",
+          value: "none",
+        },
+      ],
+      hint: "`nav a { display: block; }` and `.draft { display: none; }`.",
+      solution: [
+        "<style>",
+        "  nav a { display: block; }",
+        "  .draft { display: none; }",
+        "</style>",
+        "<nav>",
+        '  <a href="#">All notes</a>',
+        '  <a href="#">Shopping</a>',
+        "</nav>",
+        '<p class="draft">Not finished yet.</p>',
+        "<p>Milk and bread.</p>",
+      ],
+    }),
+    pageYourTurn({
+      title: "Sizes that bend",
+      task: "Give `.article` a `max-width` of `600px` instead of its fixed width, and give `.card` a `min-height` of `120px` instead of its fixed height.",
+      starter: [
+        "<style>",
+        "  .article { width: 600px; }",
+        "  .card { height: 120px; border: 1px solid #d0d7de; }",
+        "</style>",
+        '<div class="article">',
+        '  <div class="card">Milk, bread and eggs.</div>',
+        "</div>",
+      ],
+      checks: [
+        {
+          kind: "style",
+          label: "The article is at most 600px wide",
+          selector: ".article",
+          property: "max-width",
+          value: "600px",
+        },
+        {
+          kind: "style",
+          label: "The card is at least 120px tall",
+          selector: ".card",
+          property: "min-height",
+          value: "120px",
+        },
+      ],
+      hint: "Swap the property names: `width` becomes `max-width`, `height` becomes `min-height`.",
+      solution: [
+        "<style>",
+        "  .article { max-width: 600px; }",
+        "  .card { min-height: 120px; border: 1px solid #d0d7de; }",
+        "</style>",
+        '<div class="article">',
+        '  <div class="card">Milk, bread and eggs.</div>',
+        "</div>",
+      ],
+    }),
+    pageYourTurn({
+      title: "Scroll and cut off",
+      task: "Let `.list` scroll when its items don't fit, with `overflow: auto`. Then make `.title` stay on one line and end in an ellipsis: `white-space`, `overflow` and `text-overflow`.",
+      starter: [
+        "<style>",
+        "  .list { height: 80px; border: 1px solid #d0d7de; }",
+        "  .title { width: 160px; }",
+        "</style>",
+        '<p class="title">A note title that is far too long to fit</p>',
+        '<div class="list">',
+        "  <p>Milk</p><p>Bread</p><p>Eggs</p><p>Butter</p>",
+        "</div>",
+      ],
+      checks: [
+        {
+          kind: "style",
+          label: "The list scrolls when needed",
+          selector: ".list",
+          property: "overflow-y",
+          value: "auto",
+        },
+        {
+          kind: "style",
+          label: "The title stays on one line",
+          selector: ".title",
+          property: "white-space",
+          value: "nowrap",
+        },
+        {
+          kind: "style",
+          label: "The title cuts off what doesn't fit",
+          selector: ".title",
+          property: "overflow-x",
+          value: "hidden",
+        },
+        {
+          kind: "style",
+          label: "The title ends in an ellipsis",
+          selector: ".title",
+          property: "text-overflow",
+          value: "ellipsis",
+        },
+      ],
+      hint: "`.list { overflow: auto; }` and `.title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }`.",
+      solution: [
+        "<style>",
+        "  .list { height: 80px; border: 1px solid #d0d7de; overflow: auto; }",
+        "  .title { width: 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }",
+        "</style>",
+        '<p class="title">A note title that is far too long to fit</p>',
+        '<div class="list">',
+        "  <p>Milk</p><p>Bread</p><p>Eggs</p><p>Butter</p>",
+        "</div>",
+      ],
+    }),
+  ),
+
+  part(
+    "recap",
+    "Recap and cheat sheet",
+    reference("Display and sizing cheat sheet", [
+      ["display: block", "New line, full width.", "nav a { display: block; }"],
+      [
+        "display: inline-block",
+        "In the line, takes a size.",
+        ".tag { display: inline-block; }",
+      ],
+      [
+        "display: none",
+        "Gone: no space, not read out.",
+        ".draft { display: none; }",
+      ],
+      ["visibility: hidden", "Invisible, space kept.", "visibility: hidden;"],
+      ["width: auto", "Blocks fill the parent.", "the default"],
+      ["max-width", "A ceiling; shrinks on phones.", "max-width: 40rem;"],
+      ["min-height", "A floor; grows with content.", "min-height: 10rem;"],
+      ["margin: 0 auto", "Centres a narrower block.", "margin: 0 auto;"],
+      [
+        "fit-content",
+        "Hug the content, up to the space.",
+        "width: fit-content;",
+      ],
+      ["overflow: auto", "Scroll only when needed.", "overflow: auto;"],
+    ]),
+    quickCheck(
+      "A box has `width: 50%; max-width: 300px; min-width: 200px` in a 1000px parent. How wide is it?",
+      ["500px", "300px", "200px"],
+      1,
+      "50% asks for 500px, and `max-width` cuts it to 300px. In a 300px parent, 50% would be 150px and `min-width` would raise it to 200px.",
+    ),
+  ),
+);

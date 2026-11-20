@@ -170,6 +170,13 @@ export const cssGlossary: GlossaryEntry[] = [
     { aliases: ["scroll", "overflow hidden", "max-width"] },
   ),
   term(
+    "intrinsic-size",
+    "Intrinsic size",
+    "A size that comes from the content itself rather than from a width you set.",
+    "`max-content` is the content on one line, `min-content` its longest word, and `fit-content` is `max-content` but no wider than the space there is. Inline-blocks and images are sized this way by default. See [[css-display]].",
+    { aliases: ["min-content", "max-content", "fit-content", "shrink-to-fit"] },
+  ),
+  term(
     "flex-container",
     "Flex container and flex items",
     "The element with `display: flex`, and its direct children, which it lines up.",
