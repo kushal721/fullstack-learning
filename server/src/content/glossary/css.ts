@@ -177,6 +177,28 @@ export const cssGlossary: GlossaryEntry[] = [
     { aliases: ["min-content", "max-content", "fit-content", "shrink-to-fit"] },
   ),
   term(
+    "css-gradient",
+    "Gradient",
+    "An image the browser draws by blending colours: along a line, out from a point, or round a centre.",
+    "`linear-gradient(to right, #1d4ed8, gold)`, `radial-gradient()` and `conic-gradient()` go in `background-image`, never `background-color`. Each colour is a stop with an optional position; two stops at the same place make a hard line.",
+    {
+      aliases: [
+        "gradient",
+        "linear-gradient",
+        "radial-gradient",
+        "conic-gradient",
+        "colour stop",
+      ],
+    },
+  ),
+  term(
+    "box-shadow",
+    "box-shadow",
+    "A shadow drawn behind a box: x and y offset, blur, spread and colour. It takes up no space.",
+    "`box-shadow: 0 4px 12px rgb(0 0 0 / 15%)` raises a card off the page. `inset` draws it inside; several shadows are comma-separated, first on top. `text-shadow` does the same for letters.",
+    { aliases: ["shadow", "text-shadow", "inset shadow", "drop shadow"] },
+  ),
+  term(
     "flex-container",
     "Flex container and flex items",
     "The element with `display: flex`, and its direct children, which it lines up.",
