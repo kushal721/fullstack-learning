@@ -11,75 +11,18 @@ import {
 } from "../blocks.js";
 import { cascadeModule } from "./cascade.js";
 import { gridModule } from "./grid.js";
+import { positioningModule } from "./positioning.js";
 import { responsiveModule } from "./responsive.js";
 
-// Intermediate: steps 8–17. Grid, responsive design and the cascade
-// (modules), positioning, states and transitions.
+// Intermediate: steps 8–16. Grid, responsive design, positioning and the
+// cascade (modules), states and transitions.
 export const intermediate: LevelPlan = {
   outcome:
     "Build layouts that work on every screen, and know which rule wins when two disagree.",
   steps: [
     gridModule,
     responsiveModule,
-    lesson(
-      "position",
-      "Positioning",
-      3,
-      reference("position values", [
-        ["static", "The default: in the normal flow.", "position: static;"],
-        [
-          "relative",
-          "Nudged from its normal place; anchors absolute children.",
-          "position: relative; top: 4px;",
-        ],
-        [
-          "absolute",
-          "Placed inside the nearest positioned parent.",
-          "position: absolute; top: 0; right: 0;",
-        ],
-        [
-          "fixed",
-          "Stays put relative to the window.",
-          "position: fixed; bottom: 1rem;",
-        ],
-        [
-          "sticky",
-          "Scrolls, then sticks at an edge.",
-          "position: sticky; top: 0;",
-        ],
-      ]),
-      playground("A badge in the corner of a card", [
-        "<style>",
-        "  .card { position: relative; padding: 24px; background: #eef3ff; border-radius: 8px; }",
-        "  .badge { position: absolute; top: 8px; right: 8px;",
-        "    background: crimson; color: white; padding: 2px 8px; border-radius: 99px; }",
-        "</style>",
-        '<div class="card">A note <span class="badge">New</span></div>',
-      ]),
-      quickCheck(
-        "An absolutely positioned badge jumps to the corner of the whole page. What's missing?",
-        [
-          "`position: relative` on the card",
-          "A bigger `z-index`",
-          "`display: flex`",
-        ],
-        0,
-        "Absolute elements are placed inside the nearest positioned ancestor; make the card one with [[css-position|`position: relative`]].",
-      ),
-    ),
-    lesson(
-      "z-index",
-      "What's on top: z-index",
-      2,
-      explain(
-        "When positioned elements overlap, [[z-index]] decides which is drawn on top: the higher number wins, among elements in the same stacking context.",
-      ),
-      keyPoints(
-        "Use it only for things that really overlap: menus, dialogs, sticky headers.",
-        "It only works on positioned elements (and flex or grid children).",
-        "A small scale (1, 10, 100) is easier than 99999.",
-      ),
-    ),
+    positioningModule,
     lesson(
       "states",
       "States: hover, focus and more",
@@ -212,7 +155,7 @@ export const intermediate: LevelPlan = {
     levelCheck("intermediate-check", "Intermediate check", [
       ["css-intermediate-fr", "grid"],
       ["css-intermediate-mobile-first", "media-queries"],
-      ["css-intermediate-absolute", "position"],
+      ["css-intermediate-absolute", "positioning"],
       ["css-intermediate-specificity", "cascade"],
     ]),
   ],
