@@ -325,6 +325,21 @@ export const cssGlossary: GlossaryEntry[] = [
     { aliases: ["transitions", "ease", "duration"] },
   ),
   term(
+    "easing",
+    "Easing (timing function)",
+    "How a transition or animation speeds up and slows down over its duration.",
+    "`linear` keeps one speed; `ease` (the default) speeds up then slows; `ease-out` starts fast and settles, for things arriving; `ease-in` starts slow, for things leaving. `cubic-bezier()` draws a custom curve. Used by [[transition|transitions]].",
+    {
+      aliases: [
+        "timing function",
+        "ease-out",
+        "ease-in",
+        "linear",
+        "cubic-bezier",
+      ],
+    },
+  ),
+  term(
     "custom-property",
     "Custom property",
     "A value you name once and reuse: `--color-primary: #1d4ed8;` then `var(--color-primary)`.",

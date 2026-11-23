@@ -7,15 +7,15 @@ import {
   levelCheck,
   playground,
   quickCheck,
-  reference,
 } from "../blocks.js";
 import { cascadeModule } from "./cascade.js";
 import { gridModule } from "./grid.js";
 import { positioningModule } from "./positioning.js";
 import { responsiveModule } from "./responsive.js";
+import { statesAndTransitionsModule } from "./states-and-transitions.js";
 
-// Intermediate: steps 8–16. Grid, responsive design, positioning and the
-// cascade (modules), states and transitions.
+// Intermediate: steps 8–15. Grid, responsive design, positioning, states
+// and transitions, and the cascade (modules), forms and the Notes App.
 export const intermediate: LevelPlan = {
   outcome:
     "Build layouts that work on every screen, and know which rule wins when two disagree.",
@@ -23,85 +23,8 @@ export const intermediate: LevelPlan = {
     gridModule,
     responsiveModule,
     positioningModule,
-    lesson(
-      "states",
-      "States: hover, focus and more",
-      3,
-      reference("Pseudo-classes and pseudo-elements", [
-        [
-          ":hover",
-          "While the mouse is over it.",
-          "a:hover { text-decoration: underline; }",
-        ],
-        [
-          ":focus-visible",
-          "Keyboard focus: never hide it.",
-          "button:focus-visible { outline: 2px solid; }",
-        ],
-        [
-          ":disabled",
-          "A disabled button or field.",
-          "button:disabled { opacity: .5; }",
-        ],
-        [
-          ":first-child",
-          "The first child of its parent.",
-          "li:first-child { font-weight: bold; }",
-        ],
-        [
-          ":nth-child(odd)",
-          "Every other one: stripes.",
-          "tr:nth-child(odd) { background: #f6f8fa; }",
-        ],
-        [
-          "::before",
-          "Generated content before the element.",
-          'a::before { content: "→ "; }',
-        ],
-      ]),
-      playground("Hover, focus with Tab, and stripes", [
-        "<style>",
-        "  button:hover { background: gold; }",
-        "  button:focus-visible { outline: 3px solid royalblue; }",
-        "  li:nth-child(odd) { background: #eef3ff; }",
-        "</style>",
-        "<button>Hover me</button> <button>Then press Tab</button>",
-        "<ul><li>One</li><li>Two</li><li>Three</li><li>Four</li></ul>",
-      ]),
-      explain(
-        "A [[pseudo-class]] matches a state or a position, so you don't need extra classes or JavaScript for these.",
-      ),
-    ),
+    statesAndTransitionsModule,
     cascadeModule,
-    lesson(
-      "transitions",
-      "Transitions: smooth changes",
-      3,
-      explain(
-        "A [[transition]] animates a change instead of switching at once: a button that fades to a new colour on hover.",
-      ),
-      playground("Hover the button", [
-        "<style>",
-        "  button {",
-        "    padding: 8px 16px; border: 0; border-radius: 8px;",
-        "    background: royalblue; color: white;",
-        "    transition: background 300ms ease, transform 300ms ease;",
-        "  }",
-        "  button:hover { background: crimson; transform: translateY(-3px); }",
-        "</style>",
-        "<button>Save</button>",
-      ]),
-      quickCheck(
-        "Where does the `transition` property go?",
-        [
-          "On the normal state, so it animates both ways",
-          "Only in `:hover`",
-          "On the parent",
-        ],
-        0,
-        "Put it on the element itself; then the change in and the change back are both smooth.",
-      ),
-    ),
     lesson(
       "forms-and-buttons",
       "Styling forms and buttons",
