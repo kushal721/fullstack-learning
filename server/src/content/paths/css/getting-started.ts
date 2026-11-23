@@ -473,9 +473,10 @@ export const gettingStartedModule = moduleLesson(
     }),
     pageYourTurn({
       title: "Style only the notes",
-      task: "Give elements with the class `note` a `lightyellow` background, and make only the `h2`s **inside** notes `crimson`. The heading outside stays black.",
+      task: "Give elements with the class `note` a `lightyellow` background, and make only the `h2`s **inside** notes `crimson`. The heading outside stays black, like the rest of the page.",
       starter: [
         "<style>",
+        "  body { color: black; }",
         "</style>",
         '<div class="note"><h2>Milk</h2><p>Buy two.</p></div>',
         '<div class="note"><h2>Bread</h2><p>Brown.</p></div>',
@@ -507,6 +508,7 @@ export const gettingStartedModule = moduleLesson(
       hint: "`.note { background: lightyellow; }` and, with a space, `.note h2 { color: crimson; }`.",
       solution: [
         "<style>",
+        "  body { color: black; }",
         "  .note { background: lightyellow; }",
         "  .note h2 { color: crimson; }",
         "</style>",
