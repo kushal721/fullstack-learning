@@ -80,7 +80,7 @@ export const statesAndTransitionsModule = moduleLesson(
     "focus",
     "Focus you can see",
     explain(
-      "People who use a keyboard press Tab to move between links, buttons and fields, and the **focus ring** shows where they are. `:focus-visible` matches when the browser decides a ring should show: after a key press, not a mouse click. Style it with `outline`, which takes no space; `outline-offset` moves it out from the edge.",
+      "People who use a keyboard press Tab to move between links, buttons and fields, and the **focus ring** shows where they are. `:focus-visible` matches when the browser decides a ring should show: for buttons and links only after a key press, and for text fields always. Style it with `outline`, which takes no space; `outline-offset` moves it out from the edge.",
     ),
     playground("Press Tab to move through these", [
       "<style>",
@@ -93,7 +93,7 @@ export const statesAndTransitionsModule = moduleLesson(
     ]),
     keyPoints(
       "Never remove the outline without putting a visible style back.",
-      "`:focus-visible` shows the ring for keyboards, not for clicks.",
+      "`:focus-visible` skips the ring when a button is clicked.",
       "`:focus-within` matches a parent while something inside has focus.",
     ),
   ),
