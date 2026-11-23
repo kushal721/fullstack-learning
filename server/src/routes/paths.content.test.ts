@@ -15,7 +15,7 @@ const PLANNED: [
 ][] = [
   ["how-the-web-works", 18, 30, 40],
   ["html", 6, 12, 18],
-  ["css", 7, 16, 26],
+  ["css", 7, 15, 25],
   ["javascript", 11, 17, 24],
 ];
 
@@ -146,6 +146,7 @@ const CSS_MODULES: [id: string, number: number][] = [
   ["grid", 8],
   ["media-queries", 9],
   ["positioning", 10],
+  ["states-and-transitions", 11],
   ["cascade", 12],
 ];
 
