@@ -147,6 +147,20 @@ export const cssGlossary: GlossaryEntry[] = [
     { aliases: ["scroll", "overflow hidden", "max-width"] },
   ),
   term(
+    "flex-container",
+    "Flex container and flex items",
+    "The element with `display: flex`, and its direct children, which it lines up.",
+    "Container properties (`flex-direction`, `justify-content`, `align-items`, `gap`, `flex-wrap`) go on the parent; item properties (`flex`, `align-self`) on a child. Grandchildren aren't items. See [[css-flexbox]].",
+    { aliases: ["flex item", "flex items"] },
+  ),
+  term(
+    "flex-grow",
+    "flex-grow, flex-shrink and flex-basis",
+    "How a flex item's size is worked out: a starting size, then shares of the free space.",
+    "`flex-basis` is the starting size, `flex-grow` the share of leftover space it takes, and `flex-shrink` the share of shrinking it accepts. `flex: 1` sets all three for equal sharing. See [[css-flexbox]].",
+    { aliases: ["flex-shrink", "flex-basis", "flex: 1"] },
+  ),
+  term(
     "main-axis",
     "Main axis and cross axis",
     "In flexbox, the direction items flow (main) and the one across it (cross).",
