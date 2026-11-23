@@ -142,6 +142,7 @@ const CSS_MODULES: [id: string, number: number][] = [
   ["box-model", 3],
   ["display-and-sizing", 4],
   ["flexbox", 5],
+  ["backgrounds", 6],
   ["grid", 8],
   ["media-queries", 9],
   ["cascade", 13],
