@@ -11,7 +11,7 @@ import {
   reference,
 } from "../blocks.js";
 
-// Intermediate: steps 19–30. Grid, responsive layouts, positioning, states,
+// Intermediate: steps 17–28. Grid, responsive layouts, positioning, states,
 // which rule wins, and transitions.
 export const intermediate: LevelPlan = {
   outcome:
