@@ -126,6 +126,34 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     { aliases: ["resolver"] },
   ),
   term(
+    "top-level-domain",
+    "Top-level domain (TLD)",
+    "The last part of a domain name, like `.com`, `.org` or `.app`.",
+    "Read a [[domain]] from the right: in `api.notes.app` the TLD is `app`, `notes` is the registered name and `api` a subdomain. Each TLD is run by a registry whose servers know every name under it. Part of [[dns]].",
+    { aliases: ["tld", "tlds", "top-level domains", "subdomain"] },
+  ),
+  term(
+    "name-server",
+    "Name server",
+    "A DNS server that holds a domain's records and answers for it.",
+    "The [[resolver]] finds it by asking a root server (which knows the TLD servers) and then the TLD servers (which know each domain's name servers). The domain's own name server has the real [[dns-record|records]].",
+    {
+      aliases: [
+        "name servers",
+        "nameserver",
+        "authoritative name server",
+        "root server",
+      ],
+    },
+  ),
+  term(
+    "localhost",
+    "localhost",
+    "A name that always means this computer: `127.0.0.1`.",
+    "It's answered by your own operating system (from the hosts file or built in), never by [[dns]], so it works offline. Apps you run while developing live at addresses like `http://localhost:5173`.",
+    { aliases: ["127.0.0.1", "loopback", "hosts file"] },
+  ),
+  term(
     "cache",
     "Caching",
     "Keeping a copy of an answer so you don't have to ask again.",

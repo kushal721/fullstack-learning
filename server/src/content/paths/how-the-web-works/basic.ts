@@ -12,8 +12,9 @@ import {
   tryIt,
   code,
 } from "../blocks.js";
+import { dnsModule } from "./dns.js";
 
-// Basic: steps 1–18. From two computers talking to the whole journey of a
+// Basic: steps 1–16. From two computers talking to the whole journey of a
 // page, no experience needed.
 export const basic: LevelPlan = {
   outcome:
@@ -112,66 +113,7 @@ export const basic: LevelPlan = {
         "The [[path]] (`/notes/7`) names the page on that server. `notes.app` only says which server to ask.",
       ),
     ),
-    lesson(
-      "computers-have-numbers",
-      "Computers have numbers",
-      3,
-      explain(
-        "People remember names like `notes.app`: a [[domain]]. Computers find each other by number: an [[ip-address]] like `76.76.21.21`.",
-      ),
-      keyPoints(
-        "Every device on the internet has an IP address.",
-        "A domain is a name for people; computers use the number.",
-        "Something has to turn the name into the number: next step.",
-      ),
-    ),
-    lesson(
-      "dns",
-      "DNS: names to numbers",
-      3,
-      explain(
-        "[[dns]] turns a domain into an IP address. Your browser asks a [[resolver]]; it finds the answer and passes it back.",
-      ),
-      analogy(
-        "Like your phone's contacts: you tap a name, the phone dials the number.",
-      ),
-      diagram([
-        ["notes.app", "the name you type"],
-        ["DNS", "looks it up"],
-        ["76.76.21.21", "the number"],
-      ]),
-      quickCheck(
-        "What does DNS give the browser?",
-        [
-          "The page's HTML",
-          "The server's IP address for a name",
-          "A faster internet connection",
-        ],
-        1,
-        "DNS answers one question: which [[ip-address]] belongs to this name.",
-      ),
-    ),
-    lesson(
-      "watch-a-lookup",
-      "Watch a lookup",
-      4,
-      scene("dns-lookup"),
-      keyPoints(
-        "The resolver asks the domain's own name server.",
-        "Answers are kept for a while ([[cache|cached]]): the next lookup is instant.",
-        "If DNS fails, the browser can't find the server at all.",
-      ),
-      quickCheck(
-        "Why does the browser need DNS?",
-        [
-          "To make the page look nice",
-          "To find the server's number from its name",
-          "To store your notes",
-        ],
-        1,
-        "The browser can only connect to an IP address. DNS gives it the number for the name you typed.",
-      ),
-    ),
+    dnsModule,
     lesson(
       "http",
       "HTTP: a shared language",
@@ -353,7 +295,7 @@ export const basic: LevelPlan = {
     levelCheck("basic-check", "Basic check", [
       ["web-basic-client", "two-computers-talking"],
       ["web-basic-query", "take-a-url-apart"],
-      ["web-basic-dns-down", "watch-a-lookup"],
+      ["web-basic-dns-down", "dns"],
       ["web-basic-status-ok", "status-codes"],
       ["web-basic-no-styles", "html-css-javascript"],
       ["web-basic-first-step", "the-full-journey"],
