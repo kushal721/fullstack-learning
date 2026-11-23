@@ -275,7 +275,7 @@ export const cssGlossary: GlossaryEntry[] = [
     "z-index",
     "z-index",
     "Which positioned element is drawn on top when they overlap.",
-    "Higher numbers come forward, but only among siblings in the same stacking context. Reach for it only for things that really overlap: menus, dialogs, sticky headers.",
+    "Higher numbers come forward, but only within the same stacking context: a group started by `position` with a `z-index`, `opacity` below 1, a `transform` or `isolation: isolate`. Use it only for things that really overlap: menus, dialogs, sticky headers.",
     { aliases: ["stacking", "layer", "stacking context"] },
   ),
   term(
