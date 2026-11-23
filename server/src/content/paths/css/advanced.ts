@@ -10,9 +10,10 @@ import {
   quickCheck,
   reference,
 } from "../blocks.js";
+import { animationsModule } from "./animations.js";
 
-// Advanced: steps 16–25. Variables, modern selectors, container queries,
-// animation, dark mode, utility CSS and layers.
+// Advanced: steps 16–23. Variables, modern selectors, container queries,
+// animations and transforms (a module), dark mode, utility CSS and layers.
 export const advanced: LevelPlan = {
   outcome:
     "Build themeable, component-friendly styles with variables, modern selectors, animation and dark mode.",
@@ -103,66 +104,7 @@ export const advanced: LevelPlan = {
         "Supported in every current browser.",
       ),
     ),
-    lesson(
-      "animations",
-      "Keyframe animations",
-      3,
-      explain(
-        "A [[keyframes|keyframes animation]] describes steps in time and can run on its own, repeat or alternate, unlike a transition that needs a change to start.",
-      ),
-      playground("A loading pulse", [
-        "<style>",
-        "  @keyframes pulse {",
-        "    from { opacity: 1; transform: scale(1); }",
-        "    to { opacity: .4; transform: scale(.9); }",
-        "  }",
-        "  .dot { width: 24px; height: 24px; border-radius: 50%; background: royalblue;",
-        "    animation: pulse 800ms ease-in-out infinite alternate; }",
-        "</style>",
-        '<div class="dot"></div>',
-      ]),
-      quickCheck(
-        "What does `infinite alternate` do?",
-        [
-          "Runs once",
-          "Repeats forever, going forwards then backwards",
-          "Runs only on hover",
-        ],
-        1,
-        "`infinite` repeats; `alternate` reverses every other time, so it pulses smoothly.",
-      ),
-    ),
-    lesson(
-      "transforms",
-      "Transforms",
-      3,
-      reference("transform functions", [
-        [
-          "translate()",
-          "Move without affecting layout.",
-          "transform: translate(10px, -4px);",
-        ],
-        ["scale()", "Grow or shrink.", "transform: scale(1.1);"],
-        ["rotate()", "Turn.", "transform: rotate(8deg);"],
-        [
-          "transform-origin",
-          "The point it turns or scales around.",
-          "transform-origin: top left;",
-        ],
-      ]),
-      playground("Hover the cards", [
-        "<style>",
-        "  .card { display: inline-block; padding: 16px; margin: 8px; background: #eef3ff;",
-        "    border-radius: 8px; transition: transform 200ms; }",
-        "  .lift:hover { transform: translateY(-6px); }",
-        "  .tilt:hover { transform: rotate(-4deg) scale(1.05); }",
-        "</style>",
-        '<div class="card lift">Lift</div><div class="card tilt">Tilt</div>',
-      ]),
-      explain(
-        "A [[transform]] doesn't move the boxes around it, and browsers animate it cheaply.",
-      ),
-    ),
+    animationsModule,
     lesson(
       "dark-mode",
       "Dark mode",
@@ -250,37 +192,6 @@ export const advanced: LevelPlan = {
         "Declare the order once at the top.",
         "Styles outside any layer beat all layers.",
         "Tailwind puts its utilities in a layer.",
-      ),
-    ),
-    lesson(
-      "motion-and-contrast",
-      "Respect motion and contrast",
-      3,
-      explain(
-        "Some people get dizzy from movement and set their system to [[reduced-motion|reduce motion]]. Turn animations down for them, and keep text contrast high for everyone.",
-      ),
-      code(
-        "css",
-        "turning motion off when asked",
-        [
-          "@media (prefers-reduced-motion: reduce) {",
-          "  *, *::before, *::after {",
-          "    animation-duration: .01ms !important;",
-          "    transition-duration: .01ms !important;",
-          "  }",
-          "}",
-        ],
-        { 1: "only for people who asked for less motion" },
-      ),
-      quickCheck(
-        "Who is `prefers-reduced-motion` for?",
-        [
-          "People whose system asks for less movement",
-          "Slow computers",
-          "Phones only",
-        ],
-        0,
-        "It's an accessibility setting; this platform turns motion off for it too.",
       ),
     ),
     levelCheck("advanced-check", "Advanced check", [

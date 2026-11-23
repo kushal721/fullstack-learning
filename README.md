@@ -117,7 +117,7 @@ The site follows the system's light or dark setting and works from phone width u
   Works → HTML → CSS → JavaScript → Git & GitHub → React → HTTP & APIs →
   Backend → Databases → Authentication → Security → Testing → Deployment →
   How Everything Connects. Topics with a guided path so far: How the Web
-  Works, HTML, CSS and JavaScript (107 steps); the rest show their classic
+  Works, HTML, CSS and JavaScript (105 steps); the rest show their classic
   topic page until their path is written.
 - **Three levels, one count.** Every topic starts at Basic. Numbering carries
   on between levels (for example Basic 1–18, Intermediate 19–30, Advanced
