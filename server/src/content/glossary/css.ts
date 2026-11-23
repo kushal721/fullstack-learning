@@ -180,9 +180,30 @@ export const cssGlossary: GlossaryEntry[] = [
     "A layout in rows and columns at once, set on the parent with `display: grid`.",
     "`grid-template-columns: repeat(3, 1fr)` makes three equal columns; `gap` spaces them. Use grid for two-dimensional layouts and [[css-flexbox|flexbox]] for one row or column.",
     {
-      aliases: ["grid", "display grid", "fr", "grid-template-columns"],
+      aliases: ["grid", "display grid", "grid-template-columns"],
       kind: "concept",
     },
+  ),
+  term(
+    "grid-track",
+    "Tracks, lines and cells",
+    "A grid's columns and rows (tracks), the numbered lines between them, and the cells where they cross.",
+    "Three columns have four column lines, numbered 1 to 4; `-1` is always the last. Items are placed by line: `grid-column: 1 / 3` covers two tracks. See [[css-grid]].",
+    { aliases: ["track", "grid line", "grid lines", "grid cell"] },
+  ),
+  term(
+    "fr-unit",
+    "The fr unit",
+    "A share of the space left in a grid after fixed sizes and gaps.",
+    "`grid-template-columns: 200px 1fr 2fr` gives 200px to the first column, then splits what's left into three shares: one for the second column, two for the third. Part of [[css-grid]].",
+    { aliases: ["fr", "fraction"] },
+  ),
+  term(
+    "grid-area",
+    "Named grid areas",
+    "Laying out a grid by drawing it with names in `grid-template-areas`, then filling each with `grid-area`.",
+    '`grid-template-areas: "head head" "side main"` draws two rows; each item says `grid-area: head` and so on. Every area must be a rectangle. See [[css-grid]].',
+    { aliases: ["grid-template-areas", "named areas", "grid areas"] },
   ),
   term(
     "media-query",
