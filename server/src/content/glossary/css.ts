@@ -75,6 +75,13 @@ export const cssGlossary: GlossaryEntry[] = [
     { aliases: ["values", "keyword"] },
   ),
   term(
+    "combinator",
+    "Combinator",
+    "The part of a selector that says how two elements are related: a space, `>`, `+` or `~`.",
+    "`.card p` (a space) matches a `p` anywhere inside a `.card`; `.menu > li` only direct children; `h2 + p` the next sibling; `h2 ~ p` any later sibling. See [[css-selector]].",
+    { aliases: ["descendant selector", "child selector", "sibling selector"] },
+  ),
+  term(
     "stylesheet",
     "Stylesheet",
     "A `.css` file of rules, linked from the HTML's `<head>`.",

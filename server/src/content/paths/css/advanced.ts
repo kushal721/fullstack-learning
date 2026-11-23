@@ -11,7 +11,7 @@ import {
   reference,
 } from "../blocks.js";
 
-// Advanced: steps 26–35. Variables, modern selectors, container queries,
+// Advanced: steps 22–31. Variables, modern selectors, container queries,
 // animation, dark mode, utility CSS and layers.
 export const advanced: LevelPlan = {
   outcome:

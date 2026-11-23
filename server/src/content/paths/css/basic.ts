@@ -1,7 +1,5 @@
 import type { LevelPlan } from "@fsl/shared";
 import {
-  analogy,
-  code,
   explain,
   lesson,
   levelCheck,
@@ -11,131 +9,15 @@ import {
 } from "../blocks.js";
 import { boxModelModule } from "./box-model.js";
 import { flexboxModule } from "./flexbox.js";
+import { gettingStartedModule } from "./getting-started.js";
 
-// Basic: steps 1–15. Rules and selectors, colours and text, units, the box
-// model and flexbox (modules), display, with live examples to edit.
+// Basic: steps 1–11. Getting started, the box model and flexbox (modules),
+// colours and text, units, display, with live examples to edit.
 export const basic: LevelPlan = {
   outcome:
     "Style a page yourself: pick elements, set colours, fonts and spacing, and line things up with flexbox.",
   steps: [
-    lesson(
-      "what-css-does",
-      "What CSS does",
-      2,
-      explain(
-        "[[css]] decides how a page looks: colours, sizes, spacing and where things sit. The [[html]] says what each part is; CSS says how it looks. Change the CSS and the same page can look completely different.",
-      ),
-      analogy(
-        "If HTML is the walls and rooms of a house, CSS is the paint, the furniture and where it stands.",
-      ),
-      playground("Change the colour and the size", [
-        "<style>",
-        "  h1 { color: crimson; font-size: 40px; }",
-        "  p { color: gray; }",
-        "</style>",
-        "<h1>My notes</h1>",
-        "<p>Try changing crimson to teal, or 40px to 24px.</p>",
-      ]),
-    ),
-    lesson(
-      "rules",
-      "Rules, properties and values",
-      3,
-      explain(
-        "CSS is a list of [[css-rule|rules]]. Each rule has a selector (which elements) and declarations (how they look). A declaration is a [[css-property|property]], a colon, a [[css-value|value]] and a semicolon.",
-      ),
-      code(
-        "css",
-        "one rule",
-        ["p {", "  color: navy;", "  font-size: 18px;", "}"],
-        {
-          1: "selector: every <p>",
-          2: "property: value;",
-          3: "another declaration",
-        },
-      ),
-      quickCheck(
-        "In `h1 { color: red; }`, what is `color`?",
-        ["The selector", "The property", "The value"],
-        1,
-        "`h1` is the selector, `color` the [[css-property|property]] and `red` its [[css-value|value]].",
-      ),
-    ),
-    lesson(
-      "adding-css",
-      "Three ways to add CSS",
-      3,
-      reference("Where CSS can live", [
-        [
-          "<link>",
-          "A separate `.css` file, linked in `<head>`. The usual way.",
-          '<link rel="stylesheet" href="style.css">',
-        ],
-        [
-          "<style>",
-          "Rules inside the page itself, in `<head>`.",
-          "<style> p { color: navy; } </style>",
-        ],
-        [
-          'style="…"',
-          "Declarations on one element. Hard to reuse; avoid.",
-          '<p style="color: navy">',
-        ],
-      ]),
-      explain(
-        "A [[stylesheet]] file can be shared by every page and cached by the browser, so it's the default. The playgrounds here use `<style>` so everything fits in one box.",
-      ),
-      quickCheck(
-        "Your site has 20 pages. Where should the CSS go?",
-        [
-          "In a `style` attribute on each element",
-          "In one stylesheet file linked from every page",
-          "In a `<style>` block copied into each page",
-        ],
-        1,
-        "One [[stylesheet]] means one place to change, and the browser downloads it once.",
-      ),
-    ),
-    lesson(
-      "selectors",
-      "Selectors: picking elements",
-      4,
-      reference("The selectors you'll use most", [
-        ["p", "Every element of that type.", "p { … }"],
-        [".note", 'Every element with `class="note"`.', ".note { … }"],
-        ["#title", 'The one element with `id="title"`.', "#title { … }"],
-        [".card h2", "`h2`s anywhere inside a `.card`.", ".card h2 { … }"],
-        ["h1, h2", "Both: a comma groups selectors.", "h1, h2 { … }"],
-        ["a:hover", "Links while the mouse is over them.", "a:hover { … }"],
-        ["*", "Every element.", "* { box-sizing: border-box; }"],
-      ]),
-      playground("Try different selectors", [
-        "<style>",
-        "  .note { background: lightyellow; }",
-        "  .note h2 { color: darkorange; }",
-        "  #first { border: 2px solid orange; }",
-        "</style>",
-        '<div class="note" id="first"><h2>Milk</h2><p>Buy two.</p></div>',
-        '<div class="note"><h2>Bread</h2><p>Brown.</p></div>',
-      ]),
-      explain(
-        "A [[css-selector|selector]] is a pattern; every element that matches gets the rule's styles.",
-      ),
-    ),
-    lesson(
-      "class-or-id",
-      "Classes, not ids",
-      2,
-      explain(
-        'Style with classes. A class can be reused on many elements and an element can have several (`class="note done"`). An id must be unique, and id selectors are so strong they\'re hard to override.',
-      ),
-      quickCheck(
-        "Ten note cards should look the same. What do you give them?",
-        ["The same id", "The same class", "A style attribute each"],
-        1,
-        "Ids must be unique; a class is made for sharing a look.",
-      ),
-    ),
+    gettingStartedModule,
     lesson(
       "colours",
       "Colours",
@@ -357,8 +239,8 @@ export const basic: LevelPlan = {
       ),
     ),
     levelCheck("basic-check", "Basic check", [
-      ["css-basic-property", "rules"],
-      ["css-basic-class", "class-or-id"],
+      ["css-basic-property", "getting-started"],
+      ["css-basic-class", "getting-started"],
       ["css-basic-rem", "units"],
       ["css-basic-padding", "box-model"],
       ["css-basic-display-none", "display"],

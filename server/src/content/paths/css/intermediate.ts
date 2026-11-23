@@ -13,7 +13,7 @@ import { cascadeModule } from "./cascade.js";
 import { gridModule } from "./grid.js";
 import { responsiveModule } from "./responsive.js";
 
-// Intermediate: steps 16–25. Grid, responsive design and the cascade
+// Intermediate: steps 12–21. Grid, responsive design and the cascade
 // (modules), positioning, states and transitions.
 export const intermediate: LevelPlan = {
   outcome:
