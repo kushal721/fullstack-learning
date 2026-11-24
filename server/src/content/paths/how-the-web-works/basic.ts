@@ -1,22 +1,13 @@
 import type { LevelPlan } from "@fsl/shared";
-import {
-  analogy,
-  diagram,
-  explain,
-  inTheNotesApp,
-  keyPoints,
-  lesson,
-  levelCheck,
-  quickCheck,
-  scene,
-} from "../blocks.js";
+import { levelCheck } from "../blocks.js";
 import { clientsAndServersModule } from "./clients-and-servers.js";
 import { dnsModule } from "./dns.js";
 import { httpModule } from "./http.js";
 import { httpsModule } from "./https.js";
+import { theBrowserModule } from "./the-browser.js";
 import { urlsModule } from "./urls.js";
 
-// Basic: steps 1–10. From two computers talking to the whole journey of a
+// Basic: steps 1–7. From two computers talking to the whole journey of a
 // page, no experience needed.
 export const basic: LevelPlan = {
   outcome:
@@ -27,85 +18,14 @@ export const basic: LevelPlan = {
     dnsModule,
     httpModule,
     httpsModule,
-    lesson(
-      "the-browser",
-      "The browser's job",
-      2,
-      explain(
-        "The [[browser]] is the client you use every day. It sends the requests, reads what comes back and draws the page.",
-      ),
-      keyPoints(
-        "Finds the server (DNS).",
-        "Asks for the page (HTTP).",
-        "Builds what comes back into a page you can use.",
-      ),
-    ),
-    lesson(
-      "html-css-javascript",
-      "HTML, CSS and JavaScript",
-      3,
-      analogy(
-        "Like a house: [[html]] is the walls and rooms, [[css]] the paint and furniture, [[javascript]] the lights and doorbell.",
-      ),
-      diagram([
-        ["HTML", "structure"],
-        ["CSS", "looks"],
-        ["JavaScript", "behaviour"],
-        ["Page", "what you see"],
-      ]),
-      quickCheck(
-        "Which file decides the colour of a button?",
-        ["HTML", "CSS", "JavaScript"],
-        1,
-        "[[css]] controls how things look. [[html]] says a button exists; [[javascript]] says what it does.",
-      ),
-    ),
-    lesson(
-      "one-page-many-files",
-      "One page, many files",
-      3,
-      explain(
-        "The HTML names other files it needs: styles, scripts, images, fonts. Each [[resource]] is its own request and response.",
-      ),
-      inTheNotesApp(
-        "In the Notes App, `index.html` is almost empty: it loads one JavaScript file, and React builds the notes list from there.",
-        { fileId: "frontend/index.html" },
-      ),
-      keyPoints(
-        "A typical page loads dozens of resources.",
-        "They load side by side, so they don't wait for each other.",
-        "Each one can fail on its own: text without styles means the CSS didn't load.",
-      ),
-    ),
-    lesson(
-      "the-full-journey",
-      "The full journey",
-      4,
-      scene("journey"),
-      keyPoints(
-        "You type a [[url]]; [[dns]] finds the server's [[ip-address]].",
-        "The browser sends an HTTP [[request]].",
-        "The server sends a [[response]]: HTML, then CSS and JavaScript.",
-        "The browser builds the page: [[how-the-web-works|how the web works]].",
-      ),
-      quickCheck(
-        "What happens first when you open a website?",
-        [
-          "The server sends the HTML",
-          "The browser asks DNS for the server's address",
-          "The browser draws the page",
-        ],
-        1,
-        "Before any [[http]] can happen, the browser needs the server's address from [[dns]].",
-      ),
-    ),
+    theBrowserModule,
     levelCheck("basic-check", "Basic check", [
       ["web-basic-client", "clients-and-servers"],
       ["web-basic-query", "urls"],
       ["web-basic-dns-down", "dns"],
       ["web-basic-status-ok", "http"],
-      ["web-basic-no-styles", "html-css-javascript"],
-      ["web-basic-first-step", "the-full-journey"],
+      ["web-basic-no-styles", "the-browser"],
+      ["web-basic-first-step", "the-browser"],
     ]),
   ],
 };
