@@ -472,8 +472,29 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     "A signed file that proves a server really owns its domain.",
     "Issued by a certificate authority (Let's Encrypt is free). The browser checks it during the [[tls]] handshake; an expired or wrong one shows a full-page warning.",
     {
-      aliases: ["ssl certificate", "tls certificate", "certificate authority"],
+      aliases: ["ssl certificate", "tls certificate"],
     },
+  ),
+  term(
+    "certificate-authority",
+    "Certificate authority (CA)",
+    "A company browsers trust to check and sign certificates.",
+    "Before signing a [[certificate]], a CA checks you really control the domain. Browsers come with a short list of trusted CAs; a certificate signed by anyone else gets a warning. Let's Encrypt is a free CA.",
+    { aliases: ["ca", "certificate authorities", "let's encrypt"] },
+  ),
+  term(
+    "hsts",
+    "HSTS",
+    "A header that tells the browser to use only HTTPS for a site.",
+    "`Strict-Transport-Security: max-age=31536000` means: for the next year, turn any `http://` link to this site into `https://` before sending it. It stops a first plain-HTTP request from ever leaving. See [[https-basics|HTTPS]].",
+    { aliases: ["strict-transport-security", "strict transport security"] },
+  ),
+  term(
+    "mixed-content",
+    "Mixed content",
+    "An http:// file loaded by an https:// page.",
+    "A plain-HTTP script, style or image could be read or changed on the way, undoing the page's [[https-basics|HTTPS]]. Browsers block mixed scripts and styles, and upgrade or block mixed images. Fix it by loading everything over `https://`.",
+    { aliases: ["mixed-content warning", "insecure content"] },
   ),
   term(
     "dns-record",
