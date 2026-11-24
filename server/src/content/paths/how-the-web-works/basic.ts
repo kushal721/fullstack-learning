@@ -10,11 +10,11 @@ import {
   quickCheck,
   scene,
   tryIt,
-  code,
 } from "../blocks.js";
 import { dnsModule } from "./dns.js";
+import { httpModule } from "./http.js";
 
-// Basic: steps 1–16. From two computers talking to the whole journey of a
+// Basic: steps 1–13. From two computers talking to the whole journey of a
 // page, no experience needed.
 export const basic: LevelPlan = {
   outcome:
@@ -114,89 +114,7 @@ export const basic: LevelPlan = {
       ),
     ),
     dnsModule,
-    lesson(
-      "http",
-      "HTTP: a shared language",
-      3,
-      explain(
-        "Once the browser has the address, it sends a [[request]]. The server sends back a [[response]]. Both speak the same language: [[http]].",
-      ),
-      diagram([
-        ["Request", "GET /notes"],
-        ["Server", "does the work"],
-        ["Response", "200 OK + data"],
-      ]),
-      explain(
-        "One request, one response: this [[request-response|request–response cycle]] is the heartbeat of the web.",
-      ),
-    ),
-    lesson(
-      "methods",
-      "Methods: what you want to do",
-      3,
-      explain(
-        "Every request starts with a [[method]], a verb. [[get]] means “give me this”. [[post]] means “here is something new”.",
-      ),
-      keyPoints(
-        "**GET** /notes: load your notes.",
-        "**POST** /notes: create a note.",
-        "**PUT** or **PATCH** /notes/7: change note 7.",
-        "**DELETE** /notes/7: remove it.",
-      ),
-      quickCheck(
-        "You click **Save** on a brand-new note. Which method does the app send?",
-        ["GET", "POST", "DELETE"],
-        1,
-        "Creating something new is a [[post]]. [[get]] only reads.",
-      ),
-    ),
-    lesson(
-      "a-request-up-close",
-      "What a request looks like",
-      4,
-      code(
-        "http",
-        "a request and its response",
-        [
-          "GET /notes HTTP/1.1",
-          "Host: notes.app",
-          "Accept: application/json",
-          "",
-          "HTTP/1.1 200 OK",
-          "Content-Type: application/json",
-          "",
-          '[{"id":7,"title":"Shopping"}]',
-        ],
-        {
-          1: "method + path: what you want",
-          2: "a header: which site",
-          5: "status: how it went",
-          8: "the body: the actual data",
-        },
-      ),
-      explain(
-        "Lines like `Host:` and `Content-Type:` are [[header|headers]]: extra information about the message, not the content itself.",
-      ),
-    ),
-    lesson(
-      "status-codes",
-      "How did it go? Status codes",
-      3,
-      explain(
-        "Every response starts with a [[status-code]]. The first digit tells you the kind of answer: 2xx worked, 3xx look elsewhere, 4xx your request had a problem, 5xx the server did.",
-      ),
-      tryIt("status-codes"),
-      quickCheck(
-        "A response says `404`. What happened?",
-        [
-          "Everything worked",
-          "The page you asked for doesn't exist",
-          "The server crashed",
-        ],
-        1,
-        "4xx codes mean the request had a problem; 404 means “not found”. A crash would be 5xx.",
-      ),
-    ),
+    httpModule,
     lesson(
       "https",
       "HTTPS and the padlock",
@@ -296,7 +214,7 @@ export const basic: LevelPlan = {
       ["web-basic-client", "two-computers-talking"],
       ["web-basic-query", "take-a-url-apart"],
       ["web-basic-dns-down", "dns"],
-      ["web-basic-status-ok", "status-codes"],
+      ["web-basic-status-ok", "http"],
       ["web-basic-no-styles", "html-css-javascript"],
       ["web-basic-first-step", "the-full-journey"],
     ]),
