@@ -227,6 +227,20 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     { aliases: ["status", "200", "404", "500"] },
   ),
   term(
+    "message-body",
+    "Body",
+    "The data a request or response carries, after its headers.",
+    "A blank line separates the [[header|headers]] from the body. A [[post]] sends the new thing in its body; a [[response]] sends the page or data back in its. The [[content-type]] header says what format it is in, like JSON.",
+    { aliases: ["request body", "response body", "payload"] },
+  ),
+  term(
+    "idempotent",
+    "Idempotent",
+    "Sending a request twice ends the same as sending it once.",
+    "PUT and DELETE are idempotent: deleting note 7 twice still leaves note 7 deleted. [[post]] isn't: sending it twice makes two things. [[get]] is idempotent too, and also *safe*: it changes nothing.",
+    { aliases: ["idempotency", "safe method", "repeatable"] },
+  ),
+  term(
     "https-basics",
     "HTTPS",
     "HTTP with encryption, shown by the padlock in the address bar.",

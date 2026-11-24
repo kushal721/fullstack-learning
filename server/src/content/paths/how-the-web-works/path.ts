@@ -2,10 +2,10 @@ import type { TopicPath } from "@fsl/shared";
 import { advanced } from "./advanced.js";
 import { basic } from "./basic.js";
 import { intermediate } from "./intermediate.js";
-import { dnsScene, journeyScene } from "./scenes.js";
+import { dnsScene, httpScene, journeyScene } from "./scenes.js";
 
-// How the Web Works: 16 Basic, 12 Intermediate and 10 Advanced steps,
-// numbered 1–38 straight through.
+// How the Web Works: 13 Basic, 12 Intermediate and 10 Advanced steps,
+// numbered 1–35 straight through.
 export const howTheWebWorksPath: TopicPath = {
   topicId: "how-the-web-works",
   summary: {
@@ -14,6 +14,6 @@ export const howTheWebWorksPath: TopicPath = {
     how: "Your browser finds the server (DNS), asks it for the page (HTTP request), and builds what comes back (HTML, CSS, JS).",
   },
   overviewSceneId: "journey",
-  scenes: [journeyScene, dnsScene],
+  scenes: [journeyScene, dnsScene, httpScene],
   levels: { basic, intermediate, advanced },
 };

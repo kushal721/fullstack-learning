@@ -71,6 +71,60 @@ export const journeyScene: Scene = {
   ],
 };
 
+export const httpScene: Scene = {
+  id: "http-exchange",
+  title: "Saving a note, then loading the list",
+  actors: [
+    { id: "browser", label: "Browser", sub: "the Notes App" },
+    { id: "server", label: "API server", sub: "Express" },
+    { id: "database", label: "Database", sub: "PostgreSQL" },
+  ],
+  steps: [
+    {
+      from: "browser",
+      to: "server",
+      message: "POST /api/notes",
+      caption: "You click Save, and the browser sends a request.",
+      detail: "Method POST (create), path /api/notes, the note as a JSON body.",
+    },
+    {
+      from: "server",
+      to: "database",
+      message: "INSERT note",
+      caption: "The server checks the note, then stores it.",
+      detail: "The browser never talks to the database; only the server does.",
+    },
+    {
+      from: "database",
+      to: "server",
+      message: "saved: id 8",
+      caption: "The database saves it and gives it an id.",
+      detail: "This is the server's own business, not part of HTTP.",
+    },
+    {
+      from: "server",
+      to: "browser",
+      message: "201 Created · JSON",
+      caption: "The server answers: status 201 and the saved note.",
+      detail: "One request, one response. 201 means something new was made.",
+    },
+    {
+      from: "browser",
+      to: "server",
+      message: "GET /api/notes",
+      caption: "Later, the app asks for the whole list.",
+      detail: "GET only reads, so it never changes anything.",
+    },
+    {
+      from: "server",
+      to: "browser",
+      message: "200 OK · [notes]",
+      caption: "The server sends the list back, newest first.",
+      detail: "200 means it worked; the body is the notes as JSON.",
+    },
+  ],
+};
+
 export const dnsScene: Scene = {
   id: "dns-lookup",
   title: "Finding the server's address",

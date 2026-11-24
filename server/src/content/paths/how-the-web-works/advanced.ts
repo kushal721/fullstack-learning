@@ -10,7 +10,7 @@ import {
   quickCheck,
 } from "../blocks.js";
 
-// Advanced: steps 29–38. The details professionals need: security, speed
+// Advanced: steps 26–35. The details professionals need: security, speed
 // and scale, ending with the Notes App's real path in production.
 export const advanced: LevelPlan = {
   outcome:
