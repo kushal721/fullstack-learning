@@ -122,6 +122,27 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     { aliases: ["query", "parameters", "query parameters"] },
   ),
   term(
+    "fragment",
+    "Fragment",
+    "The part of a URL after #, pointing to a spot on the page.",
+    "In `https://notes.app/help#install` the fragment is `install`: the browser scrolls to the element with that `id`. It is never sent to the [[server]], so changing only the fragment makes no [[request]].",
+    { aliases: ["hash", "anchor link", "#"] },
+  ),
+  term(
+    "percent-encoding",
+    "Percent-encoding",
+    "Writing special characters in a URL as % and two hex digits.",
+    "Characters that mean something in a [[url]] (`&`, `?`, `#`, `/`) or aren't allowed (spaces) are encoded inside values: a space is `%20` (or `+` in a [[query]]), `&` is `%26`. In JavaScript, `URLSearchParams` and `encodeURIComponent` do it for you.",
+    { aliases: ["url encoding", "encodeURIComponent", "%20"] },
+  ),
+  term(
+    "relative-url",
+    "Relative URL",
+    "A URL worked out from the page it's on, like /about or 8.",
+    "A leading `/` starts from the site's root; no slash replaces the last part of the current [[path]]; `?…` keeps the path and changes the [[query]]. A full URL with a scheme is *absolute* and used as it is.",
+    { aliases: ["relative link", "absolute url", "relative path"] },
+  ),
+  term(
     "ip-address",
     "IP address",
     "A computer's number on the internet, like 76.76.21.21.",

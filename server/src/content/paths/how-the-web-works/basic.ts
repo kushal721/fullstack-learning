@@ -9,52 +9,20 @@ import {
   levelCheck,
   quickCheck,
   scene,
-  tryIt,
 } from "../blocks.js";
 import { clientsAndServersModule } from "./clients-and-servers.js";
 import { dnsModule } from "./dns.js";
 import { httpModule } from "./http.js";
+import { urlsModule } from "./urls.js";
 
-// Basic: steps 1–11. From two computers talking to the whole journey of a
+// Basic: steps 1–10. From two computers talking to the whole journey of a
 // page, no experience needed.
 export const basic: LevelPlan = {
   outcome:
     "Explain everything that happens between typing an address and seeing the page.",
   steps: [
     clientsAndServersModule,
-    lesson(
-      "urls",
-      "Addresses: URLs",
-      2,
-      explain(
-        "Every page on the web has an address, called a [[url]]. It tells the browser *which* computer to talk to and *what* to ask it for.",
-      ),
-      analogy(
-        "Like a postal address: the city gets the letter to the right building, the flat number to the right door.",
-      ),
-      inTheNotesApp(
-        "Every screen in the Notes App has its own URL. `App.jsx` decides which page to show for each one.",
-        { fileId: "frontend/src/App.jsx" },
-      ),
-    ),
-    lesson(
-      "take-a-url-apart",
-      "Take a URL apart",
-      4,
-      tryIt("url-anatomy"),
-      keyPoints(
-        "[[protocol|Protocol]] (`https://`): how to talk.",
-        "[[domain|Domain]] (`notes.app`): which server to talk to.",
-        "[[path|Path]] (`/notes/7`): what you want from it.",
-        "[[query|Query]] (`?sort=new`): extra options for the request.",
-      ),
-      quickCheck(
-        "In `https://notes.app/notes/7`, which part says *which page* you want?",
-        ["`https`", "`notes.app`", "`/notes/7`"],
-        2,
-        "The [[path]] (`/notes/7`) names the page on that server. `notes.app` only says which server to ask.",
-      ),
-    ),
+    urlsModule,
     dnsModule,
     httpModule,
     lesson(
@@ -154,7 +122,7 @@ export const basic: LevelPlan = {
     ),
     levelCheck("basic-check", "Basic check", [
       ["web-basic-client", "clients-and-servers"],
-      ["web-basic-query", "take-a-url-apart"],
+      ["web-basic-query", "urls"],
       ["web-basic-dns-down", "dns"],
       ["web-basic-status-ok", "http"],
       ["web-basic-no-styles", "html-css-javascript"],
