@@ -121,6 +121,7 @@ const WEB_MODULES: [id: string, number: number][] = [
   ["the-browser", 6],
   ["ports-and-tcp", 8],
   ["cookies-and-caching", 9],
+  ["apis-and-json", 10],
 ];
 
 describe.each(WEB_MODULES)("the How the Web Works %s module", (id, number) => {
