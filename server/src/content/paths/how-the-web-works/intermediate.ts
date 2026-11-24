@@ -10,9 +10,10 @@ import {
 } from "../blocks.js";
 import { apisAndJsonModule } from "./apis-and-json.js";
 import { cookiesAndCachingModule } from "./cookies-and-caching.js";
+import { hostingAndCdnsModule } from "./hosting-and-cdns.js";
 import { portsAndTcpModule } from "./ports-and-tcp.js";
 
-// Intermediate: steps 8–15. How it really works, enough to build the Notes
+// Intermediate: steps 8–14. How it really works, enough to build the Notes
 // App: connections, headers, cookies, caching, APIs and where code runs.
 export const intermediate: LevelPlan = {
   outcome:
@@ -21,42 +22,7 @@ export const intermediate: LevelPlan = {
     portsAndTcpModule,
     cookiesAndCachingModule,
     apisAndJsonModule,
-    lesson(
-      "hosting",
-      "Where servers live: hosting",
-      3,
-      explain(
-        "Your server has to run somewhere that's always on and connected: that's [[web-hosting|hosting]]. Most apps rent machines in the [[cloud]] instead of owning them.",
-      ),
-      keyPoints(
-        "You pay for what you use, by the hour or month.",
-        "Your domain's DNS points at the host's IP address.",
-        "The Notes App ships as a Docker image to a cloud host.",
-      ),
-    ),
-    lesson(
-      "cdns",
-      "CDNs: closer to you",
-      3,
-      explain(
-        "A [[cdn]] keeps copies of your files on servers all over the world. A visitor gets them from the nearest one, which cuts the waiting time.",
-      ),
-      diagram([
-        ["Visitor in Tokyo", "asks for app.js"],
-        ["CDN in Tokyo", "has a copy"],
-        ["Your server", "asked only once"],
-      ]),
-      quickCheck(
-        "What does a CDN mainly save?",
-        [
-          "Waiting time, by serving files from nearby",
-          "Disk space on the visitor's phone",
-          "The need for HTTPS",
-        ],
-        0,
-        "Being close cuts the distance every [[request]] travels.",
-      ),
-    ),
+    hostingAndCdnsModule,
     lesson(
       "rendering",
       "How the page is drawn",
