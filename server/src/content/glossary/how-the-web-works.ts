@@ -309,6 +309,13 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     { aliases: ["web browser", "chrome", "safari", "firefox"] },
   ),
   term(
+    "browser-engine",
+    "Browser engine",
+    "The part of a browser that turns HTML, CSS and JavaScript into a page.",
+    "Chrome and Edge use Blink, Safari uses WebKit and Firefox uses Gecko. Every browser on an iPhone uses WebKit. Engines follow the same web standards, which is why one page works in all of them, though new features reach each engine at different times. See [[rendering]].",
+    { aliases: ["rendering engine", "blink", "webkit", "gecko"] },
+  ),
+  term(
     "html",
     "HTML",
     "The language that gives a page its structure: headings, text, links, buttons.",
