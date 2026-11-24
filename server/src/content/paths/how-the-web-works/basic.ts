@@ -13,6 +13,7 @@ import {
 import { clientsAndServersModule } from "./clients-and-servers.js";
 import { dnsModule } from "./dns.js";
 import { httpModule } from "./http.js";
+import { httpsModule } from "./https.js";
 import { urlsModule } from "./urls.js";
 
 // Basic: steps 1–10. From two computers talking to the whole journey of a
@@ -25,29 +26,7 @@ export const basic: LevelPlan = {
     urlsModule,
     dnsModule,
     httpModule,
-    lesson(
-      "https",
-      "HTTPS and the padlock",
-      3,
-      explain(
-        "[[https-basics|HTTPS]] is HTTP with [[encryption]]. The messages are scrambled on the way, so nobody in between can read or change them.",
-      ),
-      keyPoints(
-        "The padlock in the address bar means HTTPS.",
-        "On café Wi-Fi, others see only noise, not your password.",
-        "Every real site uses HTTPS; browsers warn when it doesn't.",
-      ),
-      quickCheck(
-        "You log in on café Wi-Fi over HTTPS. What can someone else on the Wi-Fi read?",
-        [
-          "Your password",
-          "Nothing useful: the messages are encrypted",
-          "Everything you type",
-        ],
-        1,
-        "With HTTPS everything between you and the server is encrypted.",
-      ),
-    ),
+    httpsModule,
     lesson(
       "the-browser",
       "The browser's job",

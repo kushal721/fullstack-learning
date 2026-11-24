@@ -117,6 +117,7 @@ const WEB_MODULES: [id: string, number: number][] = [
   ["urls", 2],
   ["dns", 3],
   ["http", 4],
+  ["https", 5],
 ];
 
 describe.each(WEB_MODULES)("the How the Web Works %s module", (id, number) => {
