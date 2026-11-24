@@ -472,6 +472,27 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     { aliases: ["content delivery network"] },
   ),
   term(
+    "edge-server",
+    "Edge server",
+    "One of a CDN's servers, in a city near visitors.",
+    "A visitor reaches the nearest edge. If it has a copy of the file it answers at once (a *cache hit*); if not (a *miss*) it fetches it from your own server, the *origin*, and keeps a copy as [[cache-control]] allows. See [[cdn]].",
+    { aliases: ["edge", "cache hit", "cache miss", "origin server", "pop"] },
+  ),
+  term(
+    "static-hosting",
+    "Static hosting",
+    "Hosting that serves ready-made files and runs no code of yours.",
+    "A built React app is just files (HTML, JavaScript, CSS), so a static host or [[cdn]] can serve it, often for free. An API needs [[web-hosting|hosting]] that runs your program.",
+    { aliases: ["static host", "static site"] },
+  ),
+  term(
+    "health-check",
+    "Health check",
+    "A URL a host calls to ask “is this copy of the app working?”.",
+    'The Notes API answers `GET /api/health` with `{"status":"ok"}`. During a deploy the host only sends visitors to a new copy once its health check passes, and restarts copies that stop answering.',
+    { aliases: ["healthcheck", "/api/health", "readiness check"] },
+  ),
+  term(
     "dom",
     "DOM",
     "The browser's live tree of everything on the page, built from the HTML.",
