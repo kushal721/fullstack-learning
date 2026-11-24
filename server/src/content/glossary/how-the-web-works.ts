@@ -588,6 +588,13 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     { aliases: ["cross-origin", "access-control-allow-origin"] },
   ),
   term(
+    "cors-preflight",
+    "Preflight request",
+    "An OPTIONS request the browser sends first to ask a server for permission.",
+    "Before a cross-origin request with JSON, cookies, custom headers or a method like PUT or DELETE, the browser sends `OPTIONS` with an `Origin` header. Only if the answer's `Access-Control-Allow-…` headers allow it does the real request go. See [[cors-basics|CORS]].",
+    { aliases: ["preflight", "options request"] },
+  ),
+  term(
     "load-balancer",
     "Load balancer",
     "A server that spreads incoming requests over several copies of your app.",
@@ -600,6 +607,13 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     "A server that sits between client and server and passes messages on.",
     "A reverse proxy sits in front of your app: it handles [[https-basics|HTTPS]], [[cache|caching]] and compression, and often [[load-balancer|load balancing]], so your app only has to do the logic.",
     { aliases: ["reverse proxy", "nginx"] },
+  ),
+  term(
+    "reverse-proxy",
+    "Reverse proxy",
+    "A server in front of your app that handles shared jobs for it.",
+    "Browsers talk to the reverse proxy, which handles HTTPS, compression and caching, and sends each request on to the right app: `/api` to the API, everything else to static files. It's how one domain can serve both. See [[proxy]].",
+    { aliases: ["nginx", "caddy", "gateway"] },
   ),
   term(
     "latency",
