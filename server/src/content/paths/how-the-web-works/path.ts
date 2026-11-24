@@ -4,8 +4,8 @@ import { basic } from "./basic.js";
 import { intermediate } from "./intermediate.js";
 import { dnsScene, httpScene, journeyScene } from "./scenes.js";
 
-// How the Web Works: 13 Basic, 12 Intermediate and 10 Advanced steps,
-// numbered 1–35 straight through.
+// How the Web Works: 11 Basic, 12 Intermediate and 10 Advanced steps,
+// numbered 1–33 straight through.
 export const howTheWebWorksPath: TopicPath = {
   topicId: "how-the-web-works",
   summary: {

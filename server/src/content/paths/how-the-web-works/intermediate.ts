@@ -11,7 +11,7 @@ import {
   quickCheck,
 } from "../blocks.js";
 
-// Intermediate: steps 14–25. How it really works, enough to build the Notes
+// Intermediate: steps 12–23. How it really works, enough to build the Notes
 // App: connections, headers, cookies, caching, APIs and where code runs.
 export const intermediate: LevelPlan = {
   outcome:
