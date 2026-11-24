@@ -1,6 +1,5 @@
 import type { LevelPlan } from "@fsl/shared";
 import {
-  code,
   diagram,
   explain,
   inTheNotesApp,
@@ -9,6 +8,7 @@ import {
   levelCheck,
   quickCheck,
 } from "../blocks.js";
+import { apisAndJsonModule } from "./apis-and-json.js";
 import { cookiesAndCachingModule } from "./cookies-and-caching.js";
 import { portsAndTcpModule } from "./ports-and-tcp.js";
 
@@ -20,41 +20,7 @@ export const intermediate: LevelPlan = {
   steps: [
     portsAndTcpModule,
     cookiesAndCachingModule,
-    lesson(
-      "apis-and-json",
-      "APIs and JSON",
-      4,
-      explain(
-        "Pages are for people. An [[api]] is for programs: URLs that return data instead of a page, usually as [[json-data|JSON]].",
-      ),
-      code(
-        "http",
-        "the Notes App API",
-        [
-          "GET /api/notes HTTP/1.1",
-          "",
-          "HTTP/1.1 200 OK",
-          "Content-Type: application/json",
-          "",
-          '[{"id":7,"title":"Shopping","done":false}]',
-        ],
-        { 1: "a program asks", 6: "data, not a page" },
-      ),
-      inTheNotesApp(
-        "The React client asks the API for your notes, gets JSON and draws the list itself.",
-        { flowId: "list-notes" },
-      ),
-      quickCheck(
-        "What does an API usually send back?",
-        [
-          "Data for a program to use, often JSON",
-          "A finished page with styling",
-          "An IP address",
-        ],
-        0,
-        "An [[api]] returns data; the client decides how to show it.",
-      ),
-    ),
+    apisAndJsonModule,
     lesson(
       "hosting",
       "Where servers live: hosting",

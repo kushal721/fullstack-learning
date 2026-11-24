@@ -437,6 +437,13 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     { aliases: ["javascript object notation", "application/json"] },
   ),
   term(
+    "json-parse",
+    "JSON.parse and JSON.stringify",
+    "The two functions that turn JSON text into values and back.",
+    "`JSON.stringify(value)` turns a value into [[json-data|JSON]] text to send; `JSON.parse(text)` turns JSON text back into a value, and throws on invalid JSON. `response.json()` and Express's `res.json()` call them for you.",
+    { aliases: ["json.parse", "json.stringify", "serialize", "parse json"] },
+  ),
+  term(
     "api",
     "API",
     "URLs a program can call to get or change data, instead of pages for people.",
