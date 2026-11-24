@@ -67,6 +67,27 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     "Your home Wi-Fi is a small network. The [[internet]] is a network of networks. Every device on a network has an [[ip-address]].",
   ),
   term(
+    "router",
+    "Router",
+    "A device that passes packets between networks, one hop closer each time.",
+    "Your Wi-Fi box is a router: it joins your home [[network]] to your provider's. Routers across the [[internet]] read each [[packet]]'s destination and send it on; each one only knows the next step, not the whole route.",
+    { aliases: ["routers", "hop", "traceroute"] },
+  ),
+  term(
+    "isp",
+    "Internet provider (ISP)",
+    "The company that connects your home or phone to the internet.",
+    "An ISP (internet service provider) runs the [[network]] between your [[router]] and the rest of the [[internet]]. It usually runs a DNS [[resolver]] for you too.",
+    { aliases: ["internet service provider", "internet provider", "provider"] },
+  ),
+  term(
+    "data-centre",
+    "Data centre",
+    "A building full of always-on computers that run servers.",
+    "Data centres have fast connections, backup power and cooling, so [[server|servers]] can answer requests all day. “The cloud” is renting computers in someone else's data centre ([[cloud]]).",
+    { aliases: ["data center", "datacenter", "server room"] },
+  ),
+  term(
     "url",
     "URL",
     "A web address: which server to ask, and what to ask it for.",

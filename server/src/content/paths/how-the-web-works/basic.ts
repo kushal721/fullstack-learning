@@ -11,75 +11,17 @@ import {
   scene,
   tryIt,
 } from "../blocks.js";
+import { clientsAndServersModule } from "./clients-and-servers.js";
 import { dnsModule } from "./dns.js";
 import { httpModule } from "./http.js";
 
-// Basic: steps 1–13. From two computers talking to the whole journey of a
+// Basic: steps 1–11. From two computers talking to the whole journey of a
 // page, no experience needed.
 export const basic: LevelPlan = {
   outcome:
     "Explain everything that happens between typing an address and seeing the page.",
   steps: [
-    lesson(
-      "two-computers-talking",
-      "Two computers talking",
-      3,
-      explain(
-        "Every time you use a website, two computers are talking. Your device **asks** for something; another computer, far away, **answers**. The one that asks is the [[client]]. The one that answers is the [[server]].",
-      ),
-      analogy(
-        "Like a restaurant: you (the client) order from the menu, the kitchen (the server) cooks and sends the food out.",
-      ),
-      diagram(
-        [
-          ["Client", "your browser"],
-          ["Server", "a computer far away"],
-        ],
-        true,
-      ),
-    ),
-    lesson(
-      "who-is-who",
-      "Who is who",
-      3,
-      keyPoints(
-        "A [[client]] asks: your browser or a phone app.",
-        "A [[server]] answers: it is always on and has the data.",
-        "One server answers many clients at the same time.",
-        "This split is the [[client-server|client–server model]].",
-      ),
-      quickCheck(
-        "Which of these is a server?",
-        [
-          "Your phone's browser",
-          "The computer that stores everyone's notes and sends them out",
-          "Your keyboard",
-        ],
-        1,
-        "The server is the always-on computer with the data. Your browser is the [[client]] that asks it.",
-      ),
-    ),
-    lesson(
-      "internet-and-web",
-      "The internet and the web",
-      3,
-      explain(
-        "The [[internet]] is the roads: cables and Wi-Fi joining billions of computers into one huge [[network]]. The [[web]] is one thing that travels on those roads: the pages and apps you open in a [[browser]].",
-      ),
-      analogy(
-        "The internet is the road system; the web is the delivery vans on it. Email and video calls are other vehicles on the same roads.",
-      ),
-      quickCheck(
-        "Are the internet and the web the same thing?",
-        [
-          "Yes, two names for one thing",
-          "No: the web is one service that runs on the internet",
-          "No: the internet runs on the web",
-        ],
-        1,
-        "The internet is the network. The web (pages, links, browsers) is one of the things that use it.",
-      ),
-    ),
+    clientsAndServersModule,
     lesson(
       "urls",
       "Addresses: URLs",
@@ -211,7 +153,7 @@ export const basic: LevelPlan = {
       ),
     ),
     levelCheck("basic-check", "Basic check", [
-      ["web-basic-client", "two-computers-talking"],
+      ["web-basic-client", "clients-and-servers"],
       ["web-basic-query", "take-a-url-apart"],
       ["web-basic-dns-down", "dns"],
       ["web-basic-status-ok", "http"],
