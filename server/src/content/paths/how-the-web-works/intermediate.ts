@@ -9,110 +9,17 @@ import {
   levelCheck,
   quickCheck,
 } from "../blocks.js";
+import { cookiesAndCachingModule } from "./cookies-and-caching.js";
 import { portsAndTcpModule } from "./ports-and-tcp.js";
 
-// Intermediate: steps 8–18. How it really works, enough to build the Notes
+// Intermediate: steps 8–15. How it really works, enough to build the Notes
 // App: connections, headers, cookies, caching, APIs and where code runs.
 export const intermediate: LevelPlan = {
   outcome:
     "Read real requests and responses, and know how cookies, caching and APIs fit in.",
   steps: [
     portsAndTcpModule,
-    lesson(
-      "headers-up-close",
-      "Headers up close",
-      4,
-      code(
-        "http",
-        "a response's headers",
-        [
-          "HTTP/1.1 200 OK",
-          "Content-Type: application/json",
-          "Cache-Control: no-store",
-          "Set-Cookie: session=abc123; HttpOnly; Secure",
-          "Content-Length: 58",
-        ],
-        {
-          2: "what kind of data",
-          3: "may it be kept?",
-          4: "please remember this",
-          5: "how big the body is",
-        },
-      ),
-      explain(
-        "[[content-type]] tells the browser what the body is. The others control caching and cookies: the next two steps.",
-      ),
-      quickCheck(
-        "Which header tells the browser the body is JSON?",
-        ["`Content-Type`", "`Cache-Control`", "`Set-Cookie`"],
-        0,
-        "[[content-type]] names the kind of data: `application/json` here.",
-      ),
-    ),
-    lesson(
-      "cookies",
-      "HTTP forgets: cookies",
-      4,
-      explain(
-        "HTTP is [[stateless]]: each request stands alone and the server doesn't remember the last one. So how do you stay logged in?",
-      ),
-      explain(
-        "When you log in, the server sends a [[cookie]]. The browser sends it back with every later request, and the server uses it to find your [[session]].",
-      ),
-      diagram([
-        ["Log in", "POST /login"],
-        ["Set-Cookie", "server → browser"],
-        ["Cookie", "sent every time"],
-        ["You're known", "the session"],
-      ]),
-    ),
-    lesson(
-      "caching",
-      "Caching: don't ask twice",
-      3,
-      explain(
-        "A cache keeps a copy of a response so it doesn't have to be fetched again. The [[cache-control]] header says how long a copy may be kept.",
-      ),
-      keyPoints(
-        "`max-age=31536000`: keep it a year (files named after their content).",
-        "`no-cache`: keep it, but check with the server first.",
-        "`no-store`: never keep it (private data like your notes).",
-      ),
-      quickCheck(
-        "Why should your notes be sent with `no-store`?",
-        [
-          "They're private and change often",
-          "They're too big",
-          "Browsers can't cache JSON",
-        ],
-        0,
-        "Private, changing data should never sit in a shared or stale cache.",
-      ),
-    ),
-    lesson(
-      "redirects",
-      "Redirects",
-      2,
-      explain(
-        "A [[redirect]] is a response that says “what you want is over there”. The browser follows it on its own.",
-      ),
-      code(
-        "http",
-        "a redirect",
-        [
-          "GET /old-page HTTP/1.1",
-          "",
-          "HTTP/1.1 301 Moved Permanently",
-          "Location: https://notes.app/new-page",
-        ],
-        { 3: "3xx: look elsewhere", 4: "where to go" },
-      ),
-      keyPoints(
-        "`http://` → `https://` is usually a redirect.",
-        "301 means permanent; 302 and 307 mean temporary.",
-        "You only see the new address in the address bar.",
-      ),
-    ),
+    cookiesAndCachingModule,
     lesson(
       "apis-and-json",
       "APIs and JSON",
@@ -231,8 +138,8 @@ export const intermediate: LevelPlan = {
     ),
     levelCheck("intermediate-check", "Intermediate check", [
       ["web-intermediate-port", "ports-and-tcp"],
-      ["web-intermediate-stateless", "cookies"],
-      ["web-intermediate-no-store", "caching"],
+      ["web-intermediate-stateless", "cookies-and-caching"],
+      ["web-intermediate-no-store", "cookies-and-caching"],
       ["web-intermediate-api", "apis-and-json"],
     ]),
   ],

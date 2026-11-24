@@ -396,6 +396,13 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     { aliases: ["cookies", "set-cookie"] },
   ),
   term(
+    "cookie-attributes",
+    "Cookie attributes",
+    "Settings on a cookie: how long it lasts, where it's sent, who can read it.",
+    "`Max-Age` says how long to keep it; `Path` where to send it. `HttpOnly` hides it from the page's scripts, `Secure` keeps it to [[https-basics|HTTPS]], and `SameSite` keeps it off requests other sites start. Login [[cookie|cookies]] should have all three.",
+    { aliases: ["httponly", "samesite", "secure cookie", "max-age"] },
+  ),
+  term(
     "session",
     "Session",
     "The server's memory of one logged-in visitor, found through a cookie.",
@@ -407,6 +414,13 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     "The header that says if and how long a response may be cached.",
     "`max-age=3600` means keep it for an hour. `no-cache` means keep it but check first. `no-store` means never keep it, used for private data like your notes. See [[cache]].",
     { aliases: ["max-age", "no-store", "no-cache"] },
+  ),
+  term(
+    "etag",
+    "ETag",
+    "A fingerprint of a response, used to ask “has it changed?”.",
+    "The server sends `ETag` with a response. Later the browser sends it back in `If-None-Match`; if the content is the same, the server answers `304 Not Modified` with no body and the browser reuses its [[cache|cached]] copy. Express adds ETags by default.",
+    { aliases: ["if-none-match", "304", "not modified", "revalidation"] },
   ),
   term(
     "redirect",
