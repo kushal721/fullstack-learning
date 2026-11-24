@@ -623,6 +623,13 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     { kind: "concept", aliases: ["delay", "round trip", "rtt"] },
   ),
   term(
+    "core-web-vitals",
+    "Core Web Vitals",
+    "Three numbers for how fast a page feels: LCP, INP and CLS.",
+    "LCP (largest contentful paint) is when the main content appears: good is 2.5 s or less. INP (interaction to next paint) is how fast clicks respond: 200 ms or less. CLS (cumulative layout shift) is how much things jump: 0.1 or less. Lighthouse in [[devtools]] measures them.",
+    { aliases: ["lcp", "inp", "cls", "web vitals", "lighthouse"] },
+  ),
+  term(
     "websocket",
     "WebSocket",
     "A connection that stays open so the server can send messages at any time.",
