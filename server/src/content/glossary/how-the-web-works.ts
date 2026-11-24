@@ -362,6 +362,13 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     { aliases: ["transmission control protocol", "connection"] },
   ),
   term(
+    "udp",
+    "UDP",
+    "A fast way to send packets with no handshake and no resending.",
+    "Unlike [[tcp]], UDP doesn't number, confirm or resend [[packet|packets]]: a lost one stays lost. That suits video calls, games and [[dns]] lookups, where late is as bad as lost. HTTP/3 runs on QUIC, which is built on UDP.",
+    { aliases: ["user datagram protocol", "quic"] },
+  ),
+  term(
     "packet",
     "Packet",
     "A small chunk of data travelling across the internet.",

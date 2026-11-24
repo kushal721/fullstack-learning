@@ -1,6 +1,5 @@
 import type { LevelPlan } from "@fsl/shared";
 import {
-  analogy,
   code,
   diagram,
   explain,
@@ -10,53 +9,15 @@ import {
   levelCheck,
   quickCheck,
 } from "../blocks.js";
+import { portsAndTcpModule } from "./ports-and-tcp.js";
 
-// Intermediate: steps 8–19. How it really works, enough to build the Notes
+// Intermediate: steps 8–18. How it really works, enough to build the Notes
 // App: connections, headers, cookies, caching, APIs and where code runs.
 export const intermediate: LevelPlan = {
   outcome:
     "Read real requests and responses, and know how cookies, caching and APIs fit in.",
   steps: [
-    lesson(
-      "ports",
-      "Ports: which program?",
-      3,
-      explain(
-        "One server runs many programs. A [[port]] number says which one should get the message, like a flat number in a building.",
-      ),
-      keyPoints(
-        "HTTPS uses port 443; plain HTTP uses 80.",
-        "Browsers add those for you, so you rarely see them.",
-        "In development the Notes App API listens on port 3000.",
-      ),
-      quickCheck(
-        "Why can one computer run a website and an email server at the same time?",
-        [
-          "They listen on different ports",
-          "They take turns every second",
-          "They can't",
-        ],
-        0,
-        "Each program listens on its own [[port]], so messages reach the right one.",
-      ),
-    ),
-    lesson(
-      "tcp",
-      "TCP: a reliable connection",
-      3,
-      explain(
-        "Before any HTTP is sent, the browser and server open a [[tcp]] connection. TCP cuts data into [[packet|packets]], numbers them and resends any that get lost.",
-      ),
-      diagram([
-        ["Connect", "a quick hello"],
-        ["Send", "numbered packets"],
-        ["Check", "resend lost ones"],
-        ["Deliver", "in order"],
-      ]),
-      analogy(
-        "Like posting a book one numbered page at a time: if page 12 goes missing, you ask for page 12 again.",
-      ),
-    ),
+    portsAndTcpModule,
     lesson(
       "headers-up-close",
       "Headers up close",
@@ -269,7 +230,7 @@ export const intermediate: LevelPlan = {
       ),
     ),
     levelCheck("intermediate-check", "Intermediate check", [
-      ["web-intermediate-port", "ports"],
+      ["web-intermediate-port", "ports-and-tcp"],
       ["web-intermediate-stateless", "cookies"],
       ["web-intermediate-no-store", "caching"],
       ["web-intermediate-api", "apis-and-json"],

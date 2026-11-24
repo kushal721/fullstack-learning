@@ -13,7 +13,7 @@ const PLANNED: [
   intermediate: number,
   advanced: number,
 ][] = [
-  ["how-the-web-works", 7, 19, 29],
+  ["how-the-web-works", 7, 18, 28],
   ["html", 6, 12, 18],
   ["css", 7, 13, 17],
   ["javascript", 11, 17, 24],
@@ -119,6 +119,7 @@ const WEB_MODULES: [id: string, number: number][] = [
   ["http", 4],
   ["https", 5],
   ["the-browser", 6],
+  ["ports-and-tcp", 8],
 ];
 
 describe.each(WEB_MODULES)("the How the Web Works %s module", (id, number) => {
