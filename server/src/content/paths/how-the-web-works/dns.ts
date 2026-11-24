@@ -166,16 +166,16 @@ export const dnsModule = moduleLesson(
     trace(
       "Looking up notes.app",
       [
-        "You type notes.app and press Enter.",
-        "Browser cache: notes.app?           not there",
-        "Operating system: notes.app?        not there",
-        "Resolver 1.1.1.1: notes.app?        not in its cache",
-        "  Root server: who handles .app?          the .app servers",
-        "  .app server: who handles notes.app?     ns1.dns.example",
-        "  ns1.dns.example: notes.app?             76.76.21.21, TTL 300",
-        "Resolver keeps the answer for 300 seconds.",
-        "Browser connects to 76.76.21.21.",
-        "A minute later, a friend on the same resolver looks it up.",
+        "type notes.app, press Enter",
+        "browser cache?   no",
+        "computer (OS)?   no",
+        "resolver cache?  no",
+        "  root: .app?",
+        "  .app: notes.app?",
+        "  ns1: notes.app?",
+        "resolver caches it: 300 s",
+        "connect to 76.76.21.21",
+        "a friend, a minute later",
       ],
       [
         {
@@ -232,11 +232,11 @@ export const dnsModule = moduleLesson(
     "the-answer",
     "The answer: a DNS record",
     explain(
-      "A domain's owner writes its addresses into [[dns-record|DNS records]] at their name server. The one a browser needs is an **A record**: a name, how long it may be cached, and an IPv4 address. Tools like `dig` show the answer exactly as the name server stores it:",
+      "A domain's owner writes its addresses into [[dns-record|DNS records]] at their name server. The one a browser needs is an **A record**: a name, how long it may be cached, and an IPv4 address. Tools like `dig` print it on one line, exactly as the name server stores it (split in two here):",
     ),
     anatomy(
       "One A record",
-      ["notes.app.   300   IN   A   76.76.21.21"],
+      ["notes.app.  300  IN  A", "  76.76.21.21"],
       [
         [
           "notes.app.",
