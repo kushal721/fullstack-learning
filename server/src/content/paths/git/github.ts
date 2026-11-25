@@ -79,14 +79,20 @@ export const githubModule = moduleLesson(
     anatomy(
       "Two URLs for one repository",
       [
-        "https://github.com/sam/notes-app.git",
-        "git@github.com:sam/notes-app.git",
+        "https://github.com/",
+        "  sam/notes-app.git",
+        "git@github.com:",
+        "  sam/notes-app.git",
       ],
       [
         ["https://github.com", "HTTPS", "Log in with a personal access token."],
         ["sam", "owner", "The account or organisation it belongs to."],
         ["notes-app.git", "repository", "The repository's name."],
-        ["git@github.com:", "SSH", "Log in with an SSH key instead."],
+        [
+          "git@github.com:",
+          "SSH",
+          "The same repository, logging in with an SSH key.",
+        ],
       ],
     ),
   ),

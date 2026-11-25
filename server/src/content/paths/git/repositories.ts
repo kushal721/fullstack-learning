@@ -81,7 +81,8 @@ export const repositoriesModule = moduleLesson(
         "Initialized empty Git repository",
         "  in /Users/sam/notes-app/.git/",
         "",
-        "$ git clone https://github.com/sam/notes-app.git",
+        "$ git clone \\",
+        "    https://github.com/sam/notes-app.git",
       ],
       {
         3: "start a new, empty history in this folder",
