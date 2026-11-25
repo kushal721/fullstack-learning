@@ -34,6 +34,10 @@ describe("LearningTree", () => {
       "Components that update when data changes.",
     );
     expect(react).toHaveAttribute("href", "/learn/react");
+    // Label in Name (WCAG 2.5.3): the name comes from the item's own text,
+    // not a reference that could leave out what's on screen.
+    expect(react).not.toHaveAttribute("aria-labelledby");
+    expect(react).not.toHaveAttribute("aria-label");
   });
 
   it("tells screen readers the level and position of each item", () => {

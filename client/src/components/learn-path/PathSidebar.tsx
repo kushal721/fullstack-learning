@@ -60,9 +60,13 @@ export function PathSidebar({
                     const isDone = progress.done.includes(step.id);
                     return (
                       <li key={step.id}>
+                        {/* The name comes from the link's own text, so it
+                            contains what's on screen (WCAG 2.5.3, Label in
+                            Name): "Step 3: Title", plus "(done)". The spaces
+                            are text nodes, not inside the spans, so every
+                            accessibility tree keeps them. */}
                         <Link
                           to={stepHref(topicSlug, step.id)}
-                          aria-label={`Step ${step.number}: ${step.title}${isDone ? " (done)" : ""}`}
                           aria-current={isCurrent ? "step" : undefined}
                           className={`flex items-center gap-2 rounded-md px-1.5 py-1 text-sm ${
                             isCurrent
@@ -79,8 +83,15 @@ export function PathSidebar({
                             }`}
                           >
                             {isDone && !isCurrent ? "✓" : step.number}
-                          </span>
+                          </span>{" "}
+                          <span className="sr-only">Step {step.number}:</span>{" "}
                           <span>{step.title}</span>
+                          {isDone && (
+                            <>
+                              {" "}
+                              <span className="sr-only">(done)</span>
+                            </>
+                          )}
                         </Link>
                       </li>
                     );

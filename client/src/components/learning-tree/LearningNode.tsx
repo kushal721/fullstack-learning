@@ -16,7 +16,10 @@ type Props = {
 };
 
 // One topic in the tree. The link is the tree item; its accessible name is
-// just the title, and the summary is attached as a description.
+// just the title, from its own text, and the summary is attached as a
+// description. The number and the summary are hidden from the name, so the
+// name is what voice-control users read on screen (WCAG 2.5.3, Label in
+// Name) without the whole summary in it.
 export function LearningNode({
   topic,
   level,
@@ -60,7 +63,6 @@ export function LearningNode({
           aria-posinset={position}
           aria-setsize={siblingCount}
           aria-expanded={hasChildren ? isExpanded : undefined}
-          aria-labelledby={titleId}
           aria-describedby={compact ? undefined : summaryId}
           aria-current={isCurrent ? "page" : undefined}
           {...getItemProps(topic.id)}
@@ -88,7 +90,11 @@ export function LearningNode({
               {topic.title}
             </span>
             {!compact && (
-              <span id={summaryId} className="text-sm text-muted">
+              <span
+                id={summaryId}
+                aria-hidden="true"
+                className="text-sm text-muted"
+              >
                 {topic.summary}
               </span>
             )}
