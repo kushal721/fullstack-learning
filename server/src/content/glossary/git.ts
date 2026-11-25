@@ -1,4 +1,7 @@
 import type { GlossaryEntry } from "@fsl/shared";
+import { termsOf } from "./term.js";
+
+const term = termsOf("git");
 
 // Glossary entries introduced by the "Git & GitHub" topic.
 export const gitGlossary: GlossaryEntry[] = [
@@ -92,4 +95,34 @@ export const gitGlossary: GlossaryEntry[] = [
     body: "`feat: add note form` or `fix(api): return 404 for unknown notes`. The type says the kind of change: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`. Tools can read these messages to build changelogs and version numbers from the [[git-commit|commits]].",
     conceptPageId: "conventional-commit",
   },
+
+  // --- Terms the guided path introduces -------------------------------------
+  term(
+    "working-tree",
+    "Working folder",
+    "The project files as you see and edit them, outside Git's history.",
+    "Editing and saving a file only changes the working folder (Git calls it the working tree). `git status` shows what's different from the last [[git-commit|commit]]; `git restore` puts a file back.",
+    { aliases: ["working tree", "working directory", "working copy"] },
+  ),
+  term(
+    "staging-area",
+    "Staging area",
+    "The changes you've chosen with git add for the next commit.",
+    "`git add` copies a change into the staging area (also called the index); `git commit` saves exactly what's there. It lets you commit some changes and leave others for later. `git restore --staged` takes a file back out.",
+    { aliases: ["index", "git add", "staged", "stage"] },
+  ),
+  term(
+    "git-diff",
+    "Diff",
+    "The exact lines that changed: - for removed, + for added.",
+    "`git diff` shows changes in the [[working-tree|working folder]] that aren't staged; `git diff --staged` shows what the next [[git-commit|commit]] will contain. Pull requests show the same thing on GitHub.",
+    { aliases: ["diff", "git diff", "changes"] },
+  ),
+  term(
+    "git-head",
+    "HEAD",
+    "Git's name for the commit you're on now.",
+    "Usually HEAD is the newest [[git-commit|commit]] on your current [[git-branch|branch]]. `HEAD~1` is the one before it, so `git diff HEAD~1` compares with the previous commit.",
+    { aliases: ["head", "head~1"] },
+  ),
 ];
