@@ -125,4 +125,11 @@ export const gitGlossary: GlossaryEntry[] = [
     "Usually HEAD is the newest [[git-commit|commit]] on your current [[git-branch|branch]]. `HEAD~1` is the one before it, so `git diff HEAD~1` compares with the previous commit.",
     { aliases: ["head", "head~1"] },
   ),
+  term(
+    "git-fetch",
+    "Fetch",
+    "Downloading new commits from a remote without changing your branches.",
+    "`git fetch` updates `origin/main`, your note of where GitHub's `main` is, so `git status` can say if you're ahead or behind. `git pull` is fetch plus a [[merge]]. See [[github-remote-push|push and pull]].",
+    { aliases: ["git fetch", "origin/main", "ahead", "behind", "upstream"] },
+  ),
 ];
