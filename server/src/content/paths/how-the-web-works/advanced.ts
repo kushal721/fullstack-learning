@@ -3,7 +3,7 @@ import { levelCheck } from "../blocks.js";
 import { advancedNetworkingModule } from "./advanced-networking.js";
 import { performanceAndProductionModule } from "./performance-and-production.js";
 
-// Advanced: steps 15–17. The details professionals need: security, speed
+// Advanced: steps 14–16. The details professionals need: security, speed
 // and scale, ending with the Notes App's real path in production.
 export const advanced: LevelPlan = {
   outcome:

@@ -507,6 +507,13 @@ export const howTheWebWorksGlossary: GlossaryEntry[] = [
     { kind: "concept", aliases: ["render", "paint", "layout"] },
   ),
   term(
+    "main-thread",
+    "Main thread",
+    "The one line of work where a page's JavaScript and rendering both run.",
+    "While a script runs, the browser can't lay out, paint or respond to clicks. At 60 frames a second each frame has about 16.7 ms; a task over 50 ms is a *long task* and makes the page feel janky. See [[rendering]].",
+    { aliases: ["frame budget", "long task", "jank", "60 fps"] },
+  ),
+  term(
     "devtools",
     "DevTools",
     "The browser's built-in tools for looking inside a page.",
