@@ -174,4 +174,57 @@ export const gitGlossary: GlossaryEntry[] = [
     "Reviewers read a [[pull-request|pull request]]'s description, tests and code, comment on lines, and approve or request changes. Good comments explain why, and say how much they matter: blocking, question, nit.",
     { aliases: ["review", "reviewer", "approve", "request changes", "nit"] },
   ),
+  term(
+    "git-blame",
+    "Blame",
+    "Showing, for each line of a file, the commit that last changed it.",
+    "`git blame file` lists every line with its last [[git-commit|commit]], author and date. Use it to find *why* a line exists: open the commit and its pull request. Pair it with `git log -S` to find when code appeared.",
+    { aliases: ["blame", "git blame", "pickaxe", "git log -S"] },
+  ),
+  term(
+    "git-bisect",
+    "Bisect",
+    "Finding the commit that introduced a bug by binary search.",
+    "Mark a known good and a known bad [[git-commit|commit]]; Git checks out the middle one, you test it, and each answer halves the range. `git bisect run` lets a test decide. Finish with `git bisect reset`.",
+    { aliases: ["bisect", "git bisect", "binary search"] },
+  ),
+  term(
+    "git-hook",
+    "Git hook",
+    "A script Git runs at a certain moment, like before each commit.",
+    "A `pre-commit` hook can lint staged files and a `commit-msg` hook can check the message; if the script fails, Git stops. Hooks live in `.git/hooks`, so teams share them with tools like simple-git-hooks or Husky.",
+    {
+      aliases: [
+        "hooks",
+        "pre-commit",
+        "commit-msg",
+        "pre-push",
+        "husky",
+        "lint-staged",
+      ],
+    },
+  ),
+  term(
+    "github-actions",
+    "GitHub Actions",
+    "GitHub's built-in CI: workflows that run on its computers when something happens.",
+    "A workflow file in `.github/workflows/` says when to run (`on: pull_request`) and what to run (jobs of steps on a runner). Its result shows beside every [[pull-request|pull request]]. See [[ci-cd|CI/CD]].",
+    { aliases: ["actions", "workflow", "workflows", "runner", "ci.yml"] },
+  ),
+  term(
+    "signed-commit",
+    "Signed commit",
+    "A commit with a signature proving which key made it.",
+    "Signed with your private SSH or GPG key; GitHub checks it with your public key and shows Verified. The author name alone proves nothing, because it's just a setting. Turn it on with `commit.gpgsign`.",
+    { aliases: ["signing", "verified", "gpg", "commit signing", "git tag -s"] },
+  ),
+  term(
+    "protected-branch",
+    "Protected branch",
+    "A branch with rules about how changes reach it.",
+    "Protecting `main` can require a [[pull-request|pull request]], approvals, passing checks and [[signed-commit|signed commits]], and block force pushes and deletion. GitHub's newer rulesets do the same.",
+    {
+      aliases: ["branch protection", "ruleset", "rulesets", "required checks"],
+    },
+  ),
 ];

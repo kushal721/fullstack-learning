@@ -876,4 +876,235 @@ export const levelCheckExercises: PredictExercise[] = [
     explanation:
       "`content?` is optional, so an object with only a string `title` fits. Leaving out `title` or giving it a number breaks the type, and TypeScript reports it before running.",
   }),
+
+  // Git & GitHub: Basic
+  question({
+    id: "git-basic-staged",
+    title: "Saved isn't committed",
+    prompt:
+      "You edit `app.js`, save it, and run `git commit`. What does the commit contain?",
+    choices: [
+      "Your edit to app.js",
+      "Nothing new: the edit was never staged with git add",
+      "Every file in the folder",
+    ],
+    correct: 1,
+    conceptIds: ["git-repository"],
+    hint: "Which command puts a change in the staging area?",
+    explanation:
+      "Saving only changes the working folder. `git commit` saves what's staged, so without `git add app.js` the edit isn't in the commit.",
+  }),
+  question({
+    id: "git-basic-message",
+    title: "A useful message",
+    prompt:
+      "Which commit message follows the conventional style and says what changed?",
+    choices: [
+      "`updated stuff`",
+      "`fix: show an error when the note title is empty`",
+      "`Fixed it!!`",
+    ],
+    correct: 1,
+    conceptIds: ["conventional-commit", "git-commit"],
+    hint: "type: what changed, in the imperative.",
+    explanation:
+      "`fix:` gives the kind of change and the rest says exactly what it does, so nobody needs to open the diff to know.",
+  }),
+  question({
+    id: "git-basic-fast-forward",
+    title: "A simple merge",
+    prompt:
+      "You branch from `main`, make 3 commits, and nobody changes `main`. What does `git merge` on main do?",
+    choices: [
+      "Creates a merge commit with two parents",
+      "Fast-forwards: main's label moves to your last commit",
+      "Reports a conflict",
+    ],
+    correct: 1,
+    conceptIds: ["git-branch", "merge"],
+    hint: "Has main moved since you branched?",
+    explanation:
+      "`main` hasn't moved, so there's nothing to combine: its label just slides forward to your newest commit.",
+  }),
+  question({
+    id: "git-basic-rejected",
+    title: "A rejected push",
+    prompt: "`git push` is rejected with “fetch first”. What's the right fix?",
+    choices: [
+      "`git push --force`",
+      "`git pull`, then `git push`",
+      "Delete your branch",
+    ],
+    correct: 1,
+    conceptIds: ["github-remote-push"],
+    hint: "Someone pushed before you.",
+    explanation:
+      "GitHub has commits you don't. Pulling merges them with yours; then your push only adds to the history and is accepted. Forcing would delete their work.",
+  }),
+  question({
+    id: "git-basic-pr-red",
+    title: "A failing check",
+    prompt: "Your pull request has a failing CI check. What should you do?",
+    choices: [
+      "Merge anyway; it's probably fine",
+      "Fix it on the same branch and push; the checks run again",
+      "Open a new pull request",
+    ],
+    correct: 1,
+    conceptIds: ["pull-request"],
+    hint: "What happens to a pull request when you push to its branch?",
+    explanation:
+      "Every push to the branch updates the pull request and re-runs the checks. Merge only when they're green.",
+  }),
+
+  // Git & GitHub: Intermediate
+  question({
+    id: "git-intermediate-conflict",
+    title: "Finishing a conflicted merge",
+    prompt:
+      "You've edited every conflicted file and removed the markers. What finishes the merge?",
+    choices: [
+      "`git merge --abort`",
+      "`git add` the files, then `git commit`",
+      "`git push --force`",
+    ],
+    correct: 1,
+    conceptIds: ["merge"],
+    hint: "How does Git learn a file is resolved?",
+    explanation:
+      "`git add` marks each file resolved, and `git commit` creates the merge commit. `--abort` would throw the merge away.",
+  }),
+  question({
+    id: "git-intermediate-revert",
+    title: "Undoing on main",
+    prompt: "A bad commit is already on `main` on GitHub. How do you undo it?",
+    choices: [
+      "`git reset --hard` and force-push main",
+      "`git revert <hash>`: a new commit that undoes it",
+      "Delete the repository",
+    ],
+    correct: 1,
+    conceptIds: ["git-commit"],
+    hint: "Others already have that commit.",
+    explanation:
+      "Rewriting shared history breaks everyone's copy. `git revert` adds a commit doing the opposite, which everyone just pulls.",
+  }),
+  question({
+    id: "git-intermediate-rebase-rule",
+    title: "The golden rule",
+    prompt: "Which commits is it safe to rebase?",
+    choices: [
+      "Any, including main",
+      "Only your own commits that nobody else has yet",
+      "Only merge commits",
+    ],
+    correct: 1,
+    conceptIds: ["git-branch"],
+    hint: "Rebasing replaces commits with new ones.",
+    explanation:
+      "Rebased commits get new hashes. If others already have the old ones, your histories disagree. Rebase only unshared work.",
+  }),
+  question({
+    id: "git-intermediate-gitignore",
+    title: "Too late to ignore",
+    prompt:
+      "You add `.env` to `.gitignore`, but it was committed last week. What else do you need?",
+    choices: [
+      "Nothing: .gitignore removes it",
+      "`git rm --cached .env`, a commit, and rotate the secret",
+      "Rename the file",
+    ],
+    correct: 1,
+    conceptIds: ["gitignore"],
+    hint: "Does .gitignore affect files Git already tracks?",
+    explanation:
+      "Ignore rules only apply to untracked files. `git rm --cached` stops tracking it, and since the secret is in history, it must be changed.",
+  }),
+  question({
+    id: "git-intermediate-review",
+    title: "A blocking comment",
+    prompt:
+      "In a review, you notice a query returns every user's notes, not just the logged-in user's. How should you comment?",
+    choices: [
+      "`nit:` and approve",
+      "`blocking:` explain the leak and how to fix it, and request changes",
+      "Say nothing; tests will catch it",
+    ],
+    correct: 1,
+    conceptIds: ["pull-request"],
+    hint: "Can this be merged as it is?",
+    explanation:
+      "Leaking other users' data must be fixed before merging: a blocking comment that says why and how, with Request changes.",
+  }),
+
+  // Git & GitHub: Advanced
+  question({
+    id: "git-advanced-bisect",
+    title: "Halving the search",
+    prompt:
+      "About how many tests does `git bisect` need to find a bad commit among 1,000?",
+    choices: ["About 10", "About 100", "About 1,000"],
+    correct: 0,
+    conceptIds: ["git-commit"],
+    hint: "Each test halves the range.",
+    explanation:
+      "Each answer halves the suspects: 1,000 → 500 → 250 → … → 1 takes about ten halvings, so about ten tests instead of a thousand.",
+  }),
+  question({
+    id: "git-advanced-pickaxe",
+    title: "Code that's gone",
+    prompt:
+      "A function was deleted months ago. Which command finds the commit that removed it?",
+    choices: ["`git blame`", "`git log -S functionName`", "`git status`"],
+    correct: 1,
+    conceptIds: ["git-commit"],
+    hint: "Blame only shows lines that still exist.",
+    explanation:
+      "`git log -S` searches the changes themselves, so it finds the commits that added and removed the text.",
+  }),
+  question({
+    id: "git-advanced-ci",
+    title: "Where the tests run",
+    prompt: "Where should the full test suite run for every pull request?",
+    choices: [
+      "In a pre-commit hook",
+      "In a GitHub Actions workflow",
+      "Only on the reviewer's laptop",
+    ],
+    correct: 1,
+    conceptIds: ["ci-cd", "pull-request"],
+    hint: "Which one runs for everyone, on a clean machine?",
+    explanation:
+      "CI runs on a fresh runner for every pull request. Hooks are for quick local checks and can be skipped.",
+  }),
+  question({
+    id: "git-advanced-secret",
+    title: "A token in CI",
+    prompt: "A deploy step needs a token. Where does it go?",
+    choices: [
+      "Written in the workflow YAML",
+      "In the repository's Settings → Secrets, used as `${{ secrets.NAME }}`",
+      "In a comment on the pull request",
+    ],
+    correct: 1,
+    conceptIds: ["ci-cd", "secrets-env-vars"],
+    hint: "The workflow file is committed.",
+    explanation:
+      "Anything in the YAML is in the repository forever. Secrets stored in settings are injected at run time and hidden in logs.",
+  }),
+  question({
+    id: "git-advanced-verified",
+    title: "What Verified proves",
+    prompt: "What does GitHub's Verified badge on a commit prove?",
+    choices: [
+      "The code has no bugs",
+      "It was signed with a key on the author's account and hasn't changed since",
+      "A reviewer approved it",
+    ],
+    correct: 1,
+    conceptIds: ["git-commit"],
+    hint: "Identity, not quality.",
+    explanation:
+      "The author name is just a setting; a signature checked against the author's known key proves who made the commit.",
+  }),
 ];

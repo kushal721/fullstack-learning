@@ -17,6 +17,7 @@ const PLANNED: [
   ["html", 6, 12, 18],
   ["css", 7, 13, 17],
   ["javascript", 11, 17, 24],
+  ["git", 6, 11, 15],
 ];
 
 describe.each(PLANNED)(
@@ -131,6 +132,27 @@ const WEB_MODULES: [id: string, number: number][] = [
 describe.each(WEB_MODULES)("the How the Web Works %s module", (id, number) => {
   it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
     checkModule("how-the-web-works", id, number));
+});
+
+// The Git & GitHub modules: [step id, its number]. Every step is one.
+const GIT_MODULES: [id: string, number: number][] = [
+  ["repositories", 1],
+  ["commits", 2],
+  ["branches", 3],
+  ["github", 4],
+  ["pull-requests", 5],
+  ["merge-conflicts", 7],
+  ["rewriting-history", 8],
+  ["what-to-commit", 9],
+  ["code-review", 10],
+  ["searching-history", 12],
+  ["hooks-and-actions", 13],
+  ["signed-commits", 14],
+];
+
+describe.each(GIT_MODULES)("the Git & GitHub %s module", (id, number) => {
+  it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
+    checkModule("git", id, number));
 });
 
 // The HTML modules: [step id, its number].

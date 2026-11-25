@@ -16,6 +16,12 @@ export const basic: LevelPlan = {
     branchesModule,
     githubModule,
     pullRequestsModule,
-    levelCheck("basic-check", "Basic check", []),
+    levelCheck("basic-check", "Basic check", [
+      ["git-basic-staged", "repositories"],
+      ["git-basic-message", "commits"],
+      ["git-basic-fast-forward", "branches"],
+      ["git-basic-rejected", "github"],
+      ["git-basic-pr-red", "pull-requests"],
+    ]),
   ],
 };

@@ -15,6 +15,12 @@ export const intermediate: LevelPlan = {
     rewritingHistoryModule,
     whatToCommitModule,
     codeReviewModule,
-    levelCheck("intermediate-check", "Intermediate check", []),
+    levelCheck("intermediate-check", "Intermediate check", [
+      ["git-intermediate-conflict", "merge-conflicts"],
+      ["git-intermediate-revert", "rewriting-history"],
+      ["git-intermediate-rebase-rule", "rewriting-history"],
+      ["git-intermediate-gitignore", "what-to-commit"],
+      ["git-intermediate-review", "code-review"],
+    ]),
   ],
 };
