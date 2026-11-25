@@ -1,6 +1,7 @@
 import type { TopicPath } from "@fsl/shared";
 import { howTheWebWorksPath } from "./how-the-web-works/path.js";
 import { cssPath } from "./css/path.js";
+import { gitPath } from "./git/path.js";
 import { htmlPath } from "./html/path.js";
 import { javascriptPath } from "./javascript/path.js";
 
@@ -12,4 +13,5 @@ export const topicPaths: TopicPath[] = [
   htmlPath,
   cssPath,
   javascriptPath,
+  gitPath,
 ];
