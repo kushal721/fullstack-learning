@@ -3,6 +3,7 @@ import { howTheWebWorksPath } from "./how-the-web-works/path.js";
 import { cssPath } from "./css/path.js";
 import { gitPath } from "./git/path.js";
 import { htmlPath } from "./html/path.js";
+import { httpPath } from "./http/path.js";
 import { javascriptPath } from "./javascript/path.js";
 import { reactPath } from "./react/path.js";
 
@@ -16,4 +17,5 @@ export const topicPaths: TopicPath[] = [
   javascriptPath,
   gitPath,
   reactPath,
+  httpPath,
 ];

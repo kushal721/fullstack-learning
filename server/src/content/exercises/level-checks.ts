@@ -1384,4 +1384,287 @@ export const levelCheckExercises: PredictExercise[] = [
     explanation:
       'getBy checks immediately. The error renders after the rejected promise, so use `await screen.findByRole("alert")`, which keeps looking until it appears.',
   }),
+  // HTTP & APIs: Basic
+  question({
+    id: "http-basic-contract",
+    title: "A renamed field",
+    prompt:
+      "The API starts sending `name` instead of `title` in every note. Nobody changed the React app. What happens?",
+    choices: [
+      "Nothing: the browser maps the old name to the new one",
+      "The app breaks where it reads `note.title`, because the contract changed",
+      "fetch rejects with a 400",
+    ],
+    correct: 1,
+    conceptIds: ["http-request-response", "rest-endpoint"],
+    hint: "What does the client rely on?",
+    explanation:
+      "An API is a contract: the client relies on the shape of what the server sends. Renaming a field changes the contract, so `note.title` is now undefined. The response is still a 200, so nothing rejects.",
+  }),
+  question({
+    id: "http-basic-put-patch",
+    title: "Half a PUT",
+    prompt:
+      'Note 8 is `{ title: "Milk", content: "2 litres" }`. You send `PUT /api/notes/8` with only `{ "title": "Oat milk" }`. What should the note be now?',
+    choices: [
+      '`{ title: "Oat milk", content: "2 litres" }`',
+      '`{ title: "Oat milk" }` with the content empty or gone',
+      "Unchanged: PUT needs every field or it does nothing",
+    ],
+    correct: 1,
+    conceptIds: ["http-put-delete", "http-methods"],
+    hint: "PUT replaces; PATCH changes.",
+    explanation:
+      "PUT sends the whole new version, so anything left out is gone; the Notes App saves the missing content as empty. To change only the title and keep the rest, PATCH is the method that means that.",
+  }),
+  question({
+    id: "http-basic-fetch-ok",
+    title: "A 404 in try/catch",
+    prompt:
+      "`try { const res = await fetch(url); setNote(await res.json()); } catch { showError(); }`. The server answers 404. What happens?",
+    choices: [
+      "`showError()` runs",
+      "The 404's error body is passed to `setNote`",
+      "fetch retries until it gets a 200",
+    ],
+    correct: 1,
+    conceptIds: ["http-status-codes", "http-request-response"],
+    hint: "When does fetch reject?",
+    explanation:
+      "fetch only rejects when there's no response at all. A 404 is a response, so the code carries on and treats the error body as a note. Check `res.ok` (or `res.status`) before using the body.",
+  }),
+  question({
+    id: "http-basic-content-type",
+    title: "Labelling the body",
+    prompt:
+      "A POST sends `JSON.stringify(note)` as its body but sets no headers. The Notes App's server answers `400 Title is required`. Why?",
+    choices: [
+      "The JSON text is invalid",
+      "Without `Content-Type: application/json`, express.json() doesn't read the body",
+      "POST requests can't carry a body",
+      "The `Accept` header is missing",
+    ],
+    correct: 1,
+    conceptIds: ["http-headers", "http-post"],
+    hint: "How does the server know what format the body is in?",
+    explanation:
+      "fetch labels a string body text/plain. express.json() only parses bodies labelled JSON, so the controller gets no body, finds no title and answers 400. Add the Content-Type header.",
+  }),
+  question({
+    id: "http-basic-json-undefined",
+    title: "What survives JSON",
+    prompt:
+      'What does `JSON.stringify({ title: "Milk", due: undefined })` give?',
+    choices: [
+      '{"title":"Milk","due":null}',
+      '{"title":"Milk"}',
+      '{"title":"Milk","due":"undefined"}',
+    ],
+    correct: 1,
+    conceptIds: ["http-request-response"],
+    hint: "Does JSON have an undefined value?",
+    explanation:
+      "JSON has no undefined, so stringify leaves that field out entirely; it doesn't become null or a string. Send null when the other side must see that a field is empty.",
+  }),
+  question({
+    id: "http-basic-query-vs-path",
+    title: "Path or query?",
+    prompt:
+      "You want the notes that mention milk, newest first. Which URL fits REST best?",
+    choices: [
+      "GET /api/notes/search/milk/newest",
+      "GET /api/notes?search=milk&sort=newest",
+      "POST /api/searchNotes",
+    ],
+    correct: 1,
+    conceptIds: ["rest-endpoint", "http-get"],
+    hint: "Is it a different resource, or the same collection narrowed?",
+    explanation:
+      "It's still the notes collection, just filtered and ordered, so the options go in query parameters after the ?. The path is for naming which resource you mean.",
+  }),
+  // HTTP & APIs: Intermediate
+  question({
+    id: "http-intermediate-page-cap",
+    title: "A huge page",
+    prompt:
+      "Your API caps pages at 50 notes. A client sends `GET /api/notes?limit=100000`. What should it get back?",
+    choices: [
+      "Every note in the database",
+      "At most 50 notes, and a `next` link (or cursor) for the rest",
+      "500 Internal Server Error",
+    ],
+    correct: 1,
+    conceptIds: ["http-get", "rest-endpoint"],
+    hint: "Who decides the largest page?",
+    explanation:
+      "The server always caps the page size, whatever the client asks for. It sends a full page of 50 and says how to get the next one, so no single response can overwhelm it.",
+  }),
+  question({
+    id: "http-intermediate-cursor",
+    title: "A note seen twice",
+    prompt:
+      "With `?limit=20&offset=20`, people sometimes see the last note of page 1 again at the top of page 2. What's the usual fix?",
+    choices: [
+      "Ask for bigger pages",
+      "Page with a cursor: “the 20 notes after this one”",
+      "Retry the request",
+    ],
+    correct: 1,
+    conceptIds: ["http-get"],
+    hint: "What happens to positions when a new note is added?",
+    explanation:
+      "A new note shifts every position down one, so offset 20 now points at a note already shown. A cursor names where to continue, so additions don't move the next page.",
+  }),
+  question({
+    id: "http-intermediate-field-errors",
+    title: "Which field?",
+    prompt:
+      "A form sends a note with an empty title and content that is too long. Which response helps the person most?",
+    choices: [
+      '`500` with `{ "error": "Something went wrong" }`',
+      '`400` with `{ "error": "Invalid input" }`',
+      '`422` with `{ "errors": { "title": "Title is required", "content": "Too long" } }`',
+    ],
+    correct: 2,
+    conceptIds: ["http-status-codes", "http-post"],
+    hint: "The form wants to show each message next to its input.",
+    explanation:
+      "Bad input is a 4xx, not a 500. Listing every problem keyed by field lets the form show each message beside its input, so the person fixes everything in one go.",
+  }),
+  question({
+    id: "http-intermediate-breaking",
+    title: "Safe to ship?",
+    prompt:
+      "A phone app you can't update reads `GET /api/notes`. Which change is safe to make without a new version?",
+    choices: [
+      "Rename `content` to `body`",
+      "Add a `pinned` field to every note",
+      "Return `{ items: [...] }` instead of an array",
+    ],
+    correct: 1,
+    conceptIds: ["rest-endpoint", "http-get"],
+    hint: "Which one only adds?",
+    explanation:
+      "Adding a field breaks nobody, as long as clients ignore fields they don't know. Renaming a field or changing the array into an object breaks code that reads the old shape.",
+  }),
+  question({
+    id: "http-intermediate-401-403",
+    title: "Logged in, but not allowed",
+    prompt:
+      "Ben is logged in and tries to delete a note that was shared with him to read only. Which status fits?",
+    choices: ["401 Unauthorized", "403 Forbidden", "400 Bad Request"],
+    correct: 1,
+    conceptIds: ["http-status-codes", "http-put-delete"],
+    hint: "Does the server know who he is?",
+    explanation:
+      "401 means the server doesn't know who you are, so logging in could help. Here it knows it's Ben, and he still may not delete the note, so the answer is 403 Forbidden.",
+  }),
+  question({
+    id: "http-intermediate-token-url",
+    title: "Where the token goes",
+    prompt:
+      "A mobile app needs to send its access token with every request. Where should it go?",
+    choices: [
+      "In the URL: `/api/notes?token=abc`",
+      "In the header `Authorization: Bearer abc`",
+      "In the request body of every GET",
+    ],
+    correct: 1,
+    conceptIds: ["http-headers"],
+    hint: "Where do URLs end up?",
+    explanation:
+      "URLs are saved in history, server and proxy logs and analytics, so a token in one leaks. The Authorization header is the standard place, and it isn't stored alongside the URL.",
+  }),
+  // HTTP & APIs: Advanced
+  question({
+    id: "http-advanced-idempotency-key",
+    title: "A retried save",
+    prompt:
+      "Saving a note with `POST /api/notes` times out, and the client retries. How does the server avoid creating the note twice?",
+    choices: [
+      "It can't: POST must never be retried",
+      "The client sends the same Idempotency-Key on both attempts, and the server replays its stored answer",
+      "The client switches to GET for the retry",
+    ],
+    correct: 1,
+    conceptIds: ["http-post", "http-methods"],
+    hint: "What could tell the server that two requests are one action?",
+    explanation:
+      "POST isn't idempotent, so a blind retry can create two notes. With one key per action, the server stores key → response and answers a repeat with the stored response instead of saving again.",
+  }),
+  question({
+    id: "http-advanced-retry-which",
+    title: "Worth retrying?",
+    prompt: "Which failure should a client retry automatically, with backoff?",
+    choices: ["400 Bad Request", "404 Not Found", "503 Service Unavailable"],
+    correct: 2,
+    conceptIds: ["http-status-codes"],
+    hint: "Which one might pass on its own?",
+    explanation:
+      "A 503 means the server is struggling for now, so waiting and retrying can work. A 400 or 404 means the request itself is wrong or points at nothing, so sending it again gets the same answer.",
+  }),
+  question({
+    id: "http-advanced-retry-after",
+    title: "Too many requests",
+    prompt:
+      "A response is `429 Too Many Requests` with `Retry-After: 30`. What should the client do?",
+    choices: [
+      "Retry immediately",
+      "Wait at least 30 seconds, then try again",
+      "Log the user out",
+    ],
+    correct: 1,
+    conceptIds: ["http-status-codes", "http-headers"],
+    hint: "The header answers the question “when?”.",
+    explanation:
+      "429 means the client went over its rate limit, and Retry-After says how many seconds to wait. Retrying sooner just earns another 429 and keeps the server busy refusing requests.",
+  }),
+  question({
+    id: "http-advanced-openapi-path",
+    title: "Describing an endpoint",
+    prompt:
+      "In an OpenAPI document, how is the endpoint for updating one note written under `paths`?",
+    choices: [
+      '`"/api/notes/:id": { "put": … }`',
+      '`"/api/notes/{id}": { "put": … }` with `id` listed in `parameters`',
+      '`"PUT /api/notes": { "id": … }`',
+    ],
+    correct: 1,
+    conceptIds: ["rest-endpoint", "http-put-delete"],
+    hint: "OpenAPI doesn't use Express's style for parameters.",
+    explanation:
+      "Paths use curly braces for parameters, and each method is a key under its path. The `id` gets an entry in `parameters` with `in: path`, `required: true` and a schema.",
+  }),
+  question({
+    id: "http-advanced-if-match",
+    title: "Two tabs",
+    prompt:
+      'A note is open in two tabs. Tab A saves. Tab B then sends `PUT /api/notes/7` with `If-Match: "v3"`, but the note is now version 4. What should the server answer?',
+    choices: [
+      "200 OK, and save tab B's version",
+      "304 Not Modified",
+      "412 Precondition Failed, without saving",
+    ],
+    correct: 2,
+    conceptIds: ["http-put-delete", "http-headers"],
+    hint: "If-Match is a condition on the save.",
+    explanation:
+      "If-Match says “only save if it is still this version”. It isn't, so the server refuses with 412 and tab A's change survives; tab B reloads and applies its edit to the newer note.",
+  }),
+  question({
+    id: "http-advanced-private-cache",
+    title: "Caching notes",
+    prompt:
+      "`GET /api/notes` returns the logged-in user's notes. Which Cache-Control header is right?",
+    choices: [
+      "`public, max-age=3600`",
+      "`private, no-cache`",
+      "`public, no-cache`",
+    ],
+    correct: 1,
+    conceptIds: ["http-headers", "http-get"],
+    hint: "Who else could see a shared copy?",
+    explanation:
+      "`private` keeps the response out of shared caches like CDNs, so nobody else is served your notes, and `no-cache` makes the browser check with the server (using the ETag) before reusing its copy.",
+  }),
 ];
