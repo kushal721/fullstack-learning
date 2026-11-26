@@ -146,7 +146,7 @@ export const apisAndJsonModule = moduleLesson(
     "endpoints",
     "Endpoints: an API's menu",
     explain(
-      "An API is a set of [[rest-endpoint|endpoints]]: each one a method plus a path. Most web APIs follow the same pattern, called REST: a path names a kind of thing, an id picks one of them, and the [[method]] says what to do. Learn the pattern once and most APIs read the same:",
+      "An API is a set of endpoints: each one a method plus a path. Most web APIs follow the same pattern, called REST: a path names a kind of thing, an id picks one of them, and the [[method]] says what to do. Learn the pattern once and most APIs read the same:",
     ),
     reference("The REST pattern, for notes", [
       ["GET /api/notes", "List them.", "200 + [ … ]"],

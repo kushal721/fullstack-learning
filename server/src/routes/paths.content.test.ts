@@ -4,8 +4,9 @@ import { describe, expect, it } from "vitest";
 import { createApp } from "../app.js";
 
 // The real guided paths (no fixtures): their shape as the course map plans
-// it, and every step answering.
-const app = createApp();
+// it, and every step answering. Every request comes from one address, more
+// than the API's per-address limit allows, so the limit is raised here.
+const app = createApp({ rateLimits: { api: 100_000, checks: 30 } });
 
 const PLANNED: [
   topic: string,
@@ -19,6 +20,7 @@ const PLANNED: [
   ["javascript", 11, 17, 24],
   ["git", 6, 11, 15],
   ["react", 7, 13, 18],
+  ["http", 7, 12, 17],
 ];
 
 describe.each(PLANNED)(
@@ -178,6 +180,28 @@ const REACT_MODULES: [id: string, number: number][] = [
 describe.each(REACT_MODULES)("the React %s module", (id, number) => {
   it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
     checkModule("react", id, number));
+});
+
+const HTTP_MODULES: [id: string, number: number][] = [
+  ["apis", 1],
+  ["methods", 2],
+  ["status-codes", 3],
+  ["headers", 4],
+  ["json-bodies", 5],
+  ["rest-urls", 6],
+  ["pagination", 8],
+  ["validation-errors", 9],
+  ["versioning", 10],
+  ["auth-headers", 11],
+  ["idempotency", 13],
+  ["rate-limits", 14],
+  ["openapi", 15],
+  ["caching-apis", 16],
+];
+
+describe.each(HTTP_MODULES)("the HTTP %s module", (id, number) => {
+  it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
+    checkModule("http", id, number));
 });
 
 // The HTML modules: [step id, its number].
