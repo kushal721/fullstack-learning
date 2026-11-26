@@ -4,6 +4,7 @@ import { cssPath } from "./css/path.js";
 import { gitPath } from "./git/path.js";
 import { htmlPath } from "./html/path.js";
 import { javascriptPath } from "./javascript/path.js";
+import { reactPath } from "./react/path.js";
 
 // Every topic's guided path, in reading order (one folder per topic:
 // path.ts, scenes.ts, basic/, intermediate/, advanced/). Topics without a
@@ -14,4 +15,5 @@ export const topicPaths: TopicPath[] = [
   cssPath,
   javascriptPath,
   gitPath,
+  reactPath,
 ];

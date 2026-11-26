@@ -1107,4 +1107,281 @@ export const levelCheckExercises: PredictExercise[] = [
     explanation:
       "The author name is just a setting; a signature checked against the author's known key proves who made the commit.",
   }),
+  // React: Basic
+  question({
+    id: "react-basic-render",
+    title: "Who updates the page?",
+    prompt:
+      "A click handler in a React component calls `setCount(5)`. What makes the number on the page change?",
+    choices: [
+      "The handler must also set the element's `textContent`",
+      "React re-renders the component and updates the elements that differ",
+      "The page has to be reloaded",
+    ],
+    correct: 1,
+    conceptIds: ["react-why", "react-state"],
+    hint: "What does setting state ask React to do?",
+    explanation:
+      "Setting state asks React to call the component again. It compares the new JSX with the old and changes only the parts of the page that are different.",
+  }),
+  question({
+    id: "react-basic-zero",
+    title: "A stray zero",
+    prompt:
+      "`notes` is an empty array. What does `{notes.length && <NoteList notes={notes} />}` put on the page?",
+    choices: ["Nothing", "The number 0", "An empty NoteList"],
+    correct: 1,
+    conceptIds: ["jsx"],
+    hint: "What is `0 && anything`?",
+    explanation:
+      "`0 && …` evaluates to `0`, and React shows numbers as text. Use a real true-or-false test like `notes.length > 0 && …` instead.",
+  }),
+  question({
+    id: "react-basic-default",
+    title: "Defaults and props",
+    prompt:
+      'With `function Button({ variant = "primary" })`, what is `variant` for `<Button variant="danger" />` and for `<Button />`?',
+    choices: [
+      '"primary" both times',
+      '"danger", then "primary"',
+      '"danger", then undefined',
+    ],
+    correct: 1,
+    conceptIds: ["react-props"],
+    hint: "When does a default apply?",
+    explanation:
+      "A default is only used when the parent leaves the prop out. The first button passes danger; the second passes nothing, so it gets primary.",
+  }),
+  question({
+    id: "react-basic-snapshot",
+    title: "Twice in one click",
+    prompt:
+      "`count` is 0. A click runs `setCount(count + 1)` twice. What does the next render show?",
+    choices: ["1", "2", "0"],
+    correct: 0,
+    conceptIds: ["react-usestate"],
+    hint: "What is `count` inside this render?",
+    explanation:
+      "State is a snapshot: both calls read this render's `count`, 0, and ask for 1. To add twice, use the updater form `setCount((c) => c + 1)`.",
+  }),
+  question({
+    id: "react-basic-handler",
+    title: "When does it run?",
+    prompt: "Which button deletes the note only when it is clicked?",
+    choices: [
+      "`<button onClick={onDelete(note.id)}>`",
+      "`<button onClick={() => onDelete(note.id)}>`",
+      '`<button onclick="onDelete(note.id)">`',
+    ],
+    correct: 1,
+    conceptIds: ["react-event-handling"],
+    hint: "Pass a function; don't call one.",
+    explanation:
+      "The arrow function is what React calls on the click. The first version calls `onDelete` during the render, and the third isn't how React attaches handlers.",
+  }),
+  question({
+    id: "react-basic-key",
+    title: "The wrong key",
+    prompt:
+      "A list uses `key={index}`. You add a note at the top, and text typed into the first note's input now appears next to the new note. Why?",
+    choices: [
+      "React lost the typed text",
+      "Key 0 now means the new note, so React reused the first item's element for it",
+      "Inputs can't be used in lists",
+    ],
+    correct: 1,
+    conceptIds: ["react-lists-keys"],
+    hint: "What does React match items by?",
+    explanation:
+      "React matches items by key. With positions as keys, the old first element (and its input) is given to whatever is first now. Stable ids keep each element with its note.",
+  }),
+  // React: Intermediate
+  question({
+    id: "react-intermediate-deps",
+    title: "Stuck on the old note",
+    prompt:
+      "`useEffect(() => { getNote(id).then(setNote); }, []);` In the app, choosing another note leaves the first one on screen. Why?",
+    choices: [
+      "getNote is too slow",
+      "The empty array means the effect never runs again when id changes",
+      "setNote can't be passed to then",
+    ],
+    correct: 1,
+    conceptIds: ["react-useeffect"],
+    hint: "When does an effect with `[]` run?",
+    explanation:
+      "An effect re-runs only when a value in its dependency array changes. It reads `id`, so `id` must be listed: `[id]`. With `[]` it ran once, for the first note.",
+  }),
+  question({
+    id: "react-intermediate-cleanup",
+    title: "Two timers",
+    prompt:
+      "In development, a clock component's effect starts `setInterval` and the time now jumps two seconds per tick. What's missing?",
+    choices: [
+      "A cleanup that clears the interval",
+      "A second dependency",
+      "Strict Mode should be switched off",
+    ],
+    correct: 0,
+    conceptIds: ["react-useeffect"],
+    hint: "Strict Mode sets up, cleans up and sets up again.",
+    explanation:
+      "Strict Mode runs the effect twice to expose a missing cleanup. Without `return () => clearInterval(id)`, two intervals run at once, and the same leak would happen in production when the effect re-runs.",
+  }),
+  question({
+    id: "react-intermediate-controlled",
+    title: "Typing does nothing",
+    prompt:
+      "An input is written `<input value={title} />`. What happens when you type in it?",
+    choices: [
+      "The text appears and title updates",
+      "Nothing: it always shows title, and nothing changes title",
+      "The page reloads",
+    ],
+    correct: 1,
+    conceptIds: ["react-controlled-form"],
+    hint: "Who updates title?",
+    explanation:
+      "A controlled input shows its value prop. Without an onChange that sets the state, every key press is undone on the next render, so the input looks frozen.",
+  }),
+  question({
+    id: "react-intermediate-refresh",
+    title: "404 on refresh",
+    prompt:
+      "With React Router, clicking to /notes/7 works, but refreshing that page shows the host's 404 page. What fixes it?",
+    choices: [
+      "Using <a href> instead of <Link>",
+      "Making the server send index.html for page URLs it doesn't have as files",
+      "Adding a * route",
+    ],
+    correct: 1,
+    conceptIds: ["react-why"],
+    hint: "On a refresh, who answers first: React or the server?",
+    explanation:
+      "Refreshing asks the server for /notes/7. The routes only exist in the JavaScript, so the server needs a fallback that returns index.html; then React Router reads the URL.",
+  }),
+  question({
+    id: "react-intermediate-context",
+    title: "No provider",
+    prompt:
+      "`const AuthContext = createContext(null)`. A component outside every `<AuthContext>` calls `useContext(AuthContext)`. What does it get?",
+    choices: ["null, the default", "The nearest user", "An error"],
+    correct: 0,
+    conceptIds: ["react-component-communication"],
+    hint: "What's the argument to createContext for?",
+    explanation:
+      "With no provider above it, useContext returns the default given to createContext. Here that's null, so code that destructures the result will throw.",
+  }),
+  question({
+    id: "react-intermediate-hook-state",
+    title: "Shared or not?",
+    prompt:
+      "`Sidebar` and `Dashboard` both call `useNotes()`. Adding a note in `Dashboard` doesn't change `Sidebar`'s count. Why?",
+    choices: [
+      "useNotes has a bug",
+      "Each call to a hook has its own state; hooks share logic, not data",
+      "Sidebar needs a key",
+    ],
+    correct: 1,
+    conceptIds: ["react-custom-hook"],
+    hint: "Is a hook's useState shared between callers?",
+    explanation:
+      "Every component that calls a hook gets its own copy of that hook's state. To share the notes, call useNotes once in a common parent and pass them down, or provide them with context.",
+  }),
+  // React: Advanced
+  question({
+    id: "react-advanced-reducer-pure",
+    title: "Inside the reducer",
+    prompt:
+      'A reducer handles `{ type: "added", note }` with `notes.push(action.note); return notes;`. What goes wrong?',
+    choices: [
+      "Nothing, push is fastest",
+      "It changes the old state and returns the same array, so React may not re-render",
+      "The reducer runs twice",
+    ],
+    correct: 1,
+    conceptIds: ["react-state"],
+    hint: "How does React know state changed?",
+    explanation:
+      "A reducer must return a new value and leave the old one alone. Returning the same, changed array means React sees no change: `return [action.note, ...notes]` instead.",
+  }),
+  question({
+    id: "react-advanced-reducer-effect",
+    title: "Where the request goes",
+    prompt:
+      "With useReducer, where does the request that deletes a note on the server belong?",
+    choices: [
+      "In the reducer's deleted case",
+      "In the event handler, which then dispatches an action",
+      "In the action object",
+    ],
+    correct: 1,
+    conceptIds: ["react-state"],
+    hint: "Reducers are pure.",
+    explanation:
+      "Reducers only calculate the next state and React may call them more than once. Side effects like requests go in the handler, which dispatches what happened.",
+  }),
+  question({
+    id: "react-advanced-memo",
+    title: "memo did nothing",
+    prompt:
+      "`NoteCard` is wrapped in memo, but every card still re-renders when the parent does. The parent passes `onDelete={(id) => remove(id)}`. Why?",
+    choices: [
+      "memo only works on class components",
+      "The arrow function is new on every render, so the props never look the same",
+      "Cards need keys for memo to work",
+    ],
+    correct: 1,
+    conceptIds: ["react-props"],
+    hint: "How does memo compare a function prop?",
+    explanation:
+      "memo compares props with Object.is. A function created during the render is a different object each time, so wrap it in useCallback (or let the React Compiler do it).",
+  }),
+  question({
+    id: "react-advanced-measure",
+    title: "It feels slow",
+    prompt: "Typing in a search box lags. What should you do first?",
+    choices: [
+      "Wrap every component in memo",
+      "Record the interaction with the React DevTools Profiler",
+      "Rewrite the page with useReducer",
+    ],
+    correct: 1,
+    conceptIds: ["react-state"],
+    hint: "Before fixing, find out.",
+    explanation:
+      "The Profiler shows which components rendered and how long each took. The fix is often simple, like moving state down, and memo everywhere adds cost without finding the cause.",
+  }),
+  question({
+    id: "react-advanced-lazy",
+    title: "A failed chunk",
+    prompt:
+      "A lazy settings screen sits inside `<Suspense fallback={<Spinner />}>`. Its chunk fails to download. What does the user see?",
+    choices: [
+      "The spinner forever",
+      "Whatever an error boundary above it shows; with none, the app crashes",
+      "The settings screen from the cache",
+    ],
+    correct: 1,
+    conceptIds: ["react-component"],
+    hint: "Suspense covers waiting. What covers failing?",
+    explanation:
+      "Suspense only shows a fallback while loading. A failed import throws during rendering, which only an error boundary catches; without one React unmounts the app.",
+  }),
+  question({
+    id: "react-advanced-findby",
+    title: "An error that appears later",
+    prompt:
+      'A test clicks Save with a mocked API that rejects, then calls `screen.getByRole("alert")`, which fails. Why?',
+    choices: [
+      "Alerts can't be found by role",
+      "The alert appears after the promise settles, and getBy only looks once",
+      "The mock is wrong",
+    ],
+    correct: 1,
+    conceptIds: ["react-component"],
+    hint: "Which query waits?",
+    explanation:
+      'getBy checks immediately. The error renders after the rejected promise, so use `await screen.findByRole("alert")`, which keeps looking until it appears.',
+  }),
 ];

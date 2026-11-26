@@ -18,6 +18,7 @@ const PLANNED: [
   ["css", 7, 13, 17],
   ["javascript", 11, 17, 24],
   ["git", 6, 11, 15],
+  ["react", 7, 13, 18],
 ];
 
 describe.each(PLANNED)(
@@ -153,6 +154,30 @@ const GIT_MODULES: [id: string, number: number][] = [
 describe.each(GIT_MODULES)("the Git & GitHub %s module", (id, number) => {
   it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
     checkModule("git", id, number));
+});
+
+// The React modules: [step id, its number]. Every step is one.
+const REACT_MODULES: [id: string, number: number][] = [
+  ["why-react", 1],
+  ["components-and-jsx", 2],
+  ["props", 3],
+  ["state", 4],
+  ["events", 5],
+  ["lists-and-keys", 6],
+  ["effects", 8],
+  ["forms", 9],
+  ["routing", 10],
+  ["context", 11],
+  ["custom-hooks", 12],
+  ["reducers", 14],
+  ["memo-and-performance", 15],
+  ["code-splitting", 16],
+  ["testing-components", 17],
+];
+
+describe.each(REACT_MODULES)("the React %s module", (id, number) => {
+  it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
+    checkModule("react", id, number));
 });
 
 // The HTML modules: [step id, its number].

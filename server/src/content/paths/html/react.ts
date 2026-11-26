@@ -35,7 +35,7 @@ export const reactModule = moduleLesson(
     "why",
     "HTML, written inside JavaScript",
     explain(
-      "In a React app you write the page's HTML inside JavaScript, as [[jsx|JSX]]. It looks almost exactly like HTML, and it ends up as real HTML elements in the page, so everything in this topic still applies: meaningful elements, labels, alt text, headings. A build tool ([[vite|Vite]]) turns the JSX into JavaScript, and React uses that to create and update the elements.",
+      "In a React app you write the page's HTML inside JavaScript, as JSX. It looks almost exactly like HTML, and it ends up as real HTML elements in the page, so everything in this topic still applies: meaningful elements, labels, alt text, headings. A build tool (Vite) turns the JSX into JavaScript, and React uses that to create and update the elements.",
     ),
     diagram([
       ["you write JSX", '<h2 className="title">{note.title}</h2>'],
@@ -193,7 +193,7 @@ export const reactModule = moduleLesson(
     "lists-and-keys",
     "Lists and key",
     explain(
-      "To show a list, `map` over an array and return an element for each item. Each one needs a `key` that's unique among its siblings, usually the item's id, so React can tell which item is which when the list changes. The [[react-lists-keys|key]] is for React only: it never appears in the HTML.",
+      "To show a list, `map` over an array and return an element for each item. Each one needs a `key` that's unique among its siblings, usually the item's id, so React can tell which item is which when the list changes. The key is for React only: it never appears in the HTML.",
     ),
     code(
       "jsx",
