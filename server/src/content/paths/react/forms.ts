@@ -343,7 +343,7 @@ export const formsModule = moduleLesson(
     }),
     pageYourTurn({
       title: "Add from a form",
-      task: "On submit, stop the reload. If the input is empty, show `Write something first` in `#error`. Otherwise add an `<li>` with the text to `#notes`, empty `#error` and clear the input.",
+      task: "The starter already stops the reload. On submit, if the input is empty, show `Write something first` in `#error`. Otherwise add an `<li>` with the text to `#notes`, empty `#error` and clear the input.",
       starter: [
         '<form><input id="title" aria-label="Title"> <button>Add</button></form>',
         '<p id="error" role="alert"></p>',
@@ -352,6 +352,7 @@ export const formsModule = moduleLesson(
         '  const input = document.querySelector("#title");',
         '  const error = document.querySelector("#error");',
         '  document.querySelector("form").addEventListener("submit", (event) => {',
+        "    event.preventDefault();",
         "",
         "  });",
         "</script>",
@@ -390,7 +391,7 @@ export const formsModule = moduleLesson(
           count: 1,
         },
       ],
-      hint: '`event.preventDefault();` then check `input.value.trim()`. To add: create an `li`, set its `textContent`, `append` it, then `input.value = ""`.',
+      hint: 'Check `input.value.trim()`. To add: create an `li`, set its `textContent`, `append` it, then `input.value = ""`.',
       solution: [
         '<form><input id="title" aria-label="Title"> <button>Add</button></form>',
         '<p id="error" role="alert"></p>',

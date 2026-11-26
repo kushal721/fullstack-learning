@@ -337,7 +337,7 @@ export const routingModule = moduleLesson(
     }),
     pageYourTurn({
       title: "A tiny router",
-      task: "Finish `navigate(path)`: store the path in `state.path` and render. In the nav's click handler, stop the browser following the link, then navigate to the link's `data-to`.",
+      task: "Finish `navigate(path)`: store the path in `state.path` and render. The click handler already stops the browser following the link: call `navigate` with the link's `data-to`.",
       starter: [
         '<nav><a href="/" data-to="/">Home</a> <a href="/about" data-to="/about">About</a></nav>',
         '<main id="view"></main>',
@@ -352,6 +352,7 @@ export const routingModule = moduleLesson(
         "  }",
         '  document.querySelector("nav").addEventListener("click", (event) => {',
         '    const link = event.target.closest("a");',
+        "    event.preventDefault();",
         "",
         "  });",
         "  render();",
@@ -383,7 +384,7 @@ export const routingModule = moduleLesson(
           text: "Your notes",
         },
       ],
-      hint: "`navigate`: `state.path = path; render();`. In the handler: `event.preventDefault(); navigate(link.dataset.to);`",
+      hint: "`navigate`: `state.path = path; render();`. In the handler: `navigate(link.dataset.to);`",
       solution: [
         '<nav><a href="/" data-to="/">Home</a> <a href="/about" data-to="/about">About</a></nav>',
         '<main id="view"></main>',
