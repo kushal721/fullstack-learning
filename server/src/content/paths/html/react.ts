@@ -262,7 +262,7 @@ export const reactModule = moduleLesson(
     "escaped-text",
     "Text is shown safely",
     explain(
-      "Whatever you put in `{ }` as text is **escaped**: `<` becomes `&lt;`, so a note containing `<script>` is shown as those characters, never run. That's what protects React apps from [[xss|XSS]] by default. The escape hatch is called `dangerouslySetInnerHTML`, and the name is the warning: it inserts raw HTML, so never use it with text a user typed.",
+      "Whatever you put in `{ }` as text is **escaped**: `<` becomes `&lt;`, so a note containing `<script>` is shown as those characters, never run. That's what protects React apps from XSS (cross-site scripting) by default. The escape hatch is called `dangerouslySetInnerHTML`, and the name is the warning: it inserts raw HTML, so never use it with text a user typed.",
     ),
     inTheNotesApp(
       "`NoteCard` shows each note with `<p>{note.content}</p>`, and its comment explains why that's safe: React escapes the text, so a note containing HTML is shown as text and can never run as code.",

@@ -24,6 +24,7 @@ const PLANNED: [
   ["backend", 6, 12, 16],
   ["databases", 6, 11, 16],
   ["authentication", 6, 11, 16],
+  ["security", 6, 11, 16],
 ];
 
 describe.each(PLANNED)(
@@ -272,6 +273,27 @@ describe.each(AUTHENTICATION_MODULES)(
       checkModule("authentication", id, number));
   },
 );
+
+const SECURITY_MODULES: [id: string, number: number][] = [
+  ["never-trust-input", 1],
+  ["validation", 2],
+  ["xss", 3],
+  ["sql-injection", 4],
+  ["safe-errors", 5],
+  ["csrf", 7],
+  ["cors", 8],
+  ["secrets", 9],
+  ["security-headers", 10],
+  ["threat-modelling", 12],
+  ["dependency-audits", 13],
+  ["rate-limiting", 14],
+  ["logging-attacks", 15],
+];
+
+describe.each(SECURITY_MODULES)("the Security %s module", (id, number) => {
+  it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
+    checkModule("security", id, number));
+});
 
 // The HTML modules: [step id, its number].
 const HTML_MODULES: [id: string, number: number][] = [

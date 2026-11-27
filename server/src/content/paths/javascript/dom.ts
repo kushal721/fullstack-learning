@@ -362,7 +362,7 @@ export const domModule = moduleLesson(
     "safe-text",
     "textContent, not innerHTML",
     explain(
-      "`innerHTML` reads text **as HTML**. If that text came from a user, they can slip in their own tags and scripts, which then run on everyone's page. That attack is [[xss|cross-site scripting]]. `textContent` always treats text as plain text, so it's safe. Build elements with `createElement` and fill them with `textContent`.",
+      "`innerHTML` reads text **as HTML**. If that text came from a user, they can slip in their own tags and scripts, which then run on everyone's page. That attack is cross-site scripting (XSS). `textContent` always treats text as plain text, so it's safe. Build elements with `createElement` and fill them with `textContent`.",
     ),
     mistake({
       title: "Putting user text in with innerHTML",

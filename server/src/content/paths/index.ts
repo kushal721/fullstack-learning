@@ -9,6 +9,7 @@ import { htmlPath } from "./html/path.js";
 import { httpPath } from "./http/path.js";
 import { javascriptPath } from "./javascript/path.js";
 import { reactPath } from "./react/path.js";
+import { securityPath } from "./security/path.js";
 
 // Every topic's guided path, in reading order (one folder per topic:
 // path.ts, scenes.ts, basic/, intermediate/, advanced/). Topics without a
@@ -24,4 +25,5 @@ export const topicPaths: TopicPath[] = [
   backendPath,
   databasesPath,
   authenticationPath,
+  securityPath,
 ];

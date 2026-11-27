@@ -388,7 +388,7 @@ export const errorsModule = moduleLesson(
     "messages",
     "Messages for users, details for you",
     explain(
-      "Users need a short message they can act on: “Could not save. Check your connection and try again.” Developers need the details: kind, message, stack. So show the friendly words on the page and send the error itself to `console.error`. Never show users a stack trace: it confuses them and can help an attacker ([[safe-error-messages|safe error messages]]).",
+      "Users need a short message they can act on: “Could not save. Check your connection and try again.” Developers need the details: kind, message, stack. So show the friendly words on the page and send the error itself to `console.error`. Never show users a stack trace: it confuses them and can help an attacker.",
     ),
     pagePlayground("Show the error on the page", [
       '<label>Title <input id="title" value="  "></label>',
