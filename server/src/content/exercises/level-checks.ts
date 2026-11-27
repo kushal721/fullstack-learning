@@ -1667,4 +1667,340 @@ export const levelCheckExercises: PredictExercise[] = [
     explanation:
       "`private` keeps the response out of shared caches like CDNs, so nobody else is served your notes, and `no-cache` makes the browser check with the server (using the ETag) before reusing its copy.",
   }),
+  // Backend: Basic
+  question({
+    id: "backend-basic-trust",
+    title: "Who owns the note?",
+    prompt:
+      'A request to create a note arrives with `{ "title": "Milk", "userId": 99 }` in its body, from a user logged in as 7. Whose note should it be?',
+    choices: [
+      "User 99: the body says so",
+      "User 7: the checked login says so",
+      "Reject it: bodies can't hold numbers",
+    ],
+    correct: 1,
+    conceptIds: ["controller", "request-body"],
+    hint: "Which of the two can the sender change freely?",
+    explanation:
+      "Anyone can put any id in a body, with curl or DevTools. Who is asking comes from the login the server checked itself (`req.user.id`), so the note belongs to user 7 and the body's `userId` is ignored.",
+  }),
+  question({
+    id: "backend-basic-caret",
+    title: "A version range",
+    prompt:
+      'package.json lists `"express": "^5.3.0"`. Which of these versions may `npm install` choose?',
+    choices: ["5.2.9", "5.10.1", "6.0.0"],
+    correct: 1,
+    conceptIds: ["npm-packages"],
+    hint: "^ keeps the first number the same.",
+    explanation:
+      "A caret range allows 5.3.0 and anything later while the major version stays 5. 5.10.1 is later than 5.3.0 because 10 is more than 3; 5.2.9 is older and 6.0.0 is a new major that may break things.",
+  }),
+  question({
+    id: "backend-basic-env-string",
+    title: "A setting from the environment",
+    prompt: "The server runs with `PORT=8080`. What is `process.env.PORT + 1`?",
+    choices: ["8081", '"80801"', "undefined"],
+    correct: 1,
+    conceptIds: ["nodejs", "environment-variables"],
+    hint: "What type is every value in process.env?",
+    explanation:
+      'Environment variables are always strings, so `"8080" + 1` joins them into `"80801"`. Turn the value into a number first, as the Notes App does with `Number(process.env.PORT ?? 3000)`.',
+  }),
+  question({
+    id: "backend-basic-create-app",
+    title: "Building without listening",
+    prompt:
+      "Why does the Notes App build its Express app in `createApp()` and only call `listen` in `server.js`?",
+    choices: [
+      "Express needs two files to start",
+      "So tests can use the app with no real port",
+      "So the app answers requests faster",
+    ],
+    correct: 1,
+    conceptIds: ["express"],
+    hint: "Think about what the tests import.",
+    explanation:
+      "Tests import `createApp()` and send requests straight to the app it returns. If building the app also opened port 3000, every test file would try to take the same port, and they would clash or hang.",
+  }),
+  question({
+    id: "backend-basic-route-order",
+    title: "Which route answers?",
+    prompt:
+      'A router has `get("/:id", getNote)` and then `get("/latest", latest)`. What runs for `GET /latest`?',
+    choices: [
+      "latest, because it is an exact match",
+      'getNote, with req.params.id = "latest"',
+      "Both, one after the other",
+    ],
+    correct: 1,
+    conceptIds: ["express-route"],
+    hint: "Does Express look for the best match, or the first one?",
+    explanation:
+      "Express runs the first route that matches, in the order they were added. `:id` matches any one segment, including the word latest, so getNote answers and latest is never reached. Put fixed paths first.",
+  }),
+  question({
+    id: "backend-basic-params-strings",
+    title: "What type is the id?",
+    prompt:
+      "For `GET /api/notes/7` and the route `/api/notes/:id`, what is `req.params.id === 7`?",
+    choices: ["true", "false", "It throws a TypeError"],
+    correct: 1,
+    conceptIds: ["express-route"],
+    hint: "Where does req.params get its values from?",
+    explanation:
+      'Path parameters are cut out of the URL, so they are always strings: req.params.id is "7", and a string never strictly equals a number. Convert it with Number() first.',
+  }),
+  question({
+    id: "backend-basic-forgot-next",
+    title: "A middleware that only logs",
+    prompt:
+      "`app.use((req, res, next) => { console.log(req.path); })` is added before the routes. What does a browser get for `GET /api/notes`?",
+    choices: [
+      "The notes, as usual",
+      "A 404 Not Found",
+      "Nothing: the request hangs",
+    ],
+    correct: 2,
+    conceptIds: ["express-middleware"],
+    hint: "What must every middleware do before it finishes?",
+    explanation:
+      "Middleware must either send a response or call next(). This one does neither, so the request never reaches a route and no answer is ever sent; the browser waits until it times out.",
+  }),
+  question({
+    id: "backend-basic-json-body",
+    title: "Where did the body go?",
+    prompt:
+      "An app has no `app.use(express.json())`. A client POSTs a JSON note. What is `req.body` in the handler?",
+    choices: ["The parsed object", "The JSON text", "undefined"],
+    correct: 2,
+    conceptIds: ["request-body", "express-middleware"],
+    hint: "Which piece of code fills in req.body?",
+    explanation:
+      "Express does not read request bodies by itself. The express.json() middleware parses a JSON body into req.body; without it nothing sets req.body, so it stays undefined.",
+  }),
+  // Backend: Intermediate
+  question({
+    id: "backend-intermediate-early-return",
+    title: "One answer per request",
+    prompt:
+      "A controller runs `if (error) res.status(400).json({ error });` and then `res.status(201).json(note);`. What happens for an invalid body?",
+    choices: [
+      "Only the 400 is sent",
+      "The 400 is sent, then the 201 throws an error",
+      "Only the 201 is sent",
+    ],
+    correct: 1,
+    conceptIds: ["controller"],
+    hint: "Does sending a response stop the function?",
+    explanation:
+      "res.json sends the answer but does not end the function, so the code carries on and tries to answer again: Cannot set headers after they are sent. Write return res.status(400)… so each path answers once.",
+  }),
+  question({
+    id: "backend-intermediate-owner-id",
+    title: "Whose note is it?",
+    prompt:
+      "In the Notes App, where should `createNote` get the id of the user who owns the new note?",
+    choices: ["req.body.userId", "req.params.id", "req.user.id"],
+    correct: 2,
+    conceptIds: ["controller", "express-middleware"],
+    hint: "Which of these can the client not simply make up?",
+    explanation:
+      "Anything in the body or the URL can be set by whoever sends the request. requireAuth sets req.user from the checked login cookie before the controller runs, so req.user.id is the only id to trust.",
+  }),
+  question({
+    id: "backend-intermediate-server-check",
+    title: "The form already checks",
+    prompt:
+      "The note form has `maxLength={100}`. Someone sends a 5,000-character title with curl. What stops it?",
+    choices: [
+      "The form's maxLength",
+      "Nothing, unless the server checks too",
+      "Express rejects long bodies",
+    ],
+    correct: 1,
+    conceptIds: ["request-body", "controller"],
+    hint: "Does a curl request ever see the form?",
+    explanation:
+      "Browser checks only run in the browser. A request sent with curl or a script skips them, so the controller must validate the body itself and answer 400 before anything is saved.",
+  }),
+  question({
+    id: "backend-intermediate-mass-assignment",
+    title: "An extra field",
+    prompt:
+      'A controller saves `{ ...req.body, userId: req.user.id }`. A client sends `{ "title": "Hi", "isAdmin": true }`. What goes wrong?',
+    choices: [
+      "Nothing: title is valid",
+      "isAdmin is saved too",
+      "Express removes unknown fields",
+    ],
+    correct: 1,
+    conceptIds: ["request-body"],
+    hint: "What does the spread copy?",
+    explanation:
+      "Spreading the body copies every field the client chose to send. Picking named fields, `const { title, content } = req.body`, is an allowlist: anything else is simply dropped.",
+  }),
+  question({
+    id: "backend-intermediate-env-string",
+    title: "Port 30001",
+    prompt:
+      "With `PORT=3000` set, `app.listen(process.env.PORT + 1)` listens on port 30001. Why?",
+    choices: [
+      "Environment values are strings",
+      "PORT is read before it is set",
+      "listen adds a 1 itself",
+    ],
+    correct: 0,
+    conceptIds: ["environment-variables"],
+    hint: "What type is everything in process.env?",
+    explanation:
+      'Every value in process.env is a string, so "3000" + 1 joins them into "30001". Convert when you read it: `Number(process.env.PORT ?? 3000)`.',
+  }),
+  question({
+    id: "backend-intermediate-leaked-secret",
+    title: "Pushed by mistake",
+    prompt:
+      "A commit with the real `JWT_SECRET` in `.env` was pushed to a public repo. What must you do?",
+    choices: [
+      "Delete .env in a new commit",
+      "Rotate the secret on the server",
+      "Rename the variable",
+    ],
+    correct: 1,
+    conceptIds: ["environment-variables"],
+    hint: "Is the old value still in the history?",
+    explanation:
+      "The old secret stays in the git history and may already be copied, so treat it as known. Set a new secret on the platform and restart; then add .env to .gitignore.",
+  }),
+  question({
+    id: "backend-intermediate-error-handler",
+    title: "The handler never runs",
+    prompt:
+      '`app.use((err, req, res) => res.status(500).json({ error: "Oops" }))` is the last middleware, but errors never reach it. Why?',
+    choices: [
+      "It needs four parameters",
+      "It must come before the routes",
+      "Express 5 has no error handlers",
+    ],
+    correct: 0,
+    conceptIds: ["express-middleware"],
+    hint: "How does Express tell error middleware apart?",
+    explanation:
+      "Express recognises error-handling middleware by its four parameters, (err, req, res, next). With three it is ordinary middleware, so errors skip it and Express's default handler answers.",
+  }),
+  question({
+    id: "backend-intermediate-log-body",
+    title: "What not to log",
+    prompt:
+      "A request logger writes `req.method`, `req.path` and `req.body` for every request. What is the problem?",
+    choices: [
+      "Logs get slightly longer",
+      "Login bodies put passwords in the logs",
+      "req.path is not allowed",
+    ],
+    correct: 1,
+    conceptIds: ["express-middleware", "request-body"],
+    hint: "What is in the body of POST /api/auth/login?",
+    explanation:
+      "Bodies can hold passwords, tokens and private note text, and logs are read by many people and tools. Log named, harmless fields such as method, path, status, duration and ids instead.",
+  }),
+  // Backend: Advanced
+  question({
+    id: "backend-advanced-service-layer",
+    title: "Where the rule goes",
+    prompt:
+      "A route and a nightly job both create notes, and both must check that the title is at most 100 characters. Where should that check live?",
+    choices: [
+      "In each controller",
+      "In a service both of them call",
+      "In the repository, next to the SQL",
+      "In the error-handling middleware",
+    ],
+    correct: 1,
+    conceptIds: ["controller"],
+    hint: "Which layer takes plain values, with no req or res?",
+    explanation:
+      "Rules belong in the service layer. It takes plain values (no req or res), so the route, the job and tests all call the same function and get the same check, while controllers and repositories stay simple.",
+  }),
+  question({
+    id: "backend-advanced-fake-repo",
+    title: "Testing without a database",
+    prompt:
+      "The notes service is built with `makeNotesService({ repo })`. How can a test check its rules without a running database?",
+    choices: [
+      "Mock the whole of Express",
+      "Pass a fake repo that keeps notes in an array",
+      "Set DATABASE_URL to an empty string",
+    ],
+    correct: 1,
+    conceptIds: ["controller"],
+    hint: "What does dependency injection let you swap?",
+    explanation:
+      "Because the repository is passed in rather than imported, a test can hand the service a fake object with the same functions that stores notes in an array. The rules run as usual and no database is needed.",
+  }),
+  question({
+    id: "backend-advanced-job-queue",
+    title: "A slow export",
+    prompt:
+      "`POST /api/notes/export` builds a PDF of every note, which takes about 20 seconds. What should the route do?",
+    choices: [
+      "Build it, then answer 201",
+      "Add a job to a queue and answer 202",
+      "Answer 200 and build it with no await",
+      "Raise the request timeout",
+    ],
+    correct: 1,
+    conceptIds: ["express-route"],
+    hint: "The user shouldn't wait, and the work shouldn't be lost.",
+    explanation:
+      "Slow work goes to a job queue: the route stores a small job and answers 202 Accepted at once, and a worker builds the PDF. A promise without await is not retried and is lost if the server restarts.",
+  }),
+  question({
+    id: "backend-advanced-cron-once",
+    title: "Three emails each",
+    prompt:
+      "Every copy of the API starts a timer for `0 8 * * 1` to send weekly summaries. With three copies running, what happens on Monday at 08:00?",
+    choices: [
+      "One email per user",
+      "Three emails per user",
+      "No emails: the timers cancel out",
+    ],
+    correct: 1,
+    conceptIds: ["nodejs"],
+    hint: "How many processes run that timer?",
+    explanation:
+      "Each copy runs its own timer, so the job runs three times. A scheduled job must run once: store the schedule in the shared queue, take a lock, or use the platform's scheduler.",
+  }),
+  question({
+    id: "backend-advanced-stateless",
+    title: "Logged out at random",
+    prompt:
+      "An API keeps sessions in a `Map` in memory. After it is scaled to three copies behind a load balancer, users seem logged out at random. Why?",
+    choices: [
+      "The Map is too small",
+      "Each copy has its own Map, so most copies never saw the login",
+      "Load balancers delete cookies",
+    ],
+    correct: 1,
+    conceptIds: ["nodejs"],
+    hint: "Do separate processes share memory?",
+    explanation:
+      "Each copy is a separate process with its own memory. Copies that scale out must be stateless: keep logins in a signed token in a cookie, or sessions in Redis or the database.",
+  }),
+  question({
+    id: "backend-advanced-graceful-shutdown",
+    title: "On SIGTERM",
+    prompt:
+      "The platform sends SIGTERM to stop a server during a deploy. What is the graceful thing to do?",
+    choices: [
+      "Call process.exit(0) at once",
+      "Ignore it and keep serving",
+      "Stop taking requests, finish the rest, close the pool, exit",
+    ],
+    correct: 2,
+    conceptIds: ["nodejs"],
+    hint: "What about requests already in progress?",
+    explanation:
+      "Graceful shutdown calls server.close() so no new requests arrive but those in flight finish, then closes the database pool and exits. Exiting at once cuts off users mid-request.",
+  }),
 ];

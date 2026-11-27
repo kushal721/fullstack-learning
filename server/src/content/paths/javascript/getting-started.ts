@@ -57,7 +57,7 @@ export const gettingStartedModule = moduleLesson(
     "where-it-runs",
     "Where JavaScript runs",
     explain(
-      "Every browser has a JavaScript engine built in, so any web page can run JavaScript. The same language also runs outside the browser, on servers, using [[nodejs|Node.js]]. In this course you'll write both: browser code for the Notes App's pages and server code for its API.",
+      "Every browser has a JavaScript engine built in, so any web page can run JavaScript. The same language also runs outside the browser, on servers, using Node.js. In this course you'll write both: browser code for the Notes App's pages and server code for its API.",
     ),
     reference("Places to run JavaScript", [
       [

@@ -21,6 +21,7 @@ const PLANNED: [
   ["git", 6, 11, 15],
   ["react", 7, 13, 18],
   ["http", 7, 12, 17],
+  ["backend", 6, 12, 16],
 ];
 
 describe.each(PLANNED)(
@@ -202,6 +203,27 @@ const HTTP_MODULES: [id: string, number: number][] = [
 describe.each(HTTP_MODULES)("the HTTP %s module", (id, number) => {
   it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
     checkModule("http", id, number));
+});
+
+const BACKEND_MODULES: [id: string, number: number][] = [
+  ["what-a-backend-does", 1],
+  ["nodejs-and-npm", 2],
+  ["express-server", 3],
+  ["routes", 4],
+  ["middleware", 5],
+  ["controllers", 7],
+  ["validation", 8],
+  ["settings-and-secrets", 9],
+  ["error-handling", 10],
+  ["logging", 11],
+  ["layers-and-architecture", 13],
+  ["background-jobs", 14],
+  ["scaling", 15],
+];
+
+describe.each(BACKEND_MODULES)("the Backend %s module", (id, number) => {
+  it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
+    checkModule("backend", id, number));
 });
 
 // The HTML modules: [step id, its number].
