@@ -2682,4 +2682,386 @@ export const levelCheckExercises: PredictExercise[] = [
     explanation:
       "A token from a secure random generator can't be guessed, and storing only its hash means a database leak hands out no working links. It should also expire in about 30 minutes and work only once.",
   }),
+  // Security: Basic
+  question({
+    id: "security-basic-owner",
+    title: "Who owns the note?",
+    prompt:
+      'A logged-in user (id 42) sends `POST /api/notes` with `{ "title": "Hi", "user_id": 1 }`. Where should the new note\'s owner come from?',
+    choices: [
+      "user_id in the body",
+      "An X-User-Id header",
+      "req.user.id, from the verified token",
+    ],
+    correct: 2,
+    conceptIds: ["input-validation"],
+    hint: "Which of these values did the server create itself?",
+    explanation:
+      "The body and headers are written by whoever sends the request, so anyone could pick user 1. `req.user.id` is set by the server only after `jwt.verify` checks the token, so it's the one value that can be trusted.",
+  }),
+  question({
+    id: "security-basic-saved-data",
+    title: "Data you saved yourself",
+    prompt:
+      "A note's title was validated and saved last week. Is it safe to show it with `innerHTML` today?",
+    choices: [
+      "Yes: it passed validation",
+      "Yes: it's from our own database",
+      "No: a user typed it, so it's still untrusted",
+    ],
+    correct: 2,
+    conceptIds: ["xss", "input-validation"],
+    hint: "Where did the title come from in the first place?",
+    explanation:
+      "Validation checks shape, and a short, valid title can still contain HTML with a script. Saved data came from input once, so it's still untrusted when you show it: use text, not HTML.",
+  }),
+  question({
+    id: "security-basic-allowlist",
+    title: "Allowlist or denylist?",
+    prompt:
+      "A route accepts a `sort` value from the query string. Which check is the safest?",
+    choices: [
+      'Refuse it if it contains "DROP"',
+      'Allow only "asc" or "desc"',
+      "Remove quotes, then use it",
+    ],
+    correct: 1,
+    conceptIds: ["input-validation"],
+    hint: "Which check names the good values instead of guessing bad ones?",
+    explanation:
+      "An allowlist names exactly what's allowed and refuses everything else, so new tricks fail too. Banning words or repairing input is a denylist: attackers find the spelling or encoding you didn't think of.",
+  }),
+  question({
+    id: "security-basic-mass-assignment",
+    title: "Copying the body",
+    prompt:
+      'An update route runs `Object.assign(user, req.body)`. A request sends `{ "email": "a@b.c", "role": "admin" }`. What happens?',
+    choices: [
+      "Only the email changes",
+      "The user becomes an admin",
+      "Express refuses the request",
+    ],
+    correct: 1,
+    conceptIds: ["input-validation"],
+    hint: "Which fields does Object.assign copy?",
+    explanation:
+      "Object.assign copies every field in the body, including role. That's mass assignment. Pick the fields the route changes by name, such as `const { email } = req.body`, and ignore the rest.",
+  }),
+  question({
+    id: "security-basic-textcontent",
+    title: "Showing a title",
+    prompt:
+      "A note's title is `<img src=x onerror=steal()>`. Which line shows it without running `steal()`?",
+    choices: [
+      "h2.innerHTML = title",
+      "h2.textContent = title",
+      'h2.innerHTML = "" + title',
+    ],
+    correct: 1,
+    conceptIds: ["xss"],
+    hint: "Which property treats the value as text instead of HTML?",
+    explanation:
+      "textContent inserts the value as text, so the tags are shown on the page and nothing runs. innerHTML parses the string as HTML, creating a real image whose onerror runs steal().",
+  }),
+  question({
+    id: "security-basic-glued-title",
+    title: "A glued title",
+    prompt:
+      "A search builds its SQL as \"... AND title = '\" + title + \"'\". Someone searches for x' OR '1'='1. What happens?",
+    choices: [
+      "No note is found",
+      "Every user's notes come back",
+      "PostgreSQL escapes the quote",
+    ],
+    correct: 1,
+    conceptIds: ["sql-injection", "parameterized-query"],
+    hint: "Where does the first quote in the search end up?",
+    explanation:
+      "The quote closes the value early, so OR '1'='1' becomes part of the SQL and is true for every row. With a placeholder ($1) the text would only ever be a value, and the query couldn't change.",
+  }),
+  question({
+    id: "security-basic-sort-column",
+    title: "Sorting by the user's choice",
+    prompt:
+      "Users choose how their notes are sorted with ?sort=. How should the server put the column into ORDER BY?",
+    choices: [
+      "ORDER BY $1 with the choice",
+      "Glue in req.query.sort",
+      "Map it to a fixed list in code",
+    ],
+    correct: 2,
+    conceptIds: ["sql-injection"],
+    hint: "Can a placeholder hold a column name?",
+    explanation:
+      "Placeholders hold values, never column names, so the name has to be written into the SQL. That's only safe when it comes from a list of names in your own code, with unknown choices getting the default.",
+  }),
+  question({
+    id: "security-basic-500-message",
+    title: "When the database fails",
+    prompt:
+      'A query throws relation "notez" does not exist. What should the response to the user say?',
+    choices: [
+      "The error message itself",
+      "The message and the stack",
+      "Something went wrong",
+    ],
+    correct: 2,
+    conceptIds: ["safe-error-messages"],
+    hint: "Who can fix this: the user or you?",
+    explanation:
+      "The user can't fix a broken query, and the table name, file paths and versions only help an attacker. Log the full error and stack on the server, and answer 500 with the same plain message every time.",
+  }),
+  // Security: Intermediate
+  question({
+    id: "security-intermediate-samesite-lax",
+    title: "A forged form and a Lax cookie",
+    prompt:
+      "A page on evil.example auto-submits a POST form to the Notes App. The login cookie is SameSite=Lax. What happens?",
+    choices: [
+      "The note is created as you",
+      "It arrives without the cookie: 401",
+      "The browser blocks the form",
+    ],
+    correct: 1,
+    conceptIds: ["csrf", "secure-cookies"],
+    hint: "When does a Lax cookie go with a request another site started?",
+    explanation:
+      "Lax cookies are only sent on top-level GETs, like following a link. The forged POST still reaches the server, but without the login cookie, so the Notes App doesn't know who it is and answers 401.",
+  }),
+  question({
+    id: "security-intermediate-get-delete",
+    title: "A GET that deletes",
+    prompt:
+      "An app deletes a note on GET /api/notes/8/delete, with a SameSite=Lax cookie. Why is that dangerous?",
+    choices: [
+      "GET requests can't carry cookies",
+      "Any link to it deletes the note",
+      "GET is slower than DELETE",
+    ],
+    correct: 1,
+    conceptIds: ["csrf"],
+    hint: "Which cross-site requests still carry a Lax cookie?",
+    explanation:
+      "Lax still sends the cookie when you follow a link, because a GET should only read. A link on any site to that URL would delete the note as you. Changes belong behind POST, PUT or DELETE.",
+  }),
+  question({
+    id: "security-intermediate-cors-credentials",
+    title: "Cookies across origins",
+    prompt:
+      'The page on `https://notes.app` calls `https://api.notes.app` with `credentials: "include"`. The API answers `Access-Control-Allow-Origin: *`. What happens?',
+    choices: [
+      "The page reads the answer",
+      "The browser hides the answer: * isn't allowed with cookies",
+      "The API refuses the request",
+    ],
+    correct: 1,
+    conceptIds: ["cors"],
+    hint: "What must a credentialed answer name?",
+    explanation:
+      "For a credentialed request the server must name the exact origin and send Access-Control-Allow-Credentials: true. With * the browser refuses to let the page read the answer, though the API did run the request.",
+  }),
+  question({
+    id: "security-intermediate-cors-not-auth",
+    title: "Only notes.app allowed",
+    prompt:
+      "An API's CORS allows only `https://notes.app`, so a developer removes the login check from `DELETE /api/notes/:id`. Is that safe?",
+    choices: [
+      "Yes, CORS blocks everyone else",
+      "No: curl and scripts ignore CORS",
+      "Yes, if the allowlist is exact",
+    ],
+    correct: 1,
+    conceptIds: ["cors"],
+    hint: "Who enforces CORS?",
+    explanation:
+      "CORS is a browser rule about reading answers. curl, scripts and other servers never look at it, so anyone could delete notes. Every route must still check the login and ownership.",
+  }),
+  question({
+    id: "security-intermediate-secret-pushed",
+    title: "Deleted a minute later",
+    prompt:
+      "A developer pushes `.env` with the real `JWT_SECRET`, notices, and pushes a commit deleting it a minute later. What should happen next?",
+    choices: [
+      "Nothing: the file is gone",
+      "Make a new secret, deploy it, revoke the old",
+      "Make the repository private",
+    ],
+    correct: 1,
+    conceptIds: ["secrets-env-vars"],
+    hint: "Does a new commit remove an old one?",
+    explanation:
+      "The first commit still holds the secret in every clone, and bots scan pushes within minutes. Once pushed, a secret has leaked: rotate it, which logs everyone out and makes forged tokens useless.",
+  }),
+  question({
+    id: "security-intermediate-vite-secret",
+    title: "A key for the front end",
+    prompt:
+      "A React app built with Vite needs a payment API's secret key. Where should the key go?",
+    choices: [
+      "In a VITE_ variable in .env",
+      "In the server's environment only",
+      "In the component, minified",
+    ],
+    correct: 1,
+    conceptIds: ["secrets-env-vars"],
+    hint: "What ends up in the bundle?",
+    explanation:
+      "Vite copies every VITE_ variable into the JavaScript bundle, where anyone can read it in DevTools. The key stays on the server, and the front end asks a server route to make the call for it.",
+  }),
+  question({
+    id: "security-intermediate-csp",
+    title: "An injected image",
+    prompt:
+      "A page sends `Content-Security-Policy: script-src 'self'`. A note title containing `<img src=x onerror=\"steal()\">` slips onto it unescaped. What happens?",
+    choices: [
+      "steal() runs",
+      "The inline onerror handler is blocked",
+      "The whole page is blocked",
+    ],
+    correct: 1,
+    conceptIds: ["xss"],
+    hint: "Is an onerror attribute a script from 'self'?",
+    explanation:
+      "script-src 'self' allows only script files from the page's own origin, so inline code like onerror= is blocked. That's CSP's job as a second layer: the title should still have been escaped first.",
+  }),
+  question({
+    id: "security-intermediate-hsts",
+    title: "Typing http://",
+    prompt:
+      "A site on HTTPS sends `Strict-Transport-Security: max-age=31536000`. Next week a visitor types `http://` before its address. What does the browser do?",
+    choices: [
+      "Sends the request over plain HTTP",
+      "Uses HTTPS without asking the server",
+      "Shows an error page",
+    ],
+    correct: 1,
+    conceptIds: ["https"],
+    hint: "What did the header promise for a year?",
+    explanation:
+      "HSTS tells the browser to use only HTTPS for this site for max-age seconds. It upgrades http:// to https:// itself, so nothing is ever sent unencrypted where someone could read or change it.",
+  }),
+  // Security: Advanced
+  question({
+    id: "security-advanced-stride-repudiation",
+    title: "Nobody deleted it",
+    prompt:
+      "A note was deleted. The owner says they never did it, and nothing records who did. Which STRIDE threat is this, and what's the defence?",
+    choices: [
+      "Spoofing: a password policy",
+      "Repudiation: an audit log",
+      "Tampering: HTTPS",
+    ],
+    correct: 1,
+    conceptIds: ["least-privilege"],
+    hint: "Which letter is about denying you did something?",
+    explanation:
+      "Repudiation means an action can be denied because nothing proves who did it. An audit log with the user id, action, target, time and outcome answers that question after the fact.",
+  }),
+  question({
+    id: "security-advanced-db-role",
+    title: "The API's database account",
+    prompt:
+      "The Notes API only reads and writes the users and notes tables. Which database account should it use in production?",
+    choices: [
+      "postgres, the superuser",
+      "A role with only SELECT, INSERT, UPDATE, DELETE",
+      "A role that can also DROP tables",
+    ],
+    correct: 1,
+    conceptIds: ["least-privilege"],
+    hint: "What could one SQL injection bug do with each account?",
+    explanation:
+      "Least privilege gives the API only what its queries need. If a bug or a leaked password lets someone run SQL, a limited role can't drop tables, create users or read other databases.",
+  }),
+  question({
+    id: "security-advanced-transitive",
+    title: "A package you never installed",
+    prompt:
+      "npm audit reports a flaw in jws. Your package.json doesn't list jws. Why is it installed?",
+    choices: [
+      "npm adds it to every project",
+      "Another package depends on it",
+      "Someone edited node_modules",
+    ],
+    correct: 1,
+    conceptIds: ["npm-packages"],
+    hint: "Try npm ls jws.",
+    explanation:
+      "jws is a transitive dependency: jsonwebtoken needs it. `npm ls jws` shows the chain. Update the parent package, or use overrides in package.json to force a fixed version.",
+  }),
+  question({
+    id: "security-advanced-npm-ci",
+    title: "Installing on the server",
+    prompt:
+      "Which command installs exactly the versions in package-lock.json, checking each package's integrity hash?",
+    choices: ["npm install", "npm ci", "npm audit fix --force"],
+    correct: 1,
+    conceptIds: ["npm-packages"],
+    hint: "Which one never changes the lockfile?",
+    explanation:
+      "npm ci installs exactly what the lockfile lists and fails if package.json disagrees. A newly published, possibly poisoned version can't slip in during a deploy; it only arrives through a reviewed lockfile change.",
+  }),
+  question({
+    id: "security-advanced-lockout",
+    title: "Locked out on purpose",
+    prompt:
+      "Login locks an account for 24 hours after 5 wrong passwords. What can an attacker who knows your email do?",
+    choices: [
+      "Nothing: the lock protects you",
+      "Lock you out by typing 5 wrong passwords",
+      "Read your notes",
+    ],
+    correct: 1,
+    conceptIds: ["authentication-vs-authorization"],
+    hint: "Who decides when the lock starts?",
+    explanation:
+      "Anyone can trigger a lockout, so it becomes a way to deny real users access. A delay that doubles with each failure and resets on success slows guessing without handing attackers that power.",
+  }),
+  question({
+    id: "security-advanced-trust-proxy",
+    title: "trust proxy true",
+    prompt:
+      'The API sits behind one proxy and sets app.set("trust proxy", true). How can a script dodge the per-IP login limit?',
+    choices: [
+      "It can't",
+      "Send a new fake X-Forwarded-For each time",
+      "Send the request twice",
+    ],
+    correct: 1,
+    conceptIds: ["http-headers"],
+    hint: "Who writes the leftmost X-Forwarded-For address?",
+    explanation:
+      "With true, Express takes req.ip from the leftmost X-Forwarded-For address, which the client writes itself. Each fake address gets a fresh counter. Trusting exactly 1 proxy uses the address your proxy saw.",
+  }),
+  question({
+    id: "security-advanced-log-injection",
+    title: "A newline in the email",
+    prompt:
+      'The server logs "login failed " + email as plain text. Someone logs in with an email containing a newline and "INFO login ok admin". What happens?',
+    choices: [
+      "Nothing: it's just text",
+      "The log shows a fake success line",
+      "The server crashes",
+    ],
+    correct: 1,
+    conceptIds: ["input-validation"],
+    hint: "What does a newline do in a text file?",
+    explanation:
+      "The newline starts a new line, so the rest of the email looks like a real log entry. Structured JSON logs write the newline as \\n inside the field, so input can never forge a line.",
+  }),
+  question({
+    id: "security-advanced-log-redaction",
+    title: "What to log on login",
+    prompt: "Which should never appear in your logs?",
+    choices: [
+      "The request id",
+      "The password typed",
+      "The action login.failed",
+    ],
+    correct: 1,
+    conceptIds: ["safe-error-messages"],
+    hint: "Logs are kept long and read by many people.",
+    explanation:
+      "Logs leak more easily than databases and are kept for months. Passwords, tokens and cookies must be redacted before anything is written; the action, the email tried and the request id are enough to spot attacks.",
+  }),
 ];
