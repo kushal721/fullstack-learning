@@ -2335,4 +2335,351 @@ export const levelCheckExercises: PredictExercise[] = [
     explanation:
       "A job can succeed while dumping the wrong database, or the steps may fail under pressure. Restoring regularly into a scratch database, checking row counts and timing it proves the backup and tells you your real recovery time.",
   }),
+  // Authentication: Basic
+  question({
+    id: "auth-basic-whose-note",
+    title: "Logged in, but not yours",
+    prompt:
+      "User 3 is logged in and sends `DELETE /api/notes/8`. Note 8 belongs to user 5. Which check must stop it?",
+    choices: [
+      "Authentication: who is asking",
+      "Authorization: may they do this",
+      "None: logged-in users may delete",
+    ],
+    correct: 1,
+    conceptIds: ["authentication-vs-authorization"],
+    hint: "The server already knows it's user 3.",
+    explanation:
+      "Authentication worked: the cookie says user 3. Authorization decides whether user 3 may delete note 8. The Notes App does it with `AND user_id = $2` in the DELETE, so the row isn't found and it answers 404.",
+  }),
+  question({
+    id: "auth-basic-password-rules",
+    title: "Modern password rules",
+    prompt: "Which password rule follows today's advice?",
+    choices: [
+      "Must contain a symbol and a digit",
+      "Must be changed every 90 days",
+      "At least 12 characters, not a leaked one",
+      "At most 16 characters",
+    ],
+    correct: 2,
+    conceptIds: ["why-never-store-plain-passwords"],
+    hint: "What actually makes guessing harder?",
+    explanation:
+      "Length and refusing breached passwords slow guessing down. Forced symbols and regular changes lead to predictable patterns like Summer2024!, and a short maximum blocks passphrases and password managers.",
+  }),
+  question({
+    id: "auth-basic-same-password",
+    title: "Same password, two users",
+    prompt:
+      "Two users both choose `sunshine1`. The app stores bcrypt hashes. How do the two stored hashes compare?",
+    choices: [
+      "Identical",
+      "Different: each has its own salt",
+      "Identical unless the cost differs",
+    ],
+    correct: 1,
+    conceptIds: ["salting", "bcrypt"],
+    hint: "What does bcrypt.hash make fresh every time?",
+    explanation:
+      "bcrypt makes a new random salt for every hash and mixes it in, so equal passwords give different strings. A precomputed table of hashes is useless, and each account must be attacked on its own.",
+  }),
+  question({
+    id: "auth-basic-why-slow",
+    title: "Why not SHA-256?",
+    prompt: "Why should passwords be hashed with bcrypt rather than SHA-256?",
+    choices: [
+      "SHA-256 can be turned back into the password",
+      "bcrypt is slow on purpose and salts each one",
+      "bcrypt output is shorter",
+    ],
+    correct: 1,
+    conceptIds: ["password-hashing", "bcrypt"],
+    hint: "Think of an attacker with a stolen users table.",
+    explanation:
+      "Neither can be turned back, but SHA-256 is fast: with a stolen table, an attacker can try billions of guesses a second. bcrypt adds a salt and a cost factor, so every guess takes a long time.",
+  }),
+  question({
+    id: "auth-basic-signup-race",
+    title: "Two sign-ups at once",
+    prompt:
+      "Two requests to register `ann@x.io` arrive in the same millisecond. What makes sure only one account is created?",
+    choices: [
+      "Checking for the email before the INSERT",
+      "The UNIQUE rule on users.email",
+      "The form's required attribute",
+    ],
+    correct: 1,
+    conceptIds: ["authentication-vs-authorization"],
+    hint: "Which check can't be raced?",
+    explanation:
+      "A check-then-insert can be raced: both checks see no row and both insert. The database's UNIQUE rule lets exactly one INSERT win; the other fails with 23505, which the Notes App answers with 409.",
+  }),
+  question({
+    id: "auth-basic-signup-response",
+    title: "What sign-up sends back",
+    prompt: "A sign-up succeeds. What should the 201 response contain?",
+    choices: [
+      "The new user's id and email",
+      "The whole row, hash included",
+      "The password, so the form can log in",
+    ],
+    correct: 0,
+    conceptIds: ["password-hashing", "why-never-store-plain-passwords"],
+    hint: "Send the fewest fields the client needs.",
+    explanation:
+      "The Notes App uses RETURNING id, email so the hash never leaves the server. A leaked hash lets anyone guess the password offline at their own speed, and the password itself is never stored or sent back.",
+  }),
+  question({
+    id: "auth-basic-login-same-message",
+    title: "One message for both",
+    prompt:
+      "Why does the Notes App answer `Invalid email or password` both for an unknown email and for a wrong password?",
+    choices: [
+      "The server can't tell them apart",
+      "So nobody can learn which emails have accounts",
+      "Because 401 has only one message",
+    ],
+    correct: 1,
+    conceptIds: ["authentication-vs-authorization"],
+    hint: "What could someone learn if the answers differed?",
+    explanation:
+      "The server knows which part failed, but saying so would let anyone test a list of emails and find who is registered (user enumeration). One status and one message for both failures closes that leak.",
+  }),
+  question({
+    id: "auth-basic-login-me",
+    title: "After a refresh",
+    prompt:
+      "You refresh the Notes App. How does the front end find out you're still logged in?",
+    choices: [
+      "It reads the token from document.cookie",
+      "It calls GET /api/auth/me",
+      "It logs in again with a saved password",
+    ],
+    correct: 1,
+    conceptIds: ["secure-cookies", "jwt"],
+    hint: "The login cookie is httpOnly.",
+    explanation:
+      "An httpOnly cookie is hidden from page scripts, but the browser still sends it. So App.jsx asks /api/auth/me on load: it gets the user back, or a 401 meaning nobody is logged in.",
+  }),
+  // Authentication: Intermediate
+  question({
+    id: "auth-intermediate-session-vs-token",
+    title: "Ending a login at once",
+    prompt:
+      "A user's laptop is stolen and every login must end right now. Which design makes that simple?",
+    choices: [
+      "A signed token in a cookie",
+      "Server-side sessions in a store",
+      "A longer Max-Age on the cookie",
+    ],
+    correct: 1,
+    conceptIds: ["secure-cookies", "jwt"],
+    hint: "Which one exists only while the server remembers it?",
+    explanation:
+      "A session is a store entry, so deleting the user's sessions ends them everywhere at once. A signed token like the Notes App's keeps working until it expires unless you add a way to revoke it.",
+  }),
+  question({
+    id: "auth-intermediate-httponly",
+    title: "Hiding the cookie",
+    prompt:
+      "Which cookie attribute stops a script injected into the page from reading the login cookie?",
+    choices: ["Secure", "HttpOnly", "SameSite=Lax", "Path=/"],
+    correct: 1,
+    conceptIds: ["secure-cookies"],
+    hint: "Think about document.cookie.",
+    explanation:
+      "HttpOnly hides the cookie from document.cookie, so injected JavaScript can't copy it. Secure keeps it off plain HTTP, SameSite decides which requests carry it, and Path where it is sent.",
+  }),
+  question({
+    id: "auth-intermediate-jwt-payload",
+    title: "What's in the payload",
+    prompt:
+      "You paste a Notes App token into a JWT decoder website, without the secret. What can you see?",
+    choices: [
+      "Nothing: it's encrypted",
+      "The claims, such as sub and exp",
+      "The user's password hash",
+    ],
+    correct: 1,
+    conceptIds: ["jwt"],
+    hint: "Base64url is an encoding, not a lock.",
+    explanation:
+      "The header and payload are only base64url-encoded, so anyone can read sub, iat and exp. The secret is needed to make a valid signature, not to read. That's why a payload holds ids, never secrets.",
+  }),
+  question({
+    id: "auth-intermediate-jwt-verify",
+    title: "A changed token",
+    prompt:
+      'Someone edits a token\'s payload from "sub": 3 to "sub": 4 and sends it. What does requireAuth do?',
+    choices: [
+      "Treats them as user 4",
+      "jwt.verify throws, so it answers 401",
+      "Treats them as user 3",
+    ],
+    correct: 1,
+    conceptIds: ["jwt", "authentication-vs-authorization"],
+    hint: "What was the signature made from?",
+    explanation:
+      "The signature was computed over the original header and payload with JWT_SECRET. jwt.verify recomputes it, the two no longer match, it throws, and requireAuth's catch answers 401 Please log in.",
+  }),
+  question({
+    id: "auth-intermediate-idor",
+    title: "Someone else's note",
+    prompt:
+      "A route runs requireAuth, then UPDATE notes SET title = $1 WHERE id = $2. What's wrong?",
+    choices: [
+      "Nothing: requireAuth checked the login",
+      "Any logged-in user can edit any note",
+      "Only the owner can edit, but slowly",
+    ],
+    correct: 1,
+    conceptIds: ["authentication-vs-authorization"],
+    hint: "requireAuth answers who. Who answers whose?",
+    explanation:
+      "requireAuth proves who is asking, not whether note 8 is theirs. Without AND user_id = req.user.id, changing the id in the URL reaches anyone's note: an IDOR bug. The ownership check belongs in every query.",
+  }),
+  question({
+    id: "auth-intermediate-logout-copied-token",
+    title: "After logging out",
+    prompt:
+      "A Notes App user logs out. Someone copied their token yesterday. What happens when that person uses it today?",
+    choices: [
+      "401: logout cancelled the token",
+      "It works until the token's exp",
+      "403: the cookie was cleared",
+    ],
+    correct: 1,
+    conceptIds: ["jwt", "secure-cookies"],
+    hint: "What did clearCookie actually remove?",
+    explanation:
+      "clearCookie only removes the browser's copy. The token is still correctly signed and unexpired, and the Notes App keeps no list of revoked tokens, so it works for up to 7 days. A denylist or a token version would stop it.",
+  }),
+  // Authentication: Advanced
+  question({
+    id: "auth-advanced-refresh-reuse",
+    title: "A spent refresh token",
+    prompt:
+      "Refresh tokens are rotated. A refresh token that was already used arrives at POST /api/auth/refresh. What should the server do?",
+    choices: [
+      "Accept it if not expired",
+      "Answer 401, keep other tokens",
+      "Answer 401, revoke its family",
+    ],
+    correct: 2,
+    conceptIds: ["jwt", "secure-cookies"],
+    hint: "The real user always holds the newest token.",
+    explanation:
+      "With rotation, a spent token coming back means someone copied it. The server can't tell the thief from the user, so it revokes every token from that login and both have to log in again.",
+  }),
+  question({
+    id: "auth-advanced-short-access",
+    title: "Why access tokens are short",
+    prompt:
+      "Why does an app with refresh tokens keep its access token to about 15 minutes?",
+    choices: [
+      "It can't easily be revoked",
+      "Short tokens are faster",
+      "Browsers drop long cookies",
+    ],
+    correct: 0,
+    conceptIds: ["jwt"],
+    hint: "How does the server check an access token?",
+    explanation:
+      "An access token is checked by its signature alone, with no database lookup, so it keeps working until it expires. Keeping it short limits how long a stolen one is useful; the refresh token, stored on the server, can be revoked.",
+  }),
+  question({
+    id: "auth-advanced-oauth-link",
+    title: "Linking a Google account",
+    prompt:
+      "After checking Google's ID token, how should the app find the matching user in its own users table?",
+    choices: [
+      "By the email in the token",
+      "By provider plus the sub claim",
+      "By the access token",
+    ],
+    correct: 1,
+    conceptIds: ["authentication-vs-authorization", "jwt"],
+    hint: "Which value never changes and belongs to one account?",
+    explanation:
+      "The provider's sub is a stable id for exactly one account there. Matching on email alone lets anyone who controls a provider account with that address take over your user's account.",
+  }),
+  question({
+    id: "auth-advanced-oauth-state",
+    title: "A state that doesn't match",
+    prompt:
+      "Your OAuth callback receives a valid-looking code, but its state differs from the one you saved. What do you do?",
+    choices: [
+      "Swap the code anyway",
+      "Refuse the login",
+      "Trust the state in the URL",
+    ],
+    correct: 1,
+    conceptIds: ["authentication-vs-authorization"],
+    hint: "What does state prove?",
+    explanation:
+      "state ties the callback to a login this browser really started. A mismatch can mean an attacker is trying to log the user into the attacker's own account, so the app must refuse.",
+  }),
+  question({
+    id: "auth-advanced-totp-reuse",
+    title: "The same code twice",
+    prompt:
+      "A TOTP code was accepted 10 seconds ago. Someone sends the same code again, still inside its window. What should happen?",
+    choices: [
+      "Accept it: it's still valid",
+      "Refuse it: already used",
+      "Accept it with a warning",
+    ],
+    correct: 1,
+    conceptIds: ["authentication-vs-authorization"],
+    hint: "Who else might have seen the code being typed?",
+    explanation:
+      "The server remembers the last window each user used and refuses a code from it again. Otherwise someone who watched the code being typed, or a fake page that captured it, could log in with it.",
+  }),
+  question({
+    id: "auth-advanced-recovery-storage",
+    title: "Storing recovery codes",
+    prompt: "How should the server store a user's recovery codes?",
+    choices: [
+      "In plain text, to show again",
+      "Hashed, deleted when used",
+      "Encrypted, reusable",
+    ],
+    correct: 1,
+    conceptIds: ["password-hashing", "bcrypt"],
+    hint: "They act like passwords that work once.",
+    explanation:
+      "Recovery codes skip the second factor, so a leaked table would let anyone in. Hash them like passwords, show them only once at setup, and delete each one as soon as it's used.",
+  }),
+  question({
+    id: "auth-advanced-reset-answer",
+    title: "Reset for an unknown email",
+    prompt:
+      "Someone requests a password reset for an email with no account. What should the API answer?",
+    choices: [
+      "404 No such account",
+      "The same 200 message as always",
+      "400 Invalid email",
+    ],
+    correct: 1,
+    conceptIds: ["authentication-vs-authorization"],
+    hint: "What could a different answer reveal?",
+    explanation:
+      "A different answer would let anyone test which emails are registered. The API gives the same message and status every time, and only sends the email when the account really exists.",
+  }),
+  question({
+    id: "auth-advanced-reset-token",
+    title: "A safe reset token",
+    prompt: "Which reset token is safe to email?",
+    choices: [
+      "User id plus the time",
+      "32 random bytes, hash stored",
+      "A Math.random() number",
+    ],
+    correct: 1,
+    conceptIds: ["password-hashing"],
+    hint: "Could an attacker predict it, or read it from the database?",
+    explanation:
+      "A token from a secure random generator can't be guessed, and storing only its hash means a database leak hands out no working links. It should also expire in about 30 minutes and work only once.",
+  }),
 ];

@@ -23,6 +23,7 @@ const PLANNED: [
   ["http", 7, 12, 17],
   ["backend", 6, 12, 16],
   ["databases", 6, 11, 16],
+  ["authentication", 6, 11, 16],
 ];
 
 describe.each(PLANNED)(
@@ -247,6 +248,30 @@ describe.each(DATABASES_MODULES)("the Databases %s module", (id, number) => {
   it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
     checkModule("databases", id, number));
 });
+
+const AUTHENTICATION_MODULES: [id: string, number: number][] = [
+  ["who-are-you", 1],
+  ["passwords", 2],
+  ["hashing", 3],
+  ["signing-up", 4],
+  ["the-login-flow", 5],
+  ["sessions-and-cookies", 7],
+  ["tokens-jwt", 8],
+  ["protecting-routes", 9],
+  ["logging-out", 10],
+  ["refresh-tokens", 12],
+  ["oauth", 13],
+  ["two-factor", 14],
+  ["password-reset", 15],
+];
+
+describe.each(AUTHENTICATION_MODULES)(
+  "the Authentication %s module",
+  (id, number) => {
+    it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
+      checkModule("authentication", id, number));
+  },
+);
 
 // The HTML modules: [step id, its number].
 const HTML_MODULES: [id: string, number: number][] = [

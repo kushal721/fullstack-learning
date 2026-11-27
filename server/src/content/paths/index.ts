@@ -1,4 +1,5 @@
 import type { TopicPath } from "@fsl/shared";
+import { authenticationPath } from "./authentication/path.js";
 import { backendPath } from "./backend/path.js";
 import { howTheWebWorksPath } from "./how-the-web-works/path.js";
 import { cssPath } from "./css/path.js";
@@ -22,4 +23,5 @@ export const topicPaths: TopicPath[] = [
   httpPath,
   backendPath,
   databasesPath,
+  authenticationPath,
 ];
