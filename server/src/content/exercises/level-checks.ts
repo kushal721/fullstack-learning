@@ -2003,4 +2003,336 @@ export const levelCheckExercises: PredictExercise[] = [
     explanation:
       "Graceful shutdown calls server.close() so no new requests arrive but those in flight finish, then closes the database pool and exits. Exiting at once cuts off users mid-request.",
   }),
+  // Databases: Basic
+  question({
+    id: "databases-basic-json-file",
+    title: "Two saves at once",
+    prompt:
+      "A server keeps notes in `notes.json`: each request reads the file, adds a note and writes it back. Two requests add a note at the same moment. What can happen?",
+    choices: [
+      "Both notes are always saved",
+      "One note is lost, with no error",
+      "The second request waits its turn",
+    ],
+    correct: 1,
+    conceptIds: ["database"],
+    hint: "Both requests read the file before either writes.",
+    explanation:
+      "Both requests read the same old list, each adds its note to its own copy, and the second write replaces the first. One note silently disappears. A database handles many writes at once without losing any.",
+  }),
+  question({
+    id: "databases-basic-foreign-key",
+    title: "A note for nobody",
+    prompt:
+      "`notes.user_id` is `REFERENCES users (id)`. There is no user with id 9. What does `INSERT INTO notes (user_id, title) VALUES (9, 'Milk')` do?",
+    choices: [
+      "Saves the note with user_id 9",
+      "Saves it with user_id NULL",
+      "Fails with a foreign key error",
+    ],
+    correct: 2,
+    conceptIds: ["foreign-key", "one-to-many-relationship"],
+    hint: "What does REFERENCES promise about every note?",
+    explanation:
+      "A foreign key makes the database check that every user_id matches an existing users.id. There is no user 9, so the insert fails with an error and nothing is saved.",
+  }),
+  question({
+    id: "databases-basic-newest-three",
+    title: "The three newest",
+    prompt: "Which query gives user 1's three newest note titles?",
+    choices: [
+      "… WHERE user_id = 1 LIMIT 3",
+      "… WHERE user_id = 1 ORDER BY created_at DESC LIMIT 3",
+      "… ORDER BY created_at DESC LIMIT 3",
+    ],
+    correct: 1,
+    conceptIds: ["sql-select"],
+    hint: "You need to filter, then sort, then keep a few.",
+    explanation:
+      "WHERE keeps only user 1's notes, ORDER BY created_at DESC puts the newest first, and LIMIT 3 keeps three. Without ORDER BY the rows come in no promised order; without WHERE you get everyone's notes.",
+  }),
+  question({
+    id: "databases-basic-returning",
+    title: "The new note's id",
+    prompt:
+      "`createNote` sends `INSERT INTO notes (user_id, title, content) VALUES ($1, $2, $3) RETURNING id, title`. What does RETURNING do?",
+    choices: [
+      "Sends back the saved row",
+      "Saves the row a second time",
+      "Undoes the insert on error",
+    ],
+    correct: 0,
+    conceptIds: ["sql-insert"],
+    hint: "The client needs the id the database chose.",
+    explanation:
+      "RETURNING makes the INSERT send back the row it stored, including the id and any defaults the database filled in, in the same round trip. createNote then answers 201 with that row.",
+  }),
+  question({
+    id: "databases-basic-no-where",
+    title: "A missing WHERE",
+    prompt:
+      "Someone runs `DELETE FROM notes;` in psql on the Notes App's database. What happens?",
+    choices: [
+      "psql refuses without a WHERE",
+      "Only the newest note is deleted",
+      "Every note of every user is deleted",
+    ],
+    correct: 2,
+    conceptIds: ["sql-update-delete"],
+    hint: "Which rows does a statement apply to when nothing picks them?",
+    explanation:
+      "Without WHERE, an UPDATE or DELETE applies to every row in the table, and SQL has no undo. Run a SELECT with the same WHERE first, or try it inside BEGIN … ROLLBACK.",
+  }),
+  question({
+    id: "databases-basic-rowcount-404",
+    title: "Someone else's note",
+    prompt:
+      "User 3 sends `PUT /api/notes/12`, but note 12 belongs to user 5. The query ends `WHERE id = $3 AND user_id = $4`. What does updateNote answer?",
+    choices: [
+      "200, and note 12 is changed",
+      "404: rowCount is 0",
+      "500: the query fails",
+      "403 Forbidden",
+    ],
+    correct: 1,
+    conceptIds: ["sql-update-delete", "crud"],
+    hint: "Does any row have id 12 and user_id 3?",
+    explanation:
+      "No row matches both conditions, so nothing changes and rowCount is 0. updateNote answers 404 Note not found, the same as for a note that doesn't exist, so nobody learns which ids exist.",
+  }),
+  question({
+    id: "databases-basic-parameters",
+    title: "A strange title",
+    prompt:
+      'createNote runs `pool.query("INSERT INTO notes (user_id, title) VALUES ($1, $2)", [3, title])` with a title of `\'); DROP TABLE notes; --`. What happens?',
+    choices: [
+      "The notes table is dropped",
+      "A note with that title is saved",
+      "PostgreSQL rejects the query",
+    ],
+    correct: 1,
+    conceptIds: ["parameterized-query"],
+    hint: "Is the title ever part of the SQL text?",
+    explanation:
+      "The SQL text and the values are sent separately. PostgreSQL fixes the query's meaning before the values arrive, so the title is only ever data and is saved exactly as typed.",
+  }),
+  question({
+    id: "databases-basic-one-pool",
+    title: "A pool per request",
+    prompt:
+      "A controller creates `new pg.Pool(config)` at the start of every request and never closes it. What goes wrong as traffic grows?",
+    choices: [
+      "Nothing: pools are free",
+      "Queries return stale rows",
+      "New connections pile up until PostgreSQL refuses more",
+    ],
+    correct: 2,
+    conceptIds: ["db-connection-pool"],
+    hint: "What does a pool open when it is first used?",
+    explanation:
+      "Each new pool opens its own connections, which is slow, and these are never closed. PostgreSQL limits connections, so it soon refuses. Create one pool in db.js and import it everywhere.",
+  }),
+  // Databases: Intermediate
+  question({
+    id: "databases-intermediate-left-join",
+    title: "Users with no notes",
+    prompt:
+      "Ann has 2 notes and Bo has none. Which query lists both, with Bo's count as 0?",
+    choices: [
+      "JOIN with COUNT(*)",
+      "LEFT JOIN with COUNT(n.id)",
+      "LEFT JOIN with COUNT(*)",
+    ],
+    correct: 1,
+    conceptIds: ["foreign-key", "one-to-many-relationship", "sql-select"],
+    hint: "Which join keeps unmatched users, and which COUNT skips NULL?",
+    explanation:
+      "An inner JOIN drops Bo. LEFT JOIN keeps him with NULL note columns; COUNT(n.id) skips that NULL and gives 0, while COUNT(*) counts his one row and gives 1.",
+  }),
+  question({
+    id: "databases-intermediate-on-delete",
+    title: "Deleting a user",
+    prompt:
+      "The Notes App's `notes.user_id` says `REFERENCES users (id) ON DELETE CASCADE`. What does `DELETE FROM users WHERE id = 3` do?",
+    choices: [
+      "Fails while user 3 has notes",
+      "Deletes user 3 and all their notes",
+      "Deletes user 3; notes keep user_id 3",
+      "Sets their notes' user_id to NULL",
+    ],
+    correct: 1,
+    conceptIds: ["foreign-key"],
+    hint: "What does CASCADE do to the rows that point at the deleted one?",
+    explanation:
+      "CASCADE deletes the child rows too, so the user's notes go with them. RESTRICT (or the default) would refuse the delete, and SET NULL would empty user_id, which NOT NULL forbids.",
+  }),
+  question({
+    id: "databases-intermediate-index-order",
+    title: "The wrong first column",
+    prompt:
+      "A table has an index on `(user_id, created_at)`. Which query can't use it to jump to the rows?",
+    choices: [
+      "WHERE user_id = 3",
+      "WHERE user_id = 3 ORDER BY created_at",
+      "WHERE created_at > '2026-01-01'",
+    ],
+    correct: 2,
+    conceptIds: ["sql-select"],
+    hint: "A composite index is sorted by its first column first.",
+    explanation:
+      "The index is sorted by user_id, then by created_at within each user. Rows after a date are spread through every user's section, so a search on created_at alone can't start anywhere in it.",
+  }),
+  question({
+    id: "databases-intermediate-index-fk",
+    title: "Is the foreign key indexed?",
+    prompt:
+      "Why does the Notes App's schema.sql add `CREATE INDEX notes_user_id_idx ON notes (user_id)`?",
+    choices: [
+      "PostgreSQL doesn't index foreign keys by itself",
+      "Without it, user_id could repeat",
+      "It makes inserts faster",
+    ],
+    correct: 0,
+    conceptIds: ["foreign-key", "sql-select"],
+    hint: "Which columns get an index automatically?",
+    explanation:
+      "PRIMARY KEY and UNIQUE get an index automatically, but a foreign key doesn't. Every notes query filters by user_id, so without this index PostgreSQL would read everyone's notes to find one user's.",
+  }),
+  question({
+    id: "databases-intermediate-migration-edit",
+    title: "A migration that already ran",
+    prompt:
+      "Migration 003 ran in production last week, and its default value was wrong. What's the right fix?",
+    choices: [
+      "Edit 003 and deploy again",
+      "Write a new migration, 005, that fixes it",
+      "Run schema.sql again",
+    ],
+    correct: 1,
+    conceptIds: ["sql-table", "database"],
+    hint: "Will a database that already ran 003 ever run it again?",
+    explanation:
+      "The migration tool records 003 as done, so an edited 003 never runs where it already ran, and databases drift apart. A new migration reaches every database in the same order.",
+  }),
+  question({
+    id: "databases-intermediate-n-plus-one",
+    title: "Tags in a loop",
+    prompt:
+      "A page loads 50 notes with one query, then each note's tags with one query per note. How many queries is that, and what fixes it?",
+    choices: [
+      "50: nothing to fix",
+      "51: load every note's tags in one query",
+      "2: it's already batched",
+    ],
+    correct: 1,
+    conceptIds: ["sql-select", "one-to-many-relationship"],
+    hint: "One for the list, plus one per note.",
+    explanation:
+      "That's the N+1 problem: 1 query for the notes plus 50 for the tags. One query with WHERE note_id = ANY($1), or a JOIN, loads every note's tags at once, so the count stays at two whatever the number of notes.",
+  }),
+  // Databases: Advanced
+  question({
+    id: "databases-advanced-one-client",
+    title: "BEGIN on the pool",
+    prompt:
+      'A controller runs `pool.query("BEGIN")`, two UPDATEs and `pool.query("COMMIT")`, all through `pool.query`. What\'s wrong?',
+    choices: [
+      "Nothing: the pool keeps it together",
+      "Each call may use a different connection",
+      "COMMIT must come before the UPDATEs",
+    ],
+    correct: 1,
+    conceptIds: ["db-transaction", "db-connection-pool"],
+    hint: "Which connection does each pool.query borrow?",
+    explanation:
+      "A transaction lives on one connection, but pool.query borrows any free one per call. Borrow one client with pool.connect(), run BEGIN, the changes and COMMIT on it, ROLLBACK on error and release() in finally.",
+  }),
+  question({
+    id: "databases-advanced-lost-update",
+    title: "Two withdrawals",
+    prompt:
+      "Two requests each read a balance of 100, subtract 30 in JavaScript and write the result back. What balance is left?",
+    choices: ["40", "70", "100", "An error"],
+    correct: 1,
+    conceptIds: ["db-transaction", "sql-update-delete"],
+    hint: "Both wrote a value worked out from the same old read.",
+    explanation:
+      "Both write 70, so one withdrawal is lost. Let the database do the maths in one statement (SET balance = balance - 30), or lock the row with SELECT … FOR UPDATE inside a transaction.",
+  }),
+  question({
+    id: "databases-advanced-each-fact-once",
+    title: "The email in every note",
+    prompt:
+      "A table stores the owner's email in every note row. Ana changes her email and one row is missed. What is this problem called?",
+    choices: [
+      "An update anomaly",
+      "A lost update",
+      "A deadlock",
+      "A foreign key error",
+    ],
+    correct: 0,
+    conceptIds: ["foreign-key", "one-to-many-relationship"],
+    hint: "The same fact is stored in many places.",
+    explanation:
+      "Copies of one fact drift apart when a change misses one: an update anomaly. Normalising stores the email once in users and only user_id in notes, as the Notes App's schema does.",
+  }),
+  question({
+    id: "databases-advanced-rows-removed",
+    title: "Rows Removed by Filter",
+    prompt:
+      "EXPLAIN ANALYZE for listNotes shows `Seq Scan on notes` and `Rows Removed by Filter: 99960` to return 40 rows. What's the likely fix?",
+    choices: [
+      "Add LIMIT 40",
+      "An index on notes (user_id)",
+      "Run ANALYZE on users",
+    ],
+    correct: 1,
+    conceptIds: ["sql-select"],
+    hint: "How many rows did it read to keep 40?",
+    explanation:
+      "It read every note and threw almost all away: a sequential scan. An index on the filtered column lets PostgreSQL go straight to the user's rows, which is why the Notes App has notes_user_id_idx.",
+  }),
+  question({
+    id: "databases-advanced-explain-analyze",
+    title: "Measuring a DELETE",
+    prompt:
+      "You want the plan and real timings for a slow DELETE without losing data. What do you run?",
+    choices: [
+      "EXPLAIN ANALYZE DELETE …",
+      "BEGIN; EXPLAIN ANALYZE DELETE …; ROLLBACK;",
+      "ANALYZE notes;",
+    ],
+    correct: 1,
+    conceptIds: ["sql-update-delete", "db-transaction"],
+    hint: "EXPLAIN ANALYZE really runs the statement.",
+    explanation:
+      "EXPLAIN ANALYZE executes the query to measure it, so a bare DELETE really deletes. Inside a transaction you get the timings and then roll the change back. ANALYZE alone only refreshes statistics.",
+  }),
+  question({
+    id: "databases-advanced-rpo",
+    title: "Nightly backups",
+    prompt:
+      "Backups run nightly at 02:00. The disk dies at 17:00. How much data can be lost?",
+    choices: ["None", "Up to 15 hours of changes", "Only the last minute"],
+    correct: 1,
+    conceptIds: ["database"],
+    hint: "When was the last copy taken?",
+    explanation:
+      "Everything since the 02:00 backup is gone. How much you can afford to lose is the RPO; to shrink it, use point-in-time recovery, which replays the write-ahead log up to a chosen moment.",
+  }),
+  question({
+    id: "databases-advanced-test-restore",
+    title: "A backup that works",
+    prompt: "How do you know your backups will actually work?",
+    choices: [
+      "The backup job reports success",
+      "The files are big enough",
+      "You restore one into a scratch database",
+    ],
+    correct: 2,
+    conceptIds: ["database"],
+    hint: "Only one of these proves the way back.",
+    explanation:
+      "A job can succeed while dumping the wrong database, or the steps may fail under pressure. Restoring regularly into a scratch database, checking row counts and timing it proves the backup and tells you your real recovery time.",
+  }),
 ];

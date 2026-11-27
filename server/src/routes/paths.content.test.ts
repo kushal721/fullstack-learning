@@ -22,6 +22,7 @@ const PLANNED: [
   ["react", 7, 13, 18],
   ["http", 7, 12, 17],
   ["backend", 6, 12, 16],
+  ["databases", 6, 11, 16],
 ];
 
 describe.each(PLANNED)(
@@ -224,6 +225,27 @@ const BACKEND_MODULES: [id: string, number: number][] = [
 describe.each(BACKEND_MODULES)("the Backend %s module", (id, number) => {
   it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
     checkModule("backend", id, number));
+});
+
+const DATABASES_MODULES: [id: string, number: number][] = [
+  ["why-a-database", 1],
+  ["tables-rows-keys", 2],
+  ["select-and-insert", 3],
+  ["update-and-delete", 4],
+  ["sql-from-node", 5],
+  ["relationships-and-joins", 7],
+  ["indexes", 8],
+  ["migrations", 9],
+  ["orms", 10],
+  ["transactions", 12],
+  ["normalisation", 13],
+  ["query-plans", 14],
+  ["backups", 15],
+];
+
+describe.each(DATABASES_MODULES)("the Databases %s module", (id, number) => {
+  it(`is step ${number}, in parts that cover all its blocks, with objectives`, () =>
+    checkModule("databases", id, number));
 });
 
 // The HTML modules: [step id, its number].
